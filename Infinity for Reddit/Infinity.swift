@@ -32,6 +32,7 @@ struct Infinity: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.dependencyManager, DependencyManager.shared)
         }
         .modelContainer(sharedModelContainer)
     }

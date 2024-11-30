@@ -7,9 +7,11 @@
 
 import SwiftUI
 import SwiftData
+import Swinject
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dependencyManager) private var dependencyManager: Container
     @Query private var items: [Item]
 
     var body: some View {
