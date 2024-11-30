@@ -7,16 +7,14 @@
 import Swinject
 
 class DependencyManager {
-    static let shared = DependencyManager()
-    let container: Container
-    
-    private init() {
-        container = Container()
+    static let shared: Container = {
+        func registerDependencies(_ c: Container) {
+            // TODO register dependencies on container
+        }
         
-        registerDependencies()
-    }
-    
-    private func registerDependencies() {
+        let container = Container()
+        registerDependencies(container)
         
-    }
+        return container
+    }()
 }
