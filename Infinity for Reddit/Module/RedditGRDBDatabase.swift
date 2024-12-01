@@ -9,21 +9,18 @@ import Foundation
 import GRDB
 
 struct RedditGRDBDatabase {
-    static let shared = try! RedditGRDBDatabase()
-    
-    let dbPool: DatabasePool
-    
-    private init() throws {
+    public static func create() throws -> DatabasePool {
         let path = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("reddit_data.sqlite")
             .path
         
-        dbPool = try DatabasePool(path: path)
-        //try setupMigrations()
+        let dbPool = try DatabasePool(path: path)
+        try setupMigrations(dbPool)
+        return dbPool
     }
     
-    private func setupMigrations() throws {
+    private static func setupMigrations(_ dbPool: DatabasePool) throws {
         // TODO for future database scheme migration
     }
 }

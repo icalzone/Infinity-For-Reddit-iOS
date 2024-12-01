@@ -7,6 +7,7 @@
 
 import Swinject
 import Alamofire
+import GRDB
 
 struct DependencyManager {
     static let shared = DependencyManager()
@@ -21,5 +22,12 @@ struct DependencyManager {
     private func registerDependencies(_ c: Container) {
         // TODO register dependencies on container
         c.register(Session.self) {_ in AF}
+        c.register(DatabasePool.self) {_ in
+            do {
+                return try RedditGRDBDatabase.create()
+            } catch {
+                fatalError("Failed to create DatabasePool: \(error)")
+            }
+        }
     }
 }
