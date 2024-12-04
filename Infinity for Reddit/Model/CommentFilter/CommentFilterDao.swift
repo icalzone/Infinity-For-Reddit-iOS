@@ -1,0 +1,81 @@
+//
+// CommentFilterDao.swift
+// Infinity for Reddit
+//
+// Created by joeylr2042 on 2024-12-04
+//
+
+import GRDB
+import Combine
+
+struct CommentFilterDao {
+    let dbPool: DatabasePool
+    
+    init(dbPool: DatabasePool) {
+        self.dbPool = dbPool
+    }
+    
+    func insert(commentFilter: CommentFilter) throws {
+        try dbPool.write { db in
+            try commentFilter.insert(db, onConflict: .replace)
+        }
+    }
+    
+    func insertAll(commentFilters: [CommentFilter]) throws {
+        try dbPool.write { db in
+            for filter in commentFilters {
+                try filter.insert(db, onConflict: .replace)
+            }
+        }
+    }
+    
+    func deleteAllCommentFilters() throws {
+        try dbPool.write { db in
+            try db.execute(sql: "DELETE FROM comment_filter")
+        }
+    }
+    
+    func deleteCommentFilter(commentFilter: CommentFilter) throws {
+        try dbPool.write { db in
+            try db.execute(sql: "DELETE FROM comment_filter WHERE name = ?", arguments: [commentFilter.name])
+        }
+    }
+    
+    func deleteCommentFilter(name: String) throws {
+        try dbPool.write { db in
+            try db.execute(sql: "DELETE FROM comment_filter WHERE name = ?", arguments: [name])
+        }
+    }
+    
+    func getCommentFilter(name: String) throws -> CommentFilter? {
+        try dbPool.read { db in
+            try CommentFilter.fetchOne(db, sql: "SELECT * FROM comment_filter WHERE name = ? LIMIT 1", arguments: [name])
+        }
+    }
+    
+    func getAllCommentFiltersLiveData() -> AnyPublisher<[CommentFilter], Error> {
+        ValueObservation
+            .tracking { db in try CommentFilter.fetchAll(db, sql: "SELECT * FROM comment_filter ORDER BY name") }
+            .publisher(in: dbPool)
+            .eraseToAnyPublisher()
+    }
+    
+    func getAllCommentFilters() throws -> [CommentFilter] {
+        try dbPool.read { db in
+            try CommentFilter.fetchAll(db)
+        }
+    }
+    
+    func getValidCommentFilters(usage: Int, nameOfUsage: String) throws -> [CommentFilter] {
+        try dbPool.read { db in
+            let sql = """
+                SELECT * FROM comment_filter WHERE (comment_filter.name IN 
+                    (SELECT comment_filter_usage.name FROM comment_filter_usage 
+                     WHERE (usage = ? AND name_of_usage = ? COLLATE NOCASE))) 
+                OR (comment_filter.name NOT IN 
+                    (SELECT comment_filter_usage.name FROM comment_filter_usage))
+            """
+            return try CommentFilter.fetchAll(db, sql: sql, arguments: [usage, nameOfUsage])
+        }
+    }
+}
