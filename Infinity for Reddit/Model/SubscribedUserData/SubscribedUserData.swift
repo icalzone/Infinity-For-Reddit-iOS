@@ -8,7 +8,6 @@
 import GRDB
 
 struct SubscribedUserData: Codable, FetchableRecord, PersistableRecord {
-    static let ANONYMOUS_ACCOUNT = "-"
     static let databaseTableName: String = "subscribed_users"
     
     var name: String

@@ -8,7 +8,6 @@
 import GRDB
 
 struct MultiReddit: Codable, FetchableRecord, PersistableRecord {
-    static let ANONYMOUS_ACCOUNT = "-"
     static let databaseTableName = "multi_reddits"
     
     var path: String

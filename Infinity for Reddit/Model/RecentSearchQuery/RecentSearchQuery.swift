@@ -8,7 +8,6 @@
 import GRDB
 
 struct RecentSearchQuery: Codable, FetchableRecord, PersistableRecord {
-    static let ANONYMOUS_ACCOUNT = "-"
     static let databaseTableName: String = "recent_search_queries"
     
     var username: String

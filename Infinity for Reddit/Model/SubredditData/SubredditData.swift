@@ -8,7 +8,6 @@
 import GRDB
 
 struct SubredditData: Codable, FetchableRecord, PersistableRecord {
-    static let ANONYMOUS_ACCOUNT = "-"
     static let databaseTableName = "subreddits"
     
     var id: String
