@@ -38,5 +38,9 @@ struct DependencyManager {
             operationQueue.maxConcurrentOperationCount = 4
             return operationQueue
         }
+        
+        c.register(UserDefaults.self) { _ in
+            UserDefaults.standard
+        }
     }
 }
