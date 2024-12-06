@@ -21,15 +21,15 @@ struct NotificationView: View {
             fatalError("Failed to resolve UserDefaults")
         }
         self.userDefaults = resolvedUserDefaults
-        if userDefaults.object(forKey: "enableNotifications") == nil {
-            userDefaults.set(true, forKey: "enableNotifications")
+        if userDefaults.object(forKey: "ENABLE_NOTIFICATION_KEY") == nil {
+            userDefaults.set(true, forKey: "ENABLE_NOTIFICATION_KEY")
             }
-        if userDefaults.object(forKey: "checkNotificationsInterval") == nil {
-            userDefaults.set(60, forKey: "checkNotificationsInterval")
+        if userDefaults.object(forKey: "NOTIFICATION_INTERVAL_KEY") == nil {
+            userDefaults.set(60, forKey: "NOTIFICATION_INTERVAL_KEY")
         }
 
-        _enableNotifications = State(initialValue: userDefaults.bool(forKey: "enableNotifications"))
-        _checkNotificationsInterval = State(initialValue: userDefaults.integer(forKey: "checkNotificationsInterval"))
+        _enableNotifications = State(initialValue: userDefaults.bool(forKey: "ENABLE_NOTIFICATION_KEY"))
+        _checkNotificationsInterval = State(initialValue: userDefaults.integer(forKey: "NOTIFICATION_INTERVAL_KEY"))
     }
 
     var body: some View {
@@ -38,7 +38,7 @@ struct NotificationView: View {
                 Section {
                     Toggle("Enable Notifications", systemImage: "bell.fill", isOn: $enableNotifications)
                         .onChange(of: enableNotifications) { _, newValue in
-                            userDefaults.set(newValue, forKey: "enableNotifications")
+                            userDefaults.set(newValue, forKey: "ENABLE_NOTIFICATION_KEY")
                         }
                     
                     Picker("Check Notifications Interval", systemImage: "clock.fill", selection: $checkNotificationsInterval) {
@@ -53,7 +53,7 @@ struct NotificationView: View {
                             }
                     }
                     .onChange(of: checkNotificationsInterval) { _, newValue in
-                        userDefaults.set(newValue, forKey: "checkNotificationsInterval")
+                        userDefaults.set(newValue, forKey: "NOTIFICATION_INTERVAL_KEY")
                     }
                 }
             }
