@@ -13,6 +13,10 @@ struct ImmersiveInterfaceView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var immersiveInterface: Bool
     @State private var ignoreNavigationBarInImmersiveInterface: Bool
+    
+    let IMMERSIVE_INTERFACE_KEY = UserDefaultsUtils.IMMERSIVE_INTERFACE_KEY
+    let IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY = UserDefaultsUtils.IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY
+    
     private let userDefaults: UserDefaults
     
     init(){
@@ -21,16 +25,16 @@ struct ImmersiveInterfaceView: View {
         }
         self.userDefaults = resolvedUserDefaults
         
-        if userDefaults.object(forKey: "IMMERSIVE_INTERFACE_KEY") == nil {
-            userDefaults.set(true, forKey: "IMMERSIVE_INTERFACE_KEY")
+        if userDefaults.object(forKey: IMMERSIVE_INTERFACE_KEY) == nil {
+            userDefaults.set(true, forKey: IMMERSIVE_INTERFACE_KEY)
         }
         
-        if userDefaults.object(forKey: "IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY") == nil {
-            userDefaults.set(false, forKey: "IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY")
+        if userDefaults.object(forKey: IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY) == nil {
+            userDefaults.set(false, forKey: IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY)
         }
         
-        _immersiveInterface = State(initialValue: userDefaults.bool(forKey: "IMMERSIVE_INTERFACE_KEY"))
-        _ignoreNavigationBarInImmersiveInterface = State(initialValue: userDefaults.bool(forKey: "IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY"))
+        _immersiveInterface = State(initialValue: userDefaults.bool(forKey: IMMERSIVE_INTERFACE_KEY))
+        _ignoreNavigationBarInImmersiveInterface = State(initialValue: userDefaults.bool(forKey: IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY))
     }
     
     var body: some View {
@@ -44,7 +48,7 @@ struct ImmersiveInterfaceView: View {
                 }
             }
             .onChange(of: immersiveInterface){
-                _, newValue in userDefaults.set(newValue, forKey: "IMMERSIVE_INTERFACE_KEY")
+                _, newValue in userDefaults.set(newValue, forKey: IMMERSIVE_INTERFACE_KEY)
             }
             Toggle(isOn: $ignoreNavigationBarInImmersiveInterface){
                 VStack(alignment: .leading) {
@@ -54,7 +58,7 @@ struct ImmersiveInterfaceView: View {
                         .foregroundColor(.gray)
                 }
             }.onChange(of: ignoreNavigationBarInImmersiveInterface){
-                _, newValue in userDefaults.set(newValue, forKey: "IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY")
+                _, newValue in userDefaults.set(newValue, forKey: IMMERSIVE_INTERFACE_IGNORE_NAV_BAR_KEY)
             }
         }
         .navigationTitle("Immersive Interface")
