@@ -29,13 +29,12 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     
     public func fetchPosts(postListingType: PostListingType, limit: Int) -> AnyPublisher<ListingData, any Error> {
         return Future<ListingData, Error> { promise in
-            self.session.request(RedditOAuthAPI.getFrongPagePost(headers: APIUtils.getOAuthHeader(accessToken: ""/*self.account?.accessToken ?? ""*/)))
+            self.session.request(RedditOAuthAPI.getFrongPagePost(headers: APIUtils.getOAuthHeader(accessToken: self.account?.accessToken ?? "")))
                 .validate()
                 //.publishData()
                 .responseData { response in
                     switch response.result {
                     case .success(let data):
-                        print(String(data: data, encoding: .utf8))
                         do {
                             let json = JSON(data)
                             if let error = json.error {

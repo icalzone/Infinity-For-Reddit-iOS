@@ -10,9 +10,10 @@ import Combine
 
 public class PostListingViewModel: ObservableObject {
     // MARK: - Properties
-    @Published var posts: [Post]?
+    @Published var posts: [Post] = []
     @Published var isLoading: Bool = false
     @Published var hasMorePages: Bool = true
+    private var isInitialLoad: Bool = true
     
     private var allPostIds = Set<String>()
     private var after: String? = nil
@@ -29,10 +30,16 @@ public class PostListingViewModel: ObservableObject {
     // MARK: - Methods
     
     /// Fetches the next page of posts
-    public func loadPosts() {
+    public func loadPosts(account: Account) {
         guard !isLoading, hasMorePages else { return }
         
         isLoading = true
+        
+        if isInitialLoad {
+            postListingRepository.setAccount(account)
+            isInitialLoad = false
+        }
+        
         postListingRepository.fetchPosts(postListingType: .frontPage, limit: 100)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
@@ -49,10 +56,9 @@ public class PostListingViewModel: ObservableObject {
                     let realNewPosts = listingData.posts.filter {
                         !self.allPostIds.contains($0.id)
                     }
-                    if self.posts == nil {
-                        self.posts = [Post]()
-                    }
-                    self.posts!.append(contentsOf: realNewPosts)
+                    
+                    self.posts.append(contentsOf: realNewPosts)
+                    
                     allPostIds.formUnion(
                         realNewPosts
                             .compactMap {
@@ -66,10 +72,17 @@ public class PostListingViewModel: ObservableObject {
     }
     
     /// Reloads posts from the first page
-    func refreshPosts() {
+    func refreshPosts(account: Account) {
+        // This is for user switching accounts. We have to force clear all load
+        cancellables.forEach { $0.cancel() }
+        
+        isInitialLoad = true
+        isLoading = false
+        
         after = nil
         hasMorePages = true
-        posts = nil
-        loadPosts()
+        posts = []
+        
+        loadPosts(account: account)
     }
 }

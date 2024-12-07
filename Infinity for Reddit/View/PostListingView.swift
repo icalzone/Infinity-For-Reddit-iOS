@@ -32,12 +32,19 @@ struct PostListingView: View {
     }
     
     var body: some View {
-        List() {
+        Group {
+            if postListingViewModel.isLoading {
+                Text("Is loading")
+            } else if postListingViewModel.posts.isEmpty {
+                Text("No posts")
+            } else {
+                List(postListingViewModel.posts, id: \.id) { post in
+                    Text(post.title)
+                }
+            }
         }
         .onAppear {
-            postListingViewModel.postListingRepository.setAccount(accountViewModel.account)
-            
-            postListingViewModel.loadPosts()
+            postListingViewModel.loadPosts(account: accountViewModel.account)
         }
     }
 }
