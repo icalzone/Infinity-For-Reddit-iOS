@@ -17,6 +17,14 @@ struct FontView: View {
     @State private var titleFontSize: Int
     @State private var contentFontFamily: Int
     @State private var contentFontSize: Int
+    
+    let FONT_FAMILY_KEY = UserDefaultsUtils.FONT_FAMILY_KEY
+    let FONT_SIZE_KEY = UserDefaultsUtils.FONT_SIZE_KEY
+    let TITLE_FONT_FAMILY_KEY = UserDefaultsUtils.TITLE_FONT_FAMILY_KEY
+    let TITLE_FONT_SIZE_KEY = UserDefaultsUtils.TITLE_FONT_SIZE_KEY
+    let CONTENT_FONT_FAMILY_KEY = UserDefaultsUtils.CONTENT_FONT_FAMILY_KEY
+    let CONTENT_FONT_SIZE_KEY = UserDefaultsUtils.CONTENT_FONT_SIZE_KEY
+    
     private let families: [String] = ["Default", "Balsamiq Sans", "Balsamiq Sans Bold", "Noto Sans", "Noto Sans Bold", "Harmonia Sans", "Harmonia Sans Bold (No Italic)", "Roboto Condensed", "Roboto Condensed Bold", "Inter (No Italic)", "Inter Bold (No Italic)", "Manrope (No Italic)", "Manrope Bold (No Italic)", "Sriracha", "Atkinson Hyperlegible", "Atkinson Hyperlegible Bold", "Custom Font Family"]
     private let sizes: [String] = ["Extra Small", "Small", "Normal", "Large", "Extra Large"]
     private let contentSizes: [String] = ["Extra Small", "Small", "Normal", "Large", "Extra Large", "Enormously Large"]
@@ -29,36 +37,36 @@ struct FontView: View {
         }
         self.userDefaults = resolvedUserDefaults
         
-        if userDefaults.object(forKey: "FONT_FAMILY_KEY") == nil {
-            userDefaults.set(0, forKey: "FONT_FAMILY_KEY")
+        if userDefaults.object(forKey: FONT_FAMILY_KEY) == nil {
+            userDefaults.set(0, forKey: FONT_FAMILY_KEY)
         }
         
-        if userDefaults.object(forKey: "FONT_SIZE_KEY") == nil {
-            userDefaults.set(2, forKey: "FONT_SIZE_KEY")
+        if userDefaults.object(forKey: FONT_SIZE_KEY) == nil {
+            userDefaults.set(2, forKey: FONT_SIZE_KEY)
         }
         
-        if userDefaults.object(forKey: "TITLE_FONT_FAMILY_KEY") == nil {
-            userDefaults.set(0, forKey: "TITLE_FONT_FAMILY_KEY")
+        if userDefaults.object(forKey: TITLE_FONT_FAMILY_KEY) == nil {
+            userDefaults.set(0, forKey: TITLE_FONT_FAMILY_KEY)
         }
         
-        if userDefaults.object(forKey: "TITLE_FONT_SIZE_KEY") == nil {
-            userDefaults.set(2, forKey: "TITLE_FONT_SIZE_KEY")
+        if userDefaults.object(forKey: TITLE_FONT_SIZE_KEY) == nil {
+            userDefaults.set(2, forKey: TITLE_FONT_SIZE_KEY)
         }
         
-        if userDefaults.object(forKey: "CONTENT_FONT_FAMILY_KEY") == nil {
-            userDefaults.set(0, forKey: "CONTENT_FONT_FAMILY_KEY")
+        if userDefaults.object(forKey: CONTENT_FONT_FAMILY_KEY) == nil {
+            userDefaults.set(0, forKey: CONTENT_FONT_FAMILY_KEY)
         }
         
-        if userDefaults.object(forKey: "CONTENT_FONT_SIZE_KEY") == nil {
-            userDefaults.set(2, forKey: "CONTENT_FONT_SIZE_KEY")
+        if userDefaults.object(forKey: CONTENT_FONT_SIZE_KEY) == nil {
+            userDefaults.set(2, forKey: CONTENT_FONT_SIZE_KEY)
         }
         
-        _fontFamily = State(initialValue: userDefaults.integer(forKey: "FONT_FAMILY_KEY"))
-        _fontSize = State(initialValue: userDefaults.integer(forKey: "FONT_SIZE_KEY"))
-        _titleFontFamily = State(initialValue: userDefaults.integer(forKey: "TITLE_FONT_FAMILY_KEY"))
-        _titleFontSize = State(initialValue: userDefaults.integer(forKey: "TITLE_FONT_SIZE_KEY"))
-        _contentFontFamily = State(initialValue: userDefaults.integer(forKey: "CONTENT_FONT_FAMILY_KEY"))
-        _contentFontSize = State(initialValue: userDefaults.integer(forKey: "CONTENT_FONT_SIZE_KEY"))
+        _fontFamily = State(initialValue: userDefaults.integer(forKey: FONT_FAMILY_KEY))
+        _fontSize = State(initialValue: userDefaults.integer(forKey: FONT_SIZE_KEY))
+        _titleFontFamily = State(initialValue: userDefaults.integer(forKey: TITLE_FONT_FAMILY_KEY))
+        _titleFontSize = State(initialValue: userDefaults.integer(forKey: TITLE_FONT_SIZE_KEY))
+        _contentFontFamily = State(initialValue: userDefaults.integer(forKey: CONTENT_FONT_FAMILY_KEY))
+        _contentFontSize = State(initialValue: userDefaults.integer(forKey: CONTENT_FONT_SIZE_KEY))
     }
     
     var body: some View {
@@ -76,7 +84,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: fontFamily) { _, newValue in
-                    userDefaults.set(newValue, forKey: "FONT_FAMILY_KEY")
+                    userDefaults.set(newValue, forKey: FONT_FAMILY_KEY)
                 }
                 Picker("Font Size", selection: $fontSize){
                     ForEach(0..<sizes.count, id: \.self) { index in
@@ -85,7 +93,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: fontSize) { _, newValue in
-                    userDefaults.set(newValue, forKey: "FONT_SIZE_KEY")
+                    userDefaults.set(newValue, forKey: FONT_SIZE_KEY)
                 }
             }
             Section(header: Text("Title")){
@@ -96,7 +104,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: titleFontFamily) { _, newValue in
-                    userDefaults.set(newValue, forKey: "TITLE_FONT_FAMILY_KEY")
+                    userDefaults.set(newValue, forKey: TITLE_FONT_FAMILY_KEY)
                 }
                 Picker("Title Font Size", selection: $titleFontSize){
                     ForEach(0..<sizes.count, id: \.self) { index in
@@ -105,7 +113,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: titleFontSize) { _, newValue in
-                    userDefaults.set(newValue, forKey: "TITLE_FONT_SIZE_KEY")
+                    userDefaults.set(newValue, forKey: TITLE_FONT_SIZE_KEY)
                 }
             }
             Section(header: Text("Content")){
@@ -116,7 +124,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: contentFontFamily) { _, newValue in
-                    userDefaults.set(newValue, forKey: "CONTENT_FONT_FAMILY_KEY")
+                    userDefaults.set(newValue, forKey: CONTENT_FONT_FAMILY_KEY)
                 }
                 Picker("Content Font Size", selection: $contentFontSize){
                     ForEach(0..<contentSizes.count, id: \.self) { index in
@@ -125,7 +133,7 @@ struct FontView: View {
                 }
                 .padding(.leading, 44.5)
                 .onChange(of: contentFontSize) { _, newValue in
-                    userDefaults.set(newValue, forKey: "CONTENT_FONT_SIZE_KEY")
+                    userDefaults.set(newValue, forKey: CONTENT_FONT_SIZE_KEY)
                 }
             }
         }
