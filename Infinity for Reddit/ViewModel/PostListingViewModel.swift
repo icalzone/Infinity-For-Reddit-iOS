@@ -10,10 +10,11 @@ import Combine
 
 public class PostListingViewModel: ObservableObject {
     // MARK: - Properties
-    @Published var listingData: ListingData?
+    @Published var posts: [Post]?
     @Published var isLoading: Bool = false
     @Published var hasMorePages: Bool = true
     
+    private var allPostIds = Set<String>()
     private var after: String? = nil
     private let pageSize: Int = 100
     private var cancellables = Set<AnyCancellable>()
@@ -39,9 +40,26 @@ public class PostListingViewModel: ObservableObject {
                 if case .failure(let error) = completion {
                     print("Error fetching posts: \(error)")
                 }
-            }, receiveValue: { [weak self] newPosts in
+            }, receiveValue: { [weak self] listingData in
                 guard let self = self else { return }
                 //self.posts.append(contentsOf: newPosts)
+                if (listingData.posts.isEmpty) {
+                    // No more posts
+                } else {
+                    let realNewPosts = listingData.posts.filter {
+                        !self.allPostIds.contains($0.id)
+                    }
+                    if self.posts == nil {
+                        self.posts = [Post]()
+                    }
+                    self.posts!.append(contentsOf: realNewPosts)
+                    allPostIds.formUnion(
+                        realNewPosts
+                            .compactMap {
+                                $0.id
+                            }
+                    )
+                }
                 print("fuck")
             })
             .store(in: &cancellables)
@@ -51,7 +69,7 @@ public class PostListingViewModel: ObservableObject {
     func refreshPosts() {
         after = nil
         hasMorePages = true
-        listingData = nil
+        posts = nil
         loadPosts()
     }
 }

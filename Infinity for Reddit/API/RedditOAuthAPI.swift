@@ -30,7 +30,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         case .getMyInfo:
             return "/api/v1/me"
         case .getFrongPagePost:
-            return "/"
+            return "/best.json"
         }
     }
     

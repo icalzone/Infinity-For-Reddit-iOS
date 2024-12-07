@@ -70,7 +70,7 @@ class PostListingRootClass: NSObject, NSCoding{
 
 public class ListingData : NSObject, NSCoding{
     
-    var children : [Children]! = [Children]()
+    var posts : [Post]! = [Post]()
     var after : String!
     var before : String!
     var dist : Int!
@@ -84,7 +84,10 @@ public class ListingData : NSObject, NSCoding{
         }
         let childrenArray = json["children"].arrayValue
         for childJSON in childrenArray {
-            children.append(Children(fromJson: childJSON))
+            let dataJson = childJSON["data"]
+            if !dataJson.isEmpty{
+                posts.append(Post(fromJson: dataJson))
+            }
         }
         after = json["after"].stringValue
         before = json["before"].stringValue
@@ -138,68 +141,7 @@ public class ListingData : NSObject, NSCoding{
     }
 }
 
-class Children : NSObject, NSCoding{
-    
-    var data : PostData!
-    var kind : String!
-    
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!){
-        if json.isEmpty{
-            return
-        }
-        let dataJson = json["data"]
-        if !dataJson.isEmpty{
-            data = PostData(fromJson: dataJson)
-        }
-        kind = json["kind"].stringValue
-    }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if data != nil{
-            dictionary["data"] = data.toDictionary()
-        }
-        if kind != nil{
-            dictionary["kind"] = kind
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required init(coder aDecoder: NSCoder)
-    {
-        data = aDecoder.decodeObject(forKey: "data") as? PostData
-        kind = aDecoder.decodeObject(forKey: "kind") as? String
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    func encode(with aCoder: NSCoder)
-    {
-        if data != nil{
-            aCoder.encode(data, forKey: "data")
-        }
-        if kind != nil{
-            aCoder.encode(kind, forKey: "kind")
-        }
-    }
-    
-}
-
-class PostData : NSObject, NSCoding{
+class Post : NSObject, NSCoding {
     var approvedAtUtc : String!
     var approvedBy : String!
     var archived : Bool!
@@ -876,6 +818,10 @@ class PostData : NSObject, NSCoding{
         if userReports != nil{
             aCoder.encode(userReports, forKey: "user_reports")
         }
+    }
+    
+    static func == (lhs: Post, rhs: Post) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
