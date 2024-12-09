@@ -12,7 +12,7 @@ struct AccountSheet: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     if let profileImageUrl = accountViewModel.account.profileImageUrl {

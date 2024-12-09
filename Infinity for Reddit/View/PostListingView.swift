@@ -45,7 +45,6 @@ struct PostListingView: View {
                     if postListingViewModel.hasMorePages {
                         Text("Loading more pages")
                             .onAppear {
-                                print("damn")
                                 postListingViewModel.loadPosts(account: accountViewModel.account)
                             }
                     }

@@ -15,7 +15,12 @@ struct RedditGRDBDatabase {
             .appendingPathComponent("reddit_data.sqlite")
             .path
         
-        let dbPool = try DatabasePool(path: path)
+        var config = Configuration()
+        config.prepareDatabase { db in
+            try db.execute(sql: "PRAGMA journal_mode = WAL")
+        }
+        
+        let dbPool = try DatabasePool(path: path, configuration: config)
         try setupDatabaseScheme(dbPool)
         try setupMigrations(dbPool)
         return dbPool
@@ -37,6 +42,35 @@ struct RedditGRDBDatabase {
                 t.column("refresh_token", .text)
                 t.column("is_current_user", .boolean)
                 t.column("code", .text)
+            }
+            
+            try db.create(table: PostFilter.databaseTableName, ifNotExists: true) { t in
+                t.column("name", .text).primaryKey()
+                t.column("maxVote", .integer)
+                t.column("minVote", .integer)
+                t.column("maxComments", .integer)
+                t.column("minComments", .integer)
+                t.column("maxAwards", .integer)
+                t.column("minAwards", .integer)
+                t.column("allowNSFW", .boolean)
+                t.column("onlyNSFW", .boolean)
+                t.column("onlySpoiler", .boolean)
+                t.column("postTitleExcludesRegex", .text)
+                t.column("postTitleContainsRegex", .text)
+                t.column("postTitleExcludesStrings", .text)
+                t.column("postTitleContainsStrings", .text)
+                t.column("excludeSubreddits", .text)
+                t.column("excludeUsers", .text)
+                t.column("containFlairs", .text)
+                t.column("excludeFlairs", .text)
+                t.column("excludeDomains", .text)
+                t.column("containDomains", .text)
+                t.column("containTextType", .boolean)
+                t.column("containLinkType", .boolean)
+                t.column("containImageType", .boolean)
+                t.column("containGifType", .boolean)
+                t.column("containVideoType", .boolean)
+                t.column("containGalleryType", .boolean)
             }
         }
     }

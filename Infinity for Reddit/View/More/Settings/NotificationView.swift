@@ -38,26 +38,24 @@ struct NotificationView: View {
     }
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    Toggle("Enable Notifications", systemImage: "bell.fill", isOn: $enableNotifications)
-                        .onChange(of: enableNotifications) { _, newValue in
-                            userDefaults.set(newValue, forKey: ENABLE_NOTIFICATION_KEY)
+        Form {
+            Section {
+                Toggle("Enable Notifications", systemImage: "bell.fill", isOn: $enableNotifications)
+                    .onChange(of: enableNotifications) { _, newValue in
+                        userDefaults.set(newValue, forKey: ENABLE_NOTIFICATION_KEY)
+                    }
+                
+                Picker("Check Notifications Interval", systemImage: "clock.fill", selection: $checkNotificationsInterval) {
+                    ForEach(0..<notificationsIntervals.count, id: \.self) { index in
+                        Text(notificationsIntervals[index]).tag(index)
                         }
-                    
-                    Picker("Check Notifications Interval", systemImage: "clock.fill", selection: $checkNotificationsInterval) {
-                        ForEach(0..<notificationsIntervals.count, id: \.self) { index in
-                            Text(notificationsIntervals[index]).tag(index)
-                            }
-                    }
-                    .onChange(of: checkNotificationsInterval) { _, newValue in
-                        userDefaults.set(newValue, forKey: NOTIFICATION_INTERVAL_KEY)
-                    }
+                }
+                .onChange(of: checkNotificationsInterval) { _, newValue in
+                    userDefaults.set(newValue, forKey: NOTIFICATION_INTERVAL_KEY)
                 }
             }
-            .navigationTitle("Notification")
         }
+        .navigationTitle("Notification")
     }
 }
 

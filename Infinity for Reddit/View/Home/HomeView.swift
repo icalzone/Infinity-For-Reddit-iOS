@@ -17,7 +17,7 @@ struct HomeView: View {
     @State private var showProfile: Bool = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 TabView(selection: $selectedTab) {
                     PostListingView()

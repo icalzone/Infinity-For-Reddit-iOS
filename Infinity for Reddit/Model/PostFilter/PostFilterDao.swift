@@ -40,7 +40,7 @@ struct PostFilterDao {
             try db.execute(sql: "DELETE FROM post_filter WHERE name = ?", arguments: [postFilter.name])
         }
     }
-
+    
     func deletePostFilter(name: String) throws {
         try dbPool.write { db in
             try db.execute(sql: "DELETE FROM post_filter WHERE name = ?", arguments: [name])
@@ -54,15 +54,19 @@ struct PostFilterDao {
     }
     
     func getAllPostFiltersLiveData() -> AnyPublisher<[PostFilter], Error> {
-        ValueObservation
-            .tracking { db in try PostFilter.fetchAll(db, sql: "SELECT * FROM post_filter ORDER BY name") }
-            .publisher(in: dbPool)
-            .eraseToAnyPublisher()
+        
+        let observation = ValueObservation
+            .tracking { db in
+                try PostFilter.fetchAll(db, sql: "SELECT * FROM post_filter ORDER BY name")
+            }
+            .publisher(in: dbPool)  // Use publisher with DatabasePool
+        
+        return observation.eraseToAnyPublisher()
     }
     
     func getAllPostFilters() throws -> [PostFilter] {
         try dbPool.read { db in
-            try PostFilter.fetchAll(db)
+            try PostFilter.fetchAll(db, sql: "SELECT * FROM post_filter ORDER BY name")
         }
     }
     
