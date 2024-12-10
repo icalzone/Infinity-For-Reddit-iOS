@@ -61,6 +61,7 @@ class PostFilterViewModel: ObservableObject {
     }
     
     func savePostFilter(
+        originalProfileName: String?,
         profileName: String,
         maxVote: Int,
         minVote: Int,
@@ -111,11 +112,31 @@ class PostFilterViewModel: ObservableObject {
             containVideoType: showVideo,
             containGalleryType: showGallery
         )
-        
+        if let originalProfileName = originalProfileName , originalProfileName != profileName {
+            deletePostFilter(originalProfileName)
+        }
         do {
             try postFilterDao.insert(postFilter: postFilterModel)
         } catch {
             print("Error: Failed to insert postFilter - \(error.localizedDescription)")
         }
+    }
+    
+    func deletePostFilter(_ postfilterName: String) {
+        do {
+            try postFilterDao.deletePostFilter(name: postfilterName)
+            
+        } catch {
+            print("Error deleting \(postfilterName): \(error)")
+        }
+    }
+    
+    func fetchPostFilter(_ filterName: String) throws -> PostFilter? {
+        do {
+            return try postFilterDao.getPostFilter(name: filterName)
+        } catch {
+            print("Error fetching \(filterName): \(error)")
+        }
+        return nil
     }
 }
