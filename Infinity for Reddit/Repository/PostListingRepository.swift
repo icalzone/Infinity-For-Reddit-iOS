@@ -28,7 +28,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     }
     
     public func fetchPosts(postListingType: PostListingType, limit: Int, after: String) -> AnyPublisher<ListingData, any Error> {
-        return Future<ListingData, Error> { promise in
+        return Future<ListingData, any Error> { promise in
             self.session.request(RedditOAuthAPI.getFrongPagePost(headers: APIUtils.getOAuthHeader(accessToken: self.account?.accessToken ?? ""), queries: ["after": after]))
                 .validate()
                 .responseData { response in

@@ -141,7 +141,7 @@ public class ListingData : NSObject, NSCoding{
     }
 }
 
-class Post : NSObject, NSCoding {
+class Post : NSObject, NSCoding, ObservableObject, Identifiable {
     var approvedAtUtc : String!
     var approvedBy : String!
     var archived : Bool!
@@ -152,8 +152,8 @@ class Post : NSObject, NSCoding {
     var authorFullname : String!
     var authorIsBlocked : Bool!
     var canModPost : Bool!
-    var created : Float!
-    var createdUtc : Float!
+    var created : Int64!
+    var createdUtc : Int64!
     var domain : String!
     var downs : Int!
     var edited : Bool!
@@ -196,6 +196,15 @@ class Post : NSObject, NSCoding {
     var score : Int!
     var selftext : String!
     var selftextHtml : String!
+    var selftextTruncated: String! {
+        if selftext == nil {
+            return nil
+        }
+        if selftext.count > 200 {
+            return String(selftext.prefix(200))
+        }
+        return selftext
+    }
     var sendReplies : Bool!
     var spoiler : Bool!
     var stickied : Bool!
@@ -235,8 +244,8 @@ class Post : NSObject, NSCoding {
         authorFullname = json["author_fullname"].stringValue
         authorIsBlocked = json["author_is_blocked"].boolValue
         canModPost = json["can_mod_post"].boolValue
-        created = json["created"].floatValue
-        createdUtc = json["created_utc"].floatValue
+        created = json["created"].int64Value
+        createdUtc = json["created_utc"].int64Value
         domain = json["domain"].stringValue
         downs = json["downs"].intValue
         edited = json["edited"].boolValue
@@ -553,8 +562,8 @@ class Post : NSObject, NSCoding {
         authorFullname = aDecoder.decodeObject(forKey: "author_fullname") as? String
         authorIsBlocked = aDecoder.decodeObject(forKey: "author_is_blocked") as? Bool
         canModPost = aDecoder.decodeObject(forKey: "can_mod_post") as? Bool
-        created = aDecoder.decodeObject(forKey: "created") as? Float
-        createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Float
+        created = aDecoder.decodeObject(forKey: "created") as? Int64
+        createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Int64
         domain = aDecoder.decodeObject(forKey: "domain") as? String
         downs = aDecoder.decodeObject(forKey: "downs") as? Int
         edited = aDecoder.decodeObject(forKey: "edited") as? Bool
@@ -828,7 +837,7 @@ class Post : NSObject, NSCoding {
 class Preview : NSObject, NSCoding{
     
     var enabled : Bool!
-    var images : [Image]! = [Image]()
+    var images : [Image]!
     
     
     /**
@@ -969,6 +978,9 @@ class Resolution : NSObject, NSCoding{
     var height : Int!
     var url : String!
     var width : Int!
+    var aspectRatio : CGSize {
+        return CGSize(width: width, height: height)
+    }
     
     
     /**
