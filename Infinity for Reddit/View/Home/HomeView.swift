@@ -10,8 +10,10 @@ import Swinject
 import GRDB
 
 struct HomeView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @EnvironmentObject var accountViewModel: AccountViewModel
+    @EnvironmentObject var customThemeViewModel: CustomThemeViewModel
     
     @State private var selectedTab: Tab = .home
     @State private var showProfile: Bool = false
@@ -79,6 +81,9 @@ struct HomeView: View {
                 AccountSheet()
                     .presentationDetents([.medium])
             }
+        }
+        .onChange(of: colorScheme) {
+            customThemeViewModel.isDarkTheme = colorScheme == .dark
         }
     }
     

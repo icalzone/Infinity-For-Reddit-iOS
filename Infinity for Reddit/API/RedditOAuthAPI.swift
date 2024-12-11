@@ -11,6 +11,7 @@ import Foundation
 enum RedditOAuthAPI: URLRequestConvertible {
     case getMyInfo(headers: HTTPHeaders)
     case getFrongPagePost(headers: HTTPHeaders, queries: [String: String])
+    case vote(headers: HTTPHeaders, params: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -22,6 +23,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return .get
         case .getFrongPagePost:
             return .get
+        case .vote:
+            return .post
         }
     }
     
@@ -31,15 +34,17 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/api/v1/me"
         case .getFrongPagePost:
             return "/best.json"
+        case .vote:
+            return "api/vote"
         }
     }
     
     var parameters: [String: String]? {
         switch self {
-        case .getMyInfo(_):
+        case .getMyInfo(_), .getFrongPagePost(_, _):
             return nil
-        case .getFrongPagePost(_, _):
-            return nil
+        case .vote(_, let params):
+            return params
         }
     }
     
@@ -49,6 +54,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"]
         case .getFrongPagePost(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .vote(_, _):
+            return nil
         }
     }
     
@@ -58,6 +65,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return headers
         case .getFrongPagePost(let headers, _):
             return headers
+        case .vote(let headers, _):
+            return headers
         }
     }
     
@@ -66,6 +75,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
         case .getMyInfo:
             return URLEncoding.default
         case .getFrongPagePost:
+            return URLEncoding.default
+        case .vote:
             return URLEncoding.default
         }
     }

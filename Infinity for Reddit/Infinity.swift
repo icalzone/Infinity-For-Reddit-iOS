@@ -17,6 +17,7 @@ struct Infinity: App {
     }()
     
     @StateObject var accountViewModel: AccountViewModel
+    @StateObject var customThemeViewModel: CustomThemeViewModel
     
     init() {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
@@ -24,6 +25,7 @@ struct Infinity: App {
         }
         
         _accountViewModel = StateObject(wrappedValue: AccountViewModel(dbPool: resolvedDBPool))
+        _customThemeViewModel = StateObject(wrappedValue: CustomThemeViewModel())
     }
 
     var body: some Scene {
@@ -31,6 +33,7 @@ struct Infinity: App {
             HomeView()
                 .environment(\.dependencyManager, DependencyManager.shared.container)
                 .environmentObject(accountViewModel)
+                .environmentObject(customThemeViewModel)
         }
     }
 }

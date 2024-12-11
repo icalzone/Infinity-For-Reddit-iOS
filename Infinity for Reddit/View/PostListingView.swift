@@ -11,6 +11,7 @@ import GRDB
 import Alamofire
 
 struct PostListingView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @EnvironmentObject var accountViewModel: AccountViewModel
     
@@ -53,6 +54,9 @@ struct PostListingView: View {
                     }
                 }.scrollBounceBehavior(.basedOnSize)
             }
+        }
+        .onChange(of: colorScheme) {
+            //print(colorScheme == .dark)
         }
         .onAppear {
             postListingViewModel.loadPosts(account: accountViewModel.account)
