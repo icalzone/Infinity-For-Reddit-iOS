@@ -1,5 +1,5 @@
 //
-// FontView.swift
+// FontInterfaceView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-05
@@ -9,7 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct FontView: View {
+struct FontInterfaceView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var fontFamily: Int
     @State private var fontSize: Int
@@ -72,7 +72,7 @@ struct FontView: View {
     var body: some View {
         List{
             Section{
-                NavigationLink(destination: FontView()){
+                NavigationLink(destination: FontInterfaceView()){
                     Text("Font Preview").padding(.leading, 44.5)
                 }
             }

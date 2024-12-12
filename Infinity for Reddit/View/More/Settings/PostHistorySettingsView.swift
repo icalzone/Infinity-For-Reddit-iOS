@@ -1,5 +1,5 @@
 //
-// GesturesButtons.swift
+// PostHistorySettingsView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-04
@@ -9,10 +9,10 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct DownloadLocationView: View {
+struct PostHistorySettingsView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     
     var body: some View {
-        Text("Download Location")
+        Text("Post History")
     }
 }

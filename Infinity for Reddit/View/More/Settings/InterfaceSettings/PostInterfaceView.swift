@@ -1,5 +1,5 @@
 //
-//  PostView.swift
+//  PostInterfaceView.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2024-12-11.
@@ -9,7 +9,7 @@ import Swinject
 import GRDB
 import SwiftUI
 
-struct PostView: View {
+struct PostInterfaceView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var defaultPostLayout: Int
     @State private var defaultLinkPostLayout: Int
@@ -142,7 +142,7 @@ struct PostView: View {
             .onChange(of: defaultLinkPostLayout) { _, newValue in
                 userDefaults.set(newValue, forKey: DEFAULT_LINK_POST_LAYOUT_KEY)
             }
-            NavigationLink(destination: PostView()) {
+            NavigationLink(destination: PostInterfaceView()) {
                 Text("The Number of Columns in Post Feed")
             }.padding(.leading, 44.5)
             Toggle("Hide Post Type", isOn: $hidePostType).padding(.leading, 44.5).onChange(of: hidePostType) {

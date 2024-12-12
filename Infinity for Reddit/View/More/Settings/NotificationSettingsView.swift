@@ -1,5 +1,5 @@
 //
-// NotificationView.swift
+// NotificationSettingsView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-04
@@ -10,7 +10,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct NotificationView: View {
+struct NotificationSettingsView: View {
     @Environment(\.dependencyManager) private var container: Container
     @State private var enableNotifications: Bool
     @State private var checkNotificationsInterval: Int

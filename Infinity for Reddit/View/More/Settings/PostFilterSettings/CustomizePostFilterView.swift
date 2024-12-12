@@ -88,7 +88,7 @@ struct CustomizePostFilterView: View {
                     HStack {
                         TextField("Exclude subreddits (e.g., funny,AskReddit)", text: $excludeSubreddits)
                         Button("",  systemImage: "plus"){
-                            PostFilterView()
+                            PostFilterSettingsView()
                         }
                     }
                 }
@@ -97,7 +97,7 @@ struct CustomizePostFilterView: View {
                     HStack {
                         TextField("Exclude users (e.g., Hostilenemy,random)", text: $excludeUsers)
                         Button("",  systemImage: "plus"){
-                            PostFilterView()
+                            PostFilterSettingsView()
                         }
                     }
                 }

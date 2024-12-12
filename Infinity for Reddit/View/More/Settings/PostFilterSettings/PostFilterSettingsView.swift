@@ -1,5 +1,5 @@
 //
-// PostFilterView.swift
+// PostFilterSettingsView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-04
@@ -9,7 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct PostFilterView: View {
+struct PostFilterSettingsView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var isCustomizePostFilter = false
     @StateObject var postFilterViewModel: PostFilterViewModel

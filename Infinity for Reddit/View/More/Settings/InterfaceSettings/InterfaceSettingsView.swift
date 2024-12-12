@@ -1,5 +1,5 @@
 //
-// InterfaceView.swift
+// InterfaceSettingsView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-04
@@ -9,7 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct InterfaceView: View {
+struct InterfaceSettingsView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var hideFABInPostFeed: Bool
     @State private var enableBottomNavigation: Bool
@@ -74,13 +74,13 @@ struct InterfaceView: View {
     
     var body: some View {
         List {
-            NavigationLink(destination: FontView()) {
+            NavigationLink(destination: FontInterfaceView()) {
                 Label("Font", systemImage: "textformat.size")
             }
             NavigationLink(destination: ImmersiveInterfaceView()) {
                 Text("Immersive Interface").padding(.leading, 44.5)
             }
-            NavigationLink(destination: NavigationDrawerView()) {
+            NavigationLink(destination: NavigationDrawerInterfaceView()) {
                 Text("Navigation Drawer").padding(.leading, 44.5)
             }
             Toggle("Hide FAB in Post Feed", isOn: $hideFABInPostFeed).padding(.leading, 44.5).onChange(of: hideFABInPostFeed){
@@ -104,16 +104,16 @@ struct InterfaceView: View {
             .onChange(of: defaultSearchResultTab) { _, newValue in
                 userDefaults.set(newValue, forKey: DEFAULT_SEARCH_RESULT_TAB)
             }
-            NavigationLink(destination: TimeFormatView()) {
+            NavigationLink(destination: TimeFormatInterfaceView()) {
                 Text("Time Format").padding(.leading, 44.5)
             }
-            NavigationLink(destination: PostView()) {
+            NavigationLink(destination: PostInterfaceView()) {
                 Text("Post").padding(.leading, 44.5)
             }
-            NavigationLink(destination: InterfaceView()) {
+            NavigationLink(destination: InterfaceSettingsView()) {
                 Text("Post Details").padding(.leading, 44.5)
             }
-            NavigationLink(destination: InterfaceView()) {
+            NavigationLink(destination: InterfaceSettingsView()) {
                 Text("Comment").padding(.leading, 44.5)
             }
             

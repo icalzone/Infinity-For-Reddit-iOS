@@ -1,5 +1,5 @@
 //
-//  NavigationDrawerView.swift
+//  NavigationDrawerInterfaceView.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2024-12-06.
@@ -9,7 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct NavigationDrawerView: View {
+struct NavigationDrawerInterfaceView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var showAvatarOnRight: Bool
     @State private var collapseAccountSection: Bool

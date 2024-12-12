@@ -14,58 +14,58 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            NavigationLink(destination: NotificationView()) {
+            NavigationLink(destination: NotificationSettingsView()) {
                 Text("Notification")
             }
-            NavigationLink(destination: InterfaceView()) {
+            NavigationLink(destination: InterfaceSettingsView()) {
                 Text("Interface")
             }
-            NavigationLink(destination: ThemeView()) {
+            NavigationLink(destination: ThemeSettingsView()) {
                 Text("Theme")
             }
-            NavigationLink(destination: GestureButtonsView()) {
+            NavigationLink(destination: GestureButtonsSettingsView()) {
                 Text("Gesture & Buttons")
             }
-            NavigationLink(destination: VideoView()) {
+            NavigationLink(destination: VideoSettingsView()) {
                 Text("Video")
             }
-            NavigationLink(destination: LazyModeIntervalView()) {
+            NavigationLink(destination: LazyModeIntervalSettingsView()) {
                 Text("Lazy Mode Interval")
             }
-            NavigationLink(destination: DownloadLocationView()) {
+            NavigationLink(destination: DownloadLocationSettingsView()) {
                 Text("Download Location")
             }
-            NavigationLink(destination: SecurityView()) {
+            NavigationLink(destination: SecuritySettingsView()) {
                 Text("Security")
             }
-            NavigationLink(destination: ContentSensitivityFilterView()) {
+            NavigationLink(destination: ContentSensitivityFilterSettingsView()) {
                 Text("Content Sensitivity Filter")
             }
-            NavigationLink(destination: PostHistoryView()) {
+            NavigationLink(destination: PostHistorySettingsView()) {
                 Text("Post History")
             }
-            NavigationLink(destination: PostFilterView()) {
+            NavigationLink(destination: PostFilterSettingsView()) {
                 Text("Post Filter")
             }
-            NavigationLink(destination: CommentFilterView()) {
+            NavigationLink(destination: CommentFilterSettingsView()) {
                 Text("Comment Filter")
             }
-            NavigationLink(destination: MiscellaneousView()) {
+            NavigationLink(destination: MiscellaneousSettingsView()) {
                 Text("Miscellaneous")
             }
-            NavigationLink(destination: AdvancedView()) {
+            NavigationLink(destination: AdvancedSettingsView()) {
                 Text("Advanced")
             }
-            NavigationLink(destination: ManageSubscriptionView()) {
+            NavigationLink(destination: ManageSubscriptionSettingsView()) {
                 Text("Manage Subscription")
             }
-            NavigationLink(destination: AboutView()) {
+            NavigationLink(destination: AboutSettingsView()) {
                 Text("About")
             }
-            NavigationLink(destination: PrivacyPolicyView()) {
+            NavigationLink(destination: PrivacyPolicySettingsView()) {
                 Text("Privacy Policy")
             }
-            NavigationLink(destination: RedditUserAgreementView()) {
+            NavigationLink(destination: RedditUserAgreementSettingsView()) {
                 Text("Reddit User Agreement")
             }
         }

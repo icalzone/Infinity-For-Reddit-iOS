@@ -1,5 +1,5 @@
 //
-//  TimeFormatView.swift
+//  TimeFormatInterfaceView.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2024-12-07.
@@ -9,7 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 
-struct TimeFormatView: View {
+struct TimeFormatInterfaceView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @State private var showElapsedTime: Bool
     @State private var selectedTimeFormat: Int
