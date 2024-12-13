@@ -17,7 +17,7 @@ struct PostListingView: View {
     
     @StateObject var postListingViewModel: PostListingViewModel
     
-    init() {
+    init(postListingMetadata: PostListingMetadata) {
         // Resolve the session ASAP and store it in a property
         guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
             fatalError("Failed to resolve Session")
@@ -25,6 +25,7 @@ struct PostListingView: View {
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
+                postListingMetadata: postListingMetadata,
                 postListingRepository: PostListingRepository(
                     session: resolvedSession
                 )

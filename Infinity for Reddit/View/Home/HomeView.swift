@@ -22,7 +22,15 @@ struct HomeView: View {
         NavigationStack {
             VStack {
                 TabView(selection: $selectedTab) {
-                    PostListingView()
+                    PostListingView(
+                        postListingMetadata: PostListingMetadata(
+                            postListingType: .frontPage,
+                            pathComponents: ["sortType": "best"],
+                            headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                            queries: nil,
+                            params: nil
+                        )
+                    )
                         .tabItem {
                             Label("Home", systemImage: "house")
                         }

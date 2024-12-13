@@ -6,8 +6,9 @@
 //
 
 import Combine
+import Alamofire
 
 public protocol PostListingRepositoryProtocol {
-    func fetchPosts(postListingType: PostListingType, limit: Int, after: String) -> AnyPublisher<ListingData, Error>
+    func fetchPosts(postListingType: PostListingType, pathComponents: [String: String]?, headers: HTTPHeaders?, queries: [String: String]?, params: [String: String]?) -> AnyPublisher<ListingData, Error>
     func setAccount(_ account: Account)
 }

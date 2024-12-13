@@ -14,17 +14,18 @@ public class PostListingViewModel: ObservableObject {
     @Published var isInitialLoading: Bool = false
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
+    private let postListingMetadata: PostListingMetadata
     private var isInitialLoad: Bool = true
     
     private var allPostIds = Set<String>()
     private var after: String? = nil
-    private let pageSize: Int = 100
     private var cancellables = Set<AnyCancellable>()
     
     public let postListingRepository: PostListingRepositoryProtocol
     
     // MARK: - Initializer
-    init(postListingRepository: PostListingRepositoryProtocol) {
+    init(postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
+        self.postListingMetadata = postListingMetadata
         self.postListingRepository = postListingRepository
     }
     
@@ -45,7 +46,13 @@ public class PostListingViewModel: ObservableObject {
             isInitialLoad = false
         }
         
-        postListingRepository.fetchPosts(postListingType: .frontPage, limit: 100, after: after ?? "")
+        postListingRepository.fetchPosts(
+            postListingType: postListingMetadata.postListingType,
+            pathComponents: postListingMetadata.pathComponents,
+            headers: postListingMetadata.headers,
+            queries: ["limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+            params: postListingMetadata.params
+        )
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.isInitialLoading = false
