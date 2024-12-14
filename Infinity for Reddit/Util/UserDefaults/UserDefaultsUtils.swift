@@ -64,8 +64,4 @@ struct UserDefaultsUtils {
     static let POST_COMPACT_LAYOUT_TOOLBAR_HIDDEN_BY_DEFAULT = "post_compact_layout_toolbar_hidden_by_default"
     static let CLICK_TO_SHOW_MEDIA_IN_GALLERY_LAYOUT = "click_to_show_media_in_gallery_layout"
     
-    //PostDetailsInterfaceView
-    static let SEPARATE_POST_AND_COMMENTS_IN_LANDSCAPE_MODE = "separate_post_and_comments_in_landscape_mode"
-    static let HIDE_UPVOTE_RATIO = "hide_upvote_ratio"
-    static let EMBEDDED_MEDIA_TYPE = "embedded_media_type"
 }

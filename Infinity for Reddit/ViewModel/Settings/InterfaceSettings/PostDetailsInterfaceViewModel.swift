@@ -21,14 +21,14 @@ class PostDetailsInterfaceViewModel: ObservableObject {
     @Published var hideNumberOfComments: Bool
     @Published var embeddedMediaType: Int
     
-    let SEPARATE_POST_AND_COMMENTS_IN_LANDSCAPE_MODE = UserDefaultsUtils.SEPARATE_POST_AND_COMMENTS_IN_LANDSCAPE_MODE
-    let HIDE_POST_TYPE = UserDefaultsUtils.HIDE_POST_TYPE
-    let HIDE_POST_FLAIR = UserDefaultsUtils.HIDE_POST_FLAIR
-    let HIDE_UPVOTE_RATIO = UserDefaultsUtils.HIDE_UPVOTE_RATIO
-    let HIDE_SUBREDDIT_AND_USER_PREFIX = UserDefaultsUtils.HIDE_SUBREDDIT_AND_USER_PREFIX
-    let HIDE_NUMBER_OF_VOTES = UserDefaultsUtils.HIDE_THE_NUMBER_OF_VOTES
-    let HIDE_NUMBER_OF_COMMENTS = UserDefaultsUtils.HIDE_THE_NUMBER_OF_COMMENTS
-    let EMBEDDED_MEDIA_TYPE = UserDefaultsUtils.EMBEDDED_MEDIA_TYPE
+    let SEPARATE_POST_AND_COMMENTS_IN_LANDSCAPE_MODE = PostDetailsUserDefaultsUtils.SEPARATE_POST_AND_COMMENTS_IN_LANDSCAPE_MODE
+    let HIDE_POST_TYPE = PostDetailsUserDefaultsUtils.HIDE_POST_TYPE
+    let HIDE_POST_FLAIR = PostDetailsUserDefaultsUtils.HIDE_POST_FLAIR
+    let HIDE_UPVOTE_RATIO = PostDetailsUserDefaultsUtils.HIDE_UPVOTE_RATIO
+    let HIDE_SUBREDDIT_AND_USER_PREFIX = PostDetailsUserDefaultsUtils.HIDE_SUBREDDIT_AND_USER_PREFIX
+    let HIDE_NUMBER_OF_VOTES = PostDetailsUserDefaultsUtils.HIDE_THE_NUMBER_OF_VOTES
+    let HIDE_NUMBER_OF_COMMENTS = PostDetailsUserDefaultsUtils.HIDE_THE_NUMBER_OF_COMMENTS
+    let EMBEDDED_MEDIA_TYPE = PostDetailsUserDefaultsUtils.EMBEDDED_MEDIA_TYPE
     
     let embeddedMediaTypes: [String] = ["All", "Image and GIF", "Image and emote", "GIF and emote", "Image", "GIF", "Emote", "None"]
     
@@ -37,7 +37,7 @@ class PostDetailsInterfaceViewModel: ObservableObject {
     
     // MARK: - Initializer
     init(){
-        guard let resolvedUserDefaults = DependencyManager.shared.container.resolve(UserDefaults.self) else {
+        guard let resolvedUserDefaults = DependencyManager.shared.container.resolve(UserDefaults.self, name: "PostDetails") else {
             fatalError("Failed to resolve UserDefaults")
         }
         self.userDefaults = resolvedUserDefaults

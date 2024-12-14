@@ -43,5 +43,9 @@ struct DependencyManager {
         c.register(UserDefaults.self) { _ in
             UserDefaults.standard
         }
+        
+        c.register(UserDefaults.self, name: "PostDetails") { _ in
+            return UserDefaults(suiteName: "com.docilealligator.infinityforReddit.PostDetails")!
+        }
     }
 }
