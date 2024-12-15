@@ -23,7 +23,7 @@ public class PostViewModel: ObservableObject {
     }
     
     func votePost(vote: Int) {
-        guard let accessToken = account.accessToken, let fullName = post.name else { return }
+        guard let _ = account.accessToken, let fullName = post.name else { return }
         
         let previousVote = post.likes
         

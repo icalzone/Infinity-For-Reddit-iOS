@@ -36,7 +36,7 @@ struct HomeView: View {
                         }
                         .tag(Tab.home)
                     
-                    LoginView()
+                    SubscriptionsView()
                         .tabItem {
                             Label("Subscriptions", systemImage: "book")
                         }

@@ -17,6 +17,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case getMultiredditPosts(pathComponents: [String: String], queries: [String: String])
     case getSubredditConcatPosts(pathComponents: [String: String], queries: [String: String])
     case vote(params: [String: String])
+    case getSubscribedThing(queries: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -24,9 +25,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
     
     var method: HTTPMethod {
         switch self {
-        case .getMyInfo:
-            return .get
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts:
+        case .getMyInfo, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThing:
             return .get
         case .vote:
             return .post
@@ -41,35 +40,27 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/\(pathComponents["sortType"] ?? "best").json"
         case .vote:
             return "/api/vote"
-        case .getSubredditPosts(let pathComponents, let queries):
+        case .getSubredditPosts(let pathComponents, _):
             return "/r/\(pathComponents["subreddit"] ?? "popular")/\(pathComponents["sortType"] ?? "hot").json"
-        case .getUserPosts(let pathComponents, let queries):
+        case .getUserPosts(let pathComponents, _):
             return "/user/\(pathComponents["username"] ?? "")/\(pathComponents["where"] ?? "submitted").json"
         case .getSearchPosts:
             return "search.json"
-        case .getMultiredditPosts(let pathComponents, let queries):
+        case .getMultiredditPosts(let pathComponents, _):
             return "\(pathComponents["multipath"] ?? "popular").json"
-        case .getSubredditConcatPosts(let pathComponents, let queries):
+        case .getSubredditConcatPosts(let pathComponents, _):
             return "/r/\(pathComponents["subreddit"] ?? "popular")/\(pathComponents["sortType"] ?? "hot").json"
+        case .getSubscribedThing:
+            return "/subreddits/mine/subscriber"
         }
     }
     
     var parameters: [String: String]? {
         switch self {
-        case .getMyInfo, .getFrontPagePosts:
+        case .getMyInfo, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThing:
             return nil
         case .vote(let params):
             return params
-        case .getSubredditPosts:
-            return nil
-        case .getUserPosts:
-            return nil
-        case .getSearchPosts:
-            return nil
-        case .getMultiredditPosts:
-            return nil
-        case .getSubredditConcatPosts:
-            return nil
         }
     }
     
@@ -91,47 +82,21 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSubredditConcatPosts(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getSubscribedThing(let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         }
     }
     
     var headers: HTTPHeaders? {
         switch self {
-        case .getMyInfo:
-            return nil
-        case .getFrontPagePosts(_, _):
-            return nil
-        case .vote(_):
-            return nil
-        case .getSubredditPosts(_, _):
-            return nil
-        case .getUserPosts(_, _):
-            return nil
-        case .getSearchPosts(_):
-            return nil
-        case .getMultiredditPosts(_, _):
-            return nil
-        case .getSubredditConcatPosts(_, _):
+        case .getMyInfo, .getFrontPagePosts, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThing:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getMyInfo:
-            return URLEncoding.default
-        case .getFrontPagePosts:
-            return URLEncoding.default
-        case .vote:
-            return URLEncoding.default
-        case .getSubredditPosts:
-            return URLEncoding.default
-        case .getUserPosts:
-            return URLEncoding.default
-        case .getSearchPosts:
-            return URLEncoding.default
-        case .getMultiredditPosts:
-            return URLEncoding.default
-        case .getSubredditConcatPosts:
+        case .getMyInfo, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .vote, .getSubscribedThing:
             return URLEncoding.default
         }
     }
