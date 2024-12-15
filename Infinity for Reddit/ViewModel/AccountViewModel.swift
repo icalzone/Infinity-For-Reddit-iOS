@@ -44,6 +44,7 @@ public class AccountViewModel: ObservableObject {
     
     public func updateTokens(accessToken: String, refreshToken: String?) throws {
         account.accessToken = accessToken
+        print("Access Token: \(accessToken)")
         if let validRefreshToken = refreshToken, !validRefreshToken.isEmpty {
             account.refreshToken = validRefreshToken
             try accountDao.updateAccessTokenAndRefreshToken(username: account.username, accessToken: accessToken, refreshToken: validRefreshToken)
@@ -85,5 +86,6 @@ public class AccountViewModel: ObservableObject {
         }
         
         _shared = AccountViewModel(dbPool: resolvedDBPool)
+        print("Access Token: \(_shared?.account.accessToken ?? "")")
     }
 }

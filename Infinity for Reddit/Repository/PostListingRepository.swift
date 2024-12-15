@@ -15,16 +15,10 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         case NetworkError(String)
         case JSONDecodingError(String)
     }
-    
-    private var account: Account?
     private let session: Session
     
     public init(session: Session) {
         self.session = session
-    }
-    
-    public func setAccount(_ account: Account) {
-        self.account = account
     }
     
     public func fetchPosts(
@@ -32,7 +26,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         pathComponents: [String: String]? = nil,
         queries: [String: String]? = [:],
         params: [String: String]? = [:]
-    ) -> AnyPublisher<ListingData, any Error> {
+    ) -> AnyPublisher<PostListing, any Error> {
         
         let apiRequest: URLRequestConvertible
         switch postListingType {
@@ -50,7 +44,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
             apiRequest = RedditOAuthAPI.getSubredditConcatPosts(pathComponents: pathComponents!, queries: queries!)
         }
         
-        return Future<ListingData, any Error> { promise in
+        return Future<PostListing, any Error> { promise in
             self.session.request(
                 apiRequest
             )
@@ -64,7 +58,6 @@ public class PostListingRepository: PostListingRepositoryProtocol {
                                 throw PostListingRepositoryError.JSONDecodingError(error.localizedDescription)
                             } else {
                                 let postListingRootClass = PostListingRootClass(fromJson: json)
-                                print(postListingRootClass)
                                 promise(.success(postListingRootClass.data))
                             }
                         } catch {

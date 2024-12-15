@@ -8,12 +8,31 @@
 import SwiftUI
 import Swinject
 import GRDB
+import Alamofire
 
 struct SubscriptionsView: View {
+    @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
+    @EnvironmentObject var accountViewModel: AccountViewModel
     
+    @StateObject var subscriptionListingViewModel: SubscriptionListingViewModel
+
     // State to track the selected picker index
     @State private var selectedOption = 0
+    
+    init() {
+        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
+            fatalError("Failed to resolve Session")
+        }
+        
+        _subscriptionListingViewModel = StateObject(
+            wrappedValue: SubscriptionListingViewModel(
+                subscriptionListingRepository: SubscriptionListingRepository(
+                    session: resolvedSession
+                )
+            )
+        )
+    }
 
     var body: some View {
         VStack {
@@ -26,7 +45,7 @@ struct SubscriptionsView: View {
             .padding()
 
             if selectedOption == 0 {
-                SubredditsView()
+                SubredditsView(subscriptionListingViewModel: subscriptionListingViewModel)
             } else if selectedOption == 1 {
                 UsersView()
             } else {
@@ -35,30 +54,45 @@ struct SubscriptionsView: View {
 
             Spacer() // Push content to the top
         }
-        .navigationTitle("Subscriptions") // Optional navigation title
+        .navigationTitle("Subscriptions")
+        .onAppear {
+            subscriptionListingViewModel.loadSubscriptions()
+        }
     }
-}
-
-struct SubredditsView: View {
-    var body: some View {
-        Text("Subreddits Content")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.green.opacity(0.1))
+    
+    struct SubredditsView: View {
+        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+        
+        var body: some View {
+            Group {
+                if subscriptionListingViewModel.isLoading {
+                    Text("Is loading")
+                } else if subscriptionListingViewModel.subscriptions.isEmpty {
+                    Text("No posts")
+                } else {
+                    List {
+                        ForEach(subscriptionListingViewModel.subscriptions, id: \.id) { subscription in
+                            Text(subscription.displayName)
+                        }
+                    }.scrollBounceBehavior(.basedOnSize)
+                }
+            }
+        }
     }
-}
 
-struct UsersView: View {
-    var body: some View {
-        Text("Users Content")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.purple.opacity(0.1))
+    struct UsersView: View {
+        var body: some View {
+            Text("Users Content")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.purple.opacity(0.1))
+        }
     }
-}
 
-struct CustomFeedView: View {
-    var body: some View {
-        Text("Custom Feed Content")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.blue.opacity(0.1))
+    struct CustomFeedView: View {
+        var body: some View {
+            Text("Custom Feed Content")
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.blue.opacity(0.1))
+        }
     }
 }

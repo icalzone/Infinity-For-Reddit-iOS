@@ -42,7 +42,6 @@ public class PostListingViewModel: ObservableObject {
         }
         
         if isInitialLoad {
-            postListingRepository.setAccount(account)
             isInitialLoad = false
         }
         

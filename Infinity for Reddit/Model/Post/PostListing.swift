@@ -11,7 +11,7 @@ import SwiftyJSON
 
 class PostListingRootClass: NSObject, NSCoding{
     var kind: String!
-    var data: ListingData!
+    var data: PostListing!
     
     /**
      * Instantiate the instance using the passed json values to set the properties values
@@ -22,7 +22,7 @@ class PostListingRootClass: NSObject, NSCoding{
         }
         let dataJson = json["data"]
         if !dataJson.isEmpty{
-            data = ListingData(fromJson: dataJson)
+            data = PostListing(fromJson: dataJson)
         }
         kind = json["kind"].stringValue
     }
@@ -48,7 +48,7 @@ class PostListingRootClass: NSObject, NSCoding{
      */
     @objc required init(coder aDecoder: NSCoder)
     {
-        data = aDecoder.decodeObject(forKey: "data") as? ListingData
+        data = aDecoder.decodeObject(forKey: "data") as? PostListing
         kind = aDecoder.decodeObject(forKey: "kind") as? String
     }
     
@@ -68,7 +68,7 @@ class PostListingRootClass: NSObject, NSCoding{
     }
 }
 
-public class ListingData : NSObject, NSCoding{
+public class PostListing : NSObject, NSCoding{
     
     var posts : [Post]! = [Post]()
     var after : String!
