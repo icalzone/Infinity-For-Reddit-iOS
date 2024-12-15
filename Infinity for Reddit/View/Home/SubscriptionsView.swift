@@ -47,7 +47,7 @@ struct SubscriptionsView: View {
             if selectedOption == 0 {
                 SubredditsView(subscriptionListingViewModel: subscriptionListingViewModel)
             } else if selectedOption == 1 {
-                UsersView()
+                UsersView(subscriptionListingViewModel: subscriptionListingViewModel)
             } else {
                 CustomFeedView()
             }
@@ -67,11 +67,11 @@ struct SubscriptionsView: View {
             Group {
                 if subscriptionListingViewModel.isLoading {
                     Text("Is loading")
-                } else if subscriptionListingViewModel.subscriptions.isEmpty {
-                    Text("No posts")
+                } else if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
+                    Text("No subscribed subreddits")
                 } else {
                     List {
-                        ForEach(subscriptionListingViewModel.subscriptions, id: \.id) { subscription in
+                        ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.id) { subscription in
                             Text(subscription.displayName)
                         }
                     }.scrollBounceBehavior(.basedOnSize)
@@ -81,10 +81,22 @@ struct SubscriptionsView: View {
     }
 
     struct UsersView: View {
+        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+        
         var body: some View {
-            Text("Users Content")
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.purple.opacity(0.1))
+            Group {
+                if subscriptionListingViewModel.isLoading {
+                    Text("Is loading")
+                } else if subscriptionListingViewModel.userSubscriptions.isEmpty {
+                    Text("No subscribed users")
+                } else {
+                    List {
+                        ForEach(subscriptionListingViewModel.userSubscriptions, id: \.id) { subscription in
+                            Text(subscription.displayName)
+                        }
+                    }.scrollBounceBehavior(.basedOnSize)
+                }
+            }
         }
     }
 

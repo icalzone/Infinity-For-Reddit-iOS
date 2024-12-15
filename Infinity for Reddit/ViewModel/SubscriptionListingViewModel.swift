@@ -10,7 +10,8 @@ import Combine
 
 public class SubscriptionListingViewModel: ObservableObject {
     // MARK: - Properties
-    @Published var subscriptions: [Subscription] = []
+    @Published var subredditSubscriptions: [Subscription] = []
+    @Published var userSubscriptions: [Subscription] = []
     private var subscriptionsPrivate: [Subscription] = []
     @Published var isLoading: Bool = false
     private var after: String? = nil
@@ -46,11 +47,25 @@ public class SubscriptionListingViewModel: ObservableObject {
                 guard let self = self else { return }
                 if (subscriptionListing.subscriptions.isEmpty) {
                     // No more subscriptions
+                    var subreddits = [Subscription]()
+                    var users = [Subscription]()
+                    for subscription in self.subscriptionsPrivate {
+                        if subscription.subredditType == "user" {
+                            subscription.displayName = String(subscription.displayName[subscription.displayName.index(subscription.displayName.startIndex, offsetBy: 2)...])
+                            users.append(subscription)
+                        } else {
+                            subreddits.append(subscription)
+                        }
+                    }
+                    
+                    users.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
+                    subreddits.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
+                    
                     DispatchQueue.main.async {
                         self.after = nil
                         self.isLoading = false
-                        self.subscriptionsPrivate.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
-                        self.subscriptions = self.subscriptionsPrivate
+                        self.subredditSubscriptions = subreddits
+                        self.userSubscriptions = users
                     }
                 } else {
                     self.after = subscriptionListing.after
@@ -58,11 +73,25 @@ public class SubscriptionListingViewModel: ObservableObject {
                     subscriptionsPrivate.append(contentsOf: subscriptionListing.subscriptions)
                     
                     if self.after == nil || self.after?.isEmpty == true {
+                        var subreddits = [Subscription]()
+                        var users = [Subscription]()
+                        for subscription in self.subscriptionsPrivate {
+                            if subscription.subredditType == "user" {
+                                subscription.displayName = String(subscription.displayName[subscription.displayName.index(subscription.displayName.startIndex, offsetBy: 2)...])
+                                users.append(subscription)
+                            } else {
+                                subreddits.append(subscription)
+                            }
+                        }
+                        
+                        users.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
+                        subreddits.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
+                        
                         DispatchQueue.main.async {
                             self.after = nil
                             self.isLoading = false
-                            self.subscriptionsPrivate.sort { $0.displayName.lowercased() < $1.displayName.lowercased() }
-                            self.subscriptions = self.subscriptionsPrivate
+                            self.subredditSubscriptions = subreddits
+                            self.userSubscriptions = users
                         }
                     } else {
                         loadSubscriptions()
