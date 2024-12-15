@@ -73,43 +73,43 @@ class FontInterfaceViewModel: ObservableObject {
         
         $fontFamily
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.FONT_FAMILY_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.FONT_FAMILY_KEY ?? "")
             }
             .store(in: &cancellables)
         
         $fontSize
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.FONT_SIZE_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.FONT_SIZE_KEY ?? "")
             }
             .store(in: &cancellables)
         
         $titleFontFamily
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.TITLE_FONT_FAMILY_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.TITLE_FONT_FAMILY_KEY ?? "")
             }
             .store(in: &cancellables)
         
         $titleFontSize
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.TITLE_FONT_SIZE_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.TITLE_FONT_SIZE_KEY ?? "")
             }
             .store(in: &cancellables)
         
         $contentFontFamily
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.CONTENT_FONT_FAMILY_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.CONTENT_FONT_FAMILY_KEY ?? "")
             }
             .store(in: &cancellables)
         
         $contentFontSize
             .sink { [weak self] newValue in
-                self?.saveInterfaceSettings(setting: newValue, forKey: self?.CONTENT_FONT_SIZE_KEY ?? "")
+                self?.saveFontInterfaceSettings(setting: newValue, forKey: self?.CONTENT_FONT_SIZE_KEY ?? "")
             }
             .store(in: &cancellables)
     }
     
     // MARK: - Methods
-    func saveInterfaceSettings<T>(setting: T, forKey key: String) {
+    func saveFontInterfaceSettings<T>(setting: T, forKey key: String) {
         userDefaults.set(setting, forKey: key)
     }
     
