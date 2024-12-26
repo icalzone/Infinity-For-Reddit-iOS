@@ -57,6 +57,7 @@ struct SubscriptionsView: View {
         .navigationTitle("Subscriptions")
         .onAppear {
             subscriptionListingViewModel.loadSubscriptionsOnline()
+            subscriptionListingViewModel.loadMyCustomFeedsOnline()
         }
     }
     
@@ -116,9 +117,6 @@ struct SubscriptionsView: View {
                         }
                     }.scrollBounceBehavior(.basedOnSize)
                 }
-            }
-            .onAppear {
-                subscriptionListingViewModel.loadMyCustomFeeds()
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-// MultiRedditDao.swift
+// MyCustomFeedDao.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-03
@@ -8,32 +8,36 @@
 import GRDB
 import Combine
 
-struct MultiRedditDao {
+struct MyCustomFeedDao {
     private let dbPool: DatabasePool
     
     init(dbPool: DatabasePool) {
         self.dbPool = dbPool
     }
     
-    func insert(multiReddit: MultiReddit) throws {
+    func insert(myCustomFeed: MyCustomFeed) throws {
         try dbPool.write { db in
-            try multiReddit.insert(db, onConflict: .replace)
+            try myCustomFeed.insert(db, onConflict: .replace)
         }
     }
     
-    func insertAll(multiReddits: [MultiReddit]) throws {
-        try dbPool.write { db in
-            for data in multiReddits {
-                try data.insert(db, onConflict: .replace)
+    func insertAll(myCustomFeeds: [MyCustomFeed]) {
+        try? dbPool.write { db in
+            for data in myCustomFeeds {
+                do {
+                    try data.insert(db, onConflict: .replace)
+                } catch {
+                    print(error)
+                }
             }
         }
     }
     
-    func getAllMultiRedditsWithSearchQuery(username: String, searchQuery: String) -> AnyPublisher<[MultiReddit], Error> {
+    func getAllMyCustomFeedsWithSearchQuery(username: String, searchQuery: String) -> AnyPublisher<[MyCustomFeed], Error> {
         ValueObservation.tracking { db in
-            try MultiReddit.fetchAll(db, sql: """
+            try MyCustomFeed.fetchAll(db, sql: """
                 SELECT * 
-                FROM multi_reddits 
+                FROM custom_feeds 
                 WHERE username = ? AND display_name LIKE '%' || ? || '%' 
                 ORDER BY name COLLATE NOCASE ASC
                 """, arguments: [username, searchQuery])
@@ -42,22 +46,22 @@ struct MultiRedditDao {
         .eraseToAnyPublisher()
     }
     
-    func getAllMultiRedditsList(username: String) throws -> [MultiReddit] {
+    func getAllMyCustomFeedsList(username: String) throws -> [MyCustomFeed] {
         try dbPool.read { db in
-            try MultiReddit.fetchAll(db, sql: """
+            try MyCustomFeed.fetchAll(db, sql: """
                 SELECT * 
-                FROM multi_reddits 
+                FROM custom_feeds 
                 WHERE username = ? 
                 ORDER BY name COLLATE NOCASE ASC
                 """, arguments: [username])
         }
     }
     
-    func getAllFavoriteMultiRedditsWithSearchQuery(username: String, searchQuery: String) -> AnyPublisher<[MultiReddit], Error> {
+    func getAllFavoriteMyCustomFeedsWithSearchQuery(username: String, searchQuery: String) -> AnyPublisher<[MyCustomFeed], Error> {
         ValueObservation.tracking { db in
-            try MultiReddit.fetchAll(db, sql: """
+            try MyCustomFeed.fetchAll(db, sql: """
                 SELECT * 
-                FROM multi_reddits 
+                FROM custom_feeds 
                 WHERE username = ? AND is_favorite AND display_name LIKE '%' || ? || '%' 
                 ORDER BY name COLLATE NOCASE ASC
                 """, arguments: [username, searchQuery])
@@ -66,21 +70,21 @@ struct MultiRedditDao {
         .eraseToAnyPublisher()
     }
     
-    func getMultiReddit(path: String, username: String) throws -> MultiReddit? {
+    func getMyCustomFeed(path: String, username: String) throws -> MyCustomFeed? {
         try dbPool.read { db in
-            try MultiReddit.fetchOne(db, sql: """
+            try MyCustomFeed.fetchOne(db, sql: """
                 SELECT * 
-                FROM multi_reddits 
+                FROM custom_feeds 
                 WHERE path = ? AND username = ? COLLATE NOCASE LIMIT 1
                 """, arguments: [path, username])
         }
     }
     
-    func deleteMultiReddit(name: String, username: String) throws {
+    func deleteMyCustomFeed(name: String, username: String) throws {
         try dbPool.write { db in
             try db.execute(
                 sql: """
-                    DELETE FROM multi_reddits 
+                    DELETE FROM custom_feeds 
                     WHERE name = ? AND username = ?
                     """,
                 arguments: [name, username]
@@ -88,11 +92,11 @@ struct MultiRedditDao {
         }
     }
     
-    func anonymousDeleteMultiReddit(path: String) throws {
+    func anonymousDeleteMyCustomFeed(path: String) throws {
         try dbPool.write { db in
             try db.execute(
                 sql: """
-                    DELETE FROM multi_reddits 
+                    DELETE FROM custom_feeds 
                     WHERE path = ?
                     """,
                 arguments: [path]
@@ -100,11 +104,11 @@ struct MultiRedditDao {
         }
     }
     
-    func deleteAllUserMultiReddits(username: String) throws {
+    func deleteAllUserMyCustomFeeds(username: String) throws {
         try dbPool.write { db in
             try db.execute(
                 sql: """
-                    DELETE FROM multi_reddits 
+                    DELETE FROM custom_feeds 
                     WHERE username = ?
                     """,
                 arguments: [username]

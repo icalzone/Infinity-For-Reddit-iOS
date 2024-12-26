@@ -14,7 +14,7 @@ public class SubscriptionListingViewModel: ObservableObject {
     @Published var subredditSubscriptions: [SubscribedSubredditData] = []
     @Published var userSubscriptions: [SubscribedUserData] = []
     private var subscriptionsPrivate: [Subscription] = []
-    @Published var myCustomFeeds: [CustomFeed] = []
+    @Published var myCustomFeeds: [MyCustomFeed] = []
     
     @Published var isLoadingSubscriptions: Bool = false
     @Published var isLoadingMyCustomFeeds: Bool = false
@@ -28,6 +28,7 @@ public class SubscriptionListingViewModel: ObservableObject {
     private let searchQueryPublisher = CurrentValueSubject<String, Error>("")
     private let subredditSubscriptionsPublisher: AnyPublisher<[SubscribedSubredditData], Error>
     private let userSubscriptionsPublisher: AnyPublisher<[SubscribedUserData], Error>
+    private let myCustomFeedSubscriptionsPublisher: AnyPublisher<[MyCustomFeed], Error>
     
     public let subscriptionListingRepository: SubscriptionListingRepositoryProtocol
     
@@ -57,6 +58,13 @@ public class SubscriptionListingViewModel: ObservableObject {
         userSubscriptionsPublisher = searchQueryPublisher
             .flatMap { query in
                 subscribedUserDao.getAllSubscribedUsersWithSearchQuery(accountName: AccountViewModel.shared.account.username, searchQuery: query)
+            }
+            .eraseToAnyPublisher()
+        
+        let multiredditDao = MyCustomFeedDao(dbPool: dbPool)
+        myCustomFeedSubscriptionsPublisher = searchQueryPublisher
+            .flatMap { query in
+                multiredditDao.getAllMyCustomFeedsWithSearchQuery(username: AccountViewModel.shared.account.username, searchQuery: query)
             }
             .eraseToAnyPublisher()
         
@@ -94,6 +102,22 @@ public class SubscriptionListingViewModel: ObservableObject {
                 },
                 receiveValue: { result in
                     self.userSubscriptions = result
+                }
+            )
+            .store(in: &cancellables)
+        
+        myCustomFeedSubscriptionsPublisher
+            .sink(
+                receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Finished successfully.")
+                    case .failure(let error):
+                        print("Encountered an error: \(error)")
+                    }
+                },
+                receiveValue: { result in
+                    self.myCustomFeeds = result
                 }
             )
             .store(in: &cancellables)
@@ -210,7 +234,9 @@ public class SubscriptionListingViewModel: ObservableObject {
         }
     }
     
-    public func loadMyCustomFeeds() {
+    public func loadMyCustomFeedsOnline() {
+        guard Int64(Date().timeIntervalSince1970) - AccountViewModel.shared.account.subscriptionSyncTime >= 60 * 60 * 24 else { return }
+        
         guard !isLoadingMyCustomFeeds else { return }
         
         isLoadingSubscriptions = true
@@ -226,9 +252,16 @@ public class SubscriptionListingViewModel: ObservableObject {
             }, receiveValue: { [weak self] myCustomFeedListing in
                 guard let self = self else { return }
                 myCustomFeedListing.customFeeds.sort { $0.displayName < $1.displayName }
+                
+                let myCustomFeedsTemp = myCustomFeedListing.customFeeds.map {
+                    MyCustomFeed(path: $0.path, displayName: $0.displayName, name: $0.name, owner: $0.owner, nSubscribers: $0.numSubscribers, createdUTC: Int64($0.createdUtc), over18: $0.over18, isSubscriber: $0.isSubscriber, isFavorite: $0.isFavorited)
+                }
+                
+                insertMyCustomFeeds(myCustomFeeds: myCustomFeedsTemp)
+                
                 DispatchQueue.main.async {
                     self.isLoadingMyCustomFeeds = false
-                    self.myCustomFeeds = myCustomFeedListing.customFeeds
+                    self.myCustomFeeds = myCustomFeedsTemp
                 }
             })
             .store(in: &cancellables)
@@ -245,7 +278,7 @@ public class SubscriptionListingViewModel: ObservableObject {
         subscriptionsPrivate = []
         
         loadSubscriptionsOnline()
-        loadMyCustomFeeds()
+        loadMyCustomFeedsOnline()
     }
     
     private func insertSubscribedThings(subredditSubscriptions: [SubscribedSubredditData], userSubscriptions: [SubscribedUserData], subreddits: [SubredditData]) {
@@ -322,6 +355,43 @@ public class SubscriptionListingViewModel: ObservableObject {
             }
         } catch {
             print("Error updating subscribed things: \(error)")
+        }
+    }
+    
+    private func insertMyCustomFeeds(myCustomFeeds: [MyCustomFeed]) {
+        do {
+            // Check if account exists
+            guard !AccountViewModel.shared.account.isAnonymous(),
+                  let _ = try AccountDao(dbPool: dbPool).getAccount(username: AccountViewModel.shared.account.username) else {
+                return
+            }
+            
+            let myCustomFeedDao = MyCustomFeedDao(dbPool: dbPool)
+            let existingMyCustomFeeds = try myCustomFeedDao.getAllMyCustomFeedsList(username: AccountViewModel.shared.account.username)
+            
+            let unsubscribedMyCustomFeeds = existingMyCustomFeeds.filter { existing in
+                !myCustomFeeds.contains { $0.path == existing.path }
+            }
+            
+            for unsubscribed in unsubscribedMyCustomFeeds {
+                try myCustomFeedDao.deleteMyCustomFeed(name: unsubscribed.name, username: AccountViewModel.shared.account.username)
+            }
+            
+            myCustomFeedDao.insertAll(
+                myCustomFeeds: myCustomFeeds
+            )
+            
+            do {
+                print(myCustomFeeds.count)
+                let count = try dbPool.read { db in
+                    try MyCustomFeed.fetchCount(db)
+                }
+                print("Number of rows in MyCustomFeed: \(count)")
+            } catch {
+                print("Error fetching row count: \(error)")
+            }
+        } catch {
+            print("Error updating my custom feeds: \(error)")
         }
     }
 }

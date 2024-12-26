@@ -1,5 +1,5 @@
 //
-// MultiReddit.swift
+// MyCustomFeed.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2024-12-03
@@ -7,8 +7,8 @@
 
 import GRDB
 
-struct MultiReddit: Codable, FetchableRecord, PersistableRecord {
-    static let databaseTableName = "multi_reddits"
+struct MyCustomFeed: Codable, FetchableRecord, PersistableRecord {
+    static let databaseTableName = "custom_feeds"
     
     var path: String
     var displayName: String
@@ -44,4 +44,22 @@ struct MultiReddit: Codable, FetchableRecord, PersistableRecord {
         self.isFavorite = isFavorite
         self.subreddits = subreddits
     }
+    
+    private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case path
+        case displayName = "display_name"
+        case name
+        case description
+        case copiedFrom = "copied_from"
+        case iconUrl = "icon_url"
+        case visibility
+        case owner = "username"
+        case nSubscribers = "n_subscribers"
+        case createdUTC = "created_utc"
+        case over18
+        case isSubscriber = "is_subscriber"
+        case isFavorite = "is_favorite"
+    }
+
+    public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
 }

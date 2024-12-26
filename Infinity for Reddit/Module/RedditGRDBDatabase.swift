@@ -110,6 +110,25 @@ struct RedditGRDBDatabase {
                 t.column("is_selected", .boolean).notNull().defaults(to: false)
                 t.primaryKey(["id"])
             }
+            
+            try db.create(table: MyCustomFeed.databaseTableName, ifNotExists: true) { t in
+                t.column("path", .text).notNull()
+                t.column("display_name", .text).notNull()
+                t.column("name", .text).notNull()
+                t.column("description", .text)
+                t.column("copied_from", .text)
+                t.column("icon_url", .text)
+                t.column("visibility", .text)
+                t.column("username", .text)
+                    .notNull()
+                    .references(Account.databaseTableName, onDelete: .cascade)
+                t.column("n_subscribers", .integer).notNull()
+                t.column("created_utc", .integer).notNull()
+                t.column("over18", .boolean).notNull().defaults(to: false)
+                t.column("is_subscriber", .boolean).notNull().defaults(to: false)
+                t.column("is_favorite", .boolean).notNull().defaults(to: false)
+                t.primaryKey(["path", "username"])
+            }
         }
     }
 }

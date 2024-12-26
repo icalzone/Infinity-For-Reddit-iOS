@@ -80,7 +80,7 @@ class CustomFeed : NSObject, NSCoding{
     
     var canEdit : Bool!
     var created : Float!
-    var createdUtc : Float!
+    var createdUtc : Int64!
     var descriptionHtml : String!
     var descriptionMd : String!
     var displayName : String!
@@ -106,7 +106,7 @@ class CustomFeed : NSObject, NSCoding{
         }
         canEdit = json["can_edit"].boolValue
         created = json["created"].floatValue
-        createdUtc = json["created_utc"].floatValue
+        createdUtc = json["created_utc"].int64Value
         descriptionHtml = json["description_html"].stringValue
         descriptionMd = json["description_md"].stringValue
         displayName = json["display_name"].stringValue
@@ -200,7 +200,7 @@ class CustomFeed : NSObject, NSCoding{
     {
         canEdit = aDecoder.decodeObject(forKey: "can_edit") as? Bool
         created = aDecoder.decodeObject(forKey: "created") as? Float
-        createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Float
+        createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Int64
         descriptionHtml = aDecoder.decodeObject(forKey: "description_html") as? String
         descriptionMd = aDecoder.decodeObject(forKey: "description_md") as? String
         displayName = aDecoder.decodeObject(forKey: "display_name") as? String
