@@ -57,7 +57,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         case .getMyCustomFeeds:
             return "/api/multi/mine"
         case .getUserComments(let pathComponents, _):
-            return "/user/\(pathComponents["username"] ?? "Hostilenemy")/comments.json"
+            return "/user/\(pathComponents["username"] ?? "infinityAN")/comments.json"
         }
     }
     

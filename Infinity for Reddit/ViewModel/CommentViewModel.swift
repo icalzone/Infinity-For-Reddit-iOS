@@ -24,7 +24,6 @@ public class CommentViewModel: ObservableObject {
     
     func voteComment(vote: Int) {
         guard let _ = account.accessToken, let fullName = comment.name else { return }
-        
         let previousVote = comment.likes
         
         var point: String

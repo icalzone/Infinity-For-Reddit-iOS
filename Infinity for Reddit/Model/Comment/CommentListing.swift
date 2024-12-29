@@ -191,6 +191,7 @@ public class Comment : NSObject, NSCoding{
     var modReasonBy : String!
     var modReasonTitle : String!
     var modReports : [[Any]]! = [[Any]]()
+    var mediaMetadata: [String: Any]?
     var name : String!
     var noFollow : Bool!
     var numComments : Int!
@@ -272,6 +273,9 @@ public class Comment : NSObject, NSCoding{
         modNote = json["mod_note"].stringValue
         modReasonBy = json["mod_reason_by"].stringValue
         modReasonTitle = json["mod_reason_title"].stringValue
+        if let mediaMetaData = json["media_metadata"].dictionaryObject {
+            mediaMetadata = mediaMetaData
+        }
         for modReportArray in json["mod_reports"].arrayValue {
             var subArray: [Any] = []
             for modReport in modReportArray.arrayValue {
@@ -469,6 +473,9 @@ public class Comment : NSObject, NSCoding{
         if modReports != nil{
             dictionary["mod_reports"] = modReports
         }
+        if mediaMetadata != nil{
+            dictionary["media_metadata"] = mediaMetadata
+        }
         if name != nil{
             dictionary["name"] = name
         }
@@ -599,6 +606,7 @@ public class Comment : NSObject, NSCoding{
         modReasonBy = aDecoder.decodeObject(forKey: "mod_reason_by") as? String
         modReasonTitle = aDecoder.decodeObject(forKey: "mod_reason_title") as? String
         modReports = aDecoder.decodeObject(forKey: "mod_reports") as? [[Any]]
+        mediaMetadata = aDecoder.decodeObject(forKey: "media_metadata") as? [String: Any]
         name = aDecoder.decodeObject(forKey: "name") as? String
         noFollow = aDecoder.decodeObject(forKey: "no_follow") as? Bool
         numComments = aDecoder.decodeObject(forKey: "num_comments") as? Int
@@ -773,6 +781,9 @@ public class Comment : NSObject, NSCoding{
         }
         if modReports != nil{
             aCoder.encode(modReports, forKey: "mod_reports")
+        }
+        if mediaMetadata != nil{
+            aCoder.encode(mediaMetadata, forKey: "media_metadata")
         }
         if name != nil{
             aCoder.encode(name, forKey: "name")

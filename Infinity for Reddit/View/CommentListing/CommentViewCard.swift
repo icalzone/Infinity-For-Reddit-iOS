@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import MarkdownUI
 
 struct CommentViewCard: View {
     @StateObject var commentViewModel: CommentViewModel
@@ -34,7 +35,8 @@ struct CommentViewCard: View {
             }
             .padding(.vertical, 8)
             
-            Text(commentViewModel.comment.body)
+            Markdown(MarkdownUtils.modifyCommentBody(commentViewModel.comment))
+                .markdownImageProvider(.webImage)
                 .font(.system(size: 24))
                 .padding(.bottom, 8)
             
