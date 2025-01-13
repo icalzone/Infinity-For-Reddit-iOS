@@ -24,6 +24,7 @@ class MediaMetadata : NSObject, NSCoding{
     var s : MediaMetadataSource!
     //E.g. "Valid"
     var status : String!
+    var caption: String?
     
     
     /**
@@ -91,7 +92,6 @@ class MediaMetadata : NSObject, NSCoding{
         p = aDecoder.decodeObject(forKey: "p") as? [MediaMetadataPreview]
         s = aDecoder.decodeObject(forKey: "s") as? MediaMetadataSource
         status = aDecoder.decodeObject(forKey: "status") as? String
-        
     }
     
     /**
@@ -118,9 +118,7 @@ class MediaMetadata : NSObject, NSCoding{
         if status != nil{
             aCoder.encode(status, forKey: "status")
         }
-        
     }
-    
 }
 
 class MediaMetadataPreview : NSObject, NSCoding{

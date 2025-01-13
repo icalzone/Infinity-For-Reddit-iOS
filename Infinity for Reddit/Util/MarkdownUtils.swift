@@ -27,56 +27,100 @@ class MarkdownUtils {
             return
         }
         
-//        var replacedBody = commentBody
-//        
-//        let imageURLMatches = MarkdownUtils.REGEX_PATTERNS[1].matches(in: commentBody, options: [], range: NSRange(location: 0, length: commentBody.count))
-//        let imageMarkdownMatches = MarkdownUtils.REGEX_PATTERNS[2].matches(in: commentBody, options: [], range: NSRange(location: 0, length: commentBody.count))
-//        guard !imageURLMatches.isEmpty || !imageMarkdownMatches.isEmpty else {
-//            return commentBody
-//        }
-//        
-//        var excludedRanges = Set<NSRange>()
-//        for match in imageMarkdownMatches {
-//            if let range = Range(match.range, in: commentBody) {
-//                let matchedMarkdown = String(commentBody[range])
-//                if let urlRange = matchedMarkdown.range(of: #"(?<=\()\S+(?=\))"#, options: .regularExpression) {
-//                    let urlNSRange = NSRange(urlRange, in: commentBody)
-//                    excludedRanges.insert(urlNSRange)
-//                }
-//            }
-//        }
+        var replacedBody = commentBody
         
-//        for match in imageURLMatches {
-//            let matchRange = match.range
-//            
-//            // Skip matches that overlap with excluded ranges
-//            if excludedRanges.contains(where: { $0.intersection(matchRange) != nil }) {
-//                continue
-//            }
-//            
-//            // Replace the matched URL with markdown image syntax
-//            if let range = Range(matchRange, in: commentBody) {
-//                let matchedString = String(commentBody[range])
-//                let markdownImage = "![Preview Image](\(matchedString))"
-//                replacedBody.replaceSubrange(range, with: markdownImage)
-//            }
-//        }
-//        
-//        for match in imageMarkdownMatches{
-//            let range = Range(match.range, in: commentBody)!
-//            let matchedMarkdown = String(commentBody[range])
-//            let rangeOfCaption = Range(match.range(at: 1), in: commentBody)!
-//            let matchedCaption = String(commentBody[rangeOfCaption])
-//            var markdownImage: String
-//            if matchedCaption.isEmpty {
-//                markdownImage = "!\(matchedMarkdown)"
-//            } else {
-//                markdownImage = "!\(matchedMarkdown)\n\n*\(matchedCaption)*"
-//            }
-//            replacedBody = replacedBody.replacingOccurrences(of: matchedMarkdown, with: markdownImage)
-//        }
-//        print(replacedBody)
-        //return replacedBody
+        let imageURLMatches = MarkdownUtils.REGEX_PATTERNS[1].matches(in: commentBody, options: [], range: NSRange(location: 0, length: commentBody.count))
+        let imageMarkdownMatches = MarkdownUtils.REGEX_PATTERNS[2].matches(in: commentBody, options: [], range: NSRange(location: 0, length: commentBody.count))
+        guard !imageURLMatches.isEmpty || !imageMarkdownMatches.isEmpty else {
+            return
+        }
+        
+        print(commentBody)
+        var excludedRanges = Set<NSRange>()
+        for match in imageMarkdownMatches {
+            if let range = Range(match.range, in: commentBody) {
+                let matchedMarkdown = String(commentBody[range])
+                if let urlRange = matchedMarkdown.range(of: #"(?<=\()\S+(?=\))"#, options: .regularExpression) {
+                    let urlNSRange = NSRange(urlRange, in: commentBody)
+                    excludedRanges.insert(urlNSRange)
+                }
+            }
+        }
+        
+        let previewReddItLength = "https://preview.redd.it/".count;
+        
+        for match in imageURLMatches {
+            let matchRange = match.range
+            
+            // Skip matches that overlap with excluded ranges
+            if excludedRanges.contains(where: { $0.intersection(matchRange) != nil }) {
+                continue
+            }
+            
+            // Replace the matched URL with markdown image syntax
+            if let range = Range(matchRange, in: commentBody) {
+                let matchedString = String(commentBody[range])
+                // Calculate the starting index after `previewReddItLength` from the match's lower bound
+                let startIndex = matchedString.index(range.lowerBound, offsetBy: previewReddItLength)
+                // Find the index of the first occurrence of "." after `startIndex`
+                if let dotIndex = matchedString[startIndex...].firstIndex(of: ".") {
+                    // Extract the substring between `startIndex` and `dotIndex`
+                    let id = String(matchedString[startIndex ..< dotIndex])
+                    print(id)
+                    let markdownImage = "![](\(id))"
+                    replacedBody.replaceSubrange(range, with: markdownImage)
+                } else {
+                    let markdownImage = "![Preview Image](\(matchedString))"
+                    replacedBody.replaceSubrange(range, with: markdownImage)
+                }
+            }
+        }
+        
+        for match in imageMarkdownMatches {
+            let range = Range(match.range, in: commentBody)!
+            let matchedMarkdown = String(commentBody[range])
+            let rangeOfCaption = Range(match.range(at: 1), in: commentBody)!
+            let matchedCaption = String(commentBody[rangeOfCaption])
+            
+            // Find the last occurrence of "https://preview.redd.it/" within the matched range
+            if let urlStartRange = matchedMarkdown.range(of: "https://preview.redd.it/", options: .backwards, range: range) {
+                let urlStartIndex = urlStartRange.lowerBound
+                
+                // Calculate the start index for the ID extraction
+                let idStartIndex = matchedMarkdown.index(urlStartIndex, offsetBy: previewReddItLength)
+                
+                // Find the end of the ID (index of ".")
+                if let dotIndex = matchedMarkdown[idStartIndex...].firstIndex(of: ".") {
+                    // Extract the ID
+                    let id = String(matchedMarkdown[idStartIndex..<dotIndex])
+                    
+                    // Calculate the caption substring range
+                    let captionStartIndex = matchedMarkdown.index(range.lowerBound, offsetBy: 1) // matcher.start() + 1
+                    let captionEndIndex = matchedMarkdown.index(urlStartIndex, offsetBy: -2)     // urlStartIndex - 2
+                    let caption = String(matchedMarkdown[captionStartIndex..<captionEndIndex])
+                    
+                    print("ID: \(id)")
+                    print("Caption: \(caption)")
+                    
+                    let markdownImage = "![](\(id))"
+                    replacedBody.replaceSubrange(range, with: markdownImage)
+                    
+                    if !matchedCaption.isEmpty {
+                        comment.mediaMetadata?[id]?.caption = matchedCaption
+                    }
+                } else {
+                    // TODO add caption
+                    let markdownImage = "![](\(matchedMarkdown))"
+                    replacedBody.replaceSubrange(range, with: markdownImage)
+                }
+            } else {
+                // TODO add caption
+                let markdownImage = "![](\(matchedMarkdown))"
+                replacedBody.replaceSubrange(range, with: markdownImage)
+            }
+        }
+        print(replacedBody)
+        comment.body = replacedBody
     }
     
     static func detectMarkdownTable(_ text: String) -> Bool {
