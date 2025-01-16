@@ -63,6 +63,12 @@ public class AccountViewModel: ObservableObject {
         try accountDao.updateSubscriptionSyncTime(username: account.username, subscriptionSyncTime: account.subscriptionSyncTime)
     }
     
+    public func logoutToAnonymous() throws {
+        account = Account.ANONYMOUS_ACCOUNT
+        try accountDao.markAllAccountsNonCurrent()
+        objectWillChange.send()
+    }
+    
     // TODO May not work
     private func subscribeToCurrentAccount() {
         // Subscribe to the getCurrentAccountObservation publisher
