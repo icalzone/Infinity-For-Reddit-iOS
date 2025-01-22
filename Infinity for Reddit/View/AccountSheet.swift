@@ -72,9 +72,7 @@ struct AccountSheet: View {
                         }
                         .padding(.horizontal)
                         
-                        Button(action: {
-                            // Handle Sign Out Logic
-                        }) {
+                        NavigationLink(destination: AccountListingView()) {
                             Text("Switch account")
                                 .frame(maxWidth: .infinity)
                                 .padding()
