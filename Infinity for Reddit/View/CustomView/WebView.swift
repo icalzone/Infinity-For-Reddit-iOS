@@ -14,7 +14,7 @@ struct WebView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> WKWebView {
         let wKWebView = WKWebView()
-        //clean()
+        clean()
         wKWebView.navigationDelegate = context.coordinator
         return wKWebView
     }

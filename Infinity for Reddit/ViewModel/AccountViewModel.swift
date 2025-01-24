@@ -45,7 +45,19 @@ public class AccountViewModel: ObservableObject {
     }
     
     public func switchAccount(newAccount: Account) {
+        if !account.isAnonymous() {
+            do {
+                try accountDao.unmarkAccountCurrent(username: account.username)
+            } catch {
+                print("Failed to unmark account as current: \(error)")
+            }
+        }
         account = newAccount
+        do {
+            try accountDao.markAccountCurrent(username: account.username)
+        } catch {
+            print("Failed to mark account as current: \(error)")
+        }
         objectWillChange.send()
     }
     

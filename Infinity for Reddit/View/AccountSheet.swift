@@ -60,9 +60,7 @@ struct AccountSheet: View {
                         Spacer()
                         
                         // Sign Out Button
-                        Button(action: {
-                            // Handle Sign Out Logic
-                        }) {
+                        NavigationLink(destination: LoginView()) {
                             Text("Add an account")
                                 .frame(maxWidth: .infinity)
                                 .padding()

@@ -105,6 +105,15 @@ struct AccountDao {
             )
         }
     }
+    
+    func unmarkAccountCurrent(username: String) throws {
+        try dbPool.write { db in
+            try db.execute(
+                sql: "UPDATE accounts SET is_current_user = 0 WHERE username = ?",
+                arguments: [username]
+            )
+        }
+    }
 
     func markAccountCurrent(username: String) throws {
         try dbPool.write { db in
