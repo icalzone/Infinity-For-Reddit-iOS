@@ -42,9 +42,6 @@ class CustomThemeSettingsViewModel: ObservableObject {
         self.theme = userDefaults.integer(forKey: THEME_KEY)
         self.amoledDark = userDefaults.bool(forKey: AMOLED_DARK_KEY)
         
-        print(theme)
-        print(amoledDark)
-        
         // React to changes in `theme` and save to UserDefaults
         $theme
             .sink { [weak self] newValue in
