@@ -75,7 +75,7 @@ struct CustomThemeSettingsView: View {
             Spacer()
                 .frame(width: 16)
             
-            VStack {
+            VStack(alignment: .leading) {
                 Text(themeType)
                 
                 Spacer()

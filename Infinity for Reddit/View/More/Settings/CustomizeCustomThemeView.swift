@@ -15,6 +15,33 @@ struct CustomizeCustomThemeView: View {
     }
     
     var body: some View {
-        Text("Customize")
+        List {
+            ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
+                ColorEntry(fieldName: fieldName, title: fieldName, description: "description", color: 0x000000)
+            }
+        }
+    }
+    
+    private func ColorEntry(fieldName: String, title: String, description: String, color: Int) -> some View {
+        return HStack(alignment: .center) {
+            Circle()
+                .fill(Color(hex: color))
+                .frame(width: 24, height: 24)
+            
+            Spacer()
+                .frame(width: 16)
+            
+            VStack(alignment: .leading) {
+                Text(title)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                Text(description)
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
     }
 }

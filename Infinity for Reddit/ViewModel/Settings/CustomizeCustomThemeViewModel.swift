@@ -10,6 +10,7 @@ import GRDB
 
 class CustomizeCustomThemeViewModel: ObservableObject {
     @Published var customTheme: CustomTheme
+    var customThemeFields: [String]
     
     private let customThemeDao: CustomThemeDao
     
@@ -21,5 +22,7 @@ class CustomizeCustomThemeViewModel: ObservableObject {
         self.customThemeDao = CustomThemeDao(dbPool: resolvedDatabasePool)
         
         self.customTheme = customTheme
+        
+        self.customThemeFields = customTheme.getPropertyNames()
     }
 }

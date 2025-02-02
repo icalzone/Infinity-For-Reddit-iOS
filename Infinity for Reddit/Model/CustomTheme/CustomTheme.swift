@@ -6,100 +6,101 @@
 //
 
 import GRDB
+import Foundation
 
-
-struct CustomTheme: Codable, FetchableRecord, PersistableRecord {
+class CustomTheme: NSObject, Codable, FetchableRecord, PersistableRecord {
     var id: Int?
-    var name: String
-    var isLightTheme: Bool
-    var isDarkTheme: Bool
-    var isAmoledTheme: Bool
-    var colorPrimary: Int
-    var colorPrimaryDark: Int
-    var colorAccent: Int
-    var colorPrimaryLightTheme: Int
-    var primaryTextColor: Int
-    var secondaryTextColor: Int
-    var postTitleColor: Int
-    var postContentColor: Int
-    var readPostTitleColor: Int
-    var readPostContentColor: Int
-    var commentColor: Int
-    var buttonTextColor: Int
-    var backgroundColor: Int
-    var cardViewBackgroundColor: Int
-    var readPostCardViewBackgroundColor: Int
-    var filledCardViewBackgroundColor: Int
-    var readPostFilledCardViewBackgroundColor: Int
-    var commentBackgroundColor: Int
-    var bottomAppBarBackgroundColor: Int
-    var primaryIconColor: Int
-    var bottomAppBarIconColor: Int
-    var postIconAndInfoColor: Int
-    var commentIconAndInfoColor: Int
-    var toolbarPrimaryTextAndIconColor: Int
-    var toolbarSecondaryTextColor: Int
-    var circularProgressBarBackground: Int
-    var mediaIndicatorIconColor: Int
-    var mediaIndicatorBackgroundColor: Int
-    var tabLayoutWithExpandedCollapsingToolbarTabBackground: Int
-    var tabLayoutWithExpandedCollapsingToolbarTextColor: Int
-    var tabLayoutWithExpandedCollapsingToolbarTabIndicator: Int
-    var tabLayoutWithCollapsedCollapsingToolbarTabBackground: Int
-    var tabLayoutWithCollapsedCollapsingToolbarTextColor: Int
-    var tabLayoutWithCollapsedCollapsingToolbarTabIndicator: Int
-    var upvoted: Int
-    var downvoted: Int
-    var postTypeBackgroundColor: Int
-    var postTypeTextColor: Int
-    var spoilerBackgroundColor: Int
-    var spoilerTextColor: Int
-    var nsfwBackgroundColor: Int
-    var nsfwTextColor: Int
-    var flairBackgroundColor: Int
-    var flairTextColor: Int
-    var awardsBackgroundColor: Int
-    var awardsTextColor: Int
-    var archivedTint: Int
-    var lockedIconTint: Int
-    var crosspostIconTint: Int
-    var upvoteRatioIconTint: Int
-    var stickiedPostIconTint: Int
-    var noPreviewPostTypeIconTint: Int
-    var subscribed: Int
-    var unsubscribed: Int
-    var username: Int
-    var subreddit: Int
-    var authorFlairTextColor: Int
-    var submitter: Int
-    var moderator: Int
-    var currentUser: Int
-    var singleCommentThreadBackgroundColor: Int
-    var unreadMessageBackgroundColor: Int
-    var dividerColor: Int
-    var noPreviewPostTypeBackgroundColor: Int
-    var voteAndReplyUnavailableButtonColor: Int
-    var commentVerticalBarColor1: Int
-    var commentVerticalBarColor2: Int
-    var commentVerticalBarColor3: Int
-    var commentVerticalBarColor4: Int
-    var commentVerticalBarColor5: Int
-    var commentVerticalBarColor6: Int
-    var commentVerticalBarColor7: Int
-    var fabIconColor: Int
-    var chipTextColor: Int
-    var linkColor: Int
-    var receivedMessageTextColor: Int
-    var sentMessageTextColor: Int
-    var receivedMessageBackgroundColor: Int
-    var sentMessageBackgroundColor: Int
-    var sendMessageIconColor: Int
-    var fullyCollapsedCommentBackgroundColor: Int
-    var awardedCommentBackgroundColor: Int
-    var navBarColor: Int
-    var isLightStatusBar: Bool
-    var isLightNavBar: Bool
-    var isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface: Bool
+    @objc var name: String
+    @objc var isLightTheme: Bool
+    @objc var isDarkTheme: Bool
+    @objc var isAmoledTheme: Bool
+    @objc var colorPrimary: Int
+    @objc var colorPrimaryDark: Int
+    @objc var colorAccent: Int
+    @objc var colorPrimaryLightTheme: Int
+    @objc var primaryTextColor: Int
+    @objc var secondaryTextColor: Int
+    @objc var postTitleColor: Int
+    @objc var postContentColor: Int
+    @objc var readPostTitleColor: Int
+    @objc var readPostContentColor: Int
+    @objc var commentColor: Int
+    @objc var buttonTextColor: Int
+    @objc var backgroundColor: Int
+    @objc var cardViewBackgroundColor: Int
+    @objc var readPostCardViewBackgroundColor: Int
+    @objc var filledCardViewBackgroundColor: Int
+    @objc var readPostFilledCardViewBackgroundColor: Int
+    @objc var commentBackgroundColor: Int
+    @objc var bottomAppBarBackgroundColor: Int
+    @objc var primaryIconColor: Int
+    @objc var bottomAppBarIconColor: Int
+    @objc var postIconAndInfoColor: Int
+    @objc var commentIconAndInfoColor: Int
+    @objc var toolbarPrimaryTextAndIconColor: Int
+    @objc var toolbarSecondaryTextColor: Int
+    @objc var circularProgressBarBackground: Int
+    @objc var mediaIndicatorIconColor: Int
+    @objc var mediaIndicatorBackgroundColor: Int
+    @objc var tabLayoutWithExpandedCollapsingToolbarTabBackground: Int
+    @objc var tabLayoutWithExpandedCollapsingToolbarTextColor: Int
+    @objc var tabLayoutWithExpandedCollapsingToolbarTabIndicator: Int
+    @objc var tabLayoutWithCollapsedCollapsingToolbarTabBackground: Int
+    @objc var tabLayoutWithCollapsedCollapsingToolbarTextColor: Int
+    @objc var tabLayoutWithCollapsedCollapsingToolbarTabIndicator: Int
+    @objc var upvoted: Int
+    @objc var downvoted: Int
+    @objc var postTypeBackgroundColor: Int
+    @objc var postTypeTextColor: Int
+    @objc var spoilerBackgroundColor: Int
+    @objc var spoilerTextColor: Int
+    @objc var nsfwBackgroundColor: Int
+    @objc var nsfwTextColor: Int
+    @objc var flairBackgroundColor: Int
+    @objc var flairTextColor: Int
+    @objc var awardsBackgroundColor: Int
+    @objc var awardsTextColor: Int
+    @objc var archivedTint: Int
+    @objc var lockedIconTint: Int
+    @objc var crosspostIconTint: Int
+    @objc var upvoteRatioIconTint: Int
+    @objc var stickiedPostIconTint: Int
+    @objc var noPreviewPostTypeIconTint: Int
+    @objc var subscribed: Int
+    @objc var unsubscribed: Int
+    @objc var username: Int
+    @objc var subreddit: Int
+    @objc var authorFlairTextColor: Int
+    @objc var submitter: Int
+    @objc var moderator: Int
+    @objc var currentUser: Int
+    @objc var singleCommentThreadBackgroundColor: Int
+    @objc var unreadMessageBackgroundColor: Int
+    @objc var dividerColor: Int
+    @objc var noPreviewPostTypeBackgroundColor: Int
+    @objc var voteAndReplyUnavailableButtonColor: Int
+    @objc var commentVerticalBarColor1: Int
+    @objc var commentVerticalBarColor2: Int
+    @objc var commentVerticalBarColor3: Int
+    @objc var commentVerticalBarColor4: Int
+    @objc var commentVerticalBarColor5: Int
+    @objc var commentVerticalBarColor6: Int
+    @objc var commentVerticalBarColor7: Int
+    @objc var fabIconColor: Int
+    @objc var chipTextColor: Int
+    @objc var linkColor: Int
+    @objc var receivedMessageTextColor: Int
+    @objc var sentMessageTextColor: Int
+    @objc var receivedMessageBackgroundColor: Int
+    @objc var sentMessageBackgroundColor: Int
+    @objc var sendMessageIconColor: Int
+    @objc var fullyCollapsedCommentBackgroundColor: Int
+    @objc var awardedCommentBackgroundColor: Int
+    @objc var navBarColor: Int
+    @objc var isLightStatusBar: Bool
+    @objc var isLightNavBar: Bool
+    @objc var isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface: Bool
+    
     
     static var databaseTableName: String {
         return "custom_theme"
@@ -287,6 +288,41 @@ struct CustomTheme: Codable, FetchableRecord, PersistableRecord {
         self.isLightStatusBar = isLightStatusBar
         self.isLightNavBar = isLightNavBar
         self.isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface = isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface
+    }
+    
+    func getPropertyNames() -> [String] {
+        let mirror = Mirror(reflecting: self)
+        return mirror.children.compactMap {
+            $0.label
+        }.filter {
+            $0 != "id"
+        }
+    }
+    
+    func updateField(_ fieldName: String, with value: Any) {
+        switch fieldName {
+        case "name":
+            if let value = value as? String { name = value }
+        case "isLightTheme":
+            if let value = value as? Bool { isLightTheme = value }
+        case "isDarkTheme":
+            if let value = value as? Bool { isDarkTheme = value }
+        case "isAmoledTheme":
+            if let value = value as? Bool { isAmoledTheme = value }
+        case "isLightStatusBar":
+            if let value = value as? Bool { isLightStatusBar = value }
+        case "isLightNavBar":
+            if let value = value as? Bool { isLightNavBar = value }
+        case "isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface":
+            if let value = value as? Bool { isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface = value }
+        default:
+            if let value = value as? Int {
+                let mirror = Mirror(reflecting: self)
+                if mirror.children.contains(where: { $0.label == fieldName }) {
+                    self.setValue(value, forKey: fieldName)
+                }
+            }
+        }
     }
     
     static func getIndigo() -> CustomTheme {
