@@ -26,17 +26,27 @@ class CustomTheme: NSObject, Codable, FetchableRecord, PersistableRecord {
     @objc var readPostContentColor: Int
     @objc var commentColor: Int
     @objc var buttonTextColor: Int
+    @objc var chipTextColor: Int
+    @objc var linkColor: Int
+    @objc var receivedMessageTextColor: Int
+    @objc var sentMessageTextColor: Int
     @objc var backgroundColor: Int
     @objc var cardViewBackgroundColor: Int
     @objc var readPostCardViewBackgroundColor: Int
     @objc var filledCardViewBackgroundColor: Int
     @objc var readPostFilledCardViewBackgroundColor: Int
     @objc var commentBackgroundColor: Int
+    @objc var fullyCollapsedCommentBackgroundColor: Int
+    @objc var awardedCommentBackgroundColor: Int
+    @objc var receivedMessageBackgroundColor: Int
+    @objc var sentMessageBackgroundColor: Int
     @objc var bottomAppBarBackgroundColor: Int
     @objc var primaryIconColor: Int
     @objc var bottomAppBarIconColor: Int
     @objc var postIconAndInfoColor: Int
     @objc var commentIconAndInfoColor: Int
+    @objc var fabIconColor: Int
+    @objc var sendMessageIconColor: Int
     @objc var toolbarPrimaryTextAndIconColor: Int
     @objc var toolbarSecondaryTextColor: Int
     @objc var circularProgressBarBackground: Int
@@ -86,16 +96,6 @@ class CustomTheme: NSObject, Codable, FetchableRecord, PersistableRecord {
     @objc var commentVerticalBarColor5: Int
     @objc var commentVerticalBarColor6: Int
     @objc var commentVerticalBarColor7: Int
-    @objc var fabIconColor: Int
-    @objc var chipTextColor: Int
-    @objc var linkColor: Int
-    @objc var receivedMessageTextColor: Int
-    @objc var sentMessageTextColor: Int
-    @objc var receivedMessageBackgroundColor: Int
-    @objc var sentMessageBackgroundColor: Int
-    @objc var sendMessageIconColor: Int
-    @objc var fullyCollapsedCommentBackgroundColor: Int
-    @objc var awardedCommentBackgroundColor: Int
     @objc var navBarColor: Int
     @objc var isLightStatusBar: Bool
     @objc var isLightNavBar: Bool

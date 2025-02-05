@@ -16,6 +16,8 @@ struct CustomizeCustomThemeView: View {
     
     var body: some View {
         List {
+            NameEntry()
+            
             ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
                 if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
                     if let binding = getBooleanBinding(for: fieldName) {
@@ -27,8 +29,6 @@ struct CustomizeCustomThemeView: View {
                             isEnabled: binding
                         )
                     }
-                    
-                    //BooleanEntry(fieldName: fieldName, title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "", description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? "", isEnabled: <#T##Binding<Bool>#>)
                 } else {
                     if let colorBinding = getIntBinding(for: fieldName) {
                         ColorEntry(
@@ -38,10 +38,70 @@ struct CustomizeCustomThemeView: View {
                             color: colorBinding.wrappedValue
                         )
                     }
-                    //ColorEntry(fieldName: fieldName, title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "", description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? "", color: 0x000000)
                 }
             }
         }
+    }
+    
+    private func NameEntry() -> some View {
+        return HStack(alignment: .center) {
+            VStack(alignment: .leading) {
+                Text(customizeCustomThemeViewModel.customTheme.name)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                Text(NSLocalizedString("theme_name_description", comment: ""))
+                    .font(.system(size: 14))
+            }
+        }
+    }
+    
+    private func ColorEntry(fieldName: String, title: String, description: String, color: Int) -> some View {
+        return HStack(alignment: .center) {
+            Circle()
+                .fill(Color(hex: color))
+                .frame(width: 24, height: 24)
+            
+            Spacer()
+                .frame(width: 16)
+            
+            VStack(alignment: .leading) {
+                Text(title)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                Text(description)
+                    .font(.system(size: 14))
+            }
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    private func BooleanEntry(fieldName: String, title: String, description: String, isEnabled: Binding<Bool>) -> some View {
+        return HStack(alignment: .center) {
+            Spacer()
+                .frame(width: 40)
+            
+            VStack(alignment: .leading) {
+                Text(title)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                Text(description)
+                    .font(.system(size: 14))
+            }
+            
+            Spacer()
+            
+            Toggle(isOn: isEnabled) {}
+                .labelsHidden()
+        }
+        .frame(maxWidth: .infinity)
     }
     
     private func getBooleanBinding(for fieldName: String) -> Binding<Bool>? {
@@ -89,6 +149,14 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentColor
         case "buttonTextColor":
             return $customizeCustomThemeViewModel.customTheme.buttonTextColor
+        case "chipTextColor":
+            return $customizeCustomThemeViewModel.customTheme.chipTextColor
+        case "linkColor":
+            return $customizeCustomThemeViewModel.customTheme.linkColor
+        case "receivedMessageTextColor":
+            return $customizeCustomThemeViewModel.customTheme.receivedMessageTextColor
+        case "sentMessageTextColor":
+            return $customizeCustomThemeViewModel.customTheme.sentMessageTextColor
         case "backgroundColor":
             return $customizeCustomThemeViewModel.customTheme.backgroundColor
         case "cardViewBackgroundColor":
@@ -101,6 +169,14 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.readPostFilledCardViewBackgroundColor
         case "commentBackgroundColor":
             return $customizeCustomThemeViewModel.customTheme.commentBackgroundColor
+        case "fullyCollapsedCommentBackgroundColor":
+            return $customizeCustomThemeViewModel.customTheme.fullyCollapsedCommentBackgroundColor
+        case "awardedCommentBackgroundColor":
+            return $customizeCustomThemeViewModel.customTheme.awardedCommentBackgroundColor
+        case "receivedMessageBackgroundColor":
+            return $customizeCustomThemeViewModel.customTheme.receivedMessageBackgroundColor
+        case "sentMessageBackgroundColor":
+            return $customizeCustomThemeViewModel.customTheme.sentMessageBackgroundColor
         case "bottomAppBarBackgroundColor":
             return $customizeCustomThemeViewModel.customTheme.bottomAppBarBackgroundColor
         case "primaryIconColor":
@@ -111,6 +187,10 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.postIconAndInfoColor
         case "commentIconAndInfoColor":
             return $customizeCustomThemeViewModel.customTheme.commentIconAndInfoColor
+        case "fabIconColor":
+            return $customizeCustomThemeViewModel.customTheme.fabIconColor
+        case "sendMessageIconColor":
+            return $customizeCustomThemeViewModel.customTheme.sendMessageIconColor
         case "toolbarPrimaryTextAndIconColor":
             return $customizeCustomThemeViewModel.customTheme.toolbarPrimaryTextAndIconColor
         case "toolbarSecondaryTextColor":
@@ -209,65 +289,10 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor6
         case "commentVerticalBarColor7":
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor7
-        case "fabIconColor":
-            return $customizeCustomThemeViewModel.customTheme.fabIconColor
-        case "chipTextColor":
-            return $customizeCustomThemeViewModel.customTheme.chipTextColor
-        case "linkColor":
-            return $customizeCustomThemeViewModel.customTheme.linkColor
-        case "receivedMessageTextColor":
-            return $customizeCustomThemeViewModel.customTheme.receivedMessageTextColor
-        case "sentMessageTextColor":
-            return $customizeCustomThemeViewModel.customTheme.sentMessageTextColor
+        case "navBarColor":
+            return $customizeCustomThemeViewModel.customTheme.navBarColor
         default:
             return nil
         }
-    }
-    
-    private func ColorEntry(fieldName: String, title: String, description: String, color: Int) -> some View {
-        return HStack(alignment: .center) {
-            Circle()
-                .fill(Color(hex: color))
-                .frame(width: 24, height: 24)
-            
-            Spacer()
-                .frame(width: 16)
-            
-            VStack(alignment: .leading) {
-                Text(title)
-                
-                Spacer()
-                    .frame(height: 8)
-                
-                Text(description)
-                    .font(.system(size: 14))
-            }
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-    }
-    
-    private func BooleanEntry(fieldName: String, title: String, description: String, isEnabled: Binding<Bool>) -> some View {
-        return HStack(alignment: .center) {
-            Spacer()
-                .frame(width: 40)
-            
-            VStack(alignment: .leading) {
-                Text(title)
-                
-                Spacer()
-                    .frame(height: 8)
-                
-                Text(description)
-                    .font(.system(size: 14))
-            }
-            
-            Spacer()
-            
-            Toggle(isOn: isEnabled) {}
-                .labelsHidden()
-        }
-        .frame(maxWidth: .infinity)
     }
 }
