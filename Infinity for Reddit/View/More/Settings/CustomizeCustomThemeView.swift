@@ -9,7 +9,6 @@ import SwiftUI
 
 struct CustomizeCustomThemeView: View {
     @StateObject var customizeCustomThemeViewModel: CustomizeCustomThemeViewModel
-    @State var changingColor: IdentifiableBinding<Int>?
     @State var title: String?
     @State var showColorPicker: Bool = false
     
@@ -44,14 +43,6 @@ struct CustomizeCustomThemeView: View {
                 }
             }
         }
-        .sheet(item: $changingColor) { currentColor in
-            ColorPicker("Select a color", selection: Binding(
-                get: { Color(hex: currentColor.binding.wrappedValue) },
-                set: { newColor in
-                    currentColor.binding.wrappedValue = newColor.toHex()
-                }
-            ))
-        }
     }
     
     private func NameEntry() -> some View {
@@ -70,13 +61,6 @@ struct CustomizeCustomThemeView: View {
     
     private func ColorEntry(fieldName: String, title: String, description: String, color: IdentifiableBinding<Int>) -> some View {
         return HStack(alignment: .center) {
-            Circle()
-                .fill(Color(hex: color.binding.wrappedValue))
-                .frame(width: 24, height: 24)
-            
-            Spacer()
-                .frame(width: 16)
-            
             VStack(alignment: .leading) {
                 Text(title)
                 
@@ -88,23 +72,21 @@ struct CustomizeCustomThemeView: View {
             }
             
             Spacer()
+            
+            ColorPicker("Select a color", selection: Binding(
+                get: { Color(hex: color.binding.wrappedValue) },
+                set: { newColor in
+                    color.binding.wrappedValue = newColor.toHex()
+                }
+            ))
+            .frame(width: 24, height: 24)
+            .labelsHidden()
         }
         .frame(maxWidth: .infinity)
-        .onTapGesture {
-            DispatchQueue.main.async {
-                changingColor = color
-                showColorPicker = true
-            }
-            
-            //color.wrappedValue = 0
-        }
     }
     
     private func BooleanEntry(fieldName: String, title: String, description: String, isEnabled: Binding<Bool>) -> some View {
         return HStack(alignment: .center) {
-            Spacer()
-                .frame(width: 40)
-            
             VStack(alignment: .leading) {
                 Text(title)
                 
