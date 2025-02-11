@@ -244,8 +244,15 @@
     "Is loading" : {
 
     },
-    "Karma: %lld   Cake day: Dec 30, 2024" : {
-
+    "Karma: %lld  Cake day: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Karma: %1$lld  Cake day: %2$@"
+          }
+        }
+      }
     },
     "Lazy Mode Interval" : {
 
@@ -353,6 +360,9 @@
 
     },
     "Post History" : {
+
+    },
+    "Posts" : {
 
     },
     "Posts from the following subreddits will be filtered out." : {

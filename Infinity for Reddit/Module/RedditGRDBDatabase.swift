@@ -43,6 +43,7 @@ struct RedditGRDBDatabase {
                 t.column("is_current_user", .boolean)
                 t.column("code", .text)
                 t.column("subscription_sync_time", .integer)
+                t.column("created_utc", .double)
             }
             
             try db.create(table: PostFilter.databaseTableName, ifNotExists: true) { t in

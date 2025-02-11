@@ -124,6 +124,7 @@ struct LoginView: View {
                                                                                             
                                                                                             let karma = jsonResponse[JSONUtils.TOTAL_KARMA_KEY].intValue
                                                                                             let isMod = jsonResponse[JSONUtils.IS_MOD_KEY].boolValue
+                                                                                            let createdUTC = jsonResponse[JSONUtils.CREATED_UTC_KEY].doubleValue
                                                                                             
                                                                                             let account = Account(
                                                                                                 username: name,
@@ -134,7 +135,8 @@ struct LoginView: View {
                                                                                                 isMod: isMod,
                                                                                                 accessToken: accessToken,
                                                                                                 refreshToken: refreshToken,
-                                                                                                code: authCode
+                                                                                                code: authCode,
+                                                                                                createdUTC: createdUTC
                                                                                             )
                                                                                             
                                                                                             let accountDao = AccountDao(dbPool: dbPool)

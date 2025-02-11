@@ -10,9 +10,10 @@ import SwiftUI
 struct UserDetailsView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var accountViewModel: AccountViewModel
-
+    @StateObject private var userDetailsViewModel = UserDetailsViewModel()
+    
     @State private var selectedTab = 0
-
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -38,14 +39,14 @@ struct UserDetailsView: View {
                         .padding(.leading, 20)
                         .padding(.vertical, 20)
                     }
-
+                    
                     VStack(alignment: .leading, spacing: 5) {
-                        Text("u/\(accountViewModel.account.username)") // Use your actual username here
+                        Text("u/\(accountViewModel.account.username)")
                             .font(.title2)
                             .bold()
-
+                        
                         Button(action: {
-                            print("Follow tapped") // Replace with your follow action
+                            print("Follow tapped")
                         }) {
                             Text("Follow")
                                 .padding(.horizontal, 15)
@@ -59,11 +60,10 @@ struct UserDetailsView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
-
+                
                 // Stats Section
-               
-                Text("Karma: \(accountViewModel.account.karma)   Cake day: Dec 30, 2024")
-                    .padding(.leading, 30) // Add leading padding
+                Text("Karma: \(accountViewModel.account.karma)  Cake day: \(userDetailsViewModel.formattedCakeDay(accountViewModel.account.createdUTC))")
+                    .padding(.leading, 30)
                     .frame(maxWidth:.infinity, alignment:.leading)
                 
                 
@@ -82,22 +82,28 @@ struct UserDetailsView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.top, 20)
-
-                VStack {
-                    CommentListingView(
-                        commentListingMetadata: CommentListingMetadata(
-                            commentListingType: .user,
-                            pathComponents: ["sortType": "best"],
-                            headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                            queries: nil,
-                            params: nil
+                
+                if selectedTab == 1 { 
+                    VStack {
+                        CommentListingView(
+                            commentListingMetadata: CommentListingMetadata(
+                                commentListingType:.user,
+                                pathComponents: ["sortType": "best"],
+                                headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                                queries: nil,
+                                params: nil
+                            )
                         )
-                    )
-                    .id(accountViewModel.account.username)
+                        .id(accountViewModel.account.username)
+                    }
+                    .frame(maxHeight:.infinity)
+                    Spacer()
+                } else {
+                    VStack{
+                        Text("Posts")
+                    }.frame(maxHeight:.infinity)
+                    Spacer()
                 }
-                .frame(maxHeight: .infinity)
-                Spacer()
-
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1.0)))
@@ -111,7 +117,7 @@ struct TabButton: View {
     let text: String
     let isSelected: Bool
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
@@ -119,7 +125,7 @@ struct TabButton: View {
                     .foregroundColor(isSelected ? .blue : .black)
                     .bold()
                     .font(.system(size: 18))
-
+                
                 Rectangle()
                     .frame(height: 2)
                     .foregroundColor(isSelected ? .blue : .clear)

@@ -6,9 +6,10 @@
 //
 
 import GRDB
+import Foundation
 
 public struct Account: Codable, FetchableRecord, PersistableRecord, Sendable {
-    static let ANONYMOUS_ACCOUNT = Account(username: "-", isCurrentUser: false, profileImageUrl: nil, bannerImageUrl: nil, karma: 0, isMod: false, accessToken: nil, refreshToken: nil, code: nil)
+    static let ANONYMOUS_ACCOUNT = Account(username: "-", isCurrentUser: false, profileImageUrl: nil, bannerImageUrl: nil, karma: 0, isMod: false, accessToken: nil, refreshToken: nil, code: nil, createdUTC: 0.0)
     
     public static let databaseTableName = "accounts"
     
@@ -22,8 +23,9 @@ public struct Account: Codable, FetchableRecord, PersistableRecord, Sendable {
     var refreshToken: String?
     var code: String?
     var subscriptionSyncTime: Int64
+    var createdUTC: TimeInterval
     
-    init(username: String, isCurrentUser: Bool, profileImageUrl: String? = nil, bannerImageUrl: String? = nil, karma: Int, isMod: Bool, accessToken: String? = nil, refreshToken: String? = nil, code: String? = nil) {
+    init(username: String, isCurrentUser: Bool, profileImageUrl: String? = nil, bannerImageUrl: String? = nil, karma: Int, isMod: Bool, accessToken: String? = nil, refreshToken: String? = nil, code: String? = nil, createdUTC: TimeInterval) {
         self.username = username
         self.isCurrentUser = isCurrentUser
         self.profileImageUrl = profileImageUrl
@@ -34,6 +36,7 @@ public struct Account: Codable, FetchableRecord, PersistableRecord, Sendable {
         self.refreshToken = refreshToken
         self.code = code
         self.subscriptionSyncTime = 0
+        self.createdUTC = createdUTC
     }
     
     func isAnonymous() -> Bool {
@@ -51,6 +54,7 @@ public struct Account: Codable, FetchableRecord, PersistableRecord, Sendable {
         case refreshToken = "refresh_token"
         case code
         case subscriptionSyncTime = "subscription_sync_time"
+        case createdUTC = "created_utc"
     }
     
     public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
