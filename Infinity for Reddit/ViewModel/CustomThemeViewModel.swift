@@ -57,7 +57,6 @@ public class CustomThemeViewModel: ObservableObject {
             .sink(receiveCompletion: { _ in },
                   receiveValue: { [weak self] theme in
                 self?.currentDarkCustomTheme = theme
-                self?.isDarkTheme = (theme != nil) // Update isDarkTheme flag
             })
             .store(in: &cancellables)
         

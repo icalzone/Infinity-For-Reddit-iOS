@@ -40,14 +40,14 @@ struct CustomThemeSettingsView: View {
                             icon: "upvoted")
                     }
                     
-                    NavigationLink(destination: CustomizeCustomThemeView(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigoDark())) {
+                    NavigationLink(destination: CustomizeCustomThemeView(customTheme: customThemeViewModel.currentDarkCustomTheme ?? CustomTheme.getIndigoDark())) {
                         themeListItem(
                             themeType: "Dark Theme",
                             themeName: customThemeViewModel.currentDarkCustomTheme?.name ?? "Indigo Dark",
                             icon: "upvoted")
                     }
                     
-                    NavigationLink(destination: CustomizeCustomThemeView(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigoAmoled())) {
+                    NavigationLink(destination: CustomizeCustomThemeView(customTheme: customThemeViewModel.currentAmoledCustomTheme ?? CustomTheme.getIndigoAmoled())) {
                         themeListItem(
                             themeType: "Amoled Theme",
                             themeName: customThemeViewModel.currentAmoledCustomTheme?.name ?? "Indigo Amoled",
