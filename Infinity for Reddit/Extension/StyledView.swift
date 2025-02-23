@@ -39,4 +39,16 @@ extension View {
     func navigationBarImage() -> some View {
         self.modifier(NavigationBarImageViewModifier())
     }
+    
+    func themedNavigationBarBackButton() -> some View {
+        self.modifier(NavigationBarBackButtonViewModifier())
+    }
+    
+    func themedTabView() -> some View {
+        self.modifier(TabViewCustomThemeViewModifier())
+    }
+    
+    func themedTabViewGroup() -> some View {
+        self.modifier(TabViewGroupViewModifier())
+    }
 }

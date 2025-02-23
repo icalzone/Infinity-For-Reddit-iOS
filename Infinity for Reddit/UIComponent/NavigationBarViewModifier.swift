@@ -33,3 +33,12 @@ struct InlineNavigationBarWithTitle: ViewModifier {
             .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+struct NavigationBarBackButtonViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .tint(Color(hex: themeViewModel.currentCustomTheme.toolbarPrimaryTextAndIconColor))
+    }
+}

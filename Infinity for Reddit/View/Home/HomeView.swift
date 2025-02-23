@@ -22,49 +22,53 @@ struct HomeView: View {
         NavigationStack {
             VStack {
                 TabView(selection: $selectedTab) {
-                    PostListingView(
-                        account: accountViewModel.account,
-                        postListingMetadata: PostListingMetadata(
-                            postListingType: .frontPage,
-                            pathComponents: ["sortType": "best"],
-                            headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                            queries: nil,
-                            params: nil
+                    Group {
+                        PostListingView(
+                            account: accountViewModel.account,
+                            postListingMetadata: PostListingMetadata(
+                                postListingType: .frontPage,
+                                pathComponents: ["sortType": "best"],
+                                headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                                queries: nil,
+                                params: nil
+                            )
                         )
-                    )
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("Home", systemImage: "house")
-                    }
-                    .tag(Tab.home)
-                    
-                    SubscriptionsView()
+                        .id(accountViewModel.account.username)
                         .tabItem {
-                            Label("Subscriptions", systemImage: "book")
+                            Label("Home", systemImage: "house")
                         }
-                        .tag(Tab.subscriptions)
-                    
-                    CommentListingView(
-                        commentListingMetadata: CommentListingMetadata(
-                            commentListingType: .user,
-                            pathComponents: ["sortType": "best"],
-                            headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                            queries: nil,
-                            params: nil
+                        .tag(Tab.home)
+                        
+                        SubscriptionsView()
+                            .tabItem {
+                                Label("Subscriptions", systemImage: "book")
+                            }
+                            .tag(Tab.subscriptions)
+                        
+                        CommentListingView(
+                            commentListingMetadata: CommentListingMetadata(
+                                commentListingType: .user,
+                                pathComponents: ["sortType": "best"],
+                                headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                                queries: nil,
+                                params: nil
+                            )
                         )
-                    )
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("Inbox", systemImage: "envelope")
-                    }
-                    .tag(Tab.inbox)
-                    
-                    MoreView()
+                        .id(accountViewModel.account.username)
                         .tabItem {
-                            Label("More", systemImage: "person")
+                            Label("Inbox", systemImage: "envelope")
                         }
-                        .tag(Tab.more)
+                        .tag(Tab.inbox)
+                        
+                        MoreView()
+                            .tabItem {
+                                Label("More", systemImage: "person")
+                            }
+                            .tag(Tab.more)
+                    }
+                    .themedTabViewGroup()
                 }
+                .themedTabView()
             }
             .toolbar {
                 if let leadingButton = selectedTab.leadingButton {
@@ -121,6 +125,7 @@ struct HomeView: View {
         .onChange(of: colorScheme) {
             customThemeViewModel.isDarkTheme = colorScheme == .dark
         }
+        .themedNavigationBarBackButton()
     }
     
     enum Tab {
