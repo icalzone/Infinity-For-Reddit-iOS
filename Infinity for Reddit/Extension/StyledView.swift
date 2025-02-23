@@ -8,11 +8,15 @@
 import SwiftUI
 
 extension View {
-    func applyCustomThemeToList() -> some View {
+    func themedList() -> some View {
         self.modifier(ListCustomThemeViewModifier())
     }
     
     func listPlainItem() -> some View {
         self.modifier(ListPlainItemThemeViewModifier())
+    }
+    
+    func primaryText() -> some View {
+        self.modifier(PrimaryTextViewModifier())
     }
 }

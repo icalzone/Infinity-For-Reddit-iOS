@@ -68,7 +68,7 @@ struct CustomThemeSettingsView: View {
             }
             .listPlainItem()
         }
-        .applyCustomThemeToList()
+        .themedList()
         .navigationTitle("Theme")
     }
     

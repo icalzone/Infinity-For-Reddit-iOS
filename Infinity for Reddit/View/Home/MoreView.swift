@@ -45,9 +45,12 @@ struct MoreView: View {
                 NavigationLink(destination: SettingsView()) {
                     Text("Settings")
                 }
+                NavigationLink(destination: TestView()) {
+                    Text("Test")
+                }
             }
             .listPlainItem()
         }
-        .applyCustomThemeToList()
+        .themedList()
     }
 }
