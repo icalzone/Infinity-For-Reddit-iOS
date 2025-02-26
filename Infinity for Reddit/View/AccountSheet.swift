@@ -45,7 +45,7 @@ struct AccountSheet: View {
                     
                     if accountViewModel.account.isAnonymous() == false {
                         // Navigate to User Details Page
-                        NavigationLink(destination: UserDetailsView()) {
+                        NavigationLink(destination: UserDetailsView(username: accountViewModel.account.username)) {
                             Text("View User Details")
                                 .frame(maxWidth: .infinity)
                                 .padding()
