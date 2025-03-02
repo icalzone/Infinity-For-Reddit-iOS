@@ -49,9 +49,13 @@ struct CustomizeCustomThemeView: View {
                     customizeCustomThemeViewModel.saveCustomTheme()
                 }) {
                     SwiftUI.Image(systemName: "tray.and.arrow.down")
+                        .navigationBarImage()
                 }
             }
         }
+        .themedList()
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Customize")
     }
     
     private func NameEntry() -> some View {

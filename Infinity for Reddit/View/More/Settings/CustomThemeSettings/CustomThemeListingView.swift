@@ -28,6 +28,9 @@ struct CustomThemeListingView: View {
                 }
             }
         }
+        .themedList()
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Custom Themes")
     }
     
     func ThemeListItem(themeName: String, primaryColor: Color) -> some View {
