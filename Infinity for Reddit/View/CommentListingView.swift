@@ -18,17 +18,10 @@ struct CommentListingView: View {
     @StateObject var commentListingViewModel: CommentListingViewModel
     
     init(commentListingMetadata: CommentListingMetadata) {
-        // Resolve the session ASAP and store it in a property
-        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session")
-        }
-        
         _commentListingViewModel = StateObject(
             wrappedValue: CommentListingViewModel(
                 commentListingMetadata: commentListingMetadata,
-                commentListingRepository: CommentListingRepository(
-                    session: resolvedSession
-                )
+                commentListingRepository: CommentListingRepository()
             )
         )
     }

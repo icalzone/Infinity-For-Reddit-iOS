@@ -10,7 +10,14 @@ import Foundation
 
 enum RedditAPI: URLRequestConvertible {
     case getAccessToken(queries: [String: String]?, headers: HTTPHeaders, params: [String: String]?)
-    case getUserData(username: String, queries: [String: String]?)
+    case getUserData(username: String)
+    case getFrontPagePosts(pathComponents: [String: String], queries: [String: String])
+    case getSubredditPosts(pathComponents: [String: String], queries: [String: String])
+    case getUserPosts(pathComponents: [String: String], queries: [String: String])
+    case getSearchPosts(queries: [String: String])
+    case getMultiredditPosts(pathComponents: [String: String], queries: [String: String])
+    case getSubredditConcatPosts(pathComponents: [String: String], queries: [String: String])
+    case getUserComments(pathComponents: [String: String], queries: [String: String])
     
     private var baseURL: String {
         return "https://www.reddit.com"
@@ -20,7 +27,7 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken:
             return .post
-        case .getUserData:
+        case .getUserData, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments:
             return .get
         }
     }
@@ -29,8 +36,22 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken:
             return "/api/v1/access_token"
-        case .getUserData(let username, _):
+        case .getUserData(let username):
             return "/user/\(username)/about.json"
+        case .getFrontPagePosts(let pathComponents, _):
+            return "/\(pathComponents["sortType"] ?? "best").json"
+        case .getSubredditPosts(let pathComponents, _):
+            return "/r/\(pathComponents["subreddit"] ?? "popular")/\(pathComponents["sortType"] ?? "hot").json"
+        case .getUserPosts(let pathComponents, _):
+            return "/user/\(pathComponents["username"] ?? "infinityAN")/\(pathComponents["where"] ?? "submitted").json"
+        case .getSearchPosts:
+            return "search.json"
+        case .getMultiredditPosts(let pathComponents, _):
+            return "\(pathComponents["multipath"] ?? "popular").json"
+        case .getSubredditConcatPosts(let pathComponents, _):
+            return "/r/\(pathComponents["subreddit"] ?? "popular")/\(pathComponents["sortType"] ?? "hot").json"
+        case .getUserComments(let pathComponents, _):
+            return "/user/\(pathComponents["username"] ?? "infinityAN")/comments.json"
         }
     }
     
@@ -38,17 +59,31 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, _, let params):
             return params
-        case .getUserData(_, _):
+        case .getUserData, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments:
             return nil
         }
     }
     
     var queries: [String: String]? {
         switch self {
-        case .getAccessToken(queries: let queries, _, _):
+        case .getAccessToken(let queries, _, _):
             return queries
-        case .getUserData(_, queries: let queries):
-            return queries
+        case .getUserData:
+            return ["raw_json": "1"]
+        case .getFrontPagePosts(_, let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getSubredditPosts(_, let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getUserPosts(_, let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getSearchPosts(let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getMultiredditPosts(_, let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getSubredditConcatPosts(_, let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .getUserComments(_, let queries):
+            return ["raw_json": "1", "sort": "best"].merging(queries, uniquingKeysWith: { _, new in new })
         }
     }
     
@@ -56,16 +91,14 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, let headers, _):
             return headers
-        case .getUserData(_, _):
+        case .getUserData, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getAccessToken:
-            return URLEncoding.default
-        case .getUserData:
+        case .getAccessToken, .getUserData, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments:
             return URLEncoding.default
         }
     }

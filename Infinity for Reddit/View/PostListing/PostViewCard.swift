@@ -15,7 +15,7 @@ struct PostViewCard: View {
     
     init(account: Account, post: Post) {
         formatter.dateFormat = "y-MM-dd H:mm"
-        _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post))
+        _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post, postRepository: PostRepository()))
     }
     
     var body: some View {
@@ -73,8 +73,8 @@ struct PostViewCard: View {
                 }
                 .buttonStyle(.borderless)
                 
-                Text(String(postViewModel.post.score))
-                    .frame(width: 50, alignment: .center)
+                Text(String(postViewModel.post.score + postViewModel.post.likes))
+                    .frame(width: 72, alignment: .center)
                     .postInfo()
                 
                 Button(action: {

@@ -18,8 +18,11 @@ public class CommentListingRepository: CommentListingRepositoryProtocol {
     }
     private let session: Session
     
-    public init(session: Session) {
-        self.session = session
+    public init() {
+        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
+            fatalError("Failed to resolve Session")
+        }
+        self.session = resolvedSession
     }
     
     public func fetchComments(
@@ -28,7 +31,6 @@ public class CommentListingRepository: CommentListingRepositoryProtocol {
         queries: [String: String]? = [:],
         params: [String: String]? = [:]
     ) -> AnyPublisher<CommentListing, any Error> {
-        
         let apiRequest: URLRequestConvertible
         switch commentListingType {
         case .user:

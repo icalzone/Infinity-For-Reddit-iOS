@@ -21,15 +21,9 @@ struct SubscriptionsView: View {
     @State private var selectedOption = 0
     
     init() {
-        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session")
-        }
-        
         _subscriptionListingViewModel = StateObject(
             wrappedValue: SubscriptionListingViewModel(
-                subscriptionListingRepository: SubscriptionListingRepository(
-                    session: resolvedSession
-                )
+                subscriptionListingRepository: SubscriptionListingRepository()
             )
         )
     }

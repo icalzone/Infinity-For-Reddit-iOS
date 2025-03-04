@@ -18,20 +18,13 @@ struct PostListingView: View {
     private let account: Account
     
     init(account: Account, postListingMetadata: PostListingMetadata) {
-        // Resolve the session ASAP and store it in a property
-        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session")
-        }
-        
         self.account = account
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
                 account: account,
                 postListingMetadata: postListingMetadata,
-                postListingRepository: PostListingRepository(
-                    session: resolvedSession
-                )
+                postListingRepository: PostListingRepository()
             )
         )
     }
@@ -63,6 +56,6 @@ struct PostListingView: View {
         .onAppear {
             postListingViewModel.loadPosts()
         }
-        .listStyle(.plain)
+        .themedList()
     }
 }

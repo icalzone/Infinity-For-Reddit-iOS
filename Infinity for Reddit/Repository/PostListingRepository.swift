@@ -17,8 +17,11 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     }
     private let session: Session
     
-    public init(session: Session) {
-        self.session = session
+    public init() {
+        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
+            fatalError("Failed to resolve Session")
+        }
+        self.session = resolvedSession
     }
     
     public func fetchPosts(
@@ -27,7 +30,6 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         queries: [String: String]? = [:],
         params: [String: String]? = [:]
     ) -> AnyPublisher<PostListing, any Error> {
-        
         let apiRequest: URLRequestConvertible
         switch postListingType {
         case .frontPage:

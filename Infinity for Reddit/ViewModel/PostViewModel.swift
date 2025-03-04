@@ -7,19 +7,20 @@
 
 import Foundation
 import Alamofire
+import Combine
 
 public class PostViewModel: ObservableObject {
     let account: Account
-    let session: Session
     @Published var post: Post
     
-    public init(account: Account, post: Post) {
-        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session")
-        }
-        self.session = resolvedSession
+    private var cancellables = Set<AnyCancellable>()
+    
+    let postRepository: PostRepositoryProtocol
+    
+    public init(account: Account, post: Post, postRepository: PostRepositoryProtocol) {
         self.account = account
         self.post = post
+        self.postRepository = postRepository
     }
     
     func votePost(vote: Int) {
@@ -37,18 +38,17 @@ public class PostViewModel: ObservableObject {
         }
         self.objectWillChange.send()
         
-        let params = ["dir": point, "id": fullName, "rank": "10"]
-        session.request(RedditOAuthAPI.vote(params: params))
-            .validate()
-            .responseData { response in
-                switch response.result {
-                case .success(let data):
-                    self.post.likes = Int(vote)
-                    self.objectWillChange.send()
-                case .failure(let error):
-                    self.post.likes = previousVote
-                    self.objectWillChange.send()
+        postRepository.votePost(post: post, point: point)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                if case .failure(let error) = completion {
+                    self?.post.likes = previousVote
+                    self?.objectWillChange.send()
+                } else {
+                    self?.post.likes = vote
+                    self?.objectWillChange.send()
                 }
-            }
+            }, receiveValue: {})
+            .store(in: &cancellables)
         }
 }

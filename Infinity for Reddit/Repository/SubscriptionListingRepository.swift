@@ -17,8 +17,11 @@ public class SubscriptionListingRepository: SubscriptionListingRepositoryProtoco
     }
     private let session: Session
     
-    public init(session: Session) {
-        self.session = session
+    public init() {
+        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
+            fatalError("Failed to resolve Session")
+        }
+        self.session = resolvedSession
     }
     
     public func fetchSubscriptions(

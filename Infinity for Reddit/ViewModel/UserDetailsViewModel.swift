@@ -14,10 +14,12 @@ import SwiftUI
 import SwiftyJSON
 
 class UserDetailsViewModel: ObservableObject {
-    let session: Session
+    @EnvironmentObject var accountViewModel: AccountViewModel
+
     @Published var users: [String: UserData] = [:]
     @Published var isSubscribed: Bool = false
-    @EnvironmentObject var accountViewModel: AccountViewModel
+    
+    private let session: Session
     private var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -65,7 +67,7 @@ class UserDetailsViewModel: ObservableObject {
     }
     
     func fetchUserDetails(username: String, completion: @escaping (Result<UserData, Error>) -> Void) {
-        self.session.request(RedditAPI.getUserData(username: username, queries: ["raw_json" : "1"]))
+        self.session.request(RedditAPI.getUserData(username: username))
             .validate()
             .responseString { response in
                 switch response.result {
