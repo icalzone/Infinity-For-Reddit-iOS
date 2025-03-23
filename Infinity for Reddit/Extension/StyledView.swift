@@ -99,4 +99,8 @@ extension View {
     func themedToggle() -> some View {
         self.modifier(ToggleCustomThemeViewModifier())
     }
+    
+    func themedMarkdown() -> some View {
+        self.modifier(MarkdownViewModifier())
+    }
 }
