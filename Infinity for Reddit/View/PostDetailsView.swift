@@ -35,14 +35,18 @@ struct PostDetailsView: View {
         Group {
             List {
                 PostViewCard(account: account, post: post)
+                    .listPlainItem()
                 
                 if postDetailsViewModel.isInitialLoading {
                     Text("Is loading")
+                        .listPlainItem()
                 } else if postDetailsViewModel.comments.isEmpty {
                     Text("No comments")
+                        .listPlainItem()
                 } else {
                     ForEach(postDetailsViewModel.comments, id: \.id) { comment in
                         CommentViewCard(account: account, comment: comment)
+                            .listPlainItem()
                             .id(comment.id)
                     }
                     if postDetailsViewModel.hasMoreComments {
@@ -50,6 +54,7 @@ struct PostDetailsView: View {
                             .onAppear {
                                 postDetailsViewModel.fetchComments()
                             }
+                            .listPlainItem()
                     }
                 }
             }.scrollBounceBehavior(.basedOnSize)

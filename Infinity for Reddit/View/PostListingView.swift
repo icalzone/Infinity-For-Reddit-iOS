@@ -42,12 +42,14 @@ struct PostListingView: View {
                             PostViewCard(account: account, post: post)
                                 .id(post.id)
                         }
+                        .listPlainItem()
                     }
                     if postListingViewModel.hasMorePages {
                         Text("Loading more pages")
                             .onAppear {
                                 postListingViewModel.loadPosts()
                             }
+                            .listPlainItem()
                     }
                 }.scrollBounceBehavior(.basedOnSize)
             }

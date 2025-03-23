@@ -36,6 +36,7 @@ struct CommentListingView: View {
                 List {
                     ForEach(commentListingViewModel.comments, id: \.id) { comment in
                         CommentViewCard(account: accountViewModel.account, comment: comment)
+                            .listPlainItem()
                             .id(comment.id)
                     }
                     if commentListingViewModel.hasMorePages {
@@ -43,6 +44,7 @@ struct CommentListingView: View {
                             .onAppear {
                                 commentListingViewModel.loadComments(account: accountViewModel.account)
                             }
+                            .listPlainItem()
                     }
                 }.scrollBounceBehavior(.basedOnSize)
             }
