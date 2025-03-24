@@ -13,9 +13,11 @@ struct CommentViewCard: View {
     @StateObject var commentViewModel: CommentViewModel
     
     let formatter = DateFormatter()
+    private let isInPostDetails: Bool
     
-    init(account: Account, comment: Comment) {
+    init(account: Account, comment: Comment, isInPostDetails: Bool) {
         formatter.dateFormat = "y-MM-dd H:mm"
+        self.isInPostDetails = isInPostDetails
         _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment))
     }
     
@@ -23,8 +25,13 @@ struct CommentViewCard: View {
         VStack(alignment: .leading) {
             HStack(alignment: .center) {
                 VStack(alignment: .leading) {
-                    Text(commentViewModel.comment.subredditNamePrefixed)
+                    if !isInPostDetails {
+                        Text(commentViewModel.comment.subredditNamePrefixed)
+                            .subreddit()
+                    }
+                    
                     Text("u/\(commentViewModel.comment.author)")
+                        .username()
                 }
                 
                 Spacer()
@@ -32,6 +39,7 @@ struct CommentViewCard: View {
                 Text(
                     formatter.string(from: Date(timeIntervalSince1970: TimeInterval(commentViewModel.comment.createdUtc)))
                 )
+                .secondaryText()
             }
             .padding(.vertical, 8)
                     
@@ -59,16 +67,21 @@ struct CommentViewCard: View {
                     commentViewModel.comment.likes = 1
                 }) {
                     SwiftUI.Image(commentViewModel.comment.likes == 1 ? "upvoted" : "upvote")
+                        .commentIconTemplateRendering()
+                        .commentIcon()
                 }
                 .buttonStyle(.borderless)
                 
                 Text(String(commentViewModel.comment.score))
                     .frame(width: 50, alignment: .center)
+                    .commentInfo()
                 
                 Button(action: {
                     commentViewModel.voteComment(vote: -1)
                 }) {
                     SwiftUI.Image(commentViewModel.comment.likes == -1 ? "downvoted" : "downvote")
+                        .commentIconTemplateRendering()
+                        .commentIcon()
                 }
                 .padding(.trailing, 16)
                 .buttonStyle(.borderless)
@@ -79,6 +92,8 @@ struct CommentViewCard: View {
                     
                 } label: {
                     SwiftUI.Image(systemName: "square.and.arrow.up")
+                        .commentIconTemplateRendering()
+                        .commentIcon()
                 }
                 .buttonStyle(.borderless)
             }

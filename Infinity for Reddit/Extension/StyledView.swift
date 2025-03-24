@@ -68,6 +68,14 @@ extension View {
         self.modifier(PostInfoTextViewModifier())
     }
     
+    func commentIcon() -> some View {
+        self.modifier(CommentIconImageViewModifier())
+    }
+    
+    func commentInfo() -> some View {
+        self.modifier(CommentInfoTextViewModifier())
+    }
+    
     func username() -> some View {
         self.modifier(UsernameTextViewModifier())
     }

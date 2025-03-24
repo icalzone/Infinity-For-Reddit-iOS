@@ -26,6 +26,16 @@ struct PostIconImageViewModifier: ViewModifier {
     }
 }
 
+struct CommentIconImageViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.commentIconAndInfoColor))
+            .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.commentIconAndInfoColor))
+    }
+}
+
 struct PrimaryIconImageViewModifier: ViewModifier {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     

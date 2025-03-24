@@ -45,7 +45,7 @@ struct PostDetailsView: View {
                         .listPlainItem()
                 } else {
                     ForEach(postDetailsViewModel.comments, id: \.id) { comment in
-                        CommentViewCard(account: account, comment: comment)
+                        CommentViewCard(account: account, comment: comment, isInPostDetails: true)
                             .listPlainItem()
                             .id(comment.id)
                     }

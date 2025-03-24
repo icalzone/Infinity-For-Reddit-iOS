@@ -48,6 +48,16 @@ struct PostInfoTextViewModifier: ViewModifier {
     }
 }
 
+struct CommentInfoTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            //.font()
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.commentIconAndInfoColor))
+    }
+}
+
 struct UsernameTextViewModifier: ViewModifier {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     

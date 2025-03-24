@@ -12,4 +12,9 @@ extension SwiftUI.Image {
         self
             .renderingMode(.template)
     }
+    
+    func commentIconTemplateRendering() -> some View {
+        self
+            .renderingMode(.template)
+    }
 }
