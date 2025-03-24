@@ -71,7 +71,7 @@ struct CommentViewCard: View {
                 }
                 .buttonStyle(.borderless)
                 
-                Text(String(commentViewModel.comment.score))
+                Text(String(commentViewModel.comment.score + commentViewModel.comment.likes))
                     .frame(width: 50, alignment: .center)
                     .commentInfo()
                 

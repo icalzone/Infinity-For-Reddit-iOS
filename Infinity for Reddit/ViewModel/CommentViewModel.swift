@@ -25,6 +25,7 @@ public class CommentViewModel: ObservableObject {
     
     func voteComment(vote: Int) {
         guard let _ = account.accessToken, let fullName = comment.name else { return }
+        
         let previousVote = comment.likes
         
         var point: String
@@ -40,7 +41,6 @@ public class CommentViewModel: ObservableObject {
         }
         self.objectWillChange.send()
         
-        let params = ["dir": point, "id": fullName, "rank": "10"]
         commentRepository.voteComment(comment: comment, point: point)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
