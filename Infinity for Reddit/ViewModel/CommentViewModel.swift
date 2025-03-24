@@ -7,19 +7,20 @@
 
 import Foundation
 import Alamofire
+import Combine
 
 public class CommentViewModel: ObservableObject {
     let account: Account
-    let session: Session
     @Published var comment: Comment
     
-    public init(account: Account, comment: Comment) {
-        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session")
-        }
-        self.session = resolvedSession
+    private var cancellables = Set<AnyCancellable>()
+    
+    let commentRepository: CommentRepositoryProtocol
+    
+    public init(account: Account, comment: Comment, commentRepository: CommentRepositoryProtocol) {
         self.account = account
         self.comment = comment
+        self.commentRepository = commentRepository
     }
     
     func voteComment(vote: Int) {
@@ -40,17 +41,16 @@ public class CommentViewModel: ObservableObject {
         self.objectWillChange.send()
         
         let params = ["dir": point, "id": fullName, "rank": "10"]
-        session.request(RedditOAuthAPI.vote(params: params))
-            .validate()
-            .responseData { response in
-                switch response.result {
-                case .success(_):
-                    self.comment.likes = finalVote
-                    self.objectWillChange.send()
-                case .failure(_):
-                    self.comment.likes = previousVote
-                    self.objectWillChange.send()
+        commentRepository.voteComment(comment: comment, point: point)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { [weak self] completion in
+                if case .failure(_) = completion {
+                    self?.comment.likes = previousVote
+                } else {
+                    self?.comment.likes = finalVote
                 }
-            }
-        }
+                self?.objectWillChange.send()
+            }, receiveValue: {})
+            .store(in: &cancellables)
+    }
 }

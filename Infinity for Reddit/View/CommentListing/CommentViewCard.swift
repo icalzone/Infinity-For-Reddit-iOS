@@ -18,7 +18,7 @@ struct CommentViewCard: View {
     init(account: Account, comment: Comment, isInPostDetails: Bool) {
         formatter.dateFormat = "y-MM-dd H:mm"
         self.isInPostDetails = isInPostDetails
-        _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment))
+        _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment, commentRepository: CommentRepository()))
     }
     
     var body: some View {
