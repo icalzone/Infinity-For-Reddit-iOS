@@ -42,20 +42,23 @@ struct PostViewCard: View {
                 .postTitle()
             
             if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-                WebImage(url: URL(string: url)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-                }  placeholder: {
-                    Rectangle().foregroundColor(.gray)
+                GeometryReader { geo in
+                    WebImage(url: URL(string: url)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
+                    }  placeholder: {
+                        Spacer()
+                            .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
+                    }
+                    .onSuccess { image, data, cacheType in
+                        // Success
+                        // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
+                    }
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .scaledToFit()
                 }
-                .onSuccess { image, data, cacheType in
-                    // Success
-                    // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
-                }
-                .indicator(.activity)
-                .transition(.fade(duration: 0.5))
-                .scaledToFit()
                 .frame(maxWidth: .infinity)
                 .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
             } else if let selftextTruncated = postViewModel.post.selftextTruncated {
