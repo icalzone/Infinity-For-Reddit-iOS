@@ -10,6 +10,8 @@ import SDWebImageSwiftUI
 import MarkdownUI
 
 struct PostDetailsViewCard: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+    
     @StateObject var postViewModel: PostViewModel
     
     let formatter = DateFormatter()
@@ -28,6 +30,9 @@ struct PostDetailsViewCard: View {
                     
                     Text("u/\(postViewModel.post.author)")
                         .username()
+                        .onTapGesture {
+                            navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
+                        }
                 }
                 
                 Spacer()

@@ -13,6 +13,7 @@ import Alamofire
 struct PostDetailsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
+    @EnvironmentObject var navigationManager: NavigationManager
     
     @StateObject var postDetailsViewModel: PostDetailsViewModel
     private let account: Account

@@ -13,6 +13,7 @@ import Alamofire
 struct PostListingView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
+    @EnvironmentObject var navigationManager: NavigationManager
     
     @StateObject var postListingViewModel: PostListingViewModel
     private let account: Account
@@ -38,12 +39,12 @@ struct PostListingView: View {
             } else {
                 List {
                     ForEach(postListingViewModel.posts, id: \.id) { post in
-                        CustomNavigationLink(destination: PostDetailsView(account: self.account, post: post), showArrow: false) {
-                            PostViewCard(account: account, post: post)
-                                .id(post.id)
-                        }
-                        .listPlainItem()
-                        //.listRowInsets(EdgeInsets(top: 0, bottom: 0, trailing: 0))
+                        PostViewCard(account: account, post: post)
+                            .id(post.id)
+                            .listPlainItem()
+                            .onTapGesture {
+                                navigationManager.path.append(AppNavigation.postDetails(post: post))
+                            }
                     }
                     if postListingViewModel.hasMorePages {
                         Text("Loading more pages")

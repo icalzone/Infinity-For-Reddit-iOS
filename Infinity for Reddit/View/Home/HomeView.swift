@@ -17,9 +17,10 @@ struct HomeView: View {
     
     @State private var selectedTab: Tab = .home
     @State private var showProfile: Bool = false
+    @StateObject private var navigationManager = NavigationManager()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationManager.path) {
             VStack {
                 TabView(selection: $selectedTab) {
                     Group {
@@ -127,11 +128,19 @@ struct HomeView: View {
 
                 print(docsDir)
             }
+            .navigationDestination(for: AppNavigation.self) { destination in
+                if case .postDetails(let post) = destination {
+                    PostDetailsView(account: accountViewModel.account, post: post)
+                } else if case .userDetails(let username) = destination {
+                    UserDetailsView(username: username)
+                }
+            }
         }
         .onChange(of: colorScheme) {
             customThemeViewModel.isDarkTheme = colorScheme == .dark
         }
         .themedNavigationBarBackButton()
+        .environmentObject(navigationManager)
     }
     
     enum Tab {
