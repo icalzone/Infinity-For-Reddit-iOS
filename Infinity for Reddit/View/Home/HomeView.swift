@@ -41,6 +41,7 @@ struct HomeView: View {
                         .tag(Tab.home)
                         
                         SubscriptionsView()
+                            .id(accountViewModel.account.username)
                             .tabItem {
                                 Label("Subscriptions", systemImage: "book")
                             }
@@ -61,17 +62,12 @@ struct HomeView: View {
                         }
                         .tag(Tab.inbox)
                         
-                        UserDetailsView(username: "infinityAN")
-//                        UserDetailsView(username: "Hostilenemy")
+                        MoreView()
+                            .id(accountViewModel.account.username)
                             .tabItem {
                                 Label("More", systemImage: "person")
                             }
                             .tag(Tab.more)
-//                        MoreView()
-//                            .tabItem {
-//                                Label("More", systemImage: "person")
-//                            }
-//                            .tag(Tab.more)
                     }
                     .themedTabViewGroup()
                 }
