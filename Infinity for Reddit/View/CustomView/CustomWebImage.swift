@@ -120,7 +120,9 @@ struct CustomWebImage<Content: View>: View {
                 }
                 .onFailure { _ in
                     if fallbackView != nil {
-                        shouldLoadFallbackImage = true
+                        DispatchQueue.main.async {
+                            shouldLoadFallbackImage = true
+                        }
                     }
                 }
                 .indicator(.activity)
