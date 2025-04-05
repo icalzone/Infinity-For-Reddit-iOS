@@ -30,14 +30,9 @@ struct SubscriptionsView: View {
     }
 
     var body: some View {
-        VStack {
-            Picker("Options", selection: $selectedOption) {
-                Text("Subreddits").tag(0)
-                Text("Users").tag(1)
-                Text("Custom Feed").tag(2)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
+        VStack(spacing: 0) {
+            SegmentedPicker(selectedValue: $selectedOption, values: ["Subreddits", "Users", "Custom Feed"])
+                .padding(4)
 
             if selectedOption == 0 {
                 SubredditsView(subscriptionListingViewModel: subscriptionListingViewModel)

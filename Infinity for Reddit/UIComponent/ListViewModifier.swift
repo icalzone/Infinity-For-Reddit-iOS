@@ -15,6 +15,7 @@ struct ListCustomThemeViewModifier: ViewModifier {
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
             .background(Color.clear)
+            .padding(0)
     }
 }
 
