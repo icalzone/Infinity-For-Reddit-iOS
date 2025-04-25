@@ -61,8 +61,8 @@ enum Tab1 {
     
     var link: some View {
         switch self {
-        case .home: return NotificationSettingsView()
-        case .subscriptions: return InterfaceSettingsView()
+        case .home: return AnyView(NotificationSettingsView())
+        case .subscriptions: return AnyView(InterfaceSettingsView())
         }
     }
 }
