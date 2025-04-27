@@ -33,7 +33,7 @@ public class CommentRepository: CommentRepositoryProtocol {
             let params = ["dir": point, "id": comment.name!, "rank": "10"]
             _ = try await self.session.request(RedditOAuthAPI.vote(params: params))
                 .validate()
-                .serializingDecodable(Empty.self)
+                .serializingDecodable(Empty.self, automaticallyCancelling: true)
                 .value
         }
     }

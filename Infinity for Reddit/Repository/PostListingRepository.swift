@@ -49,7 +49,10 @@ public class PostListingRepository: PostListingRepositoryProtocol {
             
             try Task.checkCancellation()
             
-            let data = try await self.session.request(apiRequest).validate().serializingData().value
+            let data = try await self.session.request(apiRequest)
+                .validate()
+                .serializingData(automaticallyCancelling: true)
+                .value
             
             try Task.checkCancellation()
             
