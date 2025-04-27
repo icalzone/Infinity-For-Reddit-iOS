@@ -28,28 +28,26 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         postId: String,
         queries: [String: String] = [:]
     ) async throws -> PostDetailsRootClass {
-        return try await Task.detached {
-            try Task.checkCancellation()
-            
-            let data = try await self.session.request(
-                RedditOAuthAPI.getPostAndCommentsById(postId: postId, queries: queries)
-            )
-                .validate()
-                .serializingData(automaticallyCancelling: true)
-                .value
-            
-            try Task.checkCancellation()
-            
-            let json = JSON(data)
-            if let error = json.error {
-                throw PostDetailsRepositoryError.JSONDecodingError(error.localizedDescription)
-            }
-            
-            let postDetails = try PostDetailsRootClass(fromJson: json)
-            postDetails.makeCommentList()
-            print(postDetails.comments.count)
-            
-            return postDetails
-        }.value
+        try Task.checkCancellation()
+        
+        let data = try await self.session.request(
+            RedditOAuthAPI.getPostAndCommentsById(postId: postId, queries: queries)
+        )
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        try Task.checkCancellation()
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw PostDetailsRepositoryError.JSONDecodingError(error.localizedDescription)
+        }
+        
+        let postDetails = try PostDetailsRootClass(fromJson: json)
+        postDetails.makeCommentList()
+        print(postDetails.comments.count)
+        
+        return postDetails
     }
 }
