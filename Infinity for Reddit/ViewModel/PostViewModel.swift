@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 import Combine
 
+@MainActor
 public class PostViewModel: ObservableObject {
     let account: Account
     @Published var post: Post
