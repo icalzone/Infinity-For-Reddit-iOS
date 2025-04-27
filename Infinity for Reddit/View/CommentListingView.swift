@@ -41,8 +41,8 @@ struct CommentListingView: View {
                     }
                     if commentListingViewModel.hasMorePages {
                         Text("Loading more pages")
-                            .onAppear {
-                                commentListingViewModel.loadComments(account: accountViewModel.account)
+                            .task {
+                                await commentListingViewModel.loadComments(account: accountViewModel.account)
                             }
                             .listPlainItem()
                     }
@@ -52,12 +52,10 @@ struct CommentListingView: View {
         .onChange(of: colorScheme) {
             //print(colorScheme == .dark)
         }
-        .onAppear {
-            commentListingViewModel.loadComments(account: accountViewModel.account)
+        .task {
+            await commentListingViewModel.loadComments(account: accountViewModel.account)
         }
         .listStyle(.plain)
-        
     }
-    
 }
 

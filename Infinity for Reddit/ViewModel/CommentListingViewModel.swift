@@ -9,12 +9,14 @@ import Foundation
 import Combine
 import MarkdownUI
 
+@MainActor
 public class CommentListingViewModel: ObservableObject {
     // MARK: - Properties
     @Published var comments: [Comment] = []
     @Published var isInitialLoading: Bool = false
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
+    @Published var error: Error? = nil
     
     private var isInitialLoad: Bool = true
     private var after: String? = nil
@@ -31,7 +33,7 @@ public class CommentListingViewModel: ObservableObject {
     // MARK: - Methods
     
     /// Fetches the next page of comments
-    public func loadComments(account: Account) {
+    public func loadComments(account: Account) async {
         guard !isInitialLoading, !isLoadingMore, hasMorePages else { return }
         
         if comments.isEmpty {
@@ -44,46 +46,40 @@ public class CommentListingViewModel: ObservableObject {
             isInitialLoad = false
         }
         
-        commentListingRepository.fetchComments(
-            commentListingType: commentListingMetadata.commentListingType,
-            pathComponents: commentListingMetadata.pathComponents,
-            queries: ["limit": "100", "after": after ?? ""].merging(commentListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
-            params: commentListingMetadata.params)
-            .subscribe(on: DispatchQueue.global(qos: .userInitiated))
-            .map { listingData -> (comments: [Comment], after: String?) in
-                // Perform post-processing in the background thread
-                let processedComments = self.postProcessComments(listingData.comments)
-                return (processedComments, listingData.after)
+        defer {
+            isInitialLoading = false
+            isLoadingMore = false
+        }
+        
+        do {
+            let commentListing = try await commentListingRepository.fetchComments(
+                commentListingType: commentListingMetadata.commentListingType,
+                pathComponents: commentListingMetadata.pathComponents,
+                queries: ["limit": "100", "after": after ?? ""].merging(commentListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                params: commentListingMetadata.params)
+            
+            let processedComments = await Task.detached {
+                await self.postProcessComments(commentListing.comments)
+            }.value
+            
+            if (processedComments.isEmpty) {
+                // No more comments
+                hasMorePages = false
+                self.after = nil
+            } else {
+                self.after = commentListing.after
+                self.comments.append(contentsOf: processedComments)
+                self.hasMorePages = !(processedComments.isEmpty || after == nil || after?.isEmpty == true)
             }
-            .receive(on: DispatchQueue.main)
-            .sink(receiveCompletion: { [weak self] completion in
-                self?.isInitialLoading = false
-                self?.isLoadingMore = false
-                
-                if case .failure(let error) = completion {
-                    print("Error fetching comments: \(error)")
-                }
-            }, receiveValue: { [weak self] (processedComments, after) in
-                guard let self = self else { return }
-                if (processedComments.isEmpty) {
-                    // No more comments
-                    hasMorePages = false
-                    self.after = nil
-                } else {
-                    self.after = after
-                    self.comments.append(contentsOf: processedComments)
-                    self.hasMorePages = !(processedComments.isEmpty || after == nil || after?.isEmpty == true)
-                }
-                print("comments")
-            })
-            .store(in: &cancellables)
+            print("comments")
+        } catch {
+            self.error = error
+            print("Error fetching comments: \(error)")
+        }
     }
     
     /// Reloads posts from the first page
-    func refreshComments(account: Account) {
-        // This is for user switching accounts. We have to force clear all load
-        cancellables.forEach { $0.cancel() }
-        
+    func refreshComments(account: Account) async {
         isInitialLoad = true
         isInitialLoading = false
         isLoadingMore = false
@@ -92,7 +88,7 @@ public class CommentListingViewModel: ObservableObject {
         hasMorePages = true
         comments = []
         
-        loadComments(account: account)
+        await loadComments(account: account)
     }
     
     func postProcessComments(_ comments: [Comment]) -> [Comment] {

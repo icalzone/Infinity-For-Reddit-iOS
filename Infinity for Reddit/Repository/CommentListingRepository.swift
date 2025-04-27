@@ -30,37 +30,26 @@ public class CommentListingRepository: CommentListingRepositoryProtocol {
         pathComponents: [String: String]? = nil,
         queries: [String: String]? = [:],
         params: [String: String]? = [:]
-    ) -> AnyPublisher<CommentListing, any Error> {
-        let apiRequest: URLRequestConvertible
-        switch commentListingType {
-        case .user:
-            apiRequest = RedditOAuthAPI.getUserComments(pathComponents: pathComponents!, queries: queries!)
-        }
-        
-        return Future<CommentListing, any Error> { promise in
-            self.session.request(
-                apiRequest
-            )
-                .validate()
-                .responseData { response in
-                    switch response.result {
-                    case .success(let data):
-                        do {
-                            let json = JSON(data)
-                            if let error = json.error {
-                                throw CommentListingRepositoryError.JSONDecodingError(error.localizedDescription)
-                            } else {
-                                let commentListingRootClass = try CommentListingRootClass(fromJson: json)
-                                promise(.success(commentListingRootClass.data))
-                            }
-                        } catch {
-                            promise(.failure(error))
-                        }
-                    case .failure(let error):
-                        promise(.failure(error))
-                    }
-                }
-        }
-        .eraseToAnyPublisher()
+    ) async throws -> CommentListing {
+        return try await Task.detached {
+            let apiRequest: URLRequestConvertible
+            switch commentListingType {
+            case .user:
+                apiRequest = RedditOAuthAPI.getUserComments(pathComponents: pathComponents!, queries: queries!)
+            }
+            
+            try Task.checkCancellation()
+            
+            let data = try await self.session.request(apiRequest).validate().serializingData().value
+            
+            try Task.checkCancellation()
+            
+            let json = JSON(data)
+            if let error = json.error {
+                throw CommentListingRepositoryError.JSONDecodingError(error.localizedDescription)
+            }
+            
+            return try CommentListingRootClass(fromJson: json).data
+        }.value
     }
 }

@@ -95,7 +95,7 @@ public class PostListingViewModel: ObservableObject {
                         }
                 )
                 
-                hasMorePages = !(realNewPosts.isEmpty || postListing.after == nil || postListing.after.isEmpty)
+                hasMorePages = !(realNewPosts.isEmpty || after == nil || after?.isEmpty == true)
             }
         } catch {
             self.error = error
