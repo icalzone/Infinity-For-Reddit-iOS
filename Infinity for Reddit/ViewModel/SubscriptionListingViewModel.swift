@@ -139,13 +139,17 @@ public class SubscriptionListingViewModel: ObservableObject {
         }
         
         do {
+            try Task.checkCancellation()
+            
             let subscriptionListing = try await subscriptionListingRepository.fetchSubscriptions(
                 queries: ["limit": "100", "after": after ?? ""]
             )
             
             if (subscriptionListing.subscriptions.isEmpty) {
                 // No more subscriptions
-                transformSubsriptions()
+                try Task.checkCancellation()
+                
+                await transformSubsriptions()
                 
                 do {
                     try AccountViewModel.shared.updateSubscriptionSyncTime()
@@ -153,6 +157,8 @@ public class SubscriptionListingViewModel: ObservableObject {
                     print("Unable to update subscription sync time: \(error)")
                 }
             } else {
+                try Task.checkCancellation()
+                
                 await MainActor.run {
                     self.after = subscriptionListing.after
                 }
@@ -160,7 +166,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 subscriptionsPrivate.append(contentsOf: subscriptionListing.subscriptions)
                 
                 if self.after == nil || self.after?.isEmpty == true {
-                    transformSubsriptions()
+                    try Task.checkCancellation()
+                    
+                    await transformSubsriptions()
                     
                     do {
                         try AccountViewModel.shared.updateSubscriptionSyncTime()
@@ -174,15 +182,15 @@ public class SubscriptionListingViewModel: ObservableObject {
         } catch {
             await MainActor.run {
                 self.error = error
-                
-                print("Error fetching subscriptions: \(error)")
                 self.after = nil
                 self.isLoadingSubscriptions = false
+                
+                print("Error fetching subscriptions: \(error)")
             }
         }
     }
     
-    private func transformSubsriptions() {
+    private func transformSubsriptions() async {
         var subreddits = [Subscription]()
         var users = [Subscription]()
         for subscription in self.subscriptionsPrivate {
@@ -231,7 +239,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             )
         })
         
-        DispatchQueue.main.async {
+        await MainActor.run {
             self.after = nil
             self.isLoadingSubscriptions = false
             self.subredditSubscriptions = subredditSubscriptionsTemp
@@ -245,11 +253,16 @@ public class SubscriptionListingViewModel: ObservableObject {
         guard !isLoadingMyCustomFeeds else { return }
         
         await MainActor.run {
-            isLoadingSubscriptions = true
+            isLoadingMyCustomFeeds = true
         }
         
         do {
+            try Task.checkCancellation()
+            
             let myCustomFeedListing = try await subscriptionListingRepository.fetchMyCustomFeeds()
+            
+            try Task.checkCancellation()
+            
             myCustomFeedListing.customFeeds.sort { $0.displayName < $1.displayName }
             
             let myCustomFeedsTemp = myCustomFeedListing.customFeeds.map {
@@ -269,6 +282,8 @@ public class SubscriptionListingViewModel: ObservableObject {
                     isFavorite: $0.isFavorited
                 )
             }
+            
+            try Task.checkCancellation()
             
             insertMyCustomFeeds(myCustomFeeds: myCustomFeedsTemp)
             
