@@ -118,3 +118,14 @@ struct ListSectionHeaderViewModifier: ViewModifier {
             //.foregroundColor(Color(hex: themeViewModel.currentCustomTheme.secondaryTextColor))
     }
 }
+
+struct MediaIndicatorViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            //.font()
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.mediaIndicatorIconColor))
+            .background(Color(hex: themeViewModel.currentCustomTheme.mediaIndicatorBackgroundColor))
+    }
+}

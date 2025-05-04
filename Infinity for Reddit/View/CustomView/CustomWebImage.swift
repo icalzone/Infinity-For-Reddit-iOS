@@ -19,6 +19,10 @@ struct CustomWebImage<Content: View>: View {
     
     @State private var shouldLoadFallbackImage = false
     
+    init(_ urlString: String?) {
+        self.urlString = urlString
+    }
+    
     init(_ urlString: String?, circleClipped: Bool = false) where Content == EmptyView {
         self.urlString = urlString
         self.circleClipped = circleClipped

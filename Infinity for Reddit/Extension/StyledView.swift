@@ -127,4 +127,8 @@ extension View {
     func themedMarkdown() -> some View {
         self.modifier(MarkdownViewModifier())
     }
+    
+    func mediaIndicator() -> some View {
+        self.modifier(MediaIndicatorViewModifier())
+    }
 }

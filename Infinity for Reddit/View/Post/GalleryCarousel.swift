@@ -19,24 +19,23 @@ struct GalleryCarousel: View {
     }
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
             TabView(selection: $scrollID) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if let media = mediaMetadata[item.mediaId], let preview = media.p.last {
-                        CustomWebImage(
-                            preview.u,
-                            placeholderView: {
-                                
-                            }
-                        )
-                        .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
-                        .tag(index)
+                        CustomWebImage(preview.u)
+                            .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
+                            .tag(index)
                     }
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             
             Text("\((scrollID ?? 0) + 1)/\(items.count)")
+                .padding(4)
+                .mediaIndicator()
+                .cornerRadius(8)
+                .padding(12)
         }
     }
 }
