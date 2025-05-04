@@ -25,12 +25,16 @@ public class SubredditDetailsRepository: SubredditDetailsRepositoryProtocol {
     }
     
     public func fetchSubredditDetails(subredditName: String) async throws -> SubredditData {
+        try Task.checkCancellation()
+        
         let data = try await self.session.request(
             RedditAPI.getSubredditData(subredditName: subredditName)
         )
         .validate()
         .serializingData()
         .value
+        
+        try Task.checkCancellation()
         
         let json = JSON(data)
         if let error = json.error {
