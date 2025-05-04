@@ -64,9 +64,19 @@ class SubredditDetailsViewModel: ObservableObject {
     
     func fetchSubredditDetails() async {
         do {
-            self.subredditData = try await subredditDetailsRepository.fetchSubredditDetails(subredditName: subredditName)
+            try Task.checkCancellation()
+            
+            let fetchData = try await subredditDetailsRepository.fetchSubredditDetails(subredditName: subredditName)
+            
+            try Task.checkCancellation()
+            
+            await MainActor.run {
+                self.subredditData = fetchData
+            }
         } catch {
-            self.error = error
+            await MainActor.run {
+                self.error = error
+            }
             print("Error fetching user data: \(error)")
         }
     }
