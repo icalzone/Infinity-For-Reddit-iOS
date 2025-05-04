@@ -11,6 +11,7 @@ import SDWebImageSwiftUI
 struct CustomWebImage<Content: View>: View {
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
+    @EnvironmentObject() private var namespaceManager: NamespaceManager
     
     @State private var shouldLoadFallbackImage = false
     
@@ -74,40 +75,65 @@ struct CustomWebImage<Content: View>: View {
                     fallbackView()
                 }
             } else {
-                WebImage(url: URL(string: urlString!)) { image in
-                    if let aspectRatio = aspectRatio {
-                        image
-                            .resizable()
-                            .aspectRatio(aspectRatio, contentMode: .fit)
-                    } else {
-                        image
-                            .resizable()
+                if handleImageTapGesture == true && fullScreenMediaViewModel.currentId == (urlString ?? "") {
+                    // Image is now in full screen mode
+                    Color.clear
+                        .applyIf(width != nil) {
+                            $0.frame(width: width!)
+                        }
+                        .applyIf(height != nil) {
+                            $0.frame(height: height!)
+                        }
+                } else {
+                    WebImage(url: URL(string: urlString!)) { image in
+                        if let aspectRatio = aspectRatio {
+                            image
+                                .resizable()
+                                .aspectRatio(aspectRatio, contentMode: .fit)
+                        } else {
+                            image
+                                .resizable()
+                        }
+                    } placeholder: {
+                        placeholderView?()
+                            .applyIf(handleImageTapGesture == true && fullScreenMediaViewModel.currentId != (urlString ?? "")) {
+                                $0.matchedGeometryEffect(id: urlString ?? "", in: namespaceManager.animation)
+                            }
+                            .applyIf(handleImageTapGesture == false) {
+                                $0.matchedGeometryEffect(id: urlString ?? "", in: namespaceManager.animation)
+                            }
                     }
-                } placeholder: {
-                    placeholderView?()
-                }
-                .onSuccess { image, data, cacheType in
-                    // Success
-                    // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
-                }
-                .onFailure { _ in
-                    if fallbackView != nil {
-                        DispatchQueue.main.async {
-                            shouldLoadFallbackImage = true
+                    .onSuccess { image, data, cacheType in
+                        // Success
+                        // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
+                    }
+                    .onFailure { _ in
+                        if fallbackView != nil {
+                            DispatchQueue.main.async {
+                                shouldLoadFallbackImage = true
+                            }
                         }
                     }
-                }
-                .indicator(.activity)
-                .applyIf(circleClipped == true) {
-                    $0.clipShape(Circle())
-                }
-                .transition(.fade(duration: 0.5))
-                .scaledToFit()
-                .applyIf(width != nil) {
-                    $0.frame(width: width!)
-                }
-                .applyIf(height != nil) {
-                    $0.frame(height: height!)
+                    .indicator(.activity)
+                    .scaledToFit()
+                    .applyIf(circleClipped == true) {
+                        $0.clipShape(Circle())
+                    }
+//                    .applyIf(handleImageTapGesture != true) {
+//                        $0.transition(.fade(duration: 0.5))
+//                    }
+                    .applyIf(width != nil) {
+                        $0.frame(width: width!)
+                    }
+                    .applyIf(height != nil) {
+                        $0.frame(height: height!)
+                    }
+                    .applyIf(handleImageTapGesture == true && fullScreenMediaViewModel.currentId != (urlString ?? "")) {
+                        $0.matchedGeometryEffect(id: urlString ?? "", in: namespaceManager.animation)
+                    }
+                    .applyIf(handleImageTapGesture == false) {
+                        $0.matchedGeometryEffect(id: urlString ?? "", in: namespaceManager.animation)
+                    }
                 }
             }
         }
@@ -116,7 +142,9 @@ struct CustomWebImage<Content: View>: View {
                 .highPriorityGesture(
                     TapGesture()
                         .onEnded {
-                            fullScreenMediaViewModel.show(.image(url: urlString ?? "", post: nil))
+                            withAnimation {
+                                fullScreenMediaViewModel.show(.image(url: urlString ?? "", aspectRatio: aspectRatio, post: nil))
+                            }
                         }
                 )
         }

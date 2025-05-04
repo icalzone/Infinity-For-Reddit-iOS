@@ -21,6 +21,8 @@ struct HomeView: View {
     @State private var showProfile: Bool = false
     @StateObject private var navigationManager = NavigationManager()
     
+    @Namespace private var animation
+    
     var body: some View {
         ZStack {
             NavigationStack(path: $navigationManager.path) {
@@ -147,10 +149,11 @@ struct HomeView: View {
             .themedNavigationBarBackButton()
             
             if let media = fullScreenMediaViewModel.media {
-                if case let .image(urlString, post) = media {
-                    ImageFullScreenView(url: URL(string: urlString)) {
+                if case let .image(urlString, aspectRatio, post) = media {
+                    ImageFullScreenView(url: URL(string: urlString), aspectRatio: aspectRatio) {
                         fullScreenMediaViewModel.dismiss()
                     }
+                    .id(UUID())
                 }
             }
         }
@@ -158,6 +161,7 @@ struct HomeView: View {
             customThemeViewModel.isDarkTheme = colorScheme == .dark
         }
         .environmentObject(navigationManager)
+        .environmentObject(NamespaceManager(animation))
     }
     
     enum Tab {

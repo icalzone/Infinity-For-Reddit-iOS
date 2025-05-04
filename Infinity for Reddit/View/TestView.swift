@@ -8,61 +8,45 @@
 import SwiftUI
 
 struct TestView: View {
-    @State private var selectedItem: Tab1? = nil
-    private let tabs = [Tab1.home, Tab1.subscriptions]
+    @EnvironmentObject private var namespaceManager: NamespaceManager
+    
+    @State private var flip: Bool = false
     
     var body: some View {
-        List {
-            ForEach(tabs, id: \.self) { tab in
-                NavigationLink(destination: tab.link, tag: tab, selection: self.$selectedItem) {
-                    Text("Interface")
-                        .primaryText()
-                }
-                .listRowBackground(self.selectedItem == tab ? Color.gray : Color.clear)
-                //.listPlainItem()
+        ZStack {
+            VStack {
+                Spacer()
+                
+                Text("fuck you")
+                    .applyIf(!flip) {
+                        $0.matchedGeometryEffect(id: "test", in: namespaceManager.animation)
+                    }
             }
-//            NavigationLink(destination: NotificationSettingsView()) {
-//                Text("Notification")
-//                    .primaryText()
-//            }
-//            .listPlainItem()
-//            .buttonStyle(NavigationLinkButtonStyle())
-//            .listRowBackground(Color.clear)
+            
+            if flip {
+                TestViewFullScreen()
+            }
         }
-        .themedList()
-        .listItemTint(Color.clear)
-        .toolbar {
-            ToolbarItemGroup(placement: .primaryAction) {
-                            Button("About") {
-                                print("About tapped!")
-                            }
-
-                            Button("Help") {
-                                print("Help tapped!")
-                            }
-                        }
-
-                        ToolbarItemGroup(placement: .secondaryAction) {
-                            Button("Settings") {
-                                print("Credits tapped")
-                            }
-
-                            Button("Email Me") {
-                                print("Email tapped")
-                            }
-                        }
+        .onTapGesture {
+            withAnimation(.smooth(duration: 5)) {
+                flip.toggle()
+            }
         }
-        .navigationTitle("Settings")
     }
 }
 
-enum Tab1 {
-    case home, subscriptions
+struct TestViewFullScreen: View {
+    @EnvironmentObject private var namespaceManager: NamespaceManager
     
-    var link: some View {
-        switch self {
-        case .home: return AnyView(NotificationSettingsView())
-        case .subscriptions: return AnyView(InterfaceSettingsView())
+    @State private var flip: Bool = false
+    
+    var body: some View {
+        ZStack {
+            Color.green
+                .ignoresSafeArea()
+            
+            Text("fuck you")
+                .matchedGeometryEffect(id: "test", in: namespaceManager.animation)
         }
     }
 }

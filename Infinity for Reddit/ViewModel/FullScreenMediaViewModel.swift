@@ -8,7 +8,7 @@
 import Foundation
 
 enum FullScreenMediaType: Hashable {
-    case image(url: String, post: Post?)
+    case image(url: String, aspectRatio: CGSize?, post: Post?)
     case gif(url: String, post: Post?)
     case video(url: String, post: Post?)
     case gallery(post: Post?)
@@ -16,14 +16,24 @@ enum FullScreenMediaType: Hashable {
 
 class FullScreenMediaViewModel: ObservableObject {
     @Published var media: FullScreenMediaType?
-    
-    var isPresenting: Bool { media != nil }
+    @Published var currentId: String?
     
     func show(_ media: FullScreenMediaType) {
         self.media = media
+        switch media {
+        case .image(let url, _, _):
+            self.currentId = url
+        case .gif(let url, _):
+            self.currentId = url
+        case .video(let url, _):
+            self.currentId = url
+        default:
+            self.currentId = nil
+        }
     }
     
     func dismiss() {
         self.media = nil
+        self.currentId = nil
     }
 }
