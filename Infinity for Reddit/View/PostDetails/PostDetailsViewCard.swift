@@ -61,6 +61,18 @@ struct PostDetailsViewCard: View {
                 }
                 .frame(maxWidth: .infinity)
                 .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
+                
+                Spacer()
+                    .frame(height: 16)
+            } else if let galleryData = postViewModel.post.galleryData,
+                      !galleryData.items.isEmpty,
+                      let mediaMetadata = postViewModel.post.mediaMetadata,
+                      let preview = mediaMetadata[galleryData.items[0].mediaId] {
+                GalleryCarousel(galleryData: galleryData, mediaMetadata: mediaMetadata)
+                    .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
+                
+                Spacer()
+                    .frame(height: 16)
             }
             
             if let selftext = postViewModel.post.selftextProcessedMarkdown {
