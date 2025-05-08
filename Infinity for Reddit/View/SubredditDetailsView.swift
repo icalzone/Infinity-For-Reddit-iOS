@@ -6,6 +6,7 @@
 
 import SwiftUI
 import MarkdownUI
+import SDWebImageSwiftUI
 
 struct SubredditDetailsView: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
@@ -29,6 +30,22 @@ struct SubredditDetailsView: View {
             // Top Section (Subreddit Info)
             VStack(spacing: 0) {
                 if let subredditData = subredditDetailsViewModel.subredditData {
+                    
+                    if let bannerUrl = subredditData.bannerUrl, !bannerUrl.isEmpty {
+                        CustomWebImage(
+                            subredditData.bannerUrl,
+                            width: UIScreen.main.bounds.width,
+                            height: 200,
+                            centerCrop: true
+                        )
+//                        .offset(y: 10)
+//                        .padding(.vertical, -10)
+//                        WebImage(url: URL(string: bannerUrl))
+//                                    .resizable()
+//                                    .scaledToFill()
+//                                    .frame(width: UIScreen.main.bounds.width, height: 200)
+//                                    .clipped()
+                    }
                     VStack(spacing: 0) {
                         HStack(spacing: 0) {
                             CustomWebImage(
@@ -37,7 +54,7 @@ struct SubredditDetailsView: View {
                                 height: 80,
                                 circleClipped: true
                             )
-                            .padding(.vertical, 20)
+                            .padding(.vertical, 30)
                             
                             VStack(alignment: .leading, spacing: 5) {
                                 Text("r/\(subredditData.name)")
@@ -115,6 +132,5 @@ struct SubredditDetailsView: View {
             }
             .themedNavigationBar()
         }
-//    }
 }
 
