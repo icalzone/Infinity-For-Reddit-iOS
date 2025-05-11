@@ -10,7 +10,7 @@ import SwiftUI
 struct GalleryCarousel: View {
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     
-    @State private var scrollID: Int?
+    @StateObject private var galleryScrollState = GalleryScrollState(scrollId: 0)
     
     var items: [GalleryItem]
     var mediaMetadata: [String: MediaMetadata]
@@ -22,7 +22,7 @@ struct GalleryCarousel: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            TabView(selection: $scrollID) {
+            TabView(selection: $galleryScrollState.scrollId) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if let media = mediaMetadata[item.mediaId], let preview = media.p.last {
                         CustomWebImage(preview.u, handleImageTapGesture: false)
@@ -31,7 +31,7 @@ struct GalleryCarousel: View {
                                 TapGesture()
                                     .onEnded {
                                         withAnimation {
-                                            fullScreenMediaViewModel.show(.gallery(items: items, mediaMetadata: mediaMetadata))
+                                            fullScreenMediaViewModel.show(.gallery(items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState))
                                         }
                                     }
                             )
@@ -42,7 +42,7 @@ struct GalleryCarousel: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             
-            Text("\((scrollID ?? 0) + 1)/\(items.count)")
+            Text("\(galleryScrollState.scrollId + 1)/\(items.count)")
                 .padding(4)
                 .mediaIndicator()
                 .cornerRadius(8)

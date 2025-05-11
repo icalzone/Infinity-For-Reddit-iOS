@@ -154,8 +154,8 @@ struct HomeView: View {
                         fullScreenMediaViewModel.dismiss()
                     }
                     .id(UUID())
-                } else if case let .gallery(items, mediaMetadata) = media {
-                    GalleryFullScreenView(items: items, mediaMetadata: mediaMetadata) {
+                } else if case let .gallery(items, mediaMetadata, galleryScrollState) = media {
+                    GalleryFullScreenView(items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState) {
                         fullScreenMediaViewModel.dismiss()
                     }
                     .id(UUID())

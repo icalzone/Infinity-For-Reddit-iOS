@@ -28,9 +28,14 @@ struct TestView: View {
             }
         }
         .onTapGesture {
-            withAnimation(.smooth(duration: 5)) {
-                flip.toggle()
-            }
+//            withAnimation(.smooth(duration: 5)) {
+//                flip.toggle()
+//            }
+            
+//            GalleryFullScreenView(items: nil, mediaMetadata: nil, galleryScrollState: <#GalleryScrollState#>) {
+//                                    
+//                                }
+//                                .id(UUID())
         }
     }
 }

@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct GalleryFullScreenView: View {
-    @State private var scrollID: Int?
+    @ObservedObject private var galleryScrollState: GalleryScrollState
+    //@State private var scrollID: Int?
     @State private var scale: CGFloat = 1.0
     @GestureState private var dragOffset: CGSize = .zero
     @State private var currentDragOffset: CGSize = .zero
@@ -19,6 +20,13 @@ struct GalleryFullScreenView: View {
     var mediaMetadata: [String: MediaMetadata]
     let onDismiss: () -> Void
     
+    init(items: [GalleryItem], mediaMetadata: [String: MediaMetadata], galleryScrollState: GalleryScrollState, onDismiss: @escaping () -> Void) {
+        self.items = items
+        self.mediaMetadata = mediaMetadata
+        self.galleryScrollState = galleryScrollState
+        self.onDismiss = onDismiss
+    }
+    
     var body: some View {
         ZStack {
             Color.black
@@ -27,7 +35,7 @@ struct GalleryFullScreenView: View {
                 .edgesIgnoringSafeArea(.all)
                 .ignoresSafeArea()
             
-            TabView(selection: $scrollID) {
+            TabView(selection: $galleryScrollState.scrollId) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if let media = mediaMetadata[item.mediaId], let preview = media.p.last {
                         CustomWebImage(preview.u, handleImageTapGesture: false)

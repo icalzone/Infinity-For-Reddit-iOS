@@ -7,11 +7,19 @@
 
 import Foundation
 
-enum FullScreenMediaType: Hashable {
+enum FullScreenMediaType {
     case image(url: String, aspectRatio: CGSize?, post: Post?)
     case gif(url: String, post: Post?)
     case video(url: String, post: Post?)
-    case gallery(items: [GalleryItem], mediaMetadata: [String: MediaMetadata])
+    case gallery(items: [GalleryItem], mediaMetadata: [String: MediaMetadata], galleryScrollState: GalleryScrollState)
+}
+
+class GalleryScrollState: ObservableObject {
+    @Published var scrollId: Int = 0
+    
+    init(scrollId: Int) {
+        self.scrollId = scrollId
+    }
 }
 
 class FullScreenMediaViewModel: ObservableObject {
