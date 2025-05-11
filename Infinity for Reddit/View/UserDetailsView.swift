@@ -92,7 +92,7 @@ struct UserDetailsView: View {
                     PostListingView(
                         account: accountViewModel.account,
                         postListingMetadata:PostListingMetadata(
-                            postListingType:.user,
+                            postListingType:.user(username: accountViewModel.account.username, userWhere: .submitted),
                             pathComponents: ["sortType": "best", "username": "\(userData.name)"],
                             headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                             queries: nil,

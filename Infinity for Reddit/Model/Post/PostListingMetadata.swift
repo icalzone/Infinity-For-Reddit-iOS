@@ -28,6 +28,10 @@ public struct PostListingMetadata {
     }
 }
 
-public enum PostListingType: String, Codable {
-    case frontPage, subreddit, user, search, multireddit, subredditConcat
+public enum PostListingType: Codable {
+    case frontPage, subreddit, user(username: String, userWhere: UserWhere), search, multireddit, subredditConcat
+}
+
+public enum UserWhere: String, Codable {
+    case submitted = "submitted", upvoted = "upvoted", downvoted = "downvoted", hidden = "hidden", saved = "saved"
 }

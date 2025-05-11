@@ -36,7 +36,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
             apiRequest = RedditOAuthAPI.getFrontPagePosts(pathComponents: pathComponents!, queries: queries!)
         case .subreddit:
             apiRequest = RedditOAuthAPI.getSubredditPosts(pathComponents: pathComponents!, queries: queries!)
-        case .user:
+        case .user(let username, let userWhere):
             apiRequest = RedditOAuthAPI.getUserPosts(pathComponents: pathComponents!, queries: queries!)
         case .search:
             apiRequest = RedditOAuthAPI.getSearchPosts(queries: queries!)
