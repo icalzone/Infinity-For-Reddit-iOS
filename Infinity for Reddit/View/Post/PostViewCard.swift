@@ -72,6 +72,7 @@ struct PostViewCard: View {
                     .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
             } else if let selftextTruncated = postViewModel.post.selftextTruncated {
                 Text(selftextTruncated)
+                    .postContent()
             }
             
             HStack(alignment: .center) {

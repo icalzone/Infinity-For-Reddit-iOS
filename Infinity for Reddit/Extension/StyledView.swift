@@ -128,6 +128,14 @@ extension View {
         self.modifier(MarkdownViewModifier())
     }
     
+    func themedPostCommentMarkdown() -> some View {
+        self.modifier(PostContentMarkdownViewModifier())
+    }
+    
+    func themedCommentMarkdown() -> some View {
+        self.modifier(CommentMarkdownViewModifier())
+    }
+    
     func mediaIndicator() -> some View {
         self.modifier(MediaIndicatorViewModifier())
     }

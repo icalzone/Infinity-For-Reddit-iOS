@@ -81,7 +81,7 @@ struct PostDetailsViewCard: View {
                     .markdownImageProvider(WebImageProvider(mediaMetadata: postViewModel.post.mediaMetadata))
                     .font(.system(size: 24))
                     .padding(.bottom, 8)
-                    .themedMarkdown()
+                    .themedPostCommentMarkdown()
             }
             
             HStack(alignment: .center) {

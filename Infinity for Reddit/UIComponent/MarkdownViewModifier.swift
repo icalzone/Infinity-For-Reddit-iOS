@@ -16,6 +16,36 @@ struct MarkdownViewModifier: ViewModifier {
             //.font()
             .markdownTheme(Theme().link {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
+            }.text {
+                ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
+            })
+    }
+}
+
+struct PostContentMarkdownViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            //.font()
+            .markdownTheme(Theme().link {
+                ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
+            }.text {
+                ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.postContentColor))
+            })
+    }
+}
+
+struct CommentMarkdownViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            //.font()
+            .markdownTheme(Theme().link {
+                ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
+            }.text {
+                ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.commentColor))
             })
     }
 }
