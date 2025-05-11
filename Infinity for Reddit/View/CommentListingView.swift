@@ -29,7 +29,7 @@ struct CommentListingView: View {
     var body: some View {
         Group {
             if commentListingViewModel.isInitialLoading {
-                Text("Is loading")
+                ProgressIndicator()
             } else if commentListingViewModel.comments.isEmpty {
                 Text("No Comments")
             } else {

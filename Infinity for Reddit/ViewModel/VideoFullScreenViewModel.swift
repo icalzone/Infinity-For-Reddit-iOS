@@ -16,7 +16,6 @@ class VideoFullScreenViewModel: ObservableObject {
     }
     
     deinit {
-        print("Releasing AVPlayer")
         player.replaceCurrentItem(with: nil)
     }
 }

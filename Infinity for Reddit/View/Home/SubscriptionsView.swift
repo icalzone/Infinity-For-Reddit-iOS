@@ -63,7 +63,7 @@ struct SubscriptionsView: View {
         var body: some View {
             Group {
                 if subscriptionListingViewModel.isLoadingSubscriptions {
-                    Text("Is loading")
+                    ProgressIndicator()
                 } else if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
                     Text("No subscribed subreddits")
                 } else {
@@ -107,7 +107,7 @@ struct SubscriptionsView: View {
         var body: some View {
             Group {
                 if subscriptionListingViewModel.isLoadingSubscriptions {
-                    Text("Is loading")
+                    ProgressIndicator()
                 } else if subscriptionListingViewModel.userSubscriptions.isEmpty {
                     Text("No subscribed users")
                 } else {
@@ -153,7 +153,7 @@ struct SubscriptionsView: View {
         var body: some View {
             Group {
                 if subscriptionListingViewModel.isLoadingMyCustomFeeds {
-                    Text("Is loading")
+                    ProgressIndicator()
                 } else if subscriptionListingViewModel.myCustomFeeds.isEmpty {
                     Text("No custom feeds")
                 } else {

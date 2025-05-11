@@ -39,7 +39,7 @@ struct PostDetailsView: View {
                     .listPlainItem()
                 
                 if postDetailsViewModel.isInitialLoading {
-                    Text("Is loading")
+                    ProgressIndicator()
                         .listPlainItem()
                 } else if postDetailsViewModel.comments.isEmpty {
                     Text("No comments")
