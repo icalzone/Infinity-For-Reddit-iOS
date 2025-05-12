@@ -23,7 +23,6 @@ struct PostListingView: View {
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
-                account: account,
                 postListingMetadata: postListingMetadata,
                 postListingRepository: PostListingRepository()
             )

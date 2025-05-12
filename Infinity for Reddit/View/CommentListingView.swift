@@ -28,7 +28,7 @@ struct CommentListingView: View {
     
     var body: some View {
         Group {
-            if commentListingViewModel.isInitialLoading {
+            if commentListingViewModel.isInitialLoading || commentListingViewModel.isInitialLoad {
                 ProgressIndicator()
             } else if commentListingViewModel.comments.isEmpty {
                 Text("No Comments")
@@ -42,7 +42,7 @@ struct CommentListingView: View {
                     if commentListingViewModel.hasMorePages {
                         ProgressIndicator()
                             .task {
-                                await commentListingViewModel.loadComments(account: accountViewModel.account)
+                                await commentListingViewModel.loadComments()
                             }
                             .listPlainItem()
                     }
@@ -53,7 +53,7 @@ struct CommentListingView: View {
             //print(colorScheme == .dark)
         }
         .task {
-            await commentListingViewModel.loadComments(account: accountViewModel.account)
+            await commentListingViewModel.initialLoadComments()
         }
         .listStyle(.plain)
     }

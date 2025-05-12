@@ -12,12 +12,12 @@ import MarkdownUI
 public class CommentListingViewModel: ObservableObject {
     // MARK: - Properties
     @Published var comments: [Comment] = []
+    @Published var isInitialLoad: Bool = true
     @Published var isInitialLoading: Bool = false
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
     @Published var error: Error? = nil
     
-    private var isInitialLoad: Bool = true
     private var after: String? = nil
     public let commentListingRepository: CommentListingRepositoryProtocol
     private let commentListingMetadata: CommentListingMetadata
@@ -31,9 +31,19 @@ public class CommentListingViewModel: ObservableObject {
     
     // MARK: - Methods
     
+    public func initialLoadComments() async {
+        guard isInitialLoad else {
+            return
+        }
+        
+        await loadComments()
+    }
+    
     /// Fetches the next page of comments
-    public func loadComments(account: Account) async {
+    public func loadComments() async {
         guard !isInitialLoading, !isLoadingMore, hasMorePages else { return }
+        
+        let isInitailLoadCopy = isInitialLoad
         
         await MainActor.run {
             if comments.isEmpty {
@@ -76,12 +86,11 @@ public class CommentListingViewModel: ObservableObject {
                 isInitialLoading = false
                 isLoadingMore = false
             }
-            
-            print("comments")
         } catch {
             await MainActor.run {
                 self.error = error
                 
+                isInitialLoad = isInitailLoadCopy
                 isInitialLoading = false
                 isLoadingMore = false
             }
@@ -91,7 +100,7 @@ public class CommentListingViewModel: ObservableObject {
     }
     
     /// Reloads posts from the first page
-    func refreshComments(account: Account) async {
+    func refreshComments() async {
         isInitialLoad = true
         isInitialLoading = false
         isLoadingMore = false
@@ -100,7 +109,7 @@ public class CommentListingViewModel: ObservableObject {
         hasMorePages = true
         comments = []
         
-        await loadComments(account: account)
+        await initialLoadComments()
     }
     
     func postProcessComments(_ comments: [Comment]) -> [Comment] {

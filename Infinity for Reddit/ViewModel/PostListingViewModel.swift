@@ -17,7 +17,6 @@ public class PostListingViewModel: ObservableObject {
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
     @Published var error: Error?
-    private let account: Account
     private let postListingMetadata: PostListingMetadata
     
     private var allPostIds = Set<String>()
@@ -27,8 +26,7 @@ public class PostListingViewModel: ObservableObject {
     public let postListingRepository: PostListingRepositoryProtocol
     
     // MARK: - Initializer
-    init(account: Account, postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
-        self.account = account
+    init(postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
         self.postListingMetadata = postListingMetadata
         self.postListingRepository = postListingRepository
     }
@@ -111,9 +109,9 @@ public class PostListingViewModel: ObservableObject {
             await MainActor.run {
                 self.error = error
                 
+                isInitialLoad = isInitailLoadCopy
                 isInitialLoading = false
                 isLoadingMore = false
-                isInitialLoad = isInitailLoadCopy
             }
             
             print("Error fetching posts: \(error)")
@@ -130,7 +128,7 @@ public class PostListingViewModel: ObservableObject {
         hasMorePages = true
         posts = []
         
-        await loadPosts()
+        await initialLoadPosts()
     }
     
     func postProcessPosts(_ posts: [Post]) -> [Post] {
