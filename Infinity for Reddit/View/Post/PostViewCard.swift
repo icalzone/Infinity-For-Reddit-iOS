@@ -68,6 +68,7 @@ struct PostViewCard: View {
                       !galleryData.items.isEmpty,
                       let mediaMetadata = postViewModel.post.mediaMetadata,
                       let preview = mediaMetadata[galleryData.items[0].mediaId] {
+                // May not have a preview!!!!!!
                 GalleryCarousel(post: postViewModel.post)
                     .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
             } else if let selftextTruncated = postViewModel.post.selftextTruncated {

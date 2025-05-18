@@ -202,6 +202,19 @@ struct RedditGRDBDatabase {
                     t.column(columnName, .integer).notNull()
                 }
             }
+            
+            try db.create(table: RecentSearchQuery.databaseTableName, ifNotExists: true) { t in
+                t.column("username", .text)
+                    .notNull()
+                    .references(Account.databaseTableName, onDelete: .cascade)
+                t.column("search_query", .text).notNull()
+                t.column("search_in_subreddit_or_user_name", .text)
+                t.column("search_in_multireddit_path", .text)
+                t.column("search_in_multireddit_display_name", .text)
+                t.column("search_in_thing_type", .integer).notNull()
+                t.column("time", .integer).notNull()
+                t.primaryKey(["username", "search_query"])
+            }
         }
     }
 }

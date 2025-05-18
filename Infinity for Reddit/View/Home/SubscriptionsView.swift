@@ -14,7 +14,6 @@ import SDWebImageSwiftUI
 struct SubscriptionsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
-    @EnvironmentObject var accountViewModel: AccountViewModel
     
     @StateObject var subscriptionListingViewModel: SubscriptionListingViewModel
 

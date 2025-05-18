@@ -41,6 +41,9 @@
     "Check Notifications Interval" : {
 
     },
+    "Clear All" : {
+
+    },
     "Click to Show Media in Gallery Layout" : {
 
     },
@@ -398,6 +401,9 @@
     "r/%@" : {
 
     },
+    "Recent Searches" : {
+
+    },
     "Reddit User Agreement" : {
 
     },
@@ -405,6 +411,9 @@
 
     },
     "Save" : {
+
+    },
+    "Search" : {
 
     },
     "Security" : {

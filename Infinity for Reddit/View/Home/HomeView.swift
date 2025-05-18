@@ -66,6 +66,13 @@ struct HomeView: View {
                         }
                         .tag(Tab.inbox)
                         
+                        SearchView(username: accountViewModel.account.username)
+                            .id(accountViewModel.account.username)
+                            .tabItem {
+                                Label("Search", systemImage: "magnifyingglass")
+                            }
+                            .tag(Tab.search)
+                        
                         MoreView()
                             .id(accountViewModel.account.username)
                             .tabItem {
@@ -180,13 +187,14 @@ struct HomeView: View {
     }
     
     enum Tab {
-        case home, subscriptions, inbox, more
+        case home, subscriptions, inbox, search, more
         
         var navigationTitle: String {
             switch self {
             case .home: return "Home"
             case .subscriptions: return "Subscriptions"
             case .inbox: return "Inbox"
+            case .search: return "Search"
             case .more: return "More"
             }
         }

@@ -7,8 +7,8 @@
 
 import GRDB
 
-struct RecentSearchQuery: Codable, FetchableRecord, PersistableRecord {
-    static let databaseTableName: String = "recent_search_queries"
+public struct RecentSearchQuery: Codable, FetchableRecord, PersistableRecord {
+    public static let databaseTableName: String = "recent_search_queries"
     
     var username: String
     var searchQuery: String
@@ -27,6 +27,17 @@ struct RecentSearchQuery: Codable, FetchableRecord, PersistableRecord {
         self.multiRedditDisplayName = multiRedditDisplayName
         self.searchInThingType = searchInThingType
         self.time = time
-        
     }
+    
+    private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case username
+        case searchQuery = "search_query"
+        case searchInSubredditOrUserName = "search_in_subreddit_or_user_name"
+        case multiRedditPath = "search_in_multireddit_path"
+        case multiRedditDisplayName = "search_in_multireddit_display_name"
+        case searchInThingType = "search_in_thing_type"
+        case time
+    }
+    
+    public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
 }
