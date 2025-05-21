@@ -28,15 +28,13 @@ struct SearchResultsView: View {
                         searchInSubredditOrUserName: searchResultsViewModel.searchInSubredditOrUserName,
                         searchInMultiReddit: searchResultsViewModel.searchInMultiReddit,
                         searchInThingType: searchResultsViewModel.searchInThingType
-                        ),
+                    ),
                     pathComponents: [:],
                     headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                     queries: ["q": searchResultsViewModel.query, "include_over_18": "1", "type": "link"],
                     params: nil
                 ))
-                    .opacity(selectedOption == 0 ? 1 : 0)
-                
-                
+                .opacity(selectedOption == 0 ? 1 : 0)
             }
             
             Spacer()

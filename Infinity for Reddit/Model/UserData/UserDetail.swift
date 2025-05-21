@@ -116,7 +116,7 @@ public class UserDetail : NSObject, NSCoding{
     var prefShowSnoovatar : Bool!
     var snoovatarImg : String!
     var snoovatarSize : String!
-    var subreddit : Subreddit!
+    var subreddit : SubredditInUserJSON!
     var totalKarma : Int!
     var verified : Bool!
     
@@ -151,7 +151,7 @@ public class UserDetail : NSObject, NSCoding{
         snoovatarSize = json["snoovatar_size"].stringValue
         let subredditJson = json["subreddit"]
         if !subredditJson.isEmpty{
-            subreddit = Subreddit(fromJson: subredditJson)
+            subreddit = SubredditInUserJSON(fromJson: subredditJson)
         }
         totalKarma = json["total_karma"].intValue
         verified = json["verified"].boolValue
@@ -265,7 +265,7 @@ public class UserDetail : NSObject, NSCoding{
         prefShowSnoovatar = aDecoder.decodeObject(forKey: "pref_show_snoovatar") as? Bool
         snoovatarImg = aDecoder.decodeObject(forKey: "snoovatar_img") as? String
         snoovatarSize = aDecoder.decodeObject(forKey: "snoovatar_size") as? String
-        subreddit = aDecoder.decodeObject(forKey: "subreddit") as? Subreddit
+        subreddit = aDecoder.decodeObject(forKey: "subreddit") as? SubredditInUserJSON
         totalKarma = aDecoder.decodeObject(forKey: "total_karma") as? Int
         verified = aDecoder.decodeObject(forKey: "verified") as? Bool
         
@@ -354,7 +354,7 @@ public class UserDetail : NSObject, NSCoding{
     
 }
 
-class Subreddit : NSObject, NSCoding{
+class SubredditInUserJSON : NSObject, NSCoding{
     
     var acceptFollowers : Bool!
     var allowedMediaInComments : [AnyObject]!

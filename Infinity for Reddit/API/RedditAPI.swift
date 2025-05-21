@@ -18,6 +18,8 @@ enum RedditAPI: URLRequestConvertible {
     case getSubredditConcatPosts(pathComponents: [String: String], queries: [String: String])
     case getUserComments(pathComponents: [String: String], queries: [String: String])
     case getPostAndCommentsById(postId: String, queries: [String: String])
+    case searchSubreddits(queries: [String: String])
+    case searchUsers(queries: [String: String])
     
     private var baseURL: String {
         return "https://www.reddit.com"
@@ -27,7 +29,7 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken:
             return .post
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers:
             return .get
         }
     }
@@ -52,6 +54,10 @@ enum RedditAPI: URLRequestConvertible {
             return "/user/\(pathComponents["username"] ?? "infinityAN")/comments.json"
         case .getPostAndCommentsById(let postId, _):
             return "/comments/\(postId).json"
+        case .searchSubreddits:
+            return "subreddits/search.json"
+        case .searchUsers:
+            return "search.json"
         }
     }
     
@@ -59,7 +65,7 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, _, let params):
             return params
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers:
             return nil
         }
     }
@@ -84,6 +90,10 @@ enum RedditAPI: URLRequestConvertible {
             return ["raw_json": "1", "sort": "best"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getPostAndCommentsById(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .searchSubreddits(let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+        case .searchUsers(let queries):
+            return ["raw_json": "1", "type": "user"].merging(queries, uniquingKeysWith: { _, new in new })
         }
     }
     
@@ -91,14 +101,14 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, let headers, _):
             return headers
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getAccessToken, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById:
+        case .getAccessToken, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers:
             return URLEncoding.default
         }
     }

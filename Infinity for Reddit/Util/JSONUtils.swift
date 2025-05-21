@@ -5,6 +5,8 @@
 //  Created by Docile Alligator on 2024-12-03.
 //
 
+import SwiftyJSON
+
 public struct JSONUtils {
     public static let KIND_KEY = "kind"
     public static let KIND_VALUE_MORE = "more"
@@ -179,4 +181,17 @@ public struct JSONUtils {
     public static let IS_MOD_KEY = "is_mod"
     public static let CAN_BE_FOLLOWED_KEY = "accept_followers"
     
+    public static func parseNullableSize(_ json: JSON, _ key: String) -> Size? {
+        if let jsonArray = json[key].array, jsonArray.count == 2 {
+            let width = jsonArray[0].intValue
+            let height = jsonArray[1].intValue
+            return Size(width: width, height: height)
+        }
+        return nil
+    }
+}
+
+public struct Size {
+    let width: Int
+    let height: Int
 }

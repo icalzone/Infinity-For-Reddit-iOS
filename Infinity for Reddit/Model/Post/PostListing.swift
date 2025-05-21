@@ -146,7 +146,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
     var approvedBy : String!
     var archived : Bool!
     var author : String!
-    var authorFlairRichtext : [AuthorFlairRichtext]! = [AuthorFlairRichtext]()
+    var authorFlairRichtext : [FlairRichtext]! = [FlairRichtext]()
     var authorFlairText : String!
     var authorFlairType : String!
     var authorFullname : String!
@@ -166,7 +166,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
     var isSelf : Bool!
     var isVideo : Bool!
     @Published var likes: Int!
-    var linkFlairRichtext : [LinkFlairRichtext]! = [LinkFlairRichtext]()
+    var linkFlairRichtext : [FlairRichtext]! = [FlairRichtext]()
     var linkFlairText : String!
     var linkFlairType : String!
     var locked : Bool!
@@ -246,7 +246,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
         author = json["author"].stringValue
         let authorFlairRichtextArray = json["author_flair_richtext"].arrayValue
         for authorFlairRichtextJson in authorFlairRichtextArray{
-            authorFlairRichtext.append(AuthorFlairRichtext(fromJson: authorFlairRichtextJson))
+            authorFlairRichtext.append(FlairRichtext(fromJson: authorFlairRichtextJson))
         }
         authorFlairText = json["author_flair_text"].stringValue
         authorFlairType = json["author_flair_type"].stringValue
@@ -272,7 +272,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
         likes = json["likes"] == JSON.null ? 0 : json["likes"].boolValue == true ? 1 : -1
         let linkFlairRichtextArray = json["link_flair_richtext"].arrayValue
         for linkFlairRichtextJson in linkFlairRichtextArray{
-            linkFlairRichtext.append(LinkFlairRichtext(fromJson: linkFlairRichtextJson))
+            linkFlairRichtext.append(FlairRichtext(fromJson: linkFlairRichtextJson))
         }
         linkFlairText = json["link_flair_text"].stringValue
         linkFlairType = json["link_flair_type"].stringValue
@@ -657,7 +657,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
         approvedBy = aDecoder.decodeObject(forKey: "approved_by") as? String
         archived = aDecoder.decodeObject(forKey: "archived") as? Bool
         author = aDecoder.decodeObject(forKey: "author") as? String
-        authorFlairRichtext = aDecoder.decodeObject(forKey: "author_flair_richtext") as? [AuthorFlairRichtext]
+        authorFlairRichtext = aDecoder.decodeObject(forKey: "author_flair_richtext") as? [FlairRichtext]
         authorFlairText = aDecoder.decodeObject(forKey: "author_flair_text") as? String
         authorFlairType = aDecoder.decodeObject(forKey: "author_flair_type") as? String
         authorFullname = aDecoder.decodeObject(forKey: "author_fullname") as? String
@@ -676,7 +676,7 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
         isSelf = aDecoder.decodeObject(forKey: "is_self") as? Bool
         isVideo = aDecoder.decodeObject(forKey: "is_video") as? Bool
         likes = aDecoder.decodeObject(forKey: "likes") as? Int
-        linkFlairRichtext = aDecoder.decodeObject(forKey: "link_flair_richtext") as? [LinkFlairRichtext]
+        linkFlairRichtext = aDecoder.decodeObject(forKey: "link_flair_richtext") as? [FlairRichtext]
         linkFlairText = aDecoder.decodeObject(forKey: "link_flair_text") as? String
         linkFlairType = aDecoder.decodeObject(forKey: "link_flair_type") as? String
         locked = aDecoder.decodeObject(forKey: "locked") as? Bool
@@ -1158,154 +1158,6 @@ class Resolution : NSObject, NSCoding{
         }
         if width != nil{
             aCoder.encode(width, forKey: "width")
-        }
-        
-    }
-    
-}
-
-public class AuthorFlairRichtext : NSObject, NSCoding{
-    
-    //Type e.g. "text", "emoji"
-    var e : String!
-    //Text
-    var t : String!
-    //Media id, e.g. :pixel9proxlporcelain:
-    var a : String!
-    //Media URL
-    var u : String!
-    
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!){
-        if json.isEmpty{
-            return
-        }
-        e = json["e"].stringValue
-        t = json["t"].stringValue
-        a = json["a"].stringValue
-        u = json["u"].stringValue
-    }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if e != nil{
-            dictionary["e"] = e
-        }
-        if t != nil{
-            dictionary["t"] = t
-        }
-        if a != nil{
-            dictionary["a"] = t
-        }
-        if u != nil{
-            dictionary["u"] = t
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required public init(coder aDecoder: NSCoder)
-    {
-        e = aDecoder.decodeObject(forKey: "e") as? String
-        t = aDecoder.decodeObject(forKey: "t") as? String
-        
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    public func encode(with aCoder: NSCoder)
-    {
-        if e != nil{
-            aCoder.encode(e, forKey: "e")
-        }
-        if t != nil{
-            aCoder.encode(t, forKey: "t")
-        }
-        
-    }
-    
-}
-
-class LinkFlairRichtext : NSObject, NSCoding{
-    
-    //Type e.g. "text", "emoji"
-    var e : String!
-    //Text
-    var t : String!
-    //Media id, e.g. :pixel9proxlporcelain:
-    var a : String!
-    //Media URL
-    var u : String!
-    
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!){
-        if json.isEmpty{
-            return
-        }
-        e = json["e"].stringValue
-        t = json["t"].stringValue
-        a = json["a"].stringValue
-        u = json["u"].stringValue
-    }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if e != nil{
-            dictionary["e"] = e
-        }
-        if t != nil{
-            dictionary["t"] = t
-        }
-        if a != nil{
-            dictionary["a"] = t
-        }
-        if u != nil{
-            dictionary["u"] = t
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required init(coder aDecoder: NSCoder)
-    {
-        e = aDecoder.decodeObject(forKey: "e") as? String
-        t = aDecoder.decodeObject(forKey: "t") as? String
-        
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    func encode(with aCoder: NSCoder)
-    {
-        if e != nil{
-            aCoder.encode(e, forKey: "e")
-        }
-        if t != nil{
-            aCoder.encode(t, forKey: "t")
         }
         
     }

@@ -162,7 +162,7 @@ public class Comment : NSObject, NSCoding, Validatable {
     var author : String!
     var authorFlairBackgroundColor : String!
     var authorFlairCssClass : String!
-    var authorFlairRichtext : [AuthorFlairRichtext]! = [AuthorFlairRichtext]()
+    var authorFlairRichtext : [FlairRichtext]! = [FlairRichtext]()
     var authorFlairTemplateId : String!
     var authorFlairText : String!
     var authorFlairTextColor : String!
@@ -249,7 +249,7 @@ public class Comment : NSObject, NSCoding, Validatable {
         authorFlairCssClass = json["author_flair_css_class"].stringValue
         let authorFlairRichtextArray = json["author_flair_richtext"].arrayValue
         for authorFlairRichtextJson in authorFlairRichtextArray{
-            authorFlairRichtext.append(AuthorFlairRichtext(fromJson: authorFlairRichtextJson))
+            authorFlairRichtext.append(FlairRichtext(fromJson: authorFlairRichtextJson))
         }
         authorFlairTemplateId = json["author_flair_template_id"].stringValue
         authorFlairText = json["author_flair_text"].stringValue
@@ -595,7 +595,7 @@ public class Comment : NSObject, NSCoding, Validatable {
         author = aDecoder.decodeObject(forKey: "author") as? String
         authorFlairBackgroundColor = aDecoder.decodeObject(forKey: "author_flair_background_color") as? String
         authorFlairCssClass = aDecoder.decodeObject(forKey: "author_flair_css_class") as? String
-        authorFlairRichtext = aDecoder.decodeObject(forKey: "author_flair_richtext") as? [AuthorFlairRichtext]
+        authorFlairRichtext = aDecoder.decodeObject(forKey: "author_flair_richtext") as? [FlairRichtext]
         authorFlairTemplateId = aDecoder.decodeObject(forKey: "author_flair_template_id") as? String
         authorFlairText = aDecoder.decodeObject(forKey: "author_flair_text") as? String
         authorFlairTextColor = aDecoder.decodeObject(forKey: "author_flair_text_color") as? String
