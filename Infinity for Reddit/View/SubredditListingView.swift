@@ -64,6 +64,9 @@ struct SubredditListingView: View {
                         }
                         .contentShape(Rectangle())
                         .listPlainItem()
+                        .onTapGesture {
+                            navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subreddit.displayName))
+                        }
                     }
                     if subredditListingViewModel.hasMorePages {
                         ProgressIndicator()
