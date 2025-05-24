@@ -28,8 +28,8 @@ public class SubredditDetailsRepository: SubredditDetailsRepositoryProtocol {
         try Task.checkCancellation()
         
         let data = try await self.session.request(
-//            RedditAPI.getSubredditData(subredditName: subredditName)
-            RedditOAuthAPI.getSubredditData(subredditName: subredditName)
+            RedditAPI.getSubredditData(subredditName: subredditName)
+//            RedditOAuthAPI.getSubredditData(subredditName: subredditName)
         )
         .validate()
         .serializingData()

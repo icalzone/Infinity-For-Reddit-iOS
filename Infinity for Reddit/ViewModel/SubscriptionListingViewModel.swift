@@ -228,6 +228,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             SubredditData(
                 id: $0.id,
                 name: $0.displayName,
+                fullName: $0.name,
                 iconUrl: $0.iconImg == nil || $0.iconImg.isEmpty ? $0.communityIcon : $0.iconImg,
                 bannerUrl: $0.bannerBackgroundImage,
                 description: $0.description,

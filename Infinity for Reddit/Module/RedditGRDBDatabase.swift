@@ -121,6 +121,7 @@ struct RedditGRDBDatabase {
             try db.create(table: SubredditData.databaseTableName, ifNotExists: true) { t in
                 t.column("id", .text).notNull()
                 t.column("name", .text)
+                t.column("full_name", .text)
                 t.column("icon_url", .text)
                 t.column("banner_url", .text)
                 t.column("description", .text)

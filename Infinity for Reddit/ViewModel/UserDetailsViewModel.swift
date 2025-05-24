@@ -72,15 +72,18 @@ class UserDetailsViewModel: ObservableObject {
             }
             if action == "unsub" {
                 try subscribedUserDao.deleteSubscribedUser(name: username, accountName: AccountViewModel.shared.account.username)
-                print(try subscribedUserDao.getSubscribedUser(name: username, accountName: AccountViewModel.shared.account.username) == nil)
+//                print(try subscribedUserDao.getSubscribedUser(name: username, accountName: AccountViewModel.shared.account.username) == nil)
             } else {
-                let subscribedUserData = SubscribedUserData(
-                    name: username,
-                    iconUrl: userData?.iconUrl,
-                    username: AccountViewModel.shared.account.username,
-                    favorite: false
-                )
-                try subscribedUserDao.insert(subscribedUserData: subscribedUserData)
+                if let userData = self.userData {
+                    let subscribedUserData = SubscribedUserData(
+                        name: username,
+                        iconUrl: userData.iconUrl,
+                        username: AccountViewModel.shared.account.username,
+                        favorite: false
+                    )
+                    try subscribedUserDao.insert(subscribedUserData: subscribedUserData)
+                }
+                
             }
             
             self.isSubscribed = action == "sub"

@@ -15,7 +15,7 @@ struct SubscribedSubredditDao {
         self.dbPool = dbPool
     }
     
-    func insert(subscribedSubredditData: SubscribedSubredditData) {
+    func insert(subscribedSubredditData: SubscribedSubredditData) throws {
         try? dbPool.write { db in
             try subscribedSubredditData.insert(db, onConflict: .replace)
         }

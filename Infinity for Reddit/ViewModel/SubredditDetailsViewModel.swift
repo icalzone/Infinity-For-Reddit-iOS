@@ -13,7 +13,7 @@ import SwiftUI
 import SwiftyJSON
 
 @MainActor
-class SubredditDetailsViewModel: ObservableObject {    
+class SubredditDetailsViewModel: ObservableObject {
     @Published var subredditName: String
     @Published var subredditData: SubredditData?
     @Published var isSubscribed: Bool = false
@@ -51,15 +51,28 @@ class SubredditDetailsViewModel: ObservableObject {
             try await subredditDetailsRepository.subsribeSubreddit(subredditName: subredditName, action: action)
             
             try Task.checkCancellation()
-            do {
-                let subredditDao = SubredditDao(dbPool: dbPool)
-                try subredditDao.updateSubscription(isSubscribed: action == "sub" ? true : false)
-            } catch {
-                print("Error: Failed to update subscription in subredditData: \(error)")
-            }
-
-            self.isSubscribed = action == "sub"
             
+            let subscribedSubredditDao = SubscribedSubredditDao(dbPool: dbPool)
+            guard !AccountViewModel.shared.account.isAnonymous() else {
+                return
+            }
+            if action == "unsub" {
+                try subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: subredditName, accountName: AccountViewModel.shared.account.username)
+                //                print(try subscribedSubredditDao.getSubscribedSubreddit(subredditName: subredditName, accountName: AccountViewModel.shared.account.username) == nil)
+            } else {
+                if let subredditData = self.subredditData {
+                    let subscribedSubredditData = SubscribedSubredditData(
+                        fullName: subredditData.fullName,
+                        name: subredditName,
+                        iconUrl: subredditData.iconUrl,
+                        username: AccountViewModel.shared.account.username,
+                        favorite: false
+                    )
+                    try subscribedSubredditDao.insert(subscribedSubredditData: subscribedSubredditData)
+                }
+            }
+            
+            self.isSubscribed = action == "sub"
         } catch {
             self.error = error
             
@@ -89,16 +102,17 @@ class SubredditDetailsViewModel: ObservableObject {
             
             try Task.checkCancellation()
             
+            self.subredditData = fetchData
+            
+            let subscribedSubredditDao = SubscribedSubredditDao(dbPool: dbPool)
+            let isSubscribedReddit = try subscribedSubredditDao.getSubscribedSubreddit(subredditName: fetchData.name, accountName: AccountViewModel.shared.account.username) != nil
+            self.isSubscribed = isSubscribedReddit
+            
             do {
                 let subredditDao = SubredditDao(dbPool: dbPool)
                 try subredditDao.insert(subredditData: fetchData)
             } catch {
                 print("Error: Failed to insert subredditData - \(error.localizedDescription)")
-            }
-             
-            self.subredditData = fetchData
-            if let isJoined = self.subredditData?.isSubscribed {
-                isSubscribed = isJoined
             }
             
         } catch {

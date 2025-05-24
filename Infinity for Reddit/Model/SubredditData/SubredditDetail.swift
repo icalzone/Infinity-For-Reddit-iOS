@@ -73,6 +73,7 @@ class SubredditDetailRootClass : NSObject, NSCoding{
         return SubredditData(
             id: data.id,
             name: data.displayName,
+            fullName: data.name,
             iconUrl: data.iconImg == nil || data.iconImg.isEmpty ? data.communityIcon : data.iconImg,
             bannerUrl: data.bannerBackgroundImage,
             description: data.descriptionField,

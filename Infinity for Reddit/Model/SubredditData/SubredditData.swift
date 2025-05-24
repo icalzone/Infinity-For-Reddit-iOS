@@ -11,6 +11,7 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
     public static let databaseTableName = "subreddits"
     
     var id: String
+    var fullName: String
     var name: String
     var iconUrl: String?
     var bannerUrl: String?
@@ -24,11 +25,12 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
     var activeUsers: Int?
     var isSelected: Bool = false
     
-    init(id: String, name: String, iconUrl: String? = nil, bannerUrl: String? = nil,
+    init(id: String, name: String, fullName: String, iconUrl: String? = nil, bannerUrl: String? = nil,
          description: String? = nil, sidebarDescription: String? = nil, nSubscribers: Int, createdUTC: Int64,
          suggestedCommentSort: String? = nil, activeUsers: Int? = 0, isNSFW: Bool, isSubscribed: Bool) {
         self.id = id
         self.name = name
+        self.fullName = fullName
         self.iconUrl = iconUrl
         self.bannerUrl = bannerUrl
         self.description = description
@@ -45,6 +47,7 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
     private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case name
+        case fullName = "full_name"
         case iconUrl = "icon_url"
         case bannerUrl = "banner_url"
         case description = "description"
