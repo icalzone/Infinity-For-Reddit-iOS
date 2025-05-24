@@ -83,7 +83,6 @@ class UserDetailRootClass : NSObject, NSCoding{
             totalKarma : data.totalKarma,
             cakeday : data.createdUtc,
             isGold : data.isGold,
-            isSubscribed : data.subreddit.userIsSubscriber,
             canBeFollowed : data.acceptFollowers,
             isNSFW : data.subreddit.over18,
             description : data.subreddit.publicDescription,

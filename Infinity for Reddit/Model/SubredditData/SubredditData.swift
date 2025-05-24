@@ -21,13 +21,12 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
     var createdUTC: Int64?
     var suggestedCommentSort: String?
     var isNSFW: Bool?
-    var isSubscribed: Bool?
     var activeUsers: Int?
     var isSelected: Bool = false
     
     init(id: String, name: String, fullName: String, iconUrl: String? = nil, bannerUrl: String? = nil,
          description: String? = nil, sidebarDescription: String? = nil, nSubscribers: Int, createdUTC: Int64,
-         suggestedCommentSort: String? = nil, activeUsers: Int? = 0, isNSFW: Bool, isSubscribed: Bool) {
+         suggestedCommentSort: String? = nil, activeUsers: Int? = 0, isNSFW: Bool) {
         self.id = id
         self.name = name
         self.fullName = fullName
@@ -39,7 +38,6 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
         self.createdUTC = createdUTC
         self.suggestedCommentSort = suggestedCommentSort
         self.isNSFW = isNSFW
-        self.isSubscribed = isSubscribed
         self.activeUsers = activeUsers
         self.isSelected = false
     }
@@ -57,7 +55,6 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord {
         case suggestedCommentSort = "suggested_comment_sort"
         case activeUsers = "active_users"
         case isNSFW = "is_nsfw"
-        case isSubscribed = "is_subscribed"
         case isSelected = "is_selected"
     }
     

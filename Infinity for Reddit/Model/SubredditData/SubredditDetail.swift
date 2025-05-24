@@ -82,8 +82,7 @@ class SubredditDetailRootClass : NSObject, NSCoding{
             createdUTC: data.createdUtc,
             suggestedCommentSort: data.suggestedCommentSort,
             activeUsers: data.accountsActive,
-            isNSFW: data.over18,
-            isSubscribed: data.userIsSubscriber
+            isNSFW: data.over18
         )
     }
 

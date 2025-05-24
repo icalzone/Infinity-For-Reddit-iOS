@@ -21,14 +21,13 @@ public struct UserData: Codable, FetchableRecord, PersistableRecord {
     var totalKarma: Int?
     var cakeday: Double?
     var isGold: Bool?
-    var isSubscribed: Bool?
     var canBeFollowed: Bool?
     var isNSFW: Bool?
     var description: String?
     var title: String?
     var isSelected: Bool
     
-    init(id: String, name: String, iconUrl: String? = nil, banner: String? = nil, commentKarma: Int? = nil, linkKarma: Int? = nil, awarderKarma: Int? = nil, awardeeKarma: Int? = nil, totalKarma: Int? = nil, cakeday: Double? = nil, isGold: Bool? = nil, isSubscribed: Bool? = nil, canBeFollowed: Bool? = nil, isNSFW: Bool? = nil, description: String? = nil, title: String? = nil) {
+    init(id: String, name: String, iconUrl: String? = nil, banner: String? = nil, commentKarma: Int? = nil, linkKarma: Int? = nil, awarderKarma: Int? = nil, awardeeKarma: Int? = nil, totalKarma: Int? = nil, cakeday: Double? = nil, isGold: Bool? = nil, canBeFollowed: Bool? = nil, isNSFW: Bool? = nil, description: String? = nil, title: String? = nil) {
         self.id = id
         self.name = name
         self.iconUrl = iconUrl
@@ -40,7 +39,6 @@ public struct UserData: Codable, FetchableRecord, PersistableRecord {
         self.totalKarma = totalKarma
         self.cakeday = cakeday
         self.isGold = isGold
-        self.isSubscribed = isSubscribed
         self.canBeFollowed = canBeFollowed
         self.isNSFW = isNSFW
         self.description = description
@@ -60,7 +58,6 @@ public struct UserData: Codable, FetchableRecord, PersistableRecord {
         case totalKarma = "total_karma"
         case cakeday = "cakeday"
         case isGold = "is_gold"
-        case isSubscribed = "is_subscribed"
         case canBeFollowed = "can_follow"
         case isNSFW = "is_nsfw"
         case description = "description"
