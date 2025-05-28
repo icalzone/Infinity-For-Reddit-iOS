@@ -31,7 +31,11 @@ struct AccountSheet: View {
                     CustomWebImage(
                         accountViewModel.account.bannerImageUrl,
                         height: 150,
-                        handleImageTapGesture: false
+                        handleImageTapGesture: false,
+                        fallbackView: {
+                            Spacer()
+                                .frame(height: 150)
+                        }
                     )
                     
                     CustomWebImage(
