@@ -146,6 +146,7 @@ struct SubscriptionsView: View {
     }
 
     struct CustomFeedView: View {
+        @EnvironmentObject var navigationManager: NavigationManager
         @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
         
         var body: some View {
@@ -179,6 +180,9 @@ struct SubscriptionsView: View {
                             }
                             .contentShape(Rectangle())
                             .listPlainItem()
+                            .onTapGesture {
+                                navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                            }
                         }
                     }
                     .scrollBounceBehavior(.basedOnSize)

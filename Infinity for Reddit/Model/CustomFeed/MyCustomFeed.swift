@@ -7,7 +7,7 @@
 
 import GRDB
 
-struct MyCustomFeed: Codable, FetchableRecord, PersistableRecord {
+struct MyCustomFeed: Codable, FetchableRecord, PersistableRecord, Equatable, Hashable {
     static let databaseTableName = "custom_feeds"
     
     var path: String

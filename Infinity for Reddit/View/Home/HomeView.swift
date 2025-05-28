@@ -129,6 +129,8 @@ struct HomeView: View {
                         SubredditDetailsView(subredditName: subredditName)
                     } else if case .search(let query, let searchInSubredditOrUserName, let searchInMultiReddit, let searchInThingType) = destination {
                         SearchResultsView(query: query, searchInSubredditOrUserName: searchInSubredditOrUserName, searchInMultiReddit: searchInMultiReddit, searchInThingType: searchInThingType)
+                    } else if case .customFeed(let myCustomFeed) = destination {
+                        CustomFeedDetailsView(myCustomFeed: myCustomFeed)
                     }
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in

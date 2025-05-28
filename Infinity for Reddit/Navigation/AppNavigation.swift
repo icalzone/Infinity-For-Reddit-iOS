@@ -11,4 +11,5 @@ enum AppNavigation: Hashable {
     case subredditDetails(subredditName: String)
     case userDetails(username: String)
     case search(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: Int)
+    case customFeed(myCustomFeed: MyCustomFeed)
 }
