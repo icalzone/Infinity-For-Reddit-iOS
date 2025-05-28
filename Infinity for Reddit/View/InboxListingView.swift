@@ -82,6 +82,7 @@ struct InboxMessageItemView: View {
             
             Text(inbox.body)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
                 .secondaryText()
             
             Divider()
@@ -115,6 +116,7 @@ struct InboxNotificationItemView: View {
             
             Text(inbox.body)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(1)
                 .secondaryText()
             
             Divider()
