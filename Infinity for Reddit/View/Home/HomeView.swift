@@ -112,6 +112,7 @@ struct HomeView: View {
                 
                 print(docsDir)
             }
+            .id(accountViewModel.account.username)
             
             if let media = fullScreenMediaViewModel.media {
                 if case let .image(urlString, aspectRatio, post) = media {
