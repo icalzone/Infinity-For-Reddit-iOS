@@ -41,10 +41,13 @@ struct PostDetailsViewCard: View {
                 Text(formatter.string(from: Date(timeIntervalSince1970: TimeInterval(postViewModel.post.createdUtc))))
                     .secondaryText()
             }
-            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
             
             Text(postViewModel.post.title)
                 .font(.system(size: 24))
+                .padding(.horizontal, 16)
                 .padding(.bottom, 8)
                 .postTitle()
             
@@ -62,25 +65,20 @@ struct PostDetailsViewCard: View {
                 }
                 .frame(maxWidth: .infinity)
                 .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-                
-                Spacer()
-                    .frame(height: 16)
             } else if let galleryData = postViewModel.post.galleryData,
                       !galleryData.items.isEmpty,
                       let mediaMetadata = postViewModel.post.mediaMetadata,
                       let preview = mediaMetadata[galleryData.items[0].mediaId] {
                 GalleryCarousel(post: postViewModel.post)
                     .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
-                
-                Spacer()
-                    .frame(height: 16)
             }
             
             if let selftext = postViewModel.post.selftextProcessedMarkdown {
                 Markdown(selftext)
                     .markdownImageProvider(WebImageProvider(mediaMetadata: postViewModel.post.mediaMetadata))
                     .font(.system(size: 24))
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
                     .themedPostCommentMarkdown()
             }
             
@@ -137,10 +135,9 @@ struct PostDetailsViewCard: View {
                 }
                 .buttonStyle(.borderless)
             }
-            .padding(.vertical, 8)
-            
-            Divider()
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
         }
-        .padding(.vertical, -11)
     }
 }

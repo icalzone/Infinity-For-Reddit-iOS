@@ -36,7 +36,7 @@ struct PostDetailsView: View {
         Group {
             List {
                 PostDetailsViewCard(account: account, post: post)
-                    .listPlainItem()
+                    .listPlainItemNoInsets()
                 
                 if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
                     ProgressIndicator()
@@ -47,7 +47,7 @@ struct PostDetailsView: View {
                 } else {
                     ForEach(postDetailsViewModel.comments, id: \.id) { comment in
                         CommentViewCard(account: account, comment: comment, isInPostDetails: true)
-                            .listPlainItem()
+                            .listPlainItemNoInsets()
                             .id(comment.id)
                     }
                     if postDetailsViewModel.hasMoreComments {
