@@ -187,6 +187,7 @@ public class Comment : NSObject, NSCoding, Validatable {
     var controversiality : Int!
     var created : Float!
     var createdUtc : Float!
+    var depth : Int!
     var distinguished : String!
     var downs : Int!
     var edited : Bool!
@@ -273,6 +274,7 @@ public class Comment : NSObject, NSCoding, Validatable {
         controversiality = json["controversiality"].intValue
         created = json["created"].floatValue
         createdUtc = json["created_utc"].floatValue
+        depth = json["depth"].intValue
         distinguished = json["distinguished"].stringValue
         downs = json["downs"].intValue
         edited = json["edited"].boolValue
@@ -451,6 +453,9 @@ public class Comment : NSObject, NSCoding, Validatable {
         if createdUtc != nil{
             dictionary["created_utc"] = createdUtc
         }
+        if depth != nil {
+            dictionary["depth"] = depth
+        }
         if distinguished != nil{
             dictionary["distinguished"] = distinguished
         }
@@ -618,6 +623,7 @@ public class Comment : NSObject, NSCoding, Validatable {
         controversiality = aDecoder.decodeObject(forKey: "controversiality") as? Int
         created = aDecoder.decodeObject(forKey: "created") as? Float
         createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Float
+        depth = aDecoder.decodeObject(forKey: "depth") as? Int
         distinguished = aDecoder.decodeObject(forKey: "distinguished") as? String
         downs = aDecoder.decodeObject(forKey: "downs") as? Int
         edited = aDecoder.decodeObject(forKey: "edited") as? Bool
@@ -759,6 +765,9 @@ public class Comment : NSObject, NSCoding, Validatable {
         }
         if createdUtc != nil{
             aCoder.encode(createdUtc, forKey: "created_utc")
+        }
+        if depth != nil {
+            aCoder.encode(depth, forKey: "depth")
         }
         if distinguished != nil{
             aCoder.encode(distinguished, forKey: "distinguished")
