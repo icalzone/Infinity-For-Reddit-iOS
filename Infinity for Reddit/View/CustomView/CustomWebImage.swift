@@ -133,9 +133,6 @@ struct CustomWebImage<Content: View>: View {
                     .applyIf(height != nil) {
                         $0.frame(height: height!)
                     }
-                    .applyIf(handleImageTapGesture == true && fullScreenMediaViewModel.currentId != (urlString ?? "")) {
-                        $0.matchedGeometryEffect(id: urlString ?? "", in: namespaceManager.animation)
-                    }
                     .applyIf(centerCrop == true) {
                         $0.scaledToFill()
                             .clipped()

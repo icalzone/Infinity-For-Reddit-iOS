@@ -147,7 +147,6 @@ struct PostViewCard: View {
             }
             .padding(.vertical, 8)
         }
-        
         .onTapGesture {
             navigationManager.path.append(AppNavigation.postDetails(post: postViewModel.post))
         }
