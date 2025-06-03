@@ -25,97 +25,101 @@ struct CommentViewCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack(alignment: .center) {
-                VStack(alignment: .leading) {
-                    if !isInPostDetails {
-                        Text(commentViewModel.comment.subredditNamePrefixed)
-                            .subreddit()
+        HStack(spacing: 0) {
+            CommentIndentationView(depth: commentViewModel.comment.depth)
+            
+            VStack(alignment: .leading) {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading) {
+                        if !isInPostDetails {
+                            Text(commentViewModel.comment.subredditNamePrefixed)
+                                .subreddit()
+                                .onTapGesture {
+                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
+                                }
+                        }
+                        
+                        Text("u/\(commentViewModel.comment.author)")
+                            .username()
                             .onTapGesture {
-                                navigationManager.path.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
+                                navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
                             }
                     }
                     
-                    Text("u/\(commentViewModel.comment.author)")
-                        .username()
-                        .onTapGesture {
-                            navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
-                        }
-                }
-                
-                Spacer()
-                
-                Text(
-                    formatter.string(from: Date(timeIntervalSince1970: TimeInterval(commentViewModel.comment.createdUtc)))
-                )
-                .secondaryText()
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 8)
-            
-            Group {
-                if commentViewModel.comment.bodyProcessedMarkdown != nil {
-                    Markdown(commentViewModel.comment.bodyProcessedMarkdown!)
-                        .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
-                        .font(.system(size: 24))
-                        .padding(.horizontal, 16)
-                        .themedCommentMarkdown()
-                        .id(commentViewModel.comment.id)
-                } else {
-                    Markdown(commentViewModel.comment.body)
-                        .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
-                        .font(.system(size: 24))
-                        .padding(.horizontal, 16)
-                        .themedCommentMarkdown()
-                        .id(commentViewModel.comment.id)
-                }
-            }
-            
-            HStack(alignment: .center) {
-                Button(action: {
-                    voteTask?.cancel()
-                    voteTask = Task {
-                        await commentViewModel.voteComment(vote: 1)
-                    }
-                }) {
-                    SwiftUI.Image(commentViewModel.comment.likes == 1 ? "upvoted" : "upvote")
-                        .commentIconTemplateRendering()
-                        .commentUpvoteIcon(isUpvoted: commentViewModel.comment.likes == 1)
-                }
-                .buttonStyle(.borderless)
-                
-                Text(String(commentViewModel.comment.score + commentViewModel.comment.likes))
-                    .frame(width: 50, alignment: .center)
-                    .commentInfo()
-                
-                Button(action: {
-                    voteTask?.cancel()
-                    voteTask = Task {
-                        await commentViewModel.voteComment(vote: -1)
-                    }
-                }) {
-                    SwiftUI.Image(commentViewModel.comment.likes == -1 ? "downvoted" : "downvote")
-                        .commentIconTemplateRendering()
-                        .commentDownvoteIcon(isDownvoted: commentViewModel.comment.likes == -1)
-                }
-                .padding(.trailing, 16)
-                .buttonStyle(.borderless)
-                
-                Spacer()
-                
-                Button {
+                    Spacer()
                     
-                } label: {
-                    SwiftUI.Image(systemName: "square.and.arrow.up")
-                        .commentIconTemplateRendering()
-                        .commentIcon()
+                    Text(
+                        formatter.string(from: Date(timeIntervalSince1970: TimeInterval(commentViewModel.comment.createdUtc)))
+                    )
+                    .secondaryText()
                 }
-                .buttonStyle(.borderless)
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
+                
+                Group {
+                    if commentViewModel.comment.bodyProcessedMarkdown != nil {
+                        Markdown(commentViewModel.comment.bodyProcessedMarkdown!)
+                            .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
+                            .font(.system(size: 24))
+                            .padding(.horizontal, 16)
+                            .themedCommentMarkdown()
+                            .id(commentViewModel.comment.id)
+                    } else {
+                        Markdown(commentViewModel.comment.body)
+                            .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
+                            .font(.system(size: 24))
+                            .padding(.horizontal, 16)
+                            .themedCommentMarkdown()
+                            .id(commentViewModel.comment.id)
+                    }
+                }
+                
+                HStack(alignment: .center) {
+                    Button(action: {
+                        voteTask?.cancel()
+                        voteTask = Task {
+                            await commentViewModel.voteComment(vote: 1)
+                        }
+                    }) {
+                        SwiftUI.Image(commentViewModel.comment.likes == 1 ? "upvoted" : "upvote")
+                            .commentIconTemplateRendering()
+                            .commentUpvoteIcon(isUpvoted: commentViewModel.comment.likes == 1)
+                    }
+                    .buttonStyle(.borderless)
+                    
+                    Text(String(commentViewModel.comment.score + commentViewModel.comment.likes))
+                        .frame(width: 50, alignment: .center)
+                        .commentInfo()
+                    
+                    Button(action: {
+                        voteTask?.cancel()
+                        voteTask = Task {
+                            await commentViewModel.voteComment(vote: -1)
+                        }
+                    }) {
+                        SwiftUI.Image(commentViewModel.comment.likes == -1 ? "downvoted" : "downvote")
+                            .commentIconTemplateRendering()
+                            .commentDownvoteIcon(isDownvoted: commentViewModel.comment.likes == -1)
+                    }
+                    .padding(.trailing, 16)
+                    .buttonStyle(.borderless)
+                    
+                    Spacer()
+                    
+                    Button {
+                        
+                    } label: {
+                        SwiftUI.Image(systemName: "square.and.arrow.up")
+                            .commentIconTemplateRendering()
+                            .commentIcon()
+                    }
+                    .buttonStyle(.borderless)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 8)
         }
     }
 }
