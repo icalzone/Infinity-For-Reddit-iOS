@@ -35,11 +35,11 @@ struct ImageFullScreenView: View {
                 aspectRatio: aspectRatio,
                 handleImageTapGesture: false,
                 placeholderView: {
-                    Spacer()
-                        .frame(width: UIScreen.main.bounds.width)
-                        .applyIf(aspectRatio != nil) {
-                            $0.aspectRatio(aspectRatio!, contentMode: .fit)
-                        }
+//                    Spacer()
+//                        .frame(width: UIScreen.main.bounds.width)
+//                        .applyIf(aspectRatio != nil) {
+//                            $0.aspectRatio(aspectRatio!, contentMode: .fit)
+//                        }
                 }
             )
             .scaleEffect(scale)

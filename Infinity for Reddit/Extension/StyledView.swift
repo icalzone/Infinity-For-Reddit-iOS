@@ -32,8 +32,8 @@ extension View {
         self.modifier(NavigationBarPrimaryTextViewModifier())
     }
     
-    func themedNavigationBar() -> some View {
-        self.modifier(NavigationBarViewModifier())
+    func themedNavigationBar(opacity: Double = 1) -> some View {
+        self.modifier(NavigationBarViewModifier(opacity: opacity))
     }
     
     func addTitleToInlineNavigationBar(_ title: String, _ opacity: Double) -> some View {

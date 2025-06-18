@@ -89,12 +89,8 @@ struct CustomWebImage<Content: View>: View {
                 if handleImageTapGesture == true && fullScreenMediaViewModel.currentId == (urlString ?? "") {
                     // Image is now in full screen mode
                     Color.clear
-                        .applyIf(width != nil) {
-                            $0.frame(width: width!)
-                        }
-                        .applyIf(height != nil) {
-                            $0.frame(height: height!)
-                        }
+                        .frame(width: width)
+                        .frame(height: height)
                 } else {
                     WebImage(url: URL(string: urlString!)) { image in
                         if let aspectRatio = aspectRatio {
@@ -121,57 +117,45 @@ struct CustomWebImage<Content: View>: View {
                     }
                     .indicator(.activity)
 //                    .scaledToFit()
-                    .applyIf(circleClipped == true) {
-                        $0.clipShape(Circle())
-                    }
-                    //                    .applyIf(handleImageTapGesture != true) {
-                    //                        $0.transition(.fade(duration: 0.5))
-                    //                    }
-                    .applyIf(width != nil) {
-                        $0.frame(width: width!)
-                    }
-                    .applyIf(height != nil) {
-                        $0.frame(height: height!)
-                    }
-                    .applyIf(centerCrop == true) {
-                        $0.scaledToFill()
-                            .clipped()
-                    }
-                    .applyIf(centerCrop == false) {
-                        $0.scaledToFit()
-                    }
+                    .clipShape(circleClipped == true ? AnyShape(Circle()) : AnyShape(Rectangle()))
+                    .transition(.fade(duration: 0.5))
+                    .frame(width: width)
+                    .frame(height: height)
+//                    .scaledToFill(centerCrop == true)
+//                    .clipped(centerCrop == true)
+//                    .scaledToFit(centerCrop == false)
                 }
             }
         }
-        .applyIf(handleImageTapGesture == true) {
-            $0.contentShape(Rectangle())
-                .highPriorityGesture(
-                    TapGesture()
-                        .onEnded {
-                            withAnimation {
-                                switch post?.postType {
-                                case .image:
-                                    fullScreenMediaViewModel.show(.image(url: urlString ?? "", aspectRatio: aspectRatio, post: post))
-                                case .imageWithUrlPreview(let urlPreview):
-                                    fullScreenMediaViewModel.show(.image(url: urlString ?? "", aspectRatio: aspectRatio, post: post))
-                                case .gif:
-                                    print("gif")
-                                case .video(let videoUrl, let downloadUrl):
-                                    fullScreenMediaViewModel.show(.video(url: videoUrl, post: post))
-                                case .link:
-                                    print("link")
-                                case .imgurVideo(let url):
-                                    print("gif")
-                                case .redgifs(let redgifsId):
-                                    print("gif")
-                                case .streamable(let shortCode):
-                                    print("gif")
-                                default:
-                                    print("other types")
-                                }
-                            }
-                        }
-                )
-        }
+//        .applyIf(handleImageTapGesture == true) {
+//            $0.contentShape(Rectangle())
+//                .highPriorityGesture(
+//                    TapGesture()
+//                        .onEnded {
+//                            withAnimation {
+//                                switch post?.postType {
+//                                case .image:
+//                                    fullScreenMediaViewModel.show(.image(url: urlString ?? "", aspectRatio: aspectRatio, post: post))
+//                                case .imageWithUrlPreview(let urlPreview):
+//                                    fullScreenMediaViewModel.show(.image(url: urlString ?? "", aspectRatio: aspectRatio, post: post))
+//                                case .gif:
+//                                    print("gif")
+//                                case .video(let videoUrl, let downloadUrl):
+//                                    fullScreenMediaViewModel.show(.video(url: videoUrl, post: post))
+//                                case .link:
+//                                    print("link")
+//                                case .imgurVideo(let url):
+//                                    print("gif")
+//                                case .redgifs(let redgifsId):
+//                                    print("gif")
+//                                case .streamable(let shortCode):
+//                                    print("gif")
+//                                default:
+//                                    print("other types")
+//                                }
+//                            }
+//                        }
+//                )
+//        }
     }
 }

@@ -26,6 +26,23 @@ extension Color {
             self.init(red: red, green: green, blue: blue, opacity: alpha)
         }
     }
+    
+    init(hex: Int, opacity: Double) {
+        if hex > 0xFFFFFF {
+            // Has alpha channel
+            let red = Double((hex >> 16) & 0xFF) / 255.0
+            let green = Double((hex >> 8) & 0xFF) / 255.0
+            let blue = Double(hex & 0xFF) / 255.0
+            
+            self.init(red: red, green: green, blue: blue, opacity: opacity)
+        } else {
+            let red = Double((hex >> 16) & 0xFF) / 255.0
+            let green = Double((hex >> 8) & 0xFF) / 255.0
+            let blue = Double(hex & 0xFF) / 255.0
+            
+            self.init(red: red, green: green, blue: blue, opacity: opacity)
+        }
+    }
 }
 
 extension Color {

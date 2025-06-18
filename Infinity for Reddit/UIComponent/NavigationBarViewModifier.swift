@@ -10,10 +10,12 @@ import SwiftUI
 struct NavigationBarViewModifier: ViewModifier {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
+    var opacity: Double = 1
+    
     func body(content: Content) -> some View {
         content
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarBackground(Color(hex: themeViewModel.currentCustomTheme.colorPrimary), for: .navigationBar)
+            .toolbarBackground(Color(hex: themeViewModel.currentCustomTheme.colorPrimary, opacity: opacity), for: .navigationBar)
     }
 }
 
