@@ -165,7 +165,11 @@ struct CustomWebImage<Content: View>: View {
                                 case .video(let videoUrl, let downloadUrl):
                                     fullScreenMediaViewModel.show(.video(url: videoUrl, post: post))
                                 case .link:
-                                    //UIApplication.shared.open(url)
+                                    if let urlString = post?.url, let url = URL(string: urlString) {
+                                        UIApplication.shared.open(url)
+                                    } else {
+                                        print("Invalid or empty URL")
+                                    }
                                     print("link")
                                 case .imgurVideo(let url):
                                     print("gif")
