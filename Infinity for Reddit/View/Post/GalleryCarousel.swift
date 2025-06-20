@@ -49,7 +49,7 @@ struct GalleryCarousel: View {
             
             Text("\(galleryScrollState.scrollId + 1)/\(items.count)")
                 .padding(4)
-                .mediaIndicator()
+                .galleryIndexIndicator()
                 .cornerRadius(8)
                 .padding(12)
         }

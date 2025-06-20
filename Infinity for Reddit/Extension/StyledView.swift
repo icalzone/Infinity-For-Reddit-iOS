@@ -140,6 +140,10 @@ extension View {
         self.modifier(CommentMarkdownViewModifier())
     }
     
+    func galleryIndexIndicator() -> some View {
+        self.modifier(GalleryIndexIndicatorViewModifier())
+    }
+    
     func mediaIndicator() -> some View {
         self.modifier(MediaIndicatorViewModifier())
     }

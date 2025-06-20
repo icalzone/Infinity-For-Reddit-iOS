@@ -229,16 +229,35 @@ struct PostViewCard: View {
                         .padding(.horizontal, 16)
                 } else if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
                     GeometryReader { geo in
-                        CustomWebImage(
-                            url,
-                            aspectRatio: preview.images[0].source.aspectRatio,
-                            enableMatchedGeometryEffect: true,
-                            post: postViewModel.post,
-                            placeholderView: {
-                                Spacer()
-                                    .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
+                        ZStack(alignment: .topLeading) {
+                            CustomWebImage(
+                                url,
+                                aspectRatio: preview.images[0].source.aspectRatio,
+                                enableMatchedGeometryEffect: true,
+                                post: postViewModel.post,
+                                placeholderView: {
+                                    Spacer()
+                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
+                                }
+                            )
+                            
+                            switch postViewModel.post.postType {
+                            case .video, .imgurVideo, .redgifs, .streamable:
+                                SwiftUI.Image(systemName: "play.circle")
+                                    .resizable()
+                                    .mediaIndicator()
+                                    .padding(12)
+                                    .frame(width: 64, height: 64)
+                            case .link:
+                                SwiftUI.Image(systemName: "link.circle")
+                                    .resizable()
+                                    .mediaIndicator()
+                                    .padding(12)
+                                    .frame(width: 64, height: 64)
+                            default:
+                                EmptyView()
                             }
-                        )
+                        }
                     }
                     .frame(maxWidth: .infinity)
                     .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)

@@ -119,7 +119,7 @@ struct ListSectionHeaderViewModifier: ViewModifier {
     }
 }
 
-struct MediaIndicatorViewModifier: ViewModifier {
+struct GalleryIndexIndicatorViewModifier: ViewModifier {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
     func body(content: Content) -> some View {

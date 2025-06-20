@@ -113,3 +113,15 @@ struct PrimaryIconImageViewModifier: ViewModifier {
             .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.primaryIconColor))
     }
 }
+
+struct MediaIndicatorViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(4)
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.mediaIndicatorIconColor))
+            .background(Circle().fill(Color(hex: themeViewModel.currentCustomTheme.mediaIndicatorBackgroundColor)))
+            .clipShape(Circle())
+    }
+}
