@@ -39,9 +39,18 @@ struct VideoFullScreenView: View {
             VideoPlayer(player: videoFullScreenViewModel.player)
                 .onDisappear {
                     videoFullScreenViewModel.player.pause()
+                    
+                    NotificationCenter.default.removeObserver(self)
                 }
                 .onAppear {
                     videoFullScreenViewModel.player.play()
+                    
+                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                                                           object: videoFullScreenViewModel.player.currentItem,
+                                                           queue: .main) { _ in
+                        videoFullScreenViewModel.player.seek(to: .zero)
+                        videoFullScreenViewModel.player.play()
+                    }
                 }
                 .frame(height: 400)
                 .offset(y: currentDragOffset)
