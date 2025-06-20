@@ -13,6 +13,7 @@ struct PostViewCard: View {
     
     @StateObject var postViewModel: PostViewModel
     @State var voteTask: Task<Void, Never>?
+    @State var saveTask: Task<Void, Never>?
     
     let formatter = DateFormatter()
     
@@ -60,149 +61,6 @@ struct PostViewCard: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
                     .postTitle()
-                
-//                switch postViewModel.post.postType {
-//                case .text:
-//                    if let selftextTruncated = postViewModel.post.selftextTruncated {
-//                        Text(selftextTruncated)
-//                            .postContent()
-//                            .padding(.horizontal, 16)
-//                    }
-//                case .image:
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .imageWithUrlPreview(let urlPreview):
-//                    <#code#>
-//                case .gif:
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .video(let videoUrl, let downloadUrl):
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .gallery:
-//                    if let galleryData = postViewModel.post.galleryData,
-//                              !galleryData.items.isEmpty,
-//                              let mediaMetadata = postViewModel.post.mediaMetadata,
-//                              let preview = mediaMetadata[galleryData.items[0].mediaId] {
-//                        // May not have a preview!!!!!!
-//                        GalleryCarousel(post: postViewModel.post)
-//                            .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
-//                    }
-//                case .link:
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .noPreviewLink:
-//                    <#code#>
-//                case .poll:
-//                    <#code#>
-//                case .imgurVideo(let url):
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .redgifs(let redgifsId):
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                case .streamable(let shortCode):
-//                    if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
-//                        GeometryReader { geo in
-//                            CustomWebImage(
-//                                url,
-//                                aspectRatio: preview.images[0].source.aspectRatio,
-//                                enableMatchedGeometryEffect: true,
-//                                post: postViewModel.post,
-//                                placeholderView: {
-//                                    Spacer()
-//                                        .frame(width: geo.size.width, height: CGFloat(geo.size.width) / (CGFloat(preview.images[0].source.width) / CGFloat(preview.images[0].source.height)))
-//                                }
-//                            )
-//                        }
-//                        .frame(maxWidth: .infinity)
-//                        .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
-//                    }
-//                }
                 
                 switch postViewModel.post.postType {
                 case .link, .noPreviewLink:
@@ -306,6 +164,19 @@ struct PostViewCard: View {
                         .postInfo()
                     
                     Spacer()
+                    
+                    Button(action: {
+                        saveTask?.cancel()
+                        saveTask = Task {
+                            await postViewModel.savePost(save: !postViewModel.post.saved)
+                        }
+                    }) {
+                        SwiftUI.Image(systemName: postViewModel.post.saved ? "bookmark.fill" : "bookmark")
+                            .postIconTemplateRendering()
+                            .postIcon()
+                    }
+                    .padding(.trailing, 16)
+                    .buttonStyle(.borderless)
                     
                     ShareLink(item: postViewModel.post.url) {
                         SwiftUI.Image(systemName: "square.and.arrow.up")

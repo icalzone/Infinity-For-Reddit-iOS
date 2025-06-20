@@ -40,4 +40,20 @@ public class PostRepository: PostRepositoryProtocol {
                 .value
         }
     }
+    
+    public func savePost(
+        post: Post,
+        save: Bool
+    ) async throws {
+        do {
+            let params = ["id": post.name!]
+            
+            try Task.checkCancellation()
+            
+            _ = try await self.session.request(save ? RedditOAuthAPI.saveThing(params: params) : RedditOAuthAPI.unsaveThing(params: params))
+                .validate()
+                .serializingDecodable(Empty.self, automaticallyCancelling: true)
+                .value
+        }
+    }
 }

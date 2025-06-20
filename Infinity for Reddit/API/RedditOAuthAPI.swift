@@ -27,6 +27,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case searchSubreddits(queries: [String: String])
     case searchUsers(queries: [String: String])
     case getInbox(pathComponents: [String: String], queries: [String: String])
+    case saveThing(params: [String: String])
+    case unsaveThing(params: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -36,7 +38,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox:
             return .get
-        case .vote, .subsrcribeToSubreddit:
+        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing:
             return .post
         }
     }
@@ -79,6 +81,10 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/search.json"
         case .getInbox(let pathComponents, _):
             return "/message/\(pathComponents["where"] ?? MessageWhere.inbox.rawValue).json"
+        case .saveThing:
+            return "/api/save"
+        case .unsaveThing:
+            return "/api/unsave"
         }
     }
     
@@ -86,7 +92,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox:
             return nil
-        case .vote(let params), .subsrcribeToSubreddit(let params):
+        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params):
             return params
         }
     }
@@ -101,7 +107,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"]
         case .getSubredditData:
             return ["raw_json": "1"]
-        case .vote, .getMyCustomFeeds:
+        case .vote, .getMyCustomFeeds, .saveThing, .unsaveThing:
             return nil
         case .getSubredditPosts(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
@@ -134,14 +140,14 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo(let headers):
             return headers
-        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox:
+        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .vote, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox:
+        case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .vote, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing:
             return URLEncoding.default
         }
     }

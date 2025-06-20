@@ -56,4 +56,26 @@ public class PostViewModel: ObservableObject {
             print("Error voting post: \(error)")
         }
     }
+    
+    func savePost(save: Bool) async {
+        guard let _ = account.accessToken, let _ = post.name else { return }
+        
+        let previousSaved = post.saved
+        
+        post.saved = save
+        
+        self.objectWillChange.send()
+        
+        defer {
+            self.objectWillChange.send()
+        }
+        
+        do {
+            try await postRepository.savePost(post: post, save: save)
+        } catch {
+            self.post.saved = previousSaved
+            self.error = error
+            print("Error (un)saving post: \(error)")
+        }
+    }
 }
