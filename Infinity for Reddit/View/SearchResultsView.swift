@@ -21,7 +21,7 @@ struct SearchResultsView: View {
             SegmentedPicker(selectedValue: $selectedOption, values: ["Posts", "Subreddits", "Users"])
                 .padding(4)
             
-            ZStack {
+            TabView(selection: $selectedOption) {
                 PostListingView(account: accountViewModel.account, postListingMetadata: PostListingMetadata(
                     postListingType: PostListingType.search(
                         query: searchResultsViewModel.query,
@@ -34,16 +34,15 @@ struct SearchResultsView: View {
                     queries: ["q": searchResultsViewModel.query, "include_over_18": "1", "type": "link"],
                     params: nil
                 ))
-                .opacity(selectedOption == 0 ? 1 : 0)
+                .tag(0)
                 
                 SubredditListingView(account: accountViewModel.account, query: searchResultsViewModel.query)
-                    .opacity(selectedOption == 1 ? 1 : 0)
+                    .tag(1)
                 
                 UserListingView(account: accountViewModel.account, query: searchResultsViewModel.query)
-                    .opacity(selectedOption == 2 ? 1 : 0)
+                    .tag(2)
             }
-            
-            Spacer()
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .themedNavigationBar()
         .addTitleToInlineNavigationBar(searchResultsViewModel.query, 1.0)
