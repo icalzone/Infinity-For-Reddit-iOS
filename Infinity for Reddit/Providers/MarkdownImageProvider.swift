@@ -12,8 +12,6 @@ import SwiftUI
 // MARK: - WebImageProvider
 
 struct WebImageProvider: ImageProvider {
-    @ObservedObject var playerManager = PlayerManager()
-    
     var mediaMetadata: [String: MediaMetadata]?
     
     init(mediaMetadata: [String: MediaMetadata]?) {

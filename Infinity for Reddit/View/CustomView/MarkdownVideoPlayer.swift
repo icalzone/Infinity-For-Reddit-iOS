@@ -26,17 +26,27 @@ struct MarkdownVideoPlayer: View {
             if showPlayer {
                 MarkdownVideoPlayerWithControls(url: videoURL, aspectRatio: aspectRatio)
             } else {
-                Color.black
-                    .overlay(
-                        SwiftUI.Image(systemName: "play.circle.fill")
-                            .resizable()
-                            .foregroundColor(.white)
-                            .frame(width: 50, height: 50)
-                    )
-                    .onTapGesture {
-                        showPlayer = true
-                    }
-                    .aspectRatio(aspectRatio, contentMode: .fit)
+                VStack {
+                    Spacer()
+                    
+                    SwiftUI.Image(systemName: "play.circle.fill")
+                        .resizable()
+                        .foregroundColor(.white)
+                        .frame(width: 36, height: 36)
+                    
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.black)
+                .onTapGesture {
+                    showPlayer = true
+                }
+            }
+        }
+        .aspectRatio(aspectRatio, contentMode: .fit)
+        .onAppear {
+            if (!showPlayer) {
+                showPlayer = true
             }
         }
     }
@@ -58,6 +68,7 @@ private struct MarkdownVideoAVPlayer: UIViewControllerRepresentable {
 
 private struct MarkdownVideoPlayerWithControls: View {
     @StateObject private var manager: VideoPlayerViewModel
+    
     private let aspectRatio: CGSize
 
     init(url: URL, aspectRatio: CGSize) {
@@ -66,45 +77,64 @@ private struct MarkdownVideoPlayerWithControls: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack() {
             MarkdownVideoAVPlayer(player: manager.player)
-                .aspectRatio(aspectRatio, contentMode: .fit)
-
-            HStack {
-                Button(action: {
-                    manager.togglePlayPause()
-                }) {
-                    SwiftUI.Image(systemName: manager.isPlaying ? "pause.fill" : "play.fill")
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(.white)
+                .contentShape(Rectangle()) // makes the whole area tappable
+                .onTapGesture {
+                    manager.toggleControls()
                 }
-                .buttonStyle(.borderless)
 
-                Text(formatTime(manager.currentTime))
-                    .foregroundColor(.white)
-                    .font(.caption)
-                    .frame(width: 50, alignment: .trailing)
-
-                Slider(value: $manager.currentTime, in: 0...manager.duration, onEditingChanged: { editing in
-                    manager.isDragging = editing
-                    if !editing {
-                        manager.seek(to: manager.currentTime)
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Button(action: {
+                        manager.togglePlayPause()
+                        manager.resetControlsTimer()
+                    }) {
+                        SwiftUI.Image(systemName: manager.isPlaying ? "pause.fill" : "play.fill")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .foregroundColor(.white)
                     }
-                })
-                .accentColor(.white)
+                    .buttonStyle(.borderless)
 
-                Text(formatTime(manager.duration))
-                    .foregroundColor(.white)
-                    .font(.caption)
-                    .frame(width: 50, alignment: .leading)
+                    Text(formatTime(manager.currentTime))
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .frame(width: 50, alignment: .trailing)
+
+                    Slider(value: $manager.currentTime, in: 0...manager.duration, onEditingChanged: { editing in
+                        manager.isDragging = editing
+                        if !editing {
+                            manager.seek(to: manager.currentTime)
+                        }
+                    })
+                    .accentColor(.white)
+                    .onChange(of: manager.currentTime) { _ in
+                        if manager.isDragging {
+                            manager.resetControlsTimer()
+                        }
+                    }
+
+                    Text(formatTime(manager.duration))
+                        .foregroundColor(.white)
+                        .font(.caption)
+                        .frame(width: 50, alignment: .leading)
+                }
+                .padding()
+                .background(Color.black)
+                .opacity(manager.showControls ? 1 : 0)
             }
-            .padding()
-            .background(Color.black)
+            .onTapGesture {
+                manager.resetControlsTimer()
+            }
+            .opacity(manager.showControls ? 1 : 0)
+            .animation(.easeInOut(duration: 0.3), value: manager.showControls)
         }
+        .aspectRatio(aspectRatio, contentMode: .fit)
         .onAppear {
             manager.player.play()
-            manager.isPlaying = true
         }
     }
 

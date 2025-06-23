@@ -10,11 +10,13 @@ import AVFoundation
 
 class VideoPlayerViewModel: NSObject, ObservableObject {
     let player: AVPlayer
+    private var timer: Timer?
     
     private var statusObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
     private var timeControlStatusObserver: NSKeyValueObservation?
     
+    @Published var showControls = false
     @Published var isPlaying = false
     @Published var currentTime: Double = 0
     @Published var duration: Double = 1
@@ -91,7 +93,24 @@ class VideoPlayerViewModel: NSObject, ObservableObject {
         player.seek(to: cmTime)
     }
     
+    func toggleControls() {
+        showControls.toggle()
+        if showControls {
+            resetControlsTimer()
+        }
+    }
+    
+    func resetControlsTimer() {
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.showControls = false
+            }
+        }
+    }
+    
     deinit {
+        timer?.invalidate()
         NotificationCenter.default.removeObserver(self)
         statusObserver?.invalidate()
         timeControlStatusObserver?.invalidate()
