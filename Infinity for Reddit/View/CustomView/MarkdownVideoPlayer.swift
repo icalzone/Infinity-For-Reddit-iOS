@@ -25,22 +25,6 @@ struct MarkdownVideoPlayer: View {
         ZStack {
             if showPlayer {
                 MarkdownVideoPlayerWithControls(url: videoURL, aspectRatio: aspectRatio)
-            } else {
-                VStack {
-                    Spacer()
-                    
-                    SwiftUI.Image(systemName: "play.circle.fill")
-                        .resizable()
-                        .foregroundColor(.white)
-                        .frame(width: 36, height: 36)
-                    
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity)
-                .background(Color.black)
-                .onTapGesture {
-                    showPlayer = true
-                }
             }
         }
         .aspectRatio(aspectRatio, contentMode: .fit)
