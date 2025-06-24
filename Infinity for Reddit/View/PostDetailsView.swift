@@ -51,12 +51,15 @@ struct PostDetailsView: View {
                             .listPlainItemNoInsets()
                             .id(comment.id)
                             .onLongPressGesture {
-                                if comment.isCollasped {
-                                    postDetailsViewModel.expandComments(comment: comment)
-                                } else {
-                                    postDetailsViewModel.collapseComments(comment: comment)
+                                withAnimation {
+                                    if comment.isCollasped {
+                                        postDetailsViewModel.expandComments(comment: comment)
+                                    } else {
+                                        postDetailsViewModel.collapseComments(comment: comment)
+                                    }
                                 }
                             }
+                            .transition(.slide)
                     }
                     if postDetailsViewModel.hasMoreComments {
                         Text("Loading more comments")
