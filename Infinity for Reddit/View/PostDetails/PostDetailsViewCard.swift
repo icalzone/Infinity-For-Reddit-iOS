@@ -114,6 +114,9 @@ struct PostDetailsViewCard: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .themedPostCommentMarkdown()
+                    .markdownLinkHandler { url in
+                        LinkHandler.shared.handle(url: url)
+                    }
             }
             
             HStack(alignment: .center) {
