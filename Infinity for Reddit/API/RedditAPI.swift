@@ -22,6 +22,7 @@ enum RedditAPI: URLRequestConvertible {
     case getPostAndCommentsById(postId: String, queries: [String: String])
     case searchSubreddits(queries: [String: String])
     case searchUsers(queries: [String: String])
+    case getPartialUserData(queries: [String: String])
     
     private var baseURL: String {
         return "https://www.reddit.com"
@@ -31,7 +32,7 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken:
             return .post
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData, .getPartialUserData:
             return .get
         }
     }
@@ -64,6 +65,8 @@ enum RedditAPI: URLRequestConvertible {
             return "/user/\(username)/about.json"
         case .getSubredditData(let subredditName):
             return "r/\(subredditName)/about.json"
+        case .getPartialUserData:
+            return "/api/user_data_by_account_ids.json"
         }
     }
     
@@ -71,7 +74,7 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, _, let params):
             return params
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData, .getPartialUserData:
             return nil
         }
     }
@@ -104,6 +107,8 @@ enum RedditAPI: URLRequestConvertible {
             return ["raw_json": "1"]
         case .getSubredditData:
             return ["raw_json": "1"]
+        case .getPartialUserData(let queries):
+            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         }
     }
     
@@ -111,14 +116,14 @@ enum RedditAPI: URLRequestConvertible {
         switch self {
         case .getAccessToken(_, let headers, _):
             return headers
-        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData:
+        case .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData, .getPartialUserData:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getAccessToken, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData:
+        case .getAccessToken, .getFrontPagePosts, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getUserComments, .getPostAndCommentsById, .searchSubreddits, .searchUsers, .getUserData, .getSubredditData, .getPartialUserData:
             return URLEncoding.default
         }
     }
@@ -135,7 +140,6 @@ enum RedditAPI: URLRequestConvertible {
                 url = updatedURL
             }
         }
-        print(url)
         //Set up method and headers
         var request = URLRequest(url: url)
         request.method = method

@@ -13,10 +13,27 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
     private let lock = NSLock()
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        guard urlRequest.url?.absoluteString.hasPrefix("https://oauth.reddit.com") == true && urlRequest.headers["Authorization"] == nil else {
+        guard var url = urlRequest.url else {
             return completion(.success(urlRequest))
         }
+        
         var urlRequest = urlRequest
+        if url.absoluteString.hasPrefix("https://oauth.reddit.com") {
+            if AccountViewModel.shared.account.isAnonymous() {
+                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                components?.host = "www.reddit.com"
+                
+                if let newURL = components?.url {
+                    urlRequest.url = newURL
+                }
+            } else if urlRequest.headers["Authorization"] != nil {
+                return completion(.success(urlRequest))
+            }
+        } else {
+            return completion(.success(urlRequest))
+        }
+        
+        print(urlRequest.url?.absoluteString ?? "Empty URL?")
         
         urlRequest.setValue("bearer \(AccountViewModel.shared.account.accessToken ?? "")", forHTTPHeaderField: "Authorization")
         urlRequest.setValue(APIUtils.USER_AGENT, forHTTPHeaderField: APIUtils.USER_AGENT_KEY)
@@ -76,7 +93,6 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
             return
         }
         
-        // Call your API to refresh the token using the refresh token
         let parameters: [String: String] = ["grant_type": "refresh_token", "refresh_token": refreshToken]
         
         AF.request("https://www.reddit.com/api/v1/access_token", method: .post, parameters: parameters, encoding: URLEncoding.default, headers: APIUtils.getHttpBasicAuthHeader())
@@ -84,7 +100,6 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
             .responseDecodable(of: AccessTokenResponse.self) { response in
                 switch response.result {
                 case .success(let tokenResponse):
-                    // Use the decoded AccessTokenResponse struct
                     completion(.success((tokenResponse.accessToken, tokenResponse.refreshToken)))
                 case .failure(let error):
                     completion(.failure(error))

@@ -164,7 +164,6 @@ enum RedditOAuthAPI: URLRequestConvertible {
                 url = updatedURL
             }
         }
-        print(url)
         //Set up method and headers
         var request = URLRequest(url: url)
         request.method = method
