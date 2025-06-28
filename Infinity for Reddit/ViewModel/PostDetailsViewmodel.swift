@@ -13,8 +13,8 @@ import IdentifiedCollections
 public class PostDetailsViewModel: ObservableObject {
     // MARK: - Properties
     @Published var post: Post
-    @Published var visibleComments: IdentifiedArrayOf<Comment> = []
-    var allComments: IdentifiedArrayOf<Comment> = []
+    @Published var visibleComments: IdentifiedArrayOf<CommentItem> = []
+    var allComments: IdentifiedArrayOf<CommentItem> = []
     @Published var isSingleThread: Bool =  false
     @Published var isInitialLoad: Bool = true
     @Published var isInitialLoading: Bool = false
@@ -107,10 +107,12 @@ public class PostDetailsViewModel: ObservableObject {
         await fetchComments()
     }
     
-    func postProcessComments(_ comments: [Comment]) -> [Comment] {
+    func postProcessComments(_ comments: [CommentItem]) -> [CommentItem] {
         return comments.map {
-            modifyCommentBody($0)
-            $0.bodyProcessedMarkdown = MarkdownContent($0.body)
+            if case .comment(let comment) = $0 {
+                modifyCommentBody(comment)
+                comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
+            }
             return $0
         }
     }
@@ -119,7 +121,7 @@ public class PostDetailsViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(comment)
     }
     
-    func printDuplicateCommentIDs(in comments: IdentifiedArrayOf<Comment>) {
+    func printDuplicateCommentIDs(in comments: IdentifiedArrayOf<CommentItem>) {
         var seen: Set<String> = []
         var duplicates: Set<String> = []
 
@@ -149,9 +151,17 @@ public class PostDetailsViewModel: ObservableObject {
         let parentDepth = comment.depth
         var endIndex = index + 1
 
-        while endIndex < visibleComments.count,
-              let depth = visibleComments[endIndex].depth,
-              depth > (parentDepth ?? 0) {
+        while endIndex < visibleComments.count {
+            let item = visibleComments[endIndex]
+
+            guard case let .comment(childComment) = item else {
+                break
+            }
+
+            guard childComment.depth > (parentDepth ?? 0) else {
+                break
+            }
+
             endIndex += 1
         }
 
@@ -177,7 +187,8 @@ public class PostDetailsViewModel: ObservableObject {
             let child = allComments[childIndex]
 
             // Stop when we reach a sibling or ancestor
-            guard let childDepth = child.depth, childDepth > parentDepth else {
+            guard case let .comment(childComment) = child,
+                  childComment.depth > parentDepth else {
                 break
             }
 
@@ -201,7 +212,13 @@ public class PostDetailsViewModel: ObservableObject {
         let startIndex = visibleComments.firstIndex(where: { $0.id == comment.id }) ?? 0
         let commentBatch = Array(
             visibleComments[startIndex..<min(visibleComments.count, startIndex + UserProfileImageBatchLoader.batchSize)]
-        )
+        ).compactMap { item -> Comment? in
+            if case .comment(let comment) = item {
+                return comment
+            } else {
+                return nil
+            }
+        }
 
         Task {
             let iconUrl = await UserProfileImageBatchLoader.shared.loadIcons(for: commentBatch)

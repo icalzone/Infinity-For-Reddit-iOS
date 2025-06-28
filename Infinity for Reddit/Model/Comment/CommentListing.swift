@@ -89,12 +89,12 @@ public class CommentListing : NSObject, NSCoding, Validatable {
         let childrenArray = json["children"].arrayValue
         for childJSON in childrenArray {
             let dataJson = childJSON["data"]
-            if !dataJson.isEmpty {
-                do {
-                    try comments.append(Comment(fromJson: dataJson))
-                } catch {
+            if childJSON["kind"].stringValue == "more" {
+                commentMore = try CommentMore(fromJson: dataJson)
+            } else {
+                if !dataJson.isEmpty {
                     do {
-                        commentMore = try CommentMore(fromJson: dataJson)
+                        try comments.append(Comment(fromJson: dataJson))
                     } catch {
                         // Ignore
                     }
@@ -902,11 +902,11 @@ public class Comment : NSObject, NSCoding, Validatable, Identifiable, Observable
     }
 }
 
-class CommentMore: NSObject, NSCoding, Validatable {
+class CommentMore: NSObject, NSCoding, Validatable, Identifiable {
     var children : [String]!
     var count : Int!
     var depth : Int!
-    var id : String!
+    var id : String
     var name : String!
     var parentFullname : String!
 
@@ -917,6 +917,7 @@ class CommentMore: NSObject, NSCoding, Validatable {
         try Self.validate(json: json)
         
         if json.isEmpty {
+            id = UUID().uuidString
             return
         }
         
@@ -961,16 +962,16 @@ class CommentMore: NSObject, NSCoding, Validatable {
 
     /**
     * NSCoding required initializer.
-    * Fills the data from the passed decoder
-    */
+     * Fills the data from the passed decoder
+     */
     @objc required init(coder aDecoder: NSCoder)
     {
-         children = aDecoder.decodeObject(forKey: "children") as? [String]
-         count = aDecoder.decodeObject(forKey: "count") as? Int
-         depth = aDecoder.decodeObject(forKey: "depth") as? Int
-         id = aDecoder.decodeObject(forKey: "id") as? String
-         name = aDecoder.decodeObject(forKey: "name") as? String
-         parentFullname = aDecoder.decodeObject(forKey: "parent_id") as? String
+        children = aDecoder.decodeObject(forKey: "children") as? [String]
+        count = aDecoder.decodeObject(forKey: "count") as? Int
+        depth = aDecoder.decodeObject(forKey: "depth") as? Int
+        id = aDecoder.decodeObject(forKey: "id") as? String ?? UUID().uuidString
+        name = aDecoder.decodeObject(forKey: "name") as? String
+        parentFullname = aDecoder.decodeObject(forKey: "parent_id") as? String
     }
 
     /**
@@ -988,9 +989,7 @@ class CommentMore: NSObject, NSCoding, Validatable {
         if depth != nil{
             aCoder.encode(depth, forKey: "depth")
         }
-        if id != nil{
-            aCoder.encode(id, forKey: "id")
-        }
+        aCoder.encode(id, forKey: "id")
         if name != nil{
             aCoder.encode(name, forKey: "name")
         }
@@ -998,4 +997,18 @@ class CommentMore: NSObject, NSCoding, Validatable {
             aCoder.encode(parentFullname, forKey: "parent_id")
         }
     }
+}
+
+enum CommentItem: Identifiable {
+    var id: String {
+        switch self {
+        case .comment(let comment):
+            return comment.id
+        case .more(let more):
+            return more.id
+        }
+    }
+    
+    case comment(Comment)
+    case more(CommentMore)
 }

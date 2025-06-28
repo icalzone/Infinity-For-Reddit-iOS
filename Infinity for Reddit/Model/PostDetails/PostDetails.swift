@@ -12,7 +12,7 @@ import MarkdownUI
 public class PostDetailsRootClass: NSObject, NSCoding, Validatable {
     var postListing: PostListing!
     var commentListing: CommentListing!
-    var comments: [Comment] = []
+    var comments: [CommentItem] = []
     
     /**
      * Instantiate the instance using the passed json values to set the properties values
@@ -43,12 +43,15 @@ public class PostDetailsRootClass: NSObject, NSCoding, Validatable {
         guard !commentListing.comments.isEmpty else { return }
         for comment in commentListing.comments {
             guard let childrenCommentListing = comment.replies else {
-                comments.append(comment)
+                comments.append(CommentItem.comment(comment))
                 continue
             }
             
-            comments.append(comment)
+            comments.append(CommentItem.comment(comment))
             makeCommentList(commentListing: childrenCommentListing)
+        }
+        if let commentMore = commentListing.commentMore {
+            comments.append(CommentItem.more(commentMore))
         }
     }
     

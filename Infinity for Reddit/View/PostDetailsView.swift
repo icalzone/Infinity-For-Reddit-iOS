@@ -46,19 +46,9 @@ struct PostDetailsView: View {
                     Text("No comments")
                         .listPlainItem()
                 } else {
-                    ForEach(postDetailsViewModel.visibleComments, id: \.id) { comment in
-                        CommentViewCard(account: account, comment: comment, isInPostDetails: true, onToggleExpand: {
-                            withAnimation {
-                                if comment.isCollasped {
-                                    postDetailsViewModel.expandComments(comment: comment)
-                                } else {
-                                    postDetailsViewModel.collapseComments(comment: comment)
-                                }
-                            }
-                        })
-                            .listPlainItemNoInsets()
-                            .id(comment.id)
-                            .onLongPressGesture {
+                    ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
+                        if case let .comment(comment) = commentItem {
+                            CommentViewCard(account: account, comment: comment, isInPostDetails: true, onToggleExpand: {
                                 withAnimation {
                                     if comment.isCollasped {
                                         postDetailsViewModel.expandComments(comment: comment)
@@ -66,11 +56,23 @@ struct PostDetailsView: View {
                                         postDetailsViewModel.collapseComments(comment: comment)
                                     }
                                 }
-                            }
-                            .transition(.slide)
-                            .onAppear {
-                                postDetailsViewModel.loadIcon(comment: comment)
-                            }
+                            })
+                                .listPlainItemNoInsets()
+                                .id(comment.id)
+                                .onLongPressGesture {
+                                    withAnimation {
+                                        if comment.isCollasped {
+                                            postDetailsViewModel.expandComments(comment: comment)
+                                        } else {
+                                            postDetailsViewModel.collapseComments(comment: comment)
+                                        }
+                                    }
+                                }
+                                .transition(.slide)
+                                .onAppear {
+                                    postDetailsViewModel.loadIcon(comment: comment)
+                                }
+                        }
                     }
                     if postDetailsViewModel.hasMoreComments {
                         Text("Loading more comments")
