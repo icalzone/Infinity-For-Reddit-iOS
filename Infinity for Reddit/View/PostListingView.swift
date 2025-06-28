@@ -15,9 +15,11 @@ struct PostListingView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
     @StateObject var postListingViewModel: PostListingViewModel
     @State private var isRootView: Bool = true
+    @State private var showNewPostMenu: Bool = false
     
     private let account: Account
     
@@ -93,7 +95,7 @@ struct PostListingView: View {
         .onAppear {
             navigationBarMenuManager.push([
                 NavigationBarMenuItem(title: "New Post") {
-                    print("new post")
+                    showNewPostMenu = true
                 },
                 
                 NavigationBarMenuItem(title: "Sort") {
@@ -103,6 +105,12 @@ struct PostListingView: View {
         }
         .onDisappear {
             navigationBarMenuManager.pop()
+        }
+        .sheet(isPresented: $showNewPostMenu) {
+            NewPostSheet()
+                .themedList()
+                .presentationDetents([.fraction(0.33)])
+                .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
         }
     }
 }
