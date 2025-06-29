@@ -9,6 +9,7 @@ import Combine
 import Alamofire
 import SwiftyJSON
 import Foundation
+import GRDB
 
 public class PostListingRepository: PostListingRepositoryProtocol {
     enum PostListingRepositoryError: Error {
@@ -16,12 +17,19 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         case JSONDecodingError(String)
     }
     private let session: Session
+    private let subredditDao: SubredditDao
+    private let dbPool: DatabasePool
     
     public init() {
         guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
             fatalError("Failed to resolve Session")
         }
+        guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
+            fatalError( "Failed to resolve DatabasePool")
+        }
         self.session = resolvedSession
+        self.dbPool = resolvedDBPool
+        self.subredditDao = SubredditDao(dbPool: resolvedDBPool)
     }
     
     public func fetchPosts(
@@ -81,6 +89,19 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     }
     
     private func loadSubredditIcon(post: Post) async throws {
+        do {
+            let subredditDataList = try subredditDao.getSubredditDataByName(name: post.subreddit)
+            if !subredditDataList.isEmpty {
+                await MainActor.run {
+                    print("database icon!!!!!!!!")
+                    post.subredditOrUserIcon = subredditDataList[0].iconUrl
+                }
+                return
+            }
+        } catch {
+            // Ignore
+        }
+        
         let data = try await self.session.request(
             RedditOAuthAPI.getSubredditData(subredditName: post.subreddit)
         )

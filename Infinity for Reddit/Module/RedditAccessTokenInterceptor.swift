@@ -33,7 +33,6 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
         }
         
         print(urlRequest.url?.absoluteString ?? "Empty URL?")
-        print("damn " + (AccountViewModel.shared.account.accessToken ?? ""))
         
         completion(.success(urlRequest))
     }

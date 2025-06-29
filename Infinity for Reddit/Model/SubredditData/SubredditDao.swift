@@ -35,17 +35,17 @@ struct SubredditDao {
         }
     }
     
-    func getSubredditLiveDataByName(namePrefixed: String) throws -> AnyPublisher<SubredditData?, Error> {
+    func getSubredditLiveDataByName(name: String) throws -> AnyPublisher<SubredditData?, Error> {
         ValueObservation.tracking { db in
-            try SubredditData.fetchOne(db, sql: "SELECT * FROM subreddits WHERE name = ? COLLATE NOCASE LIMIT 1", arguments: [namePrefixed])
+            try SubredditData.fetchOne(db, sql: "SELECT * FROM subreddits WHERE name = ? COLLATE NOCASE LIMIT 1", arguments: [name])
         }
         .publisher(in: dbPool)
         .eraseToAnyPublisher()
     }
     
-    func getSubredditDataByName(namePrefixed: String) throws -> [SubredditData] {
+    func getSubredditDataByName(name: String) throws -> [SubredditData] {
         try dbPool.read { db in
-            try SubredditData.fetchAll(db, sql: "SELECT * FROM subreddits WHERE name = ? COLLATE NOCASE LIMIT 1", arguments: [namePrefixed])
+            try SubredditData.fetchAll(db, sql: "SELECT * FROM subreddits WHERE name = ? COLLATE NOCASE LIMIT 1", arguments: [name])
         }
     }
     

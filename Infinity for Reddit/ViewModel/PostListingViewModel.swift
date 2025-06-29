@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import MarkdownUI
+import GRDB
 
 public class PostListingViewModel: ObservableObject {
     // MARK: - Properties
