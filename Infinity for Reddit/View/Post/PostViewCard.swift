@@ -10,6 +10,7 @@ import SDWebImageSwiftUI
 
 struct PostViewCard: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
     
     @StateObject var postViewModel: PostViewModel
     @State var voteTask: Task<Void, Never>?

@@ -8,23 +8,19 @@
 import Foundation
 
 public class NavigationBarMenuManager: ObservableObject {
-    @Published private var stack: [[NavigationBarMenuItem]] = []
+    @Published private var itemDict: [UUID : [NavigationBarMenuItem]] = [:]
     
     var items: [NavigationBarMenuItem] {
-        stack.flatMap { $0 }
+        itemDict.flatMap { $1 }
     }
     
-    func setRootItems(_ items: [NavigationBarMenuItem]) {
-        stack = [items]
+    func push(_ items: [NavigationBarMenuItem]) -> UUID {
+        let key = UUID()
+        itemDict[key] = items
+        return key
     }
     
-    func push(_ items: [NavigationBarMenuItem]) {
-        stack.append(items)
-    }
-    
-    func pop() {
-        if stack.count > 0 {
-            stack.removeLast()
-        }
+    func pop(key: UUID) {
+        itemDict.removeValue(forKey: key)
     }
 }

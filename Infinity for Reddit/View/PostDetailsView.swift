@@ -12,11 +12,15 @@ import Alamofire
 
 struct PostDetailsView: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
     
     @StateObject var playerManager = PlayerManager()
     @StateObject var postDetailsViewModel: PostDetailsViewModel
+    @State private var showSortTypeSheet: Bool = false
+    @State private var navigationBarMenuKey: UUID?
+    
     private let account: Account
     private let post: Post
     private let isFromSubredditPostListing: Bool
@@ -48,12 +52,14 @@ struct PostDetailsView: View {
                         }
                     }
                 
-                if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
-                    ProgressIndicator()
-                        .listPlainItem()
-                } else if postDetailsViewModel.visibleComments.isEmpty {
-                    Text("No comments")
-                        .listPlainItem()
+                if postDetailsViewModel.visibleComments.isEmpty {
+                    if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
+                        ProgressIndicator()
+                            .listPlainItem()
+                    } else {
+                        Text("No comments")
+                            .listPlainItem()
+                    }
                 } else {
                     ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
                         if case let .comment(comment) = commentItem {
@@ -109,8 +115,8 @@ struct PostDetailsView: View {
         .onChange(of: colorScheme) {
             //print(colorScheme == .dark)
         }
-        .task(id: postDetailsViewModel.loadPostsTaskId) {
-            await postDetailsViewModel.fetchComments()
+        .task(id: postDetailsViewModel.loadPostAndCommentsTaskId) {
+            await postDetailsViewModel.initialLoadComments()
         }
         .refreshable {
             await postDetailsViewModel.refreshPostAndCommentsWithContinuation()
@@ -119,6 +125,30 @@ struct PostDetailsView: View {
         .themedNavigationBar()
         .toolbar {
             NavigationBarMenu()
+        }
+        .onAppear {
+            if let key = navigationBarMenuKey {
+                navigationBarMenuManager.pop(key: key)
+            }
+            navigationBarMenuKey = navigationBarMenuManager.push([
+                NavigationBarMenuItem(title: "Refresh") {
+                    postDetailsViewModel.refreshPostAndComments()
+                },
+                
+                NavigationBarMenuItem(title: "Sort") {
+                    showSortTypeSheet = true
+                }
+            ])
+        }
+        .onDisappear {
+            guard let navigationBarMenuKey else { return }
+            navigationBarMenuManager.pop(key: navigationBarMenuKey)
+        }
+        .sheet(isPresented: $showSortTypeSheet) {
+//            SortTypeSheet(postListingType: postListingMetadata.postListingType, currentSortType: postListingViewModel.sortType) { sortType in
+//                postListingViewModel.changeSortType(sortType: sortType)
+//            }
+//            .presentationDetents([.medium, .large])
         }
     }
 }

@@ -21,6 +21,7 @@ struct PostListingView: View {
     @State private var isRootView: Bool = true
     @State private var showNewPostMenu: Bool = false
     @State private var showSortTypeSheet: Bool = false
+    @State private var navigationBarMenuKey: UUID?
     
     private let account: Account
     private let postListingMetadata: PostListingMetadata
@@ -123,7 +124,10 @@ struct PostListingView: View {
             await postListingViewModel.initialLoadPosts()
         }
         .onAppear {
-            navigationBarMenuManager.push([
+            if let key = navigationBarMenuKey {
+                navigationBarMenuManager.pop(key: key)
+            }
+            navigationBarMenuKey = navigationBarMenuManager.push([
                 NavigationBarMenuItem(title: "Refresh") {
                     postListingViewModel.refreshPosts()
                 },
@@ -138,7 +142,8 @@ struct PostListingView: View {
             ])
         }
         .onDisappear {
-            navigationBarMenuManager.pop()
+            guard let navigationBarMenuKey else { return }
+            navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
         .sheet(isPresented: $showNewPostMenu) {
             NewPostSheet()

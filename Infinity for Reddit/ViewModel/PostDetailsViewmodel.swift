@@ -22,7 +22,7 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var hasMoreComments: Bool = true
     @Published var error: Error?
     @Published var sortType: SortType.Kind
-    @Published var loadPostsTaskId = UUID()
+    @Published var loadPostAndCommentsTaskId = UUID()
     private let account: Account
     private var postId: String?
     private var commentMore: CommentMore?
@@ -43,11 +43,19 @@ public class PostDetailsViewModel: ObservableObject {
     
     // MARK: - Methods
     
-    public func fetchComments() async {
-        if refreshPostsContinuation != nil {
+    public func initialLoadComments() async {
+        if sortType != lastLoadedSortType {
             await resetPostAndCommentsLoadingState()
         }
         
+        guard isInitialLoad else {
+            return
+        }
+        
+        await fetchComments(isRefreshWithContinuation: refreshPostsContinuation != nil)
+    }
+    
+    public func fetchComments(isRefreshWithContinuation: Bool = true) async {
         guard !isInitialLoading, !isLoadingMore, hasMoreComments else { return }
         
         let isInitailLoadCopy = isInitialLoad
@@ -79,7 +87,7 @@ public class PostDetailsViewModel: ObservableObject {
             try Task.checkCancellation()
             
             await MainActor.run {
-                if refreshPostsContinuation != nil {
+                if isRefreshWithContinuation {
                     self.visibleComments.removeAll()
                     self.allComments.removeAll()
                 }
@@ -93,7 +101,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.isLoadingMore = false
                 self.lastLoadedSortType = self.sortType
                 
-                if refreshPostsContinuation != nil {
+                if isRefreshWithContinuation {
                     finishPullToRefresh()
                 }
             }
@@ -149,13 +157,13 @@ public class PostDetailsViewModel: ObservableObject {
         await withCheckedContinuation { continuation in
             refreshPostsContinuation = continuation
             lastLoadedSortType = nil
-            loadPostsTaskId = UUID()
+            loadPostAndCommentsTaskId = UUID()
         }
     }
     
     func refreshPostAndComments() {
         lastLoadedSortType = nil
-        loadPostsTaskId = UUID()
+        loadPostAndCommentsTaskId = UUID()
     }
     
     func resetPostAndCommentsLoadingState() async {

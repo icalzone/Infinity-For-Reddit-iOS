@@ -18,6 +18,7 @@ struct PostListingScrollView: View {
     
     @StateObject var postListingViewModel: PostListingViewModel
     @State private var isRootView: Bool = true
+    @State private var navigationBarMenuKey: UUID?
     
     private let account: Account
     
@@ -91,7 +92,10 @@ struct PostListingScrollView: View {
             await postListingViewModel.initialLoadPosts()
         }
         .onAppear {
-            navigationBarMenuManager.push([
+            if let key = navigationBarMenuKey {
+                navigationBarMenuManager.pop(key: key)
+            }
+            navigationBarMenuKey = navigationBarMenuManager.push([
                 NavigationBarMenuItem(title: "New Post") {
                     print("new post")
                 },
@@ -102,7 +106,8 @@ struct PostListingScrollView: View {
             ])
         }
         .onDisappear {
-            navigationBarMenuManager.pop()
+            guard let navigationBarMenuKey else { return }
+            navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
     }
 }
