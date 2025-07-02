@@ -145,10 +145,10 @@ struct PostDetailsView: View {
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
         .sheet(isPresented: $showSortTypeSheet) {
-//            SortTypeSheet(postListingType: postListingMetadata.postListingType, currentSortType: postListingViewModel.sortType) { sortType in
-//                postListingViewModel.changeSortType(sortType: sortType)
-//            }
-//            .presentationDetents([.medium, .large])
+            SortTypeSheet(sortTypeKindSource: OtherSortTypeKindSource.postDetails, currentSortType: postDetailsViewModel.sortType) { sortType in
+                postDetailsViewModel.changeSortType(sortType: sortType)
+            }
+            .presentationDetents([.medium, .large])
         }
     }
 }

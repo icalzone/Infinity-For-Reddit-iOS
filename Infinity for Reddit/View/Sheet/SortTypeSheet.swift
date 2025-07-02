@@ -10,7 +10,7 @@ import SwiftUI
 struct SortTypeSheet: View {
     @Environment(\.dismiss) var dismiss
     
-    let postListingType: PostListingType
+    let sortTypeKindSource: SortTypeKindSource
     let currentSortType: SortType.Kind
     let onSelectSortType: (SortType.Kind) -> Void
     
@@ -19,7 +19,7 @@ struct SortTypeSheet: View {
             VStack(spacing: 20) {
                 Text("Select Sort Type")
                 
-                ForEach(postListingType.availableSortTypes, id: \.self) { sortType in
+                ForEach(sortTypeKindSource.availableSortTypes, id: \.self) { sortType in
                     IconTextButton(startIconUrl: sortType.icon, startIconType: .icon, endIconUrl: sortType == currentSortType ? "checkmark.seal" : nil, text: sortType.fullName) {
                         onSelectSortType(sortType)
                         dismiss()
@@ -30,4 +30,8 @@ struct SortTypeSheet: View {
             .padding(.top, 24)
         }
     }
+}
+
+protocol SortTypeKindSource {
+    var availableSortTypes: [SortType.Kind] { get }
 }

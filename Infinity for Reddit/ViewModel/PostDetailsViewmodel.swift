@@ -321,4 +321,11 @@ public class PostDetailsViewModel: ObservableObject {
             print("Load icon failed")
         }
     }
+    
+    func changeSortType(sortType: SortType.Kind) {
+        if sortType != self.sortType {
+            self.sortType = sortType
+            loadPostAndCommentsTaskId = UUID()
+        }
+    }
 }

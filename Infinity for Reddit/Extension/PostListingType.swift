@@ -5,7 +5,7 @@
 //  Created by Docile Alligator on 2025-06-29.
 //
 
-extension PostListingType {
+extension PostListingType: SortTypeKindSource {
     var availableSortTypes: [SortType.Kind] {
         switch self {
         case .frontPage:
