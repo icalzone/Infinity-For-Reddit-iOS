@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SortType {
+struct SortType: Equatable {
     enum Kind: String {
         case best = "best"
         case hot = "hot"
@@ -58,6 +58,15 @@ struct SortType {
             case .live: return "sort_live"
             }
         }
+        
+        var hasTime: Bool {
+            switch self {
+            case .top:
+                return true
+            default:
+                return false
+            }
+        }
     }
 
     enum Time: String {
@@ -70,11 +79,11 @@ struct SortType {
 
         var fullName: String {
             switch self {
-            case .hour: return "Hour"
-            case .day: return "Day"
-            case .week: return "Week"
-            case .month: return "Month"
-            case .year: return "Year"
+            case .hour: return "Now"
+            case .day: return "Today"
+            case .week: return "This Week"
+            case .month: return "This Month"
+            case .year: return "This Year"
             case .all: return "All Time"
             }
         }
@@ -86,5 +95,9 @@ struct SortType {
     init(type: Kind, time: Time? = nil) {
         self.type = type
         self.time = time
+    }
+    
+    func with(type: Kind) -> SortType {
+        SortType(type: type, time: self.time)
     }
 }

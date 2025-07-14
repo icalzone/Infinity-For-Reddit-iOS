@@ -83,7 +83,7 @@ struct CommentListingView: View {
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
         .sheet(isPresented: $showSortTypeSheet) {
-            SortTypeSheet(sortTypeKindSource: OtherSortTypeKindSource.commentListing, currentSortType: commentListingViewModel.sortType) { sortType in
+            SortTypeKindSheet(sortTypeKindSource: OtherSortTypeKindSource.commentListing, currentSortTypeKind: commentListingViewModel.sortType) { sortType in
                 commentListingViewModel.changeSortType(sortType: sortType)
             }
             .presentationDetents([.medium, .large])

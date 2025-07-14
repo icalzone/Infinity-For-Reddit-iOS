@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct IconTextButton: View {
-    var startIconUrl: String
+    var startIconUrl: String? = nil
     var startIconType: IconType = .systemIcon
     var endIconUrl: String? = nil
     var endIconType: IconType = .systemIcon
@@ -18,33 +18,38 @@ struct IconTextButton: View {
     var body: some View {
         Button(action: action) {
             HStack {
-                switch startIconType {
-                case .webImage:
-                    CustomWebImage(
-                        startIconUrl,
-                        width: 24,
-                        height: 24,
-                        circleClipped: true,
-                        handleImageTapGesture: false,
-                        fallbackView: {
-                            SwiftUI.Image(systemName: "person.crop.circle")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .primaryIcon()
-                        }
-                    )
-                case .systemIcon:
-                    SwiftUI.Image(systemName: startIconUrl)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .primaryIcon()
-                case .icon:
-                    SwiftUI.Image(startIconUrl)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 24, height: 24)
-                        .primaryIcon()
+                if let startIconUrl = startIconUrl {
+                    switch startIconType {
+                    case .webImage:
+                        CustomWebImage(
+                            startIconUrl,
+                            width: 24,
+                            height: 24,
+                            circleClipped: true,
+                            handleImageTapGesture: false,
+                            fallbackView: {
+                                SwiftUI.Image(systemName: "person.crop.circle")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .primaryIcon()
+                            }
+                        )
+                    case .systemIcon:
+                        SwiftUI.Image(systemName: startIconUrl)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .primaryIcon()
+                    case .icon:
+                        SwiftUI.Image(startIconUrl)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .primaryIcon()
+                    }
+                } else {
+                    Spacer()
+                        .frame(width: 24)
                 }
                 
                 Spacer()

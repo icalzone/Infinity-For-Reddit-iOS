@@ -6,7 +6,7 @@
 //
 
 extension PostListingType: SortTypeKindSource {
-    var availableSortTypes: [SortType.Kind] {
+    var availableSortTypeKinds: [SortType.Kind] {
         switch self {
         case .frontPage:
             return [.best, .hot, .new, .rising, .top, .controversial]
@@ -21,5 +21,25 @@ extension PostListingType: SortTypeKindSource {
         case .subredditConcat:
             return [.hot, .new, .rising, .top, .controversial]
         }
+    }
+}
+
+extension PostListingType: SortTypeTimeSource {
+    var availableSortTypeTimes: [SortType.Time] {
+        return [.day, .hour, .week, .month, .year]
+    }
+}
+
+extension PostListingType {
+    var sortEmbeddingStyle: SortEmbeddingStyle {
+        if case .user = self {
+            return .inQuery(key: "sort")
+        } else {
+            return .inPath
+        }
+    }
+    
+    var defaultSortTime: SortType.Time {
+        return .day
     }
 }

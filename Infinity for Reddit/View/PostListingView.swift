@@ -20,7 +20,9 @@ struct PostListingView: View {
     @StateObject var postListingViewModel: PostListingViewModel
     @State private var isRootView: Bool = true
     @State private var showNewPostMenu: Bool = false
-    @State private var showSortTypeSheet: Bool = false
+    @State private var showSortTypeKindSheet: Bool = false
+    @State private var showSortTypeTimeSheet: Bool = false
+    @State private var upcomingSortTypeKind: SortType.Kind?
     @State private var navigationBarMenuKey: UUID?
     
     private let account: Account
@@ -133,7 +135,7 @@ struct PostListingView: View {
                 },
                 
                 NavigationBarMenuItem(title: "Sort") {
-                    showSortTypeSheet = true
+                    showSortTypeKindSheet = true
                 },
                 
                 NavigationBarMenuItem(title: "New Post") {
@@ -151,9 +153,25 @@ struct PostListingView: View {
                 .presentationDetents([.medium, .large])
                 .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
         }
-        .sheet(isPresented: $showSortTypeSheet) {
-            SortTypeSheet(sortTypeKindSource: postListingMetadata.postListingType, currentSortType: postListingViewModel.sortType) { sortType in
-                postListingViewModel.changeSortType(sortType: sortType)
+        .sheet(isPresented: $showSortTypeKindSheet) {
+            SortTypeKindSheet(sortTypeKindSource: postListingMetadata.postListingType, currentSortTypeKind: postListingViewModel.sortType.type) { sortTypeKind in
+                if (sortTypeKind.hasTime) {
+                    upcomingSortTypeKind = sortTypeKind
+                    showSortTypeTimeSheet = true
+                } else {
+                    postListingViewModel.changeSortTypeKind(sortTypeKind: sortTypeKind)
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showSortTypeTimeSheet) {
+            SortTypeTimeSheet(
+                sortTypeTimeSource: postListingMetadata.postListingType,
+                currentSortTypeTime: postListingViewModel.sortType.time
+            ) { sortTypeTime in
+                if let upcomingSortTypeKind = upcomingSortTypeKind {
+                    postListingViewModel.changeSortType(sortType: SortType(type: upcomingSortTypeKind, time: sortTypeTime))
+                }
             }
             .presentationDetents([.medium, .large])
         }

@@ -18,11 +18,11 @@ public class PostListingViewModel: ObservableObject {
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
     @Published var error: Error?
-    @Published var sortType: SortType.Kind
+    @Published var sortType: SortType
     @Published var loadPostsTaskId = UUID()
     
     private let postListingMetadata: PostListingMetadata
-    private var lastLoadedSortType: SortType.Kind? = nil
+    private var lastLoadedSortType: SortType? = nil
     private var allPostIds = Set<String>()
     private var after: String? = nil
     
@@ -32,7 +32,10 @@ public class PostListingViewModel: ObservableObject {
     
     // MARK: - Initializer
     init(postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
-        self.sortType = postListingMetadata.postListingType.availableSortTypes[0]
+        self.sortType = SortType(
+            type: postListingMetadata.postListingType.availableSortTypeKinds[0],
+            time: postListingMetadata.postListingType.defaultSortTime
+        )
         self.postListingMetadata = postListingMetadata
         self.postListingRepository = postListingRepository
     }
@@ -72,12 +75,23 @@ public class PostListingViewModel: ObservableObject {
         do {
             try Task.checkCancellation()
             
-            let postListing = try await postListingRepository.fetchPosts(
-                postListingType: postListingMetadata.postListingType,
-                pathComponents: ["sortType": sortType.rawValue].merging(postListingMetadata.pathComponents, uniquingKeysWith: { _, new in new }),
-                queries: ["limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
-                params: postListingMetadata.params
-            )
+            let postListing: PostListing
+            switch postListingMetadata.postListingType.sortEmbeddingStyle {
+            case .inPath:
+                postListing = try await postListingRepository.fetchPosts(
+                    postListingType: postListingMetadata.postListingType,
+                    pathComponents: ["sortType": sortType.type.rawValue].merging(postListingMetadata.pathComponents, uniquingKeysWith: { _, new in new }),
+                    queries: ["t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                    params: postListingMetadata.params
+                )
+            case .inQuery(let key):
+                postListing = try await postListingRepository.fetchPosts(
+                    postListingType: postListingMetadata.postListingType,
+                    pathComponents: postListingMetadata.pathComponents,
+                    queries: ["sort": sortType.type.rawValue, key: sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                    params: postListingMetadata.params
+                )
+            }
             
             try Task.checkCancellation()
             
@@ -194,7 +208,14 @@ public class PostListingViewModel: ObservableObject {
         }
     }
     
-    func changeSortType(sortType: SortType.Kind) {
+    func changeSortTypeKind(sortTypeKind: SortType.Kind) {
+        if sortTypeKind != self.sortType.type {
+            self.sortType = self.sortType.with(type: sortTypeKind)
+            loadPostsTaskId = UUID()
+        }
+    }
+    
+    func changeSortType(sortType: SortType) {
         if sortType != self.sortType {
             self.sortType = sortType
             loadPostsTaskId = UUID()

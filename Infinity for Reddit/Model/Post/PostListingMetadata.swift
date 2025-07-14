@@ -35,3 +35,8 @@ public enum PostListingType: Codable {
 public enum UserWhere: String, Codable {
     case submitted = "submitted", upvoted = "upvoted", downvoted = "downvoted", hidden = "hidden", saved = "saved"
 }
+
+enum SortEmbeddingStyle {
+    case inPath
+    case inQuery(key: String)
+}
