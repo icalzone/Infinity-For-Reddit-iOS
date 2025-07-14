@@ -55,7 +55,9 @@ public class PostDetailsViewModel: ObservableObject {
         if post == nil {
             switch postDetailsInput {
             case .post(let post):
-                self.post = post
+                await MainActor.run {
+                    self.post = post
+                }
                 await fetchPostAndComments(isRefreshWithContinuation: refreshPostsContinuation != nil)
             case .postAndCommentId(let postId, let commentId):
                 await fetchPostAndComments(isRefreshWithContinuation: refreshPostsContinuation != nil, shouldLoadPost: true)
@@ -114,13 +116,14 @@ public class PostDetailsViewModel: ObservableObject {
             try Task.checkCancellation()
             
             let processedComments = postProcessComments(postDetails.comments)
-            if shouldLoadPost {
-                
-            }
             
             try Task.checkCancellation()
             
             await MainActor.run {
+                if shouldLoadPost {
+                    // TODO error handling here in case there is no post
+                    self.post = postDetails.postListing.posts[0]
+                }
                 if isRefreshWithContinuation {
                     self.visibleComments.removeAll()
                     self.allComments.removeAll()

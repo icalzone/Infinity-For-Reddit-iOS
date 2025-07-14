@@ -15,6 +15,7 @@ struct CommentListingView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @EnvironmentObject var accountViewModel: AccountViewModel
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject var navigationManager: NavigationManager
     
     @StateObject var commentListingViewModel: CommentListingViewModel
     @State private var showSortTypeKindSheet: Bool = false
@@ -42,7 +43,16 @@ struct CommentListingView: View {
             } else {
                 List {
                     ForEach(commentListingViewModel.comments, id: \.id) { comment in
-                        CommentViewCard(account: accountViewModel.account, comment: comment, isInPostDetails: false)
+                        CommentViewCard(
+                            account: accountViewModel.account,
+                            comment: comment,
+                            isInPostDetails: false,
+                            onCommentTapped: { comment in
+                                navigationManager.path.append(
+                                    AppNavigation.postDetailsWithId(postId: String(comment.linkId.dropFirst(3)), commentId: comment.id)
+                                )
+                            }
+                        )
                             .listPlainItemNoInsets()
                             .id(comment.id)
                     }
