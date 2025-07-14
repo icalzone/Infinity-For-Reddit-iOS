@@ -154,7 +154,10 @@ struct PostListingView: View {
                 .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
         }
         .sheet(isPresented: $showSortTypeKindSheet) {
-            SortTypeKindSheet(sortTypeKindSource: postListingMetadata.postListingType, currentSortTypeKind: postListingViewModel.sortType.type) { sortTypeKind in
+            SortTypeKindSheet(
+                sortTypeKindSource: postListingMetadata.postListingType,
+                currentSortTypeKind: postListingViewModel.sortType.type
+            ) { sortTypeKind in
                 if (sortTypeKind.hasTime) {
                     upcomingSortTypeKind = sortTypeKind
                     showSortTypeTimeSheet = true

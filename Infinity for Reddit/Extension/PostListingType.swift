@@ -26,7 +26,7 @@ extension PostListingType: SortTypeKindSource {
 
 extension PostListingType: SortTypeTimeSource {
     var availableSortTypeTimes: [SortType.Time] {
-        return [.day, .hour, .week, .month, .year]
+        return [.hour, .day, .week, .month, .year, .all]
     }
 }
 

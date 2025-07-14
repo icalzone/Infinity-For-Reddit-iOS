@@ -18,19 +18,22 @@ public class CommentListingViewModel: ObservableObject {
     @Published var isLoadingMore: Bool = false
     @Published var hasMorePages: Bool = true
     @Published var error: Error? = nil
-    @Published var sortType: SortType.Kind
+    @Published var sortType: SortType
     @Published var loadCommentsTaskId = UUID()
     
     private var after: String? = nil
     public let commentListingRepository: CommentListingRepositoryProtocol
     private let commentListingMetadata: CommentListingMetadata
-    private var lastLoadedSortType: SortType.Kind? = nil
+    private var lastLoadedSortType: SortType? = nil
     
     private var refreshCommentsContinuation: CheckedContinuation<Void, Never>?
     
     // MARK: - Initializer
     init(commentListingMetadata: CommentListingMetadata, commentListingRepository: CommentListingRepositoryProtocol) {
-        self.sortType = .new
+        self.sortType = SortType(
+            type: .new,
+            time: .all
+        )
         self.commentListingMetadata = commentListingMetadata
         self.commentListingRepository = commentListingRepository
     }
@@ -73,7 +76,7 @@ public class CommentListingViewModel: ObservableObject {
             let commentListing = try await commentListingRepository.fetchComments(
                 commentListingType: commentListingMetadata.commentListingType,
                 pathComponents: commentListingMetadata.pathComponents,
-                queries: ["sort": sortType.rawValue, "limit": "100", "after": after ?? ""].merging(commentListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                queries: ["sort": sortType.type.rawValue, "t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""].merging(commentListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
                 params: commentListingMetadata.params)
             
             try Task.checkCancellation()
@@ -163,7 +166,14 @@ public class CommentListingViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(comment)
     }
     
-    func changeSortType(sortType: SortType.Kind) {
+    func changeSortTypeKind(sortTypeKind: SortType.Kind) {
+        if sortTypeKind != self.sortType.type {
+            self.sortType = self.sortType.with(type: sortTypeKind)
+            loadCommentsTaskId = UUID()
+        }
+    }
+    
+    func changeSortType(sortType: SortType) {
         if sortType != self.sortType {
             self.sortType = sortType
             loadCommentsTaskId = UUID()

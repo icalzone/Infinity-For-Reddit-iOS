@@ -5,7 +5,7 @@
 //  Created by Docile Alligator on 2025-07-01.
 //
 
-enum OtherSortTypeKindSource: SortTypeKindSource {
+enum OtherSortTypeKindSource: SortTypeKindSource, SortTypeTimeSource {
     case postDetails
     case commentListing
     case subredditListing
@@ -22,5 +22,9 @@ enum OtherSortTypeKindSource: SortTypeKindSource {
         case .userListing:
             return [.relevance, .activity]
         }
+    }
+    
+    var availableSortTypeTimes: [SortType.Time] {
+        return [.hour, .day, .week, .month, .year, .all]
     }
 }

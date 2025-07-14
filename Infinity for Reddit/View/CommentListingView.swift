@@ -17,7 +17,9 @@ struct CommentListingView: View {
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
     
     @StateObject var commentListingViewModel: CommentListingViewModel
-    @State private var showSortTypeSheet: Bool = false
+    @State private var showSortTypeKindSheet: Bool = false
+    @State private var showSortTypeTimeSheet: Bool = false
+    @State private var upcomingSortTypeKind: SortType.Kind?
     @State private var navigationBarMenuKey: UUID?
     
     init(commentListingMetadata: CommentListingMetadata) {
@@ -74,7 +76,7 @@ struct CommentListingView: View {
                 },
                 
                 NavigationBarMenuItem(title: "Sort") {
-                    showSortTypeSheet = true
+                    showSortTypeKindSheet = true
                 }
             ])
         }
@@ -82,9 +84,28 @@ struct CommentListingView: View {
             guard let navigationBarMenuKey else { return }
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
-        .sheet(isPresented: $showSortTypeSheet) {
-            SortTypeKindSheet(sortTypeKindSource: OtherSortTypeKindSource.commentListing, currentSortTypeKind: commentListingViewModel.sortType) { sortType in
-                commentListingViewModel.changeSortType(sortType: sortType)
+        .sheet(isPresented: $showSortTypeKindSheet) {
+            SortTypeKindSheet(
+                sortTypeKindSource: OtherSortTypeKindSource.commentListing,
+                currentSortTypeKind: commentListingViewModel.sortType.type
+            ) { sortTypeKind in
+                if (sortTypeKind.hasTime) {
+                    upcomingSortTypeKind = sortTypeKind
+                    showSortTypeTimeSheet = true
+                } else {
+                    commentListingViewModel.changeSortTypeKind(sortTypeKind: sortTypeKind)
+                }
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showSortTypeTimeSheet) {
+            SortTypeTimeSheet(
+                sortTypeTimeSource: OtherSortTypeKindSource.commentListing,
+                currentSortTypeTime: commentListingViewModel.sortType.time
+            ) { sortTypeTime in
+                if let upcomingSortTypeKind = upcomingSortTypeKind {
+                    commentListingViewModel.changeSortType(sortType: SortType(type: upcomingSortTypeKind, time: sortTypeTime))
+                }
             }
             .presentationDetents([.medium, .large])
         }

@@ -108,7 +108,7 @@ struct UserDetailsView: View {
                         CommentListingView(
                             commentListingMetadata: CommentListingMetadata(
                                 commentListingType:.user,
-                                pathComponents: ["username": "\(userData.name)", "sortType": "best"],
+                                pathComponents: ["username": "\(userData.name)"],
                                 headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                                 queries: nil,
                                 params: nil
