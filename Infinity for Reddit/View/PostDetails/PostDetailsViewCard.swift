@@ -27,6 +27,9 @@ struct PostDetailsViewCard: View {
     
     var body: some View {
         VStack(alignment: .leading) {
+            Spacer()
+                .frame(height: 16)
+            
             HStack(alignment: .center) {
                 CustomWebImage(
                     postViewModel.post.subredditOrUserIconInPostDetails,
@@ -63,7 +66,6 @@ struct PostDetailsViewCard: View {
                     .secondaryText()
             }
             .padding(.horizontal, 16)
-            .padding(.top, 16)
             .padding(.bottom, 8)
             
             Text(postViewModel.post.title)
