@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import Flow
 
 struct PostViewCard: View {
     @EnvironmentObject var navigationManager: NavigationManager
@@ -90,14 +91,47 @@ struct PostViewCard: View {
                     .padding(.bottom, 8)
                     .postTitle()
                 
-                switch postViewModel.post.postType {
-                case .link:
-                    if let url = URL(string: postViewModel.post.url), let domain = url.host {
-                        Text(domain)
-                            .secondaryText()
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 8)
+                HFlow(alignment: .center) {
+                    PostTypeTag(post: postViewModel.post)
+                    
+                    if postViewModel.post.spoiler {
+                        SpoilerTag()
                     }
+                    
+                    if postViewModel.post.over18 {
+                        SensitiveTag()
+                    }
+                    
+                    FlairView(flairRichtext: postViewModel.post.linkFlairRichtext)
+                    
+                    if postViewModel.post.archived {
+                        ArchivedTag()
+                    }
+                    
+                    if postViewModel.post.locked {
+                        LockedTag()
+                    }
+                    
+                    if postViewModel.post.crosspostParent != nil {
+                        CrosspostTag()
+                    }
+                    
+                    switch postViewModel.post.postType {
+                    case .link:
+                        if let url = URL(string: postViewModel.post.url), let domain = url.host {
+                            Text(domain)
+                                .secondaryText()
+                        }
+                    default:
+                        EmptyView()
+                    }
+                }
+                .padding(.horizontal, 16)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                switch postViewModel.post.postType {
                 case .noPreviewLink:
                     if let url = URL(string: postViewModel.post.url), let domain = url.host {
                         Text(domain)
@@ -116,14 +150,23 @@ struct PostViewCard: View {
                           !galleryData.items.isEmpty,
                           let mediaMetadata = postViewModel.post.mediaMetadata,
                           let preview = mediaMetadata[galleryData.items[0].mediaId] {
+                    Spacer()
+                        .frame(height: 10)
+                    
                     // May not have a preview!!!!!!
                     GalleryCarousel(post: postViewModel.post)
                         .aspectRatio(preview.s.aspectRatio, contentMode: .fit)
                 } else if case .text = postViewModel.post.postType, let selftextTruncated = postViewModel.post.selftextTruncated {
+                    Spacer()
+                        .frame(height: 6)
+                    
                     Text(selftextTruncated)
                         .postContent()
                         .padding(.horizontal, 16)
                 } else if let preview = postViewModel.post.preview, preview.images.count > 0, let url = preview.images[0].source.url {
+                    Spacer()
+                        .frame(height: 10)
+                    
                     GeometryReader { geo in
                         ZStack(alignment: .topLeading) {
                             CustomWebImage(
@@ -158,6 +201,9 @@ struct PostViewCard: View {
                     .frame(maxWidth: .infinity)
                     .aspectRatio(preview.images[0].source.aspectRatio, contentMode: .fit)
                 } else if postViewModel.post.postType.isMedia {
+                    Spacer()
+                        .frame(height: 8)
+                    
                     // No preview media
                     ZStack {
                         switch postViewModel.post.postType {

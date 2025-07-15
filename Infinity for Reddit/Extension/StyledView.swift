@@ -161,4 +161,44 @@ extension View {
             post: post, aspectRatio: aspectRatio, matchedGeometryEffectId: matchedGeometryEffectId
         ))
     }
+    
+    func postTypeTag() -> some View {
+        self.modifier(PostTypeTagViewModifier())
+    }
+    
+    func spoilerTag() -> some View {
+        self.modifier(SpoilerTagViewModifier())
+    }
+    
+    func sensitiveTag() -> some View {
+        self.modifier(SensitiveTagViewModifier())
+    }
+    
+    func postFlairBackground() -> some View {
+        self.modifier(PostFlairBackgroundViewModifier())
+    }
+    
+    func postFlairText() -> some View {
+        self.modifier(PostFlairTextViewModifier())
+    }
+    
+    func upvoteRatioText() -> some View {
+        self.modifier(UpvoteRatioTextViewModifier())
+    }
+    
+    func upvoteRatioIcon() -> some View {
+        self.modifier(UpvoteRatioIconViewModifier())
+    }
+    
+    func archivedTag() -> some View {
+        self.modifier(ArchivedTagViewModifier())
+    }
+    
+    func lockedTag() -> some View {
+        self.modifier(LockedTagViewModifier())
+    }
+    
+    func crosspostTag() -> some View {
+        self.modifier(CrosspostTagViewModifier())
+    }
 }

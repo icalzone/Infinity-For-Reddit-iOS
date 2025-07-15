@@ -17,6 +17,9 @@
         }
       }
     },
+    "%lld%%" : {
+
+    },
     "About" : {
 
     },
@@ -455,6 +458,9 @@
     "Select Sort Type" : {
 
     },
+    "Sensitive" : {
+
+    },
     "Separate Post And Comments in Landscape Mode" : {
 
     },
@@ -492,6 +498,9 @@
 
     },
     "Sort Type" : {
+
+    },
+    "Spoiler" : {
 
     },
     "Subscribe" : {

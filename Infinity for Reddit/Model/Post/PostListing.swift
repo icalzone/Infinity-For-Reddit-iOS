@@ -243,6 +243,25 @@ public class Post : NSObject, NSCoding, ObservableObject, Identifiable {
                 return false
             }
         }
+        
+        var text: String {
+            switch self {
+            case .text:
+                return "Text"
+            case .image, .imageWithUrlPreview:
+                return "Image"
+            case .gif:
+                return "Gif"
+            case .video, .imgurVideo, .redgifs, .streamable:
+                return "Video"
+            case .gallery:
+                return "Gallery"
+            case .link, .noPreviewLink:
+                return "Link"
+            case .poll:
+                return "Poll"
+            }
+        }
     }
     
     /**

@@ -83,3 +83,113 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
             )
     }
 }
+
+struct PostTypeTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(4)
+            .background(Color(hex: themeViewModel.currentCustomTheme.postTypeBackgroundColor))
+            .cornerRadius(6)
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.postTypeTextColor))
+            .font(.system(size: 12))
+    }
+}
+
+struct SpoilerTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(4)
+            .background(Color(hex: themeViewModel.currentCustomTheme.spoilerBackgroundColor))
+            .cornerRadius(6)
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.spoilerTextColor))
+            .font(.system(size: 12))
+    }
+}
+
+struct SensitiveTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(4)
+            .background(Color(hex: themeViewModel.currentCustomTheme.nsfwBackgroundColor))
+            .cornerRadius(6)
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.nsfwTextColor))
+            .font(.system(size: 12))
+    }
+}
+
+struct PostFlairBackgroundViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .padding(4)
+            .background(Color(hex: themeViewModel.currentCustomTheme.flairBackgroundColor))
+            .cornerRadius(6)
+    }
+}
+
+struct PostFlairTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.flairTextColor))
+            .font(.system(size: 12))
+    }
+}
+
+struct UpvoteRatioTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.secondaryTextColor))
+            .font(.system(size: 12))
+    }
+}
+
+struct UpvoteRatioIconViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.upvoteRatioIconTint))
+            .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.upvoteRatioIconTint))
+    }
+}
+
+struct ArchivedTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.archivedTint))
+            .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.archivedTint))
+    }
+}
+
+struct LockedTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.lockedIconTint))
+            .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.lockedIconTint))
+    }
+}
+
+struct CrosspostTagViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.crosspostIconTint))
+            .colorMultiply(Color(hex: themeViewModel.currentCustomTheme.crosspostIconTint))
+    }
+}
