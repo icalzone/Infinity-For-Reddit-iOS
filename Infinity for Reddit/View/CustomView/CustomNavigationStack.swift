@@ -46,6 +46,12 @@ struct CustomNavigationStack<Content: View>: View {
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in
                     switch destination {
+                    case .popular:
+                        PopularOrAllView(subredditName: "popular")
+                            .environmentObject(navigationManager)
+                    case .all:
+                        PopularOrAllView(subredditName: "all")
+                            .environmentObject(navigationManager)
                     case .profile:
                         UserDetailsView(username: self.accountViewModel.account.username)
                             .environmentObject(navigationManager)

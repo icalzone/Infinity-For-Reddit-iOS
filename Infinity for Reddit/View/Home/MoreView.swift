@@ -15,6 +15,21 @@ struct MoreView: View {
     
     var body: some View {
         List {
+            Section(header: Text("Reddit").listSectionHeader()) {
+                RowText("Popular")
+                    .primaryText()
+                    .onTapGesture {
+                        navigationManager.path.append(MoreViewNavigation.popular)
+                    }
+                
+                RowText("All")
+                    .primaryText()
+                    .onTapGesture {
+                        navigationManager.path.append(MoreViewNavigation.all)
+                    }
+            }
+            .listPlainItem()
+            
             Section(header: Text("Account").listSectionHeader()) {
                 RowText("Profile")
                     .primaryText()

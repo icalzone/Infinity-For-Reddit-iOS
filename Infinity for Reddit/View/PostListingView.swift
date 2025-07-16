@@ -28,13 +28,15 @@ struct PostListingView: View {
     private let account: Account
     private let postListingMetadata: PostListingMetadata
     private var isSubredditPostListing: Bool = false
+    private let handleToolbarMenu: Bool
     
-    init(account: Account, postListingMetadata: PostListingMetadata) {
+    init(account: Account, postListingMetadata: PostListingMetadata, handleToolbarMenu: Bool = true) {
         self.account = account
         self.postListingMetadata = postListingMetadata
         if case .subreddit = postListingMetadata.postListingType {
             isSubredditPostListing = true
         }
+        self.handleToolbarMenu = handleToolbarMenu
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
@@ -51,6 +53,7 @@ struct PostListingView: View {
         if case .subreddit = postListingMetadata.postListingType {
             isSubredditPostListing = true
         }
+        self.handleToolbarMenu = false
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
@@ -116,6 +119,13 @@ struct PostListingView: View {
                             }
                             .listPlainItem()
                     }
+                }
+            }
+        }
+        .applyIf(handleToolbarMenu) {
+            $0.toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationBarMenu()
                 }
             }
         }

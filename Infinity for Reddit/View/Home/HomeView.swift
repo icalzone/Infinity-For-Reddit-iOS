@@ -40,7 +40,8 @@ struct HomeView: View {
                                 headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                                 queries: nil,
                                 params: nil
-                            )
+                            ),
+                            handleToolbarMenu: false
                         )
                         .setUpHomeTabViewChildNavigationBar()
                         .addTitleToInlineNavigationBar(selectedTab.navigationTitle, 1.0)
