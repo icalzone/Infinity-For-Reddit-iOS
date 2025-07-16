@@ -30,7 +30,7 @@ struct SearchResultsView: View {
                         searchInThingType: searchResultsViewModel.searchInThingType
                     ),
                     headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                    queries: ["q": searchResultsViewModel.query, "include_over_18": "1", "type": "link"],
+                    queries: ["q": searchResultsViewModel.query, "type": "link"],
                     params: nil
                 ))
                 .tag(0)

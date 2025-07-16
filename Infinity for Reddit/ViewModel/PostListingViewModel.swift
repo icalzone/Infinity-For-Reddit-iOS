@@ -22,6 +22,7 @@ public class PostListingViewModel: ObservableObject {
     @Published var loadPostsTaskId = UUID()
     
     private let postListingMetadata: PostListingMetadata
+    private var allowSensitive: Bool
     private var lastLoadedSortType: SortType? = nil
     private var allPostIds = Set<String>()
     private var after: String? = nil
@@ -37,6 +38,7 @@ public class PostListingViewModel: ObservableObject {
             time: postListingMetadata.postListingType.defaultSortTime
         )
         self.postListingMetadata = postListingMetadata
+        self.allowSensitive = true
         self.postListingRepository = postListingRepository
     }
     
@@ -78,17 +80,25 @@ public class PostListingViewModel: ObservableObject {
             let postListing: PostListing
             switch postListingMetadata.postListingType.sortEmbeddingStyle {
             case .inPath:
+                var queries = ["t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""]
+                if postListingMetadata.postListingType.canQuerySensitiveInAPICall {
+                    queries["include_over_18"] = allowSensitive ? "1" : "0"
+                }
                 postListing = try await postListingRepository.fetchPosts(
                     postListingType: postListingMetadata.postListingType,
                     pathComponents: ["sortType": sortType.type.rawValue].merging(postListingMetadata.pathComponents, uniquingKeysWith: { _, new in new }),
-                    queries: ["t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                    queries: queries.merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
                     params: postListingMetadata.params
                 )
             case .inQuery(let key):
+                var queries = [key: sortType.type.rawValue, "t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""]
+                if postListingMetadata.postListingType.canQuerySensitiveInAPICall {
+                    queries["include_over_18"] = allowSensitive ? "1" : "0"
+                }
                 postListing = try await postListingRepository.fetchPosts(
                     postListingType: postListingMetadata.postListingType,
                     pathComponents: postListingMetadata.pathComponents,
-                    queries: [key: sortType.type.rawValue, "t": sortType.time?.rawValue ?? "", "limit": "100", "after": after ?? ""].merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                    queries: queries.merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
                     params: postListingMetadata.params
                 )
             }

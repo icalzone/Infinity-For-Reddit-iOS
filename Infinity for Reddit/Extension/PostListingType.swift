@@ -43,3 +43,14 @@ extension PostListingType {
         return .day
     }
 }
+
+extension PostListingType {
+    var canQuerySensitiveInAPICall: Bool {
+        switch self {
+        case .search:
+            return true
+        default:
+            return false
+        }
+    }
+}
