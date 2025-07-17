@@ -12,6 +12,7 @@ import Flow
 struct PostViewCard: View {
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
     @StateObject var postViewModel: PostViewModel
     @State var voteTask: Task<Void, Never>?
@@ -29,11 +30,13 @@ struct PostViewCard: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.white)
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: -1)
-                .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 4)
-                .padding(.vertical, 8)
+            TouchRipple(backgroundShape: RoundedRectangle(cornerRadius: 20)) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(hex: themeViewModel.currentCustomTheme.cardViewBackgroundColor))
+                    .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: -1)
+                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 4)
+            }
+            .padding(.vertical, 8)
             
             VStack(alignment: .leading) {
                 Spacer()
@@ -217,7 +220,6 @@ struct PostViewCard: View {
                             SwiftUI.Image(systemName: "photo")
                                 .noPreviewPostTypeIndicator()
                         }
-                        
                     }
                     .noPreviewPostTypeIndicatorBackground()
                     .mediaTapGesture(post: postViewModel.post, aspectRatio: nil, matchedGeometryEffectId: nil)
