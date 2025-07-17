@@ -12,6 +12,7 @@ struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
     var action: (() -> Void)? = nil
     let content: () -> Content
 
+    @State private var validTouch: Bool = true
     @State private var isPressed = false
     @State private var dragStartLocation: CGPoint? = nil
     
@@ -34,11 +35,12 @@ struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
                         guard let start = dragStartLocation else { return }
                         let distance = hypot(value.location.x - start.x, value.location.y - start.y)
                         
-                        if distance <= maxTapMovement {
+                        if distance <= maxTapMovement && validTouch {
                             if !isPressed {
                                 isPressed = true
                             }
                         } else {
+                            validTouch = false
                             if isPressed {
                                 isPressed = false
                             }
@@ -48,9 +50,10 @@ struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
                         defer {
                             dragStartLocation = nil
                             isPressed = false
+                            validTouch = true
                         }
                         
-                        guard let start = dragStartLocation else { return }
+                        guard let start = dragStartLocation, validTouch else { return }
                         let dragDistance = hypot(value.location.x - start.x, value.location.y - start.y)
                         
                         if dragDistance <= maxTapMovement {
