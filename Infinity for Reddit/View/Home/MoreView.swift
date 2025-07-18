@@ -16,74 +16,64 @@ struct MoreView: View {
     var body: some View {
         List {
             Section(header: Text("Reddit").listSectionHeader()) {
-                RowText("Popular")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.popular)
-                    }
+                SimpleTouchItemRow(text: "Popular", icon: "flame") {
+                    navigationManager.path.append(MoreViewNavigation.popular)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("All")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.all)
-                    }
+                SimpleTouchItemRow(text: "All", icon: "globe") {
+                    navigationManager.path.append(MoreViewNavigation.all)
+                }
+                .listPlainItemNoInsets()
             }
             .listPlainItem()
             
             Section(header: Text("Account").listSectionHeader()) {
-                RowText("Profile")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.profile)
-                    }
+                SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
+                    navigationManager.path.append(MoreViewNavigation.profile)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("History")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.history)
-                    }
+                SimpleTouchItemRow(text: "History", icon: "clock") {
+                    navigationManager.path.append(MoreViewNavigation.history)
+                }
+                .listPlainItemNoInsets()
             }
             .listPlainItem()
             
             Section(header: Text("Post").listSectionHeader()) {
-                RowText("Upvoted")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.upvoted)
-                    }
+                SimpleTouchItemRow(text: "Upvoted", icon:"arrowshape.up") {
+                    navigationManager.path.append(MoreViewNavigation.upvoted)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("Downvoted")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.downvoted)
-                    }
+                SimpleTouchItemRow(text: "Downvoted", icon: "arrowshape.down") {
+                    navigationManager.path.append(MoreViewNavigation.downvoted)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("Hidden")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.hidden)
-                    }
+                SimpleTouchItemRow(text: "Hidden", icon: "eye.slash") {
+                    navigationManager.path.append(MoreViewNavigation.hidden)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("Saved")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.saved)
-                    }
+                SimpleTouchItemRow(text: "Saved", icon: "bookmark.fill") {
+                    navigationManager.path.append(MoreViewNavigation.saved)
+                }
+                .listPlainItemNoInsets()
             }
             .listPlainItem()
             
             Section(header: Text("Preferences").listSectionHeader()) {
-                RowText("Settings")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.settings)
-                    }
+                SimpleTouchItemRow(text: "Settings", icon: "gearshape") {
+                    navigationManager.path.append(MoreViewNavigation.settings)
+                }
+                .listPlainItemNoInsets()
                 
-                RowText("Test")
-                    .primaryText()
-                    .onTapGesture {
-                        navigationManager.path.append(MoreViewNavigation.test)
-                    }
+                SimpleTouchItemRow(text: "Test", icon: "testtube.2") {
+                    navigationManager.path.append(MoreViewNavigation.test)
+                }
+                .listPlainItemNoInsets()
             }
             .listPlainItem()
         }
