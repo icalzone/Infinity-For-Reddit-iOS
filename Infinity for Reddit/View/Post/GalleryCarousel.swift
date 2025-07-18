@@ -13,10 +13,15 @@ struct GalleryCarousel: View {
     
     @StateObject private var galleryScrollState = GalleryScrollState(scrollId: 0)
     
-    var items: [GalleryItem]
-    var mediaMetadata: [String: MediaMetadata]
+    @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
+    @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
+    
+    let post: Post
+    let items: [GalleryItem]
+    let mediaMetadata: [String: MediaMetadata]
     
     init(post: Post) {
+        self.post = post
         self.items = post.galleryData!.items
         self.mediaMetadata = post.mediaMetadata!
     }
@@ -26,18 +31,22 @@ struct GalleryCarousel: View {
             TabView(selection: $galleryScrollState.scrollId) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if let media = mediaMetadata[item.mediaId], let preview = media.p.last {
-                        CustomWebImage(preview.u, handleImageTapGesture: false)
-                            .contentShape(Rectangle())
-                            .highPriorityGesture(
-                                TapGesture()
-                                    .onEnded {
-                                        withAnimation {
-                                            fullScreenMediaViewModel.show(.gallery(currentUrl: preview.u, items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState))
-                                        }
+                        CustomWebImage(
+                            preview.u,
+                            handleImageTapGesture: false,
+                            blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages)
+                        )
+                        .contentShape(Rectangle())
+                        .highPriorityGesture(
+                            TapGesture()
+                                .onEnded {
+                                    withAnimation {
+                                        fullScreenMediaViewModel.show(.gallery(currentUrl: preview.u, items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState))
                                     }
-                            )
-                            .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
-                            .tag(index)
+                                }
+                        )
+                        .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
+                        .tag(index)
                     } else {
                         Color.clear
                             .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
