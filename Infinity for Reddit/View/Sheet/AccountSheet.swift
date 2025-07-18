@@ -52,7 +52,7 @@ struct AccountSheet: View {
                     )
                 }
                 
-                VStack(spacing: 20) {
+                VStack(spacing: 0) {
                     VStack {
                         Text(accountViewModel.account.isAnonymous() == true ? "Anonymous" : accountViewModel.account.username)
                             .font(.largeTitle)
@@ -62,17 +62,20 @@ struct AccountSheet: View {
                             Text("Karma: \(accountViewModel.account.karma)")
                                 .primaryText()
                         }
+                        
+                        Spacer()
+                            .frame(height: 8)
                     }
                     
                     if accountViewModel.account.isAnonymous() != true {
-                        IconTextButton(startIconUrl: "person.crop.circle", text: "Profile") {
+                        SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
                             dismiss()
                             navigationManager.path.append(AppNavigation.userDetails(username: accountViewModel.account.username))
                         }
                     }
                     
                     ForEach(accountListingViewModel.otherAccounts, id: \.username) { account in
-                        IconTextButton(startIconUrl: account.profileImageUrl ?? "", startIconType: .webImage, text: account.username) {
+                        SimpleWebImageTouchItemRow(text: account.username, iconUrl: account.profileImageUrl ?? "") {
                             do {
                                 AccountViewModel.shared.switchAccount(newAccount: account)
                                 try AccountViewModel.shared.updateTokens(accessToken: account.accessToken ?? "", refreshToken: account.refreshToken ?? "")
@@ -85,13 +88,13 @@ struct AccountSheet: View {
                         }
                     }
                     
-                    IconTextButton(startIconUrl: "person.crop.circle.badge.plus", text: "Add account") {
+                    SimpleTouchItemRow(text: "Add account", icon: "person.crop.circle.badge.plus") {
                         dismiss()
                         navigationManager.path.append(AppNavigation.login)
                     }
                     
                     if accountViewModel.account.isAnonymous() == false {
-                        IconTextButton(startIconUrl: "person.fill.questionmark", text: "Anonymous") {
+                        SimpleTouchItemRow(text: "Anonymous", icon: "person.fill.questionmark") {
                             do {
                                 try accountViewModel.switchToAnonymous()
                             } catch {
@@ -100,7 +103,7 @@ struct AccountSheet: View {
                             dismiss()
                         }
                         
-                        IconTextButton(startIconUrl: "rectangle.portrait.and.arrow.right", text: "Log out") {
+                        SimpleTouchItemRow(text: "Log out", icon: "rectangle.portrait.and.arrow.right") {
                             do {
                                 try accountViewModel.logout()
                             } catch {
@@ -110,7 +113,6 @@ struct AccountSheet: View {
                         }
                     }
                 }
-                .padding(.horizontal, 24)
             }
         }
     }
