@@ -22,7 +22,7 @@ struct TogglePreference: View {
     }
     
     var body: some View {
-        TouchRipple(backgroundShape: Rectangle(), action: {
+        TouchRipple(action: {
             isEnabled.toggle()
         }) {
             HStack(spacing: 0) {

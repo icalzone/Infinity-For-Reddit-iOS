@@ -17,6 +17,12 @@ struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
     @State private var dragStartLocation: CGPoint? = nil
     
     let maxTapMovement: CGFloat = 10
+    
+    init(backgroundShape: BackgroundShape = Rectangle(), action: (() -> Void)? = nil, @ViewBuilder content: @escaping () -> Content) {
+        self.backgroundShape = backgroundShape
+        self.action = action
+        self.content = content
+    }
 
     var body: some View {
         content()

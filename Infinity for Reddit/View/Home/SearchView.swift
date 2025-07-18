@@ -63,34 +63,34 @@ struct SearchView: View {
                 // Recent search items
                 VStack(spacing: 12) {
                     ForEach(searchViewModel.recentSearchQueries, id: \.time) { search in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(search.searchQuery)
-                                .primaryText()
-                            
-                            switch search.searchInThingType {
-                            case SearchInThingType.all.rawValue:
-                                Text("All subreddits")
-                                    .secondaryText()
-                            case SearchInThingType.subreddit.rawValue:
-                                Text("r/\(search.searchInSubredditOrUserName ?? "")")
-                                    .subreddit()
-                            case SearchInThingType.user.rawValue:
-                                Text("u/\(search.searchInSubredditOrUserName ?? "")")
-                                    .username()
-                            case SearchInThingType.multireddit.rawValue:
-                                Text(search.multiRedditDisplayName ?? "")
-                                    .secondaryText()
-                            default:
-                                Text("All subreddits")
-                                    .secondaryText()
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                        .padding(.vertical, 6)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
+                        TouchRipple(action: {
                             navigationManager.path.append(AppNavigation.search(query: search.searchQuery, searchInSubredditOrUserName: search.searchInSubredditOrUserName, searchInMultiReddit: search.multiRedditPath, searchInThingType: search.searchInThingType))
+                        }) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(search.searchQuery)
+                                    .primaryText()
+                                
+                                switch search.searchInThingType {
+                                case SearchInThingType.all.rawValue:
+                                    Text("All subreddits")
+                                        .secondaryText()
+                                case SearchInThingType.subreddit.rawValue:
+                                    Text("r/\(search.searchInSubredditOrUserName ?? "")")
+                                        .subreddit()
+                                case SearchInThingType.user.rawValue:
+                                    Text("u/\(search.searchInSubredditOrUserName ?? "")")
+                                        .username()
+                                case SearchInThingType.multireddit.rawValue:
+                                    Text(search.multiRedditDisplayName ?? "")
+                                        .secondaryText()
+                                default:
+                                    Text("All subreddits")
+                                        .secondaryText()
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(16)
+                            .contentShape(Rectangle())
                         }
                     }
                 }

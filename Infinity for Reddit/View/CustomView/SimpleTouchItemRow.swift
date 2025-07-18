@@ -13,7 +13,7 @@ struct SimpleTouchItemRow: View {
     var action: (() -> Void)?
     
     var body: some View {
-        TouchRipple(backgroundShape: Rectangle(), action: action) {
+        TouchRipple(action: action) {
             HStack(spacing: 0) {
                 if let icon = icon {
                     SwiftUI.Image(systemName: icon)

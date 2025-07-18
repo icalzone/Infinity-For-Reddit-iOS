@@ -14,11 +14,11 @@ struct SimpleWebImageTouchItemRow: View {
     var action: (() -> Void)?
     
     var body: some View {
-        TouchRipple(backgroundShape: Rectangle(), action: action) {
+        TouchRipple(action: action) {
             HStack(spacing: 0) {
                 if let icon = iconUrl {
                     CustomWebImage(
-                        iconUrl,
+                        icon,
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
