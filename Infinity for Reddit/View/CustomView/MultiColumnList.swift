@@ -11,10 +11,12 @@ import SwiftUI
 struct MultiColumnList<Item>: UIViewRepresentable {
     let items: [Item]
     let viewForItem: (Item) -> AnyView
+    let onItemAppear: ((Int, Item) -> Void)?
 
     func makeUIView(context: Context) -> UITableView {
         let tableView = UITableView()
         tableView.dataSource = context.coordinator
+        tableView.delegate = context.coordinator
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
@@ -23,20 +25,25 @@ struct MultiColumnList<Item>: UIViewRepresentable {
 
     func updateUIView(_ uiView: UITableView, context: Context) {
         context.coordinator.items = items
+        context.coordinator.onItemAppear = onItemAppear
         uiView.reloadData()
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(items: items, viewForItem: viewForItem)
+        Coordinator(items: items, viewForItem: viewForItem, onItemAppear: onItemAppear)
     }
 
-    class Coordinator: NSObject, UITableViewDataSource {
+    class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
         var items: [Item]
         let viewForItem: (Item) -> AnyView
+        var onItemAppear: ((Int, Item) -> Void)?
 
-        init(items: [Item], viewForItem: @escaping (Item) -> AnyView) {
+        init(items: [Item],
+             viewForItem: @escaping (Item) -> AnyView,
+             onItemAppear: ((Int, Item) -> Void)?) {
             self.items = items
             self.viewForItem = viewForItem
+            self.onItemAppear = onItemAppear
         }
 
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -47,10 +54,8 @@ struct MultiColumnList<Item>: UIViewRepresentable {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HostingCell") ??
                 UITableViewCell(style: .default, reuseIdentifier: "HostingCell")
 
-            // Remove previous hosted views
             cell.contentView.subviews.forEach { $0.removeFromSuperview() }
 
-            // Lazily create the view for this item
             let swiftUIView = viewForItem(items[indexPath.row])
             let hostingController = UIHostingController(rootView: swiftUIView)
             hostingController.view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,6 +69,12 @@ struct MultiColumnList<Item>: UIViewRepresentable {
             ])
 
             return cell
+        }
+
+        func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+            let index = indexPath.row
+            guard index < items.count else { return }
+            onItemAppear?(index, items[index])
         }
     }
 }

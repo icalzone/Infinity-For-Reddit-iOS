@@ -47,6 +47,8 @@ public class PostListingViewModel: ObservableObject {
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
+    private var paginationTask: Task<Void, Never>?
+    
     // MARK: - Initializer
     init(postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
         self.sortType = SortType(
@@ -73,11 +75,21 @@ public class PostListingViewModel: ObservableObject {
         await loadPosts(isRefreshWithContinuation: refreshPostsContinuation != nil)
     }
     
+    public func loadPostsPagination(index: Int) {
+        guard paginationTask == nil else { return }
+        
+        guard index >= posts.count - 3 else { return }
+        
+        paginationTask = Task {
+            defer { paginationTask = nil }
+            await loadPosts()
+        }
+    }
+    
     /// Fetches the next page of posts
     public func loadPosts(isRefreshWithContinuation: Bool = false) async {
         guard !isInitialLoading, !isLoadingMore, hasMorePages else { return }
         
-        print("what the fuck")
         let isInitailLoadCopy = isInitialLoad
         
         await MainActor.run {

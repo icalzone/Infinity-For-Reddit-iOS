@@ -2,7 +2,7 @@
 //  PostListingTestView.swift
 //  Infinity for Reddit
 //
-//  Created by Docile Alligator on 2024-12-04.
+//  Created by Docile Alligator on 2025-07-18.
 //
 
 import SwiftUI
@@ -75,33 +75,6 @@ struct PostListingTestView: View {
                 }
             } else {
                 if isRootView {
-//                    List {
-//                        ForEach(postListingViewModel.posts, id: \.id) { post in
-//                            PostViewCard(account: account, post: post, isSubredditPostListing: isSubredditPostListing)
-//                                //.id(post.id)
-//                                .listPlainItemNoInsets()
-//                                .onAppear {
-//                                    if post.subredditOrUserIcon == nil {
-//                                        Task {
-//                                            await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
-//                                        }
-//                                    }
-//                                }
-//                        }
-//                        if postListingViewModel.hasMorePages {
-//                            ProgressIndicator()
-//                                .task {
-//                                    await postListingViewModel.loadPosts()
-//                                }
-//                                .listPlainItem()
-//                        }
-//                    }
-//                    .scrollBounceBehavior(.basedOnSize)
-//                    .themedList()
-//                    .refreshable {
-//                        await postListingViewModel.refreshPostsWithContinuation()
-//                    }
-                    
                     MultiColumnList(
                         items: postListingViewModel.itemsWithLoadingIndicator,
                         viewForItem: { item in
@@ -123,11 +96,11 @@ struct PostListingTestView: View {
                                 return AnyView(
                                     ProgressIndicator()
                                         .id("loadingIndicator")
-                                        .task {
-                                            await postListingViewModel.loadPosts()
-                                        }
                                 )
                             }
+                        },
+                        onItemAppear: { index, item in
+                            postListingViewModel.loadPostsPagination(index: index)
                         }
                     )
                 }
@@ -168,8 +141,8 @@ struct PostListingTestView: View {
             guard let navigationBarMenuKey else { return }
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
-        .onChange(of: sensitiveContent) {
-            postListingViewModel.setSensitiveContent($0)
+        .onChange(of: sensitiveContent) { oldValue, newValue in
+            postListingViewModel.setSensitiveContent(newValue)
         }
         .sheet(isPresented: $showNewPostMenu) {
             NewPostSheet()
@@ -204,10 +177,3 @@ struct PostListingTestView: View {
         }
     }
 }
-//
-//  PostListingTestView.swift
-//  Infinity for Reddit
-//
-//  Created by Docile Alligator on 2025-07-18.
-//
-
