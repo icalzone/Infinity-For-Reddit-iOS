@@ -23,8 +23,9 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var error: Error?
     @Published var sortTypeKind: SortType.Kind
     @Published var loadPostAndCommentsTaskId = UUID()
+    @Published var postDetailsInput: PostDetailsInput
+    @Published var singleThreadContext: Int = 8
     private let account: Account
-    private let postDetailsInput: PostDetailsInput
     private var commentMore: CommentMore?
     private var after: String? = nil
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
@@ -95,10 +96,18 @@ public class PostDetailsViewModel: ObservableObject {
                     queries: ["sort": sortTypeKind.rawValue, "after": after ?? ""]
                 )
             case .postAndCommentId(let postId, let commentId):
-                postDetails = try await postDetailsRepository.fetchComments(
-                    postId: postId,
-                    queries: ["sort": sortTypeKind.rawValue, "after": after ?? ""]
-                )
+                if let commentId = commentId {
+                    postDetails = try await postDetailsRepository.fetchCommentsSingleThread(
+                        postId: postId,
+                        commentId: commentId,
+                        queries: ["sort": sortTypeKind.rawValue, "after": after ?? "", "context": String(singleThreadContext)]
+                    )
+                } else {
+                    postDetails = try await postDetailsRepository.fetchComments(
+                        postId: postId,
+                        queries: ["sort": sortTypeKind.rawValue, "after": after ?? ""]
+                    )
+                }
             }
             
             try Task.checkCancellation()
@@ -201,8 +210,8 @@ public class PostDetailsViewModel: ObservableObject {
             after = nil
             hasMoreComments = true
             if refreshPostsContinuation == nil {
-                visibleComments = []
-                allComments = []
+                visibleComments.removeAll()
+                allComments.removeAll()
             }
         }
     }

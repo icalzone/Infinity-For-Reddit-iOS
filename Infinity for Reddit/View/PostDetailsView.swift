@@ -50,6 +50,21 @@ struct PostDetailsView: View {
                                 }
                             }
                         }
+                    
+                    if case .postAndCommentId = postDetailsViewModel.postDetailsInput {
+                        TouchRipple(action: {
+                            guard let post = postDetailsViewModel.post else { return }
+                            postDetailsViewModel.postDetailsInput = .post(post)
+                            postDetailsViewModel.refreshPostAndComments()
+                        }) {
+                            Text("Click here to browse all comments")
+                                .frame(maxWidth: .infinity)
+                                .contentShape(Rectangle())
+                                .padding(16)
+                                .colorAccentText()
+                        }
+                        .listPlainItemNoInsets()
+                    }
                 }
                 
                 if postDetailsViewModel.visibleComments.isEmpty {

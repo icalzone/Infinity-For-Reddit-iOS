@@ -148,3 +148,13 @@ struct GalleryIndexIndicatorViewModifier: ViewModifier {
             .background(Color(hex: themeViewModel.currentCustomTheme.mediaIndicatorBackgroundColor))
     }
 }
+
+struct ColorAccentTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            //.font()
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
+    }
+}

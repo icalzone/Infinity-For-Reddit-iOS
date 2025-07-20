@@ -209,4 +209,8 @@ extension View {
     func filledCardBackground() -> some View {
         self.modifier(FilledCardBackgroundViewModifier())
     }
+    
+    func colorAccentText() -> some View {
+        self.modifier(ColorAccentTextViewModifier())
+    }
 }
