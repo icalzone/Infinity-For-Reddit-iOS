@@ -8,12 +8,40 @@
 import SwiftUI
 
 struct InboxConversationView: View {
+    @StateObject var inboxConversationViewModel: InboxConversationViewModel
     
     init(inbox: Inbox) {
-        
+        _inboxConversationViewModel = StateObject(
+            wrappedValue: InboxConversationViewModel(
+                inbox: inbox,
+                inboxConversationRepository: InboxConversationRepository()
+            )
+        )
     }
     
     var body: some View {
-        Text("ConversationView")
+        List {
+            Text(inboxConversationViewModel.inbox.body)
+            
+            if let replies = inboxConversationViewModel.inbox.replies?.data?.inboxes {
+                ForEach(replies, id: \.id) { reply in
+                    Text(reply.body)
+                }
+            }
+        }
+        .themedList()
+        .themedNavigationBar()
+    }
+}
+
+struct InboxConversationMe: View {
+    var body: some View {
+        EmptyView()
+    }
+}
+
+struct InboxConversationThem: View {
+    var body: some View {
+        EmptyView()
     }
 }

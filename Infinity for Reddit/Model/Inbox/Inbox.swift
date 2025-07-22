@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-class Inbox : NSObject, NSCoding{
+class Inbox : NSObject, NSCoding {
     
     var kind: String!
     
@@ -67,7 +67,8 @@ class Inbox : NSObject, NSCoding{
         newField = json["new"].boolValue
         numComments = json["num_comments"].intValue
         parentId = json["parent_id"].stringValue
-        if json["replies"].stringValue != ""{
+        let repliesJson = json["replies"]
+        if repliesJson.type == .dictionary {
             replies = InboxListingRootClass(fromJson: json["replies"], messageWhere: messageWhere)
         }
         score = json["score"].intValue
