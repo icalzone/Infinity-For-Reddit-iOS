@@ -27,83 +27,34 @@ struct InboxConversationView: View {
     }
     
     var body: some View {
-//        UICollectionViewList(
-//            items: inboxConversationViewModel.conversations,
-//            viewForItem: { inbox in
-//                AnyView(
-//                    VStack {
-//                        ChatBubble(isSentMessage: true, shouldShowTail: false) {
-//                            Text(inbox.body)
-//                        }
-//                        ChatBubble(isSentMessage: true, shouldShowTail: true) {
-//                            Text(inbox.body)
-//                        }
-//                        ChatBubble(isSentMessage: false, shouldShowTail: false) {
-//                            Text(inbox.body)
-//                        }
-//                        ChatBubble(isSentMessage: false, shouldShowTail: true) {
-//                            Text(inbox.body)
-//                        }
-//                    }
-//                )
-//            },
-//            onItemAppear: { index, inbox in
-//                
-//            },
-//            scrollFromBottom: true,
-//            scrollToBottomTrigger: $scrollToBottomTrigger
-//        )
-//        .onAppear {
-//            self.scrollToBottomTrigger = true
-//        }
-//        .themedNavigationBar()
-        
-//        VStack(spacing: 0) {
-//            Spacer()
-//            
-//            ScrollViewReader { proxy in
-//                List(inboxConversationViewModel.conversations, id: \.id) { inbox in
-//                    ChatBubble(isSentMessage: true, shouldShowTail: false) {
-//                        Text(inbox.body)
-//                    }
-//                    .listPlainItemNoInsets()
-//                    .id(inbox.id)
-//                    
-//                    Text("fuck you")
-//                }
-//                .themedList()
-//                .onAppear {
-//                    print("view appeared")
-//                    withAnimation {
-//                        proxy.scrollTo(inboxConversationViewModel.conversations.last?.id, anchor: .bottom)
-//                    }
-//                }
-//            }
-//        }
-//        .frame(maxHeight: .infinity)
-//        .themedNavigationBar()
-        
         VStack(spacing: 0) {
-            List {
-                let conversations = inboxConversationViewModel.conversations
-                
-                ForEach(Array(conversations.enumerated()), id: \.element.id) { index, inbox in
-                    // Remember the conversations is reversed.
-                    let isLastFromSender = index == 0 || conversations[index - 1].author != inbox.author
+            ScrollViewReader { proxy in
+                List {
+                    let conversations = inboxConversationViewModel.conversations
                     
-                    ChatBubble(isSentMessage: inbox.author == accountViewModel.account.username, shouldShowTail: isLastFromSender) {
-                        Text(inbox.body)
+                    ForEach(Array(conversations.enumerated()), id: \.element.id) { index, inbox in
+                        // Remember the conversations is reversed.
+                        let isLastFromSender = index == 0 || conversations[index - 1].author != inbox.author
+                        
+                        ChatBubble(isSentMessage: inbox.author == accountViewModel.account.username, shouldShowTail: isLastFromSender) {
+                            Text(inbox.body)
+                        }
+                        .listPlainItemNoInsets()
+                        .rotationEffect(.degrees(180))
+                        .id(inbox.id)
                     }
-                    .listPlainItemNoInsets()
-                    .rotationEffect(.degrees(180))
-                    .id(inbox.id)
                 }
-            }
-            .rotationEffect(.degrees(180))
-            .themedList()
-            .scrollIndicators(.hidden)
-            .onTapGesture {
-                isInputActive = false
+                .rotationEffect(.degrees(180))
+                .themedList()
+                .scrollIndicators(.hidden)
+                .onTapGesture {
+                    isInputActive = false
+                }
+                .onChange(of: inboxConversationViewModel.listScrollTarget) {
+                    guard let target = inboxConversationViewModel.listScrollTarget else { return }
+                    
+                    proxy.scrollTo(target, anchor: .bottom)
+                }
             }
             
             if inboxConversationViewModel.fullNameToReplyTo != nil {

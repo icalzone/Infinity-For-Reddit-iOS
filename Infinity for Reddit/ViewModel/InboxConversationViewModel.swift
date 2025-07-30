@@ -11,6 +11,7 @@ class InboxConversationViewModel: ObservableObject {
     @Published var inbox: Inbox
     @Published var fullNameToReplyTo: String?
     @Published var error: Error?
+    @Published var listScrollTarget: String?
     
     var conversations: [Inbox] {
         if let replies = inbox.replies?.data?.inboxes {
@@ -51,6 +52,11 @@ class InboxConversationViewModel: ObservableObject {
             try Task.checkCancellation()
             
             let newInbox = try await inboxConversationRepository.sendMessage(message: message, fullNameToReplyTo: fullNameToReplyTo)
+            
+            await MainActor.run {
+                inbox.replies.data.inboxes = (inbox.replies.data.inboxes ?? []) + [newInbox]
+                listScrollTarget = newInbox.id
+            }
         } catch {
             await MainActor.run {
                 self.error = error

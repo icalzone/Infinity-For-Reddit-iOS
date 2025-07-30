@@ -57,7 +57,7 @@ public class InboxConversationRepository: InboxConversationRepositoryProtocol {
         let inboxArray = json["json"]["data"]["things"].array
         if let inboxArray = inboxArray {
             if let inbox = inboxArray.first {
-                return Inbox(fromJson: inbox, kind: "t4", messageWhere: nil)
+                return Inbox(fromJson: inbox["data"], kind: inbox["kind"].stringValue, messageWhere: nil)
             }
         }
         
