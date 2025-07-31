@@ -10,11 +10,15 @@ import Swinject
 import GRDB
 
 struct PostFilterSettingsView: View {
+    @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
     @Environment(\.dependencyManager) private var dependencyManager: Container
-    @State private var isCustomizePostFilter = false
+    
     @StateObject var postFilterViewModel: PostFilterViewModel
-    private let postFilterDao: PostFilterDao
+    @State private var isCustomizePostFilter = false
     @State private var postFilterName: String? = nil
+    @State private var navigationBarMenuKey: UUID?
+    
+    private let postFilterDao: PostFilterDao
     
     init() {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
@@ -29,17 +33,22 @@ struct PostFilterSettingsView: View {
     }
     
     var body: some View {
-        List() {
+        List {
             Text("Restart the app to see the changes")
-                .foregroundColor(.blue)
-                .font(.caption)
+                .secondaryText()
+            
+            Divider()
+            
             if postFilterViewModel.postFilters.isEmpty {
                 Text("No post filters found. Create a new one!")
-                    .foregroundColor(.gray)
+                    .secondaryText()
+                    .listPlainItemNoInsets()
             } else {
                 ForEach(postFilterViewModel.postFilters, id: \.name) { filter in
                     HStack{
                         Text(filter.name)
+                            .primaryText()
+                        
                         Spacer()
                         
                         Button(action: {}) {
@@ -59,11 +68,14 @@ struct PostFilterSettingsView: View {
                         }
                         .tint(.red)
                     }
+                    .listPlainItemNoInsets()
                 }
             }
             
         }
-        .navigationTitle("Post Filter")
+        .themedList()
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Post Filter")
         .toolbar {
             Button("", systemImage: "plus") {
                 postFilterName = nil
