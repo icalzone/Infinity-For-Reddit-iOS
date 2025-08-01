@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CustomTextField: View {
+    @EnvironmentObject var customThemeViewModel: CustomThemeViewModel
+    
     @Binding var text: String
     var placeholder: String
     
@@ -17,6 +19,13 @@ struct CustomTextField: View {
     }
     
     var body: some View {
-        TextField(placeholder, text: $text)
+        TextField(
+            "",
+            text: $text,
+            prompt: Text(placeholder)
+                .foregroundStyle(Color(hex: customThemeViewModel.currentCustomTheme.secondaryTextColor))
+        )
+        .primaryText()
+        .tint(Color(hex: customThemeViewModel.currentCustomTheme.colorPrimary))
     }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 import Swinject
 import GRDB
+import Combine
 
 struct CustomizePostFilterView: View {
     @Environment(\.dismiss) var dismiss
@@ -35,9 +36,13 @@ struct CustomizePostFilterView: View {
     @State private var excludeDomains: String = ""
     @State private var containDomains: String = ""
     @State private var minVote: Int = -1
+    @State private var minVoteString: String = "-1"
     @State private var maxVote: Int = -1
+    @State private var maxVoteString: String = "-1"
     @State private var minComments: Int = -1
+    @State private var minCommentsString: String = "-1"
     @State private var maxComments: Int = -1
+    @State private var maxCommentsString: String = "-1"
     @Binding var postFilterName: String?
     
     init(_ postFilterName: Binding<String?>) {
@@ -249,21 +254,45 @@ struct CustomizePostFilterView: View {
                             .primaryText()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        CustomTextField("Min vote (-1: no restriction)", text: Binding(
-                            get: { String(minVote) },
-                            set: { minVote = Int($0) ?? -1 }
-                        ))
-                        .keyboardType(.numberPad)
+                        CustomTextField("Min vote (-1: no restriction)", text: $minVoteString)
+                        .onReceive(Just(minVoteString)) { newValue in
+                            var sanitized = ""
+                            if newValue.hasPrefix("-") {
+                                sanitized = "-"
+                            }
+                            
+                            sanitized += newValue
+                                .dropFirst(sanitized == "-" ? 1 : 0)
+                                .filter { $0.isNumber }
+                            
+                            if sanitized != newValue {
+                                minVoteString = sanitized
+                            }
+                            
+                            minVote = Int(sanitized) ?? -1
+                        }
                         
                         Text("Posts that have a score higher than the following value will be filtered out (-1 means no restriction).")
                             .primaryText()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        CustomTextField("Max vote (-1: no restriction)", text: Binding(
-                            get: { String(maxVote) },
-                            set: { maxVote = Int($0) ?? -1 }
-                        ))
-                        .keyboardType(.numberPad)
+                        CustomTextField("Max vote (-1: no restriction)", text: $maxVoteString)
+                        .onReceive(Just(maxVoteString)) { newValue in
+                            var sanitized = ""
+                            if newValue.hasPrefix("-") {
+                                sanitized = "-"
+                            }
+                            
+                            sanitized += newValue
+                                .dropFirst(sanitized == "-" ? 1 : 0)
+                                .filter { $0.isNumber }
+                            
+                            if sanitized != newValue {
+                                maxVoteString = sanitized
+                            }
+                            
+                            maxVote = Int(sanitized) ?? -1
+                        }
                     }
                     .padding(16)
                 }
@@ -277,21 +306,45 @@ struct CustomizePostFilterView: View {
                             .primaryText()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        CustomTextField("Min comments (-1: no restriction)", text: Binding(
-                            get: { String(minComments) },
-                            set: { minComments = Int($0) ?? -1 }
-                        ))
-                        .keyboardType(.numberPad)
+                        CustomTextField("Min comments (-1: no restriction)", text: $minCommentsString)
+                        .onReceive(Just(minCommentsString)) { newValue in
+                            var sanitized = ""
+                            if newValue.hasPrefix("-") {
+                                sanitized = "-"
+                            }
+                            
+                            sanitized += newValue
+                                .dropFirst(sanitized == "-" ? 1 : 0)
+                                .filter { $0.isNumber }
+                            
+                            if sanitized != newValue {
+                                minCommentsString = sanitized
+                            }
+                            
+                            minComments = Int(sanitized) ?? -1
+                        }
                         
                         Text("Posts will be filtered out if the number of their comments is larger than the following value. (-1 means no restriction).")
                             .primaryText()
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        CustomTextField("Max comments (-1: no restriction)", text: Binding(
-                            get: { String(maxComments) },
-                            set: { maxComments = Int($0) ?? -1 }
-                        ))
-                        .keyboardType(.numberPad)
+                        CustomTextField("Max comments (-1: no restriction)", text: $maxCommentsString)
+                        .onReceive(Just(maxCommentsString)) { newValue in
+                            var sanitized = ""
+                            if newValue.hasPrefix("-") {
+                                sanitized = "-"
+                            }
+                            
+                            sanitized += newValue
+                                .dropFirst(sanitized == "-" ? 1 : 0)
+                                .filter { $0.isNumber }
+                            
+                            if sanitized != newValue {
+                                maxCommentsString = sanitized
+                            }
+                            
+                            maxComments = Int(sanitized) ?? -1
+                        }
                     }
                     .padding(16)
                 }
