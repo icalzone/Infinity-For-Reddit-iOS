@@ -45,20 +45,57 @@ struct CustomizePostFilterView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Form {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Text("Cancel")
+                        .primaryText()
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    handleSaveAction()
+                    dismiss()
+                }) {
+                    Text("Save")
+                        .primaryText()
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            
+            List {
                 Section(header: Text("The post filter name should be unique.")) {
                     TextField("Post Filter Name", text: $profileName)
                 }
                 
-                Section(header: Text("To see certain types of posts, please turn on the switch corresponding to the types.")) {
-                    Toggle("Text", isOn: $showText)
-                    Toggle("Link", isOn: $showLink)
-                    Toggle("Image", isOn: $showImage)
-                    Toggle("Gif", isOn: $showGif)
-                    Toggle("Video", isOn: $showVideo)
-                    Toggle("Gallery", isOn: $showGallery)
+                FilledCardView {
+                    VStack(spacing: 0) {
+                        Text("To see certain types of posts, please turn on the switch corresponding to the types.")
+                            .primaryText()
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        TogglePreference(isEnabled: $showText, title: "Text", icon: "text.page")
+                        
+                        TogglePreference(isEnabled: $showLink, title: "Link", icon: "link")
+                        
+                        TogglePreference(isEnabled: $showImage, title: "Image", icon: "photo")
+                        
+                        TogglePreference(isEnabled: $showGif, title: "Gif", icon: "photo")
+                        
+                        TogglePreference(isEnabled: $showVideo, title: "Video", icon: "video")
+                        
+                        TogglePreference(isEnabled: $showGallery, title: "Gallery", icon: "square.stack")
+                    }
                 }
+                .listPlainItemNoInsets()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
                 
                 Section(header: Text("To only see sensitive or spoiler posts, please turn on the corresponding switch.")) {
                     Toggle("Only Sensitive Content", isOn: $onlySensitive)
@@ -148,21 +185,7 @@ struct CustomizePostFilterView: View {
                     .keyboardType(.numberPad)
                 }
             }
-            .navigationTitle("Customize Post Filter")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        handleSaveAction()
-                        dismiss()
-                        
-                    }
-                }
-            }
+            .themedList()
         }
         .onAppear {
             if let postFilterName = postFilterName {

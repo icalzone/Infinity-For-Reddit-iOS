@@ -27,12 +27,18 @@ public class InboxListingRepository: InboxListingRepositoryProtocol {
     public func fetchInboxListing(messageWhere: MessageWhere, pathComponents: [String : String], queries: [String : String]) async throws -> InboxListing {
         try Task.checkCancellation()
         
-        let data = try await self.session.request(
+        let response = try await self.session.request(
             RedditOAuthAPI.getInbox(pathComponents: pathComponents, queries: queries)
         )
         .validate()
         .serializingData()
-        .value
+        .response
+        
+        if let statusCode = response.response?.statusCode {
+            print("Status code: \(statusCode)")
+        }
+        
+        let data = response.data
         
         try Task.checkCancellation()
         

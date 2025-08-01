@@ -71,7 +71,6 @@ struct PostFilterSettingsView: View {
                     .listPlainItemNoInsets()
                 }
             }
-            
         }
         .themedList()
         .themedNavigationBar()
@@ -84,7 +83,6 @@ struct PostFilterSettingsView: View {
         }
         .sheet(isPresented: $isCustomizePostFilter) {
             CustomizePostFilterView($postFilterName)
-                
         }
         .onAppear {
             postFilterViewModel.loadPostFilters()
