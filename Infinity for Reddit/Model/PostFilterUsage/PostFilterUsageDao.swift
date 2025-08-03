@@ -52,7 +52,7 @@ struct PostFilterUsageDao {
 
     func deletePostFilterUsage(postFilterUsage: PostFilterUsage) throws {
         try dbPool.write { db in
-            try db.execute(sql: "DELETE FROM post_filter_usage WHERE name = ? AND usage = ? AND name_of_usage = ?", arguments: [postFilterUsage.name, postFilterUsage.usage, postFilterUsage.nameOfUsage])
+            try db.execute(sql: "DELETE FROM post_filter_usage WHERE name = ? AND usage = ? AND name_of_usage = ?", arguments: [postFilterUsage.name, postFilterUsage.usageType.rawValue, postFilterUsage.nameOfUsage])
         }
     }
 }

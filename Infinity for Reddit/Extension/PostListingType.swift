@@ -18,7 +18,7 @@ extension PostListingType: SortTypeKindSource {
             return [.relevance, .hot, .top, .new, .comments]
         case .multireddit:
             return [.hot, .new, .rising, .top, .controversial]
-        case .subredditConcat:
+        case .anonymousFrontPage:
             return [.hot, .new, .rising, .top, .controversial]
         }
     }
@@ -51,6 +51,44 @@ extension PostListingType {
             return true
         default:
             return false
+        }
+    }
+}
+
+extension PostListingType {
+    var postFilterUsageType: PostFilterUsage.UsageType {
+        switch self {
+        case .frontPage:
+            return .home
+        case .subreddit:
+            return .subreddit
+        case .user:
+            return .user
+        case .search:
+            return .search
+        case .multireddit:
+            return .multireddit
+        case .anonymousFrontPage:
+            return .home
+        }
+    }
+}
+
+extension PostListingType {
+    var postFilterNameOfUsage: String {
+        switch self {
+        case .frontPage:
+            return PostFilterUsage.NO_USAGE
+        case .subreddit(let subredditName):
+            return subredditName
+        case .user(let username, _):
+            return username
+        case .search:
+            return PostFilterUsage.NO_USAGE
+        case .multireddit(let path):
+            return path
+        case .anonymousFrontPage:
+            return PostFilterUsage.NO_USAGE
         }
     }
 }

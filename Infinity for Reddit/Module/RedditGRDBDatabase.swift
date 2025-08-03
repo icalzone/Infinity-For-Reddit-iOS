@@ -18,6 +18,7 @@ struct RedditGRDBDatabase {
         var config = Configuration()
         config.prepareDatabase { db in
             try db.execute(sql: "PRAGMA journal_mode = WAL")
+            try db.execute(sql: "PRAGMA foreign_keys = ON")
         }
         
         let dbPool = try DatabasePool(path: path, configuration: config)
@@ -74,6 +75,16 @@ struct RedditGRDBDatabase {
                 t.column("containGifType", .boolean)
                 t.column("containVideoType", .boolean)
                 t.column("containGalleryType", .boolean)
+            }
+            
+            try db.create(table: PostFilterUsage.databaseTableName, ifNotExists: true) { t in
+                t.column("name", .text)
+                    .notNull()
+                    .indexed()
+                    .references(PostFilter.databaseTableName, onDelete: .cascade, onUpdate: .cascade)
+                t.column("usage_type", .integer)
+                t.column("name_of_usage", .text)
+                t.primaryKey(["name", "usage_type", "name_of_usage"])
             }
             
             try db.create(table: SubscribedSubredditData.databaseTableName, ifNotExists: true) { t in

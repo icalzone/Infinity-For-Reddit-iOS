@@ -45,6 +45,7 @@ public class PostListingViewModel: ObservableObject {
     }
     
     private let postListingMetadata: PostListingMetadata
+    private var postFilter: PostFilter?
     private var lastLoadedSortType: SortType? = nil
     private var allPostIds = Set<String>()
     private var after: String? = nil
@@ -145,6 +146,10 @@ public class PostListingViewModel: ObservableObject {
             
             try Task.checkCancellation()
             
+            if postFilter == nil {
+                fetchPostFilter()
+            }
+            
             let processedPosts = self.postProcessPosts(postListing.posts)
             
             try Task.checkCancellation()
@@ -237,7 +242,9 @@ public class PostListingViewModel: ObservableObject {
     }
     
     func postProcessPosts(_ posts: [Post]) -> [Post] {
-        return posts.map {
+        return posts.filter { post in
+            PostFilter.isPostAllowed(post: post, postFilter: postFilter)
+        }.map {
             if !$0.selftext.isEmpty {
                 modifyPostBody($0)
                 $0.selftextProcessedMarkdown = MarkdownContent($0.selftext)
@@ -248,6 +255,10 @@ public class PostListingViewModel: ObservableObject {
     
     func modifyPostBody(_ post: Post) {
         MarkdownUtils.parseRedditImagesBlock(post)
+    }
+    
+    func fetchPostFilter() {
+        self.postFilter = postListingRepository.fetchPostFilter(postListingType: postListingMetadata.postListingType)
     }
     
     func loadIcon(post: Post, displaySubredditIcon: Bool) async {

@@ -18,6 +18,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     }
     private let session: Session
     private let subredditDao: SubredditDao
+    private let postFilterDao: PostFilterDao
     private var subredditOrUserIcons: [String: String] = [:]
     
     public init() {
@@ -29,6 +30,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         }
         self.session = resolvedSession
         self.subredditDao = SubredditDao(dbPool: resolvedDBPool)
+        self.postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
     }
     
     public func fetchPosts(
@@ -49,7 +51,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
             apiRequest = RedditOAuthAPI.getSearchPosts(queries: queries!)
         case .multireddit:
             apiRequest = RedditOAuthAPI.getMultiredditPosts(pathComponents: pathComponents!, queries: queries!)
-        case .subredditConcat:
+        case .anonymousFrontPage:
             apiRequest = RedditOAuthAPI.getSubredditConcatPosts(pathComponents: pathComponents!, queries: queries!)
         }
         
@@ -68,6 +70,17 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         }
         
         return PostListingRootClass(fromJson: json).data
+    }
+    
+    public func fetchPostFilter(postListingType: PostListingType) -> PostFilter {
+        do {
+            let postFilters = try postFilterDao.getValidPostFilters(usage: postListingType.postFilterUsageType.rawValue, nameOfUsage: postListingType.postFilterNameOfUsage)
+            // TODO get allow nsfw
+            return PostFilter.mergePostFilter(postFilters)
+        } catch {
+            // TODO get allow nsfw
+            return PostFilter()
+        }
     }
     
     public func loadIcon(post: Post, displaySubredditIcon: Bool) async throws {

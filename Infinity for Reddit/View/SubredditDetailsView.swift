@@ -183,7 +183,7 @@ struct SubredditDetailsView: View {
                             PostListingView(
                                 account: accountViewModel.account,
                                 postListingMetadata:PostListingMetadata(
-                                    postListingType:.subreddit,
+                                    postListingType:.subreddit(subredditName: subredditDetailsViewModel.subredditName),
                                     pathComponents: ["subreddit": "\(subredditData.name)"],
                                     headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                                     queries: nil,

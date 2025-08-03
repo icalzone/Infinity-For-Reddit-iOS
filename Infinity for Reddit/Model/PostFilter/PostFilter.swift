@@ -6,6 +6,7 @@
 //
 
 import GRDB
+import Foundation
 
 public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable, Hashable {
     public static let databaseTableName = "post_filter"
@@ -28,7 +29,6 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
     var minAwards: Int = -1
     
     // NSFW and Spoiler filters
-    var allowNSFW: Bool = false
     var onlyNSFW: Bool = false
     var onlySpoiler: Bool = false
     
@@ -55,6 +55,10 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
     var containGifType: Bool = true
     var containVideoType: Bool = true
     var containGalleryType: Bool = true
+    
+    // The following fields will not be saved to the database
+    var allowNSFW: Bool = false
+    var allowSpoiler: Bool = true
     
     init(
         id: Int? = nil,
@@ -115,113 +119,210 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
     }
     
     
-    //    func isPostAllowed(post: Post?, postFilter: PostFilter?) -> Bool {
-    //        guard let post = post, let postFilter = postFilter else {
-    //            return true
-    //        }
-    //
-    //        if post.isNSFW() && !postFilter.allowNSFW {
-    //            return false
-    //        }
-    //        if postFilter.maxVote > 0 && post.voteType + post.score > postFilter.maxVote {
-    //            return false
-    //        }
-    //        if postFilter.minVote > 0 && post.voteType + post.score < postFilter.minVote {
-    //            return false
-    //        }
-    //        if postFilter.maxComments > 0 && post.nComments > postFilter.maxComments {
-    //            return false
-    //        }
-    //        if postFilter.minComments > 0 && post.nComments < postFilter.minComments {
-    //            return false
-    //        }
-    //        if postFilter.onlyNSFW && !post.isNSFW {
-    //            return postFilter.onlySpoiler ? post.isSpoiler : false
-    //        }
-    //        if postFilter.onlySpoiler && !post.isSpoiler {
-    //            return postFilter.onlyNSFW ? post.isNSFW : false
-    //        }
-    //        if !postFilter.containTextType && post.postType == .text {
-    //            return false
-    //        }
-    //        if !postFilter.containLinkType && (post.postType == .link || post.postType == .noPreviewLink) {
-    //            return false
-    //        }
-    //        if !postFilter.containImageType && post.postType == .image {
-    //            return false
-    //        }
-    //        if !postFilter.containGifType && post.postType == .gif {
-    //            return false
-    //        }
-    //        if !postFilter.containVideoType && post.postType == .video {
-    //            return false
-    //        }
-    //        if !postFilter.containGalleryType && post.postType == .gallery {
-    //            return false
-    //        }
-    //        if let excludesRegex = postFilter.postTitleExcludesRegex, !excludesRegex.isEmpty {
-    //            if let regex = try? NSRegularExpression(pattern: excludesRegex) {
-    //                if regex.firstMatch(in: post.title, options: [], range: NSRange(location: 0, length: post.title.utf16.count)) != nil {
-    //                    return false
-    //                }
-    //            }
-    //        }
-    //        if let containsRegex = postFilter.postTitleContainsRegex, !containsRegex.isEmpty {
-    //            if let regex = try? NSRegularExpression(pattern: containsRegex) {
-    //                if regex.firstMatch(in: post.title, options: [], range: NSRange(location: 0, length: post.title.utf16.count)) == nil {
-    //                    return false
-    //                }
-    //            }
-    //        }
-    //        if let excludesStrings = postFilter.postTitleExcludesStrings, !excludesStrings.isEmpty {
-    //            let titles = excludesStrings.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if titles.contains(where: { post.title.localizedCaseInsensitiveContains($0) }) {
-    //                return false
-    //            }
-    //        }
-    //        if let containsStrings = postFilter.postTitleContainsStrings, !containsStrings.isEmpty {
-    //            let titles = containsStrings.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if !titles.contains(where: { post.title.localizedCaseInsensitiveContains($0) }) {
-    //                return false
-    //            }
-    //        }
-    //        if let excludeSubreddits = postFilter.excludeSubreddits, !excludeSubreddits.isEmpty {
-    //            let subreddits = excludeSubreddits.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if subreddits.contains(where: { $0.localizedCaseInsensitiveCompare(post.subredditName) == .orderedSame }) {
-    //                return false
-    //            }
-    //        }
-    //        if let excludeUsers = postFilter.excludeUsers, !excludeUsers.isEmpty {
-    //            let users = excludeUsers.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if users.contains(where: { $0.localizedCaseInsensitiveCompare(post.author) == .orderedSame }) {
-    //                return false
-    //            }
-    //        }
-    //        if let excludeFlairs = postFilter.excludeFlairs, !excludeFlairs.isEmpty {
-    //            let flairs = excludeFlairs.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if flairs.contains(where: { $0.localizedCaseInsensitiveCompare(post.flair) == .orderedSame }) {
-    //                return false
-    //            }
-    //        }
-    //        if let url = post.url, let excludeDomains = postFilter.excludeDomains, !excludeDomains.isEmpty {
-    //            let domains = excludeDomains.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-    //            if domains.contains(where: { url.lowercased().contains($0) }) {
-    //                return false
-    //            }
-    //        }
-    //        if let url = post.url, let containDomains = postFilter.containDomains, !containDomains.isEmpty {
-    //            let domains = containDomains.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-    //            if !domains.contains(where: { url.lowercased().contains($0) }) {
-    //                return false
-    //            }
-    //        }
-    //        if let containFlairs = postFilter.containFlairs, !containFlairs.isEmpty {
-    //            let flairs = containFlairs.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-    //            if flairs.isEmpty || !flairs.contains(where: { $0.localizedCaseInsensitiveCompare(post.flair) == .orderedSame }) {
-    //                return false
-    //            }
-    //        }
-    //
-    //        return true
-    //    }
+    static func isPostAllowed(post: Post?, postFilter: PostFilter?) -> Bool {
+        guard let post = post, let postFilter = postFilter else {
+            return true
+        }
+        
+        if post.over18 && !postFilter.allowNSFW {
+            return false
+        }
+        
+        if postFilter.maxVote > 0 && post.likes + post.score > postFilter.maxVote {
+            return false
+        }
+        if postFilter.minVote > 0 && post.likes + post.score < postFilter.minVote {
+            return false
+        }
+        if postFilter.maxComments > 0 && post.numComments > postFilter.maxComments {
+            return false
+        }
+        if postFilter.minComments > 0 && post.numComments < postFilter.minComments {
+            return false
+        }
+        if postFilter.onlyNSFW && !post.over18 {
+            return postFilter.onlySpoiler ? post.spoiler : false
+        }
+        if postFilter.onlySpoiler && !post.spoiler {
+            return postFilter.onlyNSFW ? post.over18 : false
+        }
+        
+        switch post.postType {
+        case .text:
+            if !postFilter.containTextType {
+                return false
+            }
+        case .image:
+            if !postFilter.containImageType {
+                return false
+            }
+        case .imageWithUrlPreview(let urlPreview):
+            if !postFilter.containImageType {
+                return false
+            }
+        case .gif:
+            if !postFilter.containGifType {
+                return false
+            }
+        case .video(let videoUrl, let downloadUrl):
+            if !postFilter.containVideoType {
+                return false
+            }
+        case .gallery:
+            if !postFilter.containGalleryType {
+                return false
+            }
+        case .link:
+            if !postFilter.containLinkType {
+                return false
+            }
+        case .noPreviewLink:
+            if !postFilter.containLinkType {
+                return false
+            }
+        case .poll:
+            break
+        case .imgurVideo(let url):
+            if !postFilter.containVideoType {
+                return false
+            }
+        case .redgifs(let redgifsId):
+            if !postFilter.containVideoType {
+                return false
+            }
+        case .streamable(let shortCode):
+            if !postFilter.containVideoType {
+                return false
+            }
+        default:
+            break
+        }
+        
+        if let excludesRegex = postFilter.postTitleExcludesRegex, !excludesRegex.isEmpty {
+            if let regex = try? NSRegularExpression(pattern: excludesRegex) {
+                if regex.firstMatch(in: post.title, options: [], range: NSRange(location: 0, length: post.title.utf16.count)) != nil {
+                    return false
+                }
+            }
+        }
+        if let containsRegex = postFilter.postTitleContainsRegex, !containsRegex.isEmpty {
+            if let regex = try? NSRegularExpression(pattern: containsRegex) {
+                if regex.firstMatch(in: post.title, options: [], range: NSRange(location: 0, length: post.title.utf16.count)) == nil {
+                    return false
+                }
+            }
+        }
+        if let excludesStrings = postFilter.postTitleExcludesStrings, !excludesStrings.isEmpty {
+            let titles = excludesStrings.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if titles.contains(where: { post.title.localizedCaseInsensitiveContains($0) }) {
+                return false
+            }
+        }
+        if let containsStrings = postFilter.postTitleContainsStrings, !containsStrings.isEmpty {
+            let titles = containsStrings.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if !titles.contains(where: { post.title.localizedCaseInsensitiveContains($0) }) {
+                return false
+            }
+        }
+        if let excludeSubreddits = postFilter.excludeSubreddits, !excludeSubreddits.isEmpty {
+            let subreddits = excludeSubreddits.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if subreddits.contains(where: { $0.localizedCaseInsensitiveCompare(post.subreddit) == .orderedSame }) {
+                return false
+            }
+        }
+        if let excludeUsers = postFilter.excludeUsers, !excludeUsers.isEmpty {
+            let users = excludeUsers.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if users.contains(where: { $0.localizedCaseInsensitiveCompare(post.author) == .orderedSame }) {
+                return false
+            }
+        }
+        if let excludeFlairs = postFilter.excludeFlairs, !excludeFlairs.isEmpty {
+            let flairs = excludeFlairs.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if flairs.contains(where: { $0.localizedCaseInsensitiveCompare(post.linkFlairText) == .orderedSame }) {
+                return false
+            }
+        }
+        if let url = post.url, let excludeDomains = postFilter.excludeDomains, !excludeDomains.isEmpty {
+            let domains = excludeDomains.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+            if domains.contains(where: { url.lowercased().contains($0) }) {
+                return false
+            }
+        }
+        if let url = post.url, let containDomains = postFilter.containDomains, !containDomains.isEmpty {
+            let domains = containDomains.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
+            if !domains.contains(where: { url.lowercased().contains($0) }) {
+                return false
+            }
+        }
+        if let containFlairs = postFilter.containFlairs, !containFlairs.isEmpty {
+            let flairs = containFlairs.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            if flairs.isEmpty || !flairs.contains(where: { $0.localizedCaseInsensitiveCompare(post.linkFlairText) == .orderedSame }) {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    static func mergePostFilter(_ postFilters: [PostFilter]) -> PostFilter {
+        guard !postFilters.isEmpty else {
+            return PostFilter()
+        }
+        if postFilters.count == 1 {
+            return postFilters.first!
+        }
+
+        var merged = PostFilter()
+        merged.name = "Merged"
+
+        for p in postFilters {
+            merged.maxVote = min(p.maxVote, merged.maxVote)
+            merged.minVote = max(p.minVote, merged.minVote)
+            merged.maxComments = min(p.maxComments, merged.maxComments)
+            merged.minComments = max(p.minComments, merged.minComments)
+            merged.maxAwards = min(p.maxAwards, merged.maxAwards)
+            merged.minAwards = max(p.minAwards, merged.minAwards)
+
+            merged.onlyNSFW = p.onlyNSFW || merged.onlyNSFW
+            merged.onlySpoiler = p.onlySpoiler || merged.onlySpoiler
+
+            if let regex = p.postTitleExcludesRegex, !regex.isEmpty {
+                merged.postTitleExcludesRegex = regex
+            }
+
+            if let regex = p.postTitleContainsRegex, !regex.isEmpty {
+                merged.postTitleContainsRegex = regex
+            }
+
+            func append(_ current: String?, _ addition: String?) -> String? {
+                guard let addition, !addition.isEmpty else {
+                    return current
+                }
+                
+                if let current, !current.isEmpty {
+                    return current + "," + addition
+                } else {
+                    return addition
+                }
+            }
+
+            merged.postTitleExcludesStrings = append(merged.postTitleExcludesStrings, p.postTitleExcludesStrings)
+            merged.postTitleContainsStrings = append(merged.postTitleContainsStrings, p.postTitleContainsStrings)
+            merged.excludeSubreddits = append(merged.excludeSubreddits, p.excludeSubreddits)
+            merged.excludeUsers = append(merged.excludeUsers, p.excludeUsers)
+            merged.containFlairs = append(merged.containFlairs, p.containFlairs)
+            merged.excludeFlairs = append(merged.excludeFlairs, p.excludeFlairs)
+            merged.excludeDomains = append(merged.excludeDomains, p.excludeDomains)
+            merged.containDomains = append(merged.containDomains, p.containDomains)
+
+            merged.containTextType = p.containTextType && merged.containTextType
+            merged.containLinkType = p.containLinkType && merged.containLinkType
+            merged.containImageType = p.containImageType && merged.containImageType
+            merged.containGifType = p.containGifType && merged.containGifType
+            merged.containVideoType = p.containVideoType && merged.containVideoType
+            merged.containGalleryType = p.containGalleryType && merged.containGalleryType
+        }
+
+        return merged
+    }
 }
