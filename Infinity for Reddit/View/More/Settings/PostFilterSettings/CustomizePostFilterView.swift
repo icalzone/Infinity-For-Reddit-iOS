@@ -332,8 +332,11 @@ struct CustomizePostFilterView: View {
         .themedNavigationBar()
         .toolbar {
             Button("", systemImage: "tray.and.arrow.down.fill") {
-                customizePostFilterViewModel.savePostFilter()
-                dismiss()
+                if customizePostFilterViewModel.savePostFilter() {
+                    dismiss()
+                } else {
+                    // TODO handle exception
+                }
             }
         }
     }

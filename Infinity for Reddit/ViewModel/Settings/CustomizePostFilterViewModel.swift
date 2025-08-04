@@ -49,7 +49,7 @@ public class CustomizePostFilterViewModel: ObservableObject {
             showGif = postFilter.containGifType
             showVideo = postFilter.containVideoType
             showGallery = postFilter.containGalleryType
-            onlySensitive = postFilter.onlyNSFW
+            onlySensitive = postFilter.onlySensitive
             onlySpoiler = postFilter.onlySpoiler
             excludesKeywords = postFilter.postTitleExcludesStrings ?? ""
             containsKeywords = postFilter.postTitleContainsStrings ?? ""
@@ -74,7 +74,7 @@ public class CustomizePostFilterViewModel: ObservableObject {
         self.customizePostFilterRepository = customizePostFilterRepository
     }
     
-    func savePostFilter() {
+    func savePostFilter() -> Bool {
         let postFilter = PostFilter(
             id: id,
             name: name,
@@ -82,7 +82,7 @@ public class CustomizePostFilterViewModel: ObservableObject {
             minVote: minVote,
             maxComments: maxComments,
             minComments: minComments,
-            onlyNSFW: onlySensitive,
+            onlySensitive: onlySensitive,
             onlySpoiler: onlySpoiler,
             postTitleExcludesRegex: excludesRegex,
             postTitleContainsRegex: containsRegex,
@@ -102,6 +102,6 @@ public class CustomizePostFilterViewModel: ObservableObject {
             containGalleryType: showGallery
         )
         
-        customizePostFilterRepository.savePostFilter(postFilter)
+        return customizePostFilterRepository.savePostFilter(postFilter)
     }
 }

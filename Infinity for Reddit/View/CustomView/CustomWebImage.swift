@@ -219,9 +219,6 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
         self.blur = blur
         self.placeholderViewBuilder = placeholderView // Assign the closures
         self.fallbackViewBuilder = fallbackView     // Assign the closures
-        
-        if let receivedWidth = width { print("CustomWebImage init: Received width = \(receivedWidth)") }
-        if let receivedHeight = height { print("CustomWebImage init: Received height = \(receivedHeight)") }
     }
 
     // Convenience Initializer: No custom placeholder or fallback (both become EmptyView)

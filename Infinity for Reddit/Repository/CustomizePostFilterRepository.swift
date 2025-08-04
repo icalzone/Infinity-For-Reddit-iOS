@@ -17,19 +17,23 @@ public class CustomizePostFilterRepository: CustomizePostFilterRepositoryProtoco
         self.postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
     }
     
-    public func savePostFilter(_ postFilter: PostFilter) {
+    public func savePostFilter(_ postFilter: PostFilter) -> Bool {
         if let id = postFilter.id {
             // Updating a post filter
             do {
                 try postFilterDao.updatePostFilter(updatedPostFilter: postFilter)
+                return true
             } catch {
                 print("Error updating postFilter - \(error.localizedDescription)")
+                return false
             }
         } else {
             do {
                 try postFilterDao.insert(postFilter: postFilter)
+                return true
             } catch {
                 print("Error inserting postFilter - \(error.localizedDescription)")
+                return false
             }
         }
     }

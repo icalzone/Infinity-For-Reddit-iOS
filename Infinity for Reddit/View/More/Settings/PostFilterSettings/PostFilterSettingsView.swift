@@ -17,13 +17,10 @@ struct PostFilterSettingsView: View {
     @StateObject var postFilterViewModel: PostFilterViewModel
     @State private var navigationBarMenuKey: UUID?
     
-    private let postFilterDao: PostFilterDao
-    
     init() {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Failed to resolve DatabasePool")
         }
-        postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
         _postFilterViewModel = StateObject(
             wrappedValue: PostFilterViewModel(
                 postFilterRepository: PostFilterRepository()

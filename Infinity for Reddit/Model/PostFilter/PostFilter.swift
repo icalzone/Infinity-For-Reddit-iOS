@@ -28,8 +28,8 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
     var maxAwards: Int = -1
     var minAwards: Int = -1
     
-    // NSFW and Spoiler filters
-    var onlyNSFW: Bool = false
+    // Sensitive and spoiler filters
+    var onlySensitive: Bool = false
     var onlySpoiler: Bool = false
     
     // Title filters
@@ -69,8 +69,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
         minComments: Int = -1,
         maxAwards: Int = -1,
         minAwards: Int = -1,
-        allowNSFW: Bool = false,
-        onlyNSFW: Bool = false,
+        onlySensitive: Bool = false,
         onlySpoiler: Bool = false,
         postTitleExcludesRegex: String? = nil,
         postTitleContainsRegex: String? = nil,
@@ -97,8 +96,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
         self.minComments = minComments
         self.maxAwards = maxAwards
         self.minAwards = minAwards
-        self.allowNSFW = allowNSFW
-        self.onlyNSFW = onlyNSFW
+        self.onlySensitive = onlySensitive
         self.onlySpoiler = onlySpoiler
         self.postTitleExcludesRegex = postTitleExcludesRegex
         self.postTitleContainsRegex = postTitleContainsRegex
@@ -118,6 +116,34 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
         self.containGalleryType = containGalleryType
     }
     
+    enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case id
+        case name
+        case maxVote = "max_vote"
+        case minVote = "min_vote"
+        case maxComments = "max_comments"
+        case minComments = "min_comments"
+        case maxAwards = "max_awards"
+        case minAwards = "min_awards"
+        case onlySensitive = "only_sensitive"
+        case onlySpoiler = "only_spoiler"
+        case postTitleExcludesRegex = "post_title_excludes_regex"
+        case postTitleContainsRegex = "post_title_contains_regex"
+        case postTitleExcludesStrings = "post_title_excludes_strings"
+        case postTitleContainsStrings = "post_title_contains_strings"
+        case excludeSubreddits = "exclude_subreddits"
+        case excludeUsers = "exclude_users"
+        case containFlairs = "contain_flairs"
+        case excludeFlairs = "exclude_flairs"
+        case excludeDomains = "exclude_domains"
+        case containDomains = "contain_domains"
+        case containTextType = "contain_text_type"
+        case containLinkType = "contain_link_type"
+        case containImageType = "contain_image_type"
+        case containGifType = "contain_gif_type"
+        case containVideoType = "contain_video_type"
+        case containGalleryType = "contain_gallery_type"
+    }
     
     static func isPostAllowed(post: Post?, postFilter: PostFilter?) -> Bool {
         guard let post = post, let postFilter = postFilter else {
@@ -140,11 +166,11 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
         if postFilter.minComments > 0 && post.numComments < postFilter.minComments {
             return false
         }
-        if postFilter.onlyNSFW && !post.over18 {
+        if postFilter.onlySensitive && !post.over18 {
             return postFilter.onlySpoiler ? post.spoiler : false
         }
         if postFilter.onlySpoiler && !post.spoiler {
-            return postFilter.onlyNSFW ? post.over18 : false
+            return postFilter.onlySensitive ? post.over18 : false
         }
         
         switch post.postType {
@@ -156,7 +182,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             if !postFilter.containImageType {
                 return false
             }
-        case .imageWithUrlPreview(let urlPreview):
+        case .imageWithUrlPreview:
             if !postFilter.containImageType {
                 return false
             }
@@ -164,7 +190,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             if !postFilter.containGifType {
                 return false
             }
-        case .video(let videoUrl, let downloadUrl):
+        case .video:
             if !postFilter.containVideoType {
                 return false
             }
@@ -182,15 +208,15 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             }
         case .poll:
             break
-        case .imgurVideo(let url):
+        case .imgurVideo:
             if !postFilter.containVideoType {
                 return false
             }
-        case .redgifs(let redgifsId):
+        case .redgifs:
             if !postFilter.containVideoType {
                 return false
             }
-        case .streamable(let shortCode):
+        case .streamable:
             if !postFilter.containVideoType {
                 return false
             }
@@ -283,7 +309,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             merged.maxAwards = min(p.maxAwards, merged.maxAwards)
             merged.minAwards = max(p.minAwards, merged.minAwards)
 
-            merged.onlyNSFW = p.onlyNSFW || merged.onlyNSFW
+            merged.onlySensitive = p.onlySensitive || merged.onlySensitive
             merged.onlySpoiler = p.onlySpoiler || merged.onlySpoiler
 
             if let regex = p.postTitleExcludesRegex, !regex.isEmpty {

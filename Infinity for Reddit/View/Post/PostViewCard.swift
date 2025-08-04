@@ -31,7 +31,6 @@ struct PostViewCard: View {
         formatter.dateFormat = "y-MM-dd H:mm"
         self.width = width
         _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post, postRepository: PostRepository()))
-        print("fuck \(width)")
     }
     
     var body: some View {

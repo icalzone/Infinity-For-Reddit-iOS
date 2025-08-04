@@ -39,7 +39,7 @@ class PostFilterViewModel: ObservableObject {
             }
             .start(in: dbPool) { error in
                 print("Error observing post filters: \(error)")
-                // Handle error
+                // TODO Handle error
             } onChange: { (postFilters: [PostFilter]) in
                 self.postFilters = postFilters
             }

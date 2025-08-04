@@ -243,7 +243,8 @@ public class PostListingViewModel: ObservableObject {
     
     func postProcessPosts(_ posts: [Post]) -> [Post] {
         return posts.filter { post in
-            PostFilter.isPostAllowed(post: post, postFilter: postFilter)
+            print(PostFilter.isPostAllowed(post: post, postFilter: postFilter))
+            return PostFilter.isPostAllowed(post: post, postFilter: postFilter)
         }.map {
             if !$0.selftext.isEmpty {
                 modifyPostBody($0)
