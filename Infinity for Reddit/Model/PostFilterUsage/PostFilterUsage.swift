@@ -19,6 +19,37 @@ public struct PostFilterUsage: Codable, FetchableRecord, PersistableRecord, Hash
         case customFeed = 4
         case search = 5
         case history = 6
+        
+        var description: String {
+            switch self {
+            case .home:
+                return "Home"
+            case .subreddit:
+                return "Subreddit"
+            case .user:
+                return "User"
+            case .customFeed:
+                return "Custom Feed"
+            case .search:
+                return "Search"
+            case .history:
+                return "History"
+            }
+        }
+        
+        var textFieldPlaceholder: String {
+            switch self {
+            case .subreddit:
+                return "Subreddit Name (Without r/ prefix)"
+            case .user:
+                return "Username (Without u/ prefix)"
+            case .customFeed:
+                return "MultiReddit Path (/user/yourusername/m/yourmultiredditname) (only lowercase characters)"
+            default:
+                // Really shouldn't happen
+                return ""
+            }
+        }
     }
 
     var postFilterId: Int

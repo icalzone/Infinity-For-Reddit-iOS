@@ -11,13 +11,35 @@ struct PostFilterUsageSheet: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var step: Step = .selectUsageType
+    @State private var nameOfUsage: String = ""
     
     var onPostFilterUsageSelected: (PostFilterUsage.UsageType, String?) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            Spacer()
-                .frame(height: 16)
+            HStack(spacing: 0) {
+                Text(step == .selectUsageType ? "Cancel" : "Back")
+                    .neutralTextButton()
+                    .onTapGesture {
+                        if case .nameOfUsage = step {
+                            step = .selectUsageType
+                        } else {
+                            dismiss()
+                        }
+                    }
+                
+                Spacer()
+                
+                if case .nameOfUsage(let selectedType) = step {
+                    Text("Save")
+                        .positiveTextButton()
+                        .onTapGesture {
+                            onPostFilterUsageSelected(selectedType, nil)
+                            dismiss()
+                        }
+                }
+            }
+            .padding(16)
             
             switch step {
                 case .selectUsageType:
@@ -43,14 +65,22 @@ struct PostFilterUsageSheet: View {
                     dismiss()
                 }
                 case .nameOfUsage(let selectedType):
-                Text(String(selectedType.rawValue))
+                RowText(selectedType.description)
+                    .padding(16)
+                
+                RowText("Leave it blank to apply this post filter to all the subreddits / users / multireddits")
+                    .primaryText()
+                    .padding(16)
+                
+                CustomTextField(selectedType.textFieldPlaceholder, text: $nameOfUsage)
+                    .padding(16)
             }
             
             Spacer()
         }
     }
     
-    private enum Step {
+    private enum Step: Equatable {
         case selectUsageType
         case nameOfUsage(selectedType: PostFilterUsage.UsageType)
     }
