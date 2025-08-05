@@ -79,7 +79,7 @@ struct PostFilterUsageListingView: View {
         }
         .sheet(isPresented: $showPostFilterUsageSheet) {
             PostFilterUsageSheet { usageType, nameOfUsage in
-                
+                postFilterUsageViewModel.savePostFilterUsage(usageType: usageType, nameOfUsage: nameOfUsage)
             }
             .presentationDetents([.medium, .large])
         }

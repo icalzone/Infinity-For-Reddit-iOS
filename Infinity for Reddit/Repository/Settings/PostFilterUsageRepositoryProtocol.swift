@@ -6,5 +6,6 @@
 //
 
 public protocol PostFilterUsageRepositoryProtocol {
-    func deletePostFilterUsage(_ postFilterUsage: PostFilterUsage)
+    func savePostFilterUsage(_ postFilterUsage: PostFilterUsage) -> Bool
+    func deletePostFilterUsage(_ postFilterUsage: PostFilterUsage) -> Bool
 }
