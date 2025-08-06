@@ -102,8 +102,7 @@ struct UserDetailsView: View {
                                 headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                                 queries: nil,
                                 params: nil
-                            ),
-                            isRootView: false
+                            )
                         )
                         .id(accountViewModel.account.username)
                     }

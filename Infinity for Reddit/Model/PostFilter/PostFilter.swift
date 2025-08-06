@@ -57,7 +57,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
     var containGalleryType: Bool = true
     
     // The following fields will not be saved to the database
-    var allowNSFW: Bool = false
+    var allowSensitive: Bool = false
     var allowSpoiler: Bool = true
     
     init(
@@ -150,7 +150,11 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             return true
         }
         
-        if post.over18 && !postFilter.allowNSFW {
+        if post.over18 && !postFilter.allowSensitive {
+            return false
+        }
+        
+        if post.spoiler && !postFilter.allowSpoiler {
             return false
         }
         

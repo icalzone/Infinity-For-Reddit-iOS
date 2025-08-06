@@ -52,6 +52,7 @@ public class PostListingViewModel: ObservableObject {
     
     // UserDefaults
     private var sensitiveContent: Bool
+    private var spoilerContent: Bool
     
     public let postListingRepository: PostListingRepositoryProtocol
     
@@ -71,11 +72,14 @@ public class PostListingViewModel: ObservableObject {
         self.postListingRepository = postListingRepository
         
         self.sensitiveContent = ContentSensitivityFilterUserDetailsUtils.sensitiveContent
+        self.spoilerContent = ContentSensitivityFilterUserDetailsUtils.spoilerContent
         
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
-                let newValue = UserDefaults.contentSensitivityFilter.bool(forKey: ContentSensitivityFilterUserDetailsUtils.sensitiveContentKey)
-                self?.setSensitiveContent(newValue)
+                let sensitiveContent = UserDefaults.contentSensitivityFilter.bool(forKey: ContentSensitivityFilterUserDetailsUtils.sensitiveContentKey)
+                let spoilerContent = UserDefaults.contentSensitivityFilter.bool(forKey: ContentSensitivityFilterUserDetailsUtils.spoilerContentKey)
+                self?.setSensitiveContent(sensitiveContent)
+                self?.setSpoilerContent(spoilerContent)
             }
             .store(in: &cancellables)
     }
@@ -269,7 +273,8 @@ public class PostListingViewModel: ObservableObject {
     
     func fetchPostFilter() {
         self.postFilter = postListingRepository.fetchPostFilter(postListingType: postListingMetadata.postListingType)
-        self.postFilter?.allowNSFW = sensitiveContent
+        self.postFilter?.allowSensitive = sensitiveContent
+        self.postFilter?.allowSpoiler = spoilerContent
     }
     
     func loadIcon(post: Post, displaySubredditIcon: Bool) async {
@@ -299,7 +304,15 @@ public class PostListingViewModel: ObservableObject {
     func setSensitiveContent(_ sensitiveContent: Bool) {
         if sensitiveContent != self.sensitiveContent {
             self.sensitiveContent = sensitiveContent
-            self.postFilter?.allowNSFW = sensitiveContent
+            self.postFilter?.allowSensitive = sensitiveContent
+            refreshPosts()
+        }
+    }
+    
+    func setSpoilerContent(_ spoilerContent: Bool) {
+        if spoilerContent != self.spoilerContent {
+            self.spoilerContent = spoilerContent
+            self.postFilter?.allowSpoiler = spoilerContent
             refreshPosts()
         }
     }
