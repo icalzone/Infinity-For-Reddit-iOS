@@ -1,0 +1,55 @@
+//
+//  CommentFilterUsageListingViewModel.swift
+//  Infinity for Reddit
+//
+//  Created by Docile Alligator on 2025-08-06.
+//
+
+import Foundation
+import GRDB
+import Combine
+
+class CommentFilterUsageListingViewModel: ObservableObject {
+    @Published var commentFilterUsages: [CommentFilterUsage] = []
+    
+    private let commentFilterId: Int
+    private let commentFilterUsageListingRepository: CommentFilterUsageListingRepositoryProtocol
+    private let commentFilterUsageDao: CommentFilterUsageDao
+    
+    private var listener: AnyDatabaseCancellable?
+    
+    private let commentFilterUsagesPublisher: AnyPublisher<[CommentFilterUsage], Error>
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(commentFilterId: Int, commentFilterUsageListingRepository: CommentFilterUsageListingRepositoryProtocol) {
+        guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
+            fatalError("Failed to resolve DatabasePool")
+        }
+        self.commentFilterId = commentFilterId
+        self.commentFilterUsageListingRepository = commentFilterUsageListingRepository
+        self.commentFilterUsageDao = CommentFilterUsageDao(dbPool: resolvedDBPool)
+        self.commentFilterUsagesPublisher = commentFilterUsageDao.getAllCommentFilterUsageLiveData(commentFilterId: commentFilterId)
+        
+        commentFilterUsagesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { _ in },
+                  receiveValue: { [weak self] commentFilterUsages in
+                self?.commentFilterUsages = commentFilterUsages
+            })
+            .store(in: &cancellables)
+    }
+    
+    func saveCommentFilterUsage(usageType: CommentFilterUsage.UsageType, nameOfUsage: String) {
+        let commentFilterUsage = CommentFilterUsage(commentFilterId: commentFilterId, usageType: usageType, nameOfUsage: nameOfUsage)
+        if !commentFilterUsageListingRepository.saveCommentFilterUsage(commentFilterUsage) {
+            // TODO handle error
+        }
+    }
+    
+    func deleteCommentFilterUsage(_ commentFilterUsage: CommentFilterUsage) {
+        if !commentFilterUsageListingRepository.deleteCommentFilterUsage(commentFilterUsage) {
+            // TODO handle error
+        }
+    }
+}

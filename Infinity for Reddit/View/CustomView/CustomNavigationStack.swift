@@ -127,9 +127,8 @@ struct CustomNavigationStack<Content: View>: View {
                         CustomizeCommentFilterView(commentFilter)
                             .environmentObject(navigationManager)
                     case .commentFilterUsageListing(let commentFilterId):
-//                        CommentFilterUsageListingView(commentFilterId: commentFilterId)
-//                            .environmentObject(navigationManager)
-                        EmptyView()
+                        CommentFilterUsageListingView(commentFilterId: commentFilterId)
+                            .environmentObject(navigationManager)
                     case .sortType:
                         EmptyView()
                     case .downloadLocation:

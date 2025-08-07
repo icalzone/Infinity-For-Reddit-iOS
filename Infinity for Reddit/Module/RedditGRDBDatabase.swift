@@ -86,6 +86,26 @@ struct RedditGRDBDatabase {
                 t.primaryKey(["post_filter_id", "usage_type", "name_of_usage"])
             }
             
+            try db.create(table: CommentFilter.databaseTableName, ifNotExists: true) { t in
+                t.autoIncrementedPrimaryKey("id")
+                t.column("name", .text)
+                t.column("display_mode", .integer)
+                t.column("max_vote", .integer)
+                t.column("min_vote", .integer)
+                t.column("exclude_strings", .text)
+                t.column("exclude_users", .text)
+            }
+            
+            try db.create(table: CommentFilterUsage.databaseTableName, ifNotExists: true) { t in
+                t.column("comment_filter_id", .integer)
+                    .notNull()
+                    .indexed()
+                    .references(CommentFilter.databaseTableName, column: "id", onDelete: .cascade, onUpdate: .cascade)
+                t.column("usage_type", .integer)
+                t.column("name_of_usage", .text)
+                t.primaryKey(["comment_filter_id", "usage_type", "name_of_usage"])
+            }
+            
             try db.create(table: SubscribedSubredditData.databaseTableName, ifNotExists: true) { t in
                 t.column("full_name", .text).notNull()
                 t.column("name", .text).notNull()

@@ -7,8 +7,8 @@
 
 import GRDB
 
-struct CommentFilterUsage: Codable, FetchableRecord, PersistableRecord, Hashable {
-    static let databaseTableName: String = "comment_filter_usage"
+public struct CommentFilterUsage: Codable, FetchableRecord, PersistableRecord, Hashable {
+    public static let databaseTableName: String = "comment_filter_usage"
     
     enum UsageType: Int, Codable {
         case subreddit = 1
