@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct PostFilterUsageListingView: View {
-    @StateObject private var postFilterUsageViewModel: PostFilterUsageViewModel
+    @StateObject private var postFilterUsageViewModel: PostFilterUsageListingViewModel
     @State private var showPostFilterUsageSheet: Bool = false
     
     init(postFilterId: Int) {
         _postFilterUsageViewModel = StateObject(
-            wrappedValue: PostFilterUsageViewModel(
+            wrappedValue: PostFilterUsageListingViewModel(
                 postFilterId: postFilterId,
-                postFilterUsageRepository: PostFilterUsageRepository()
+                postFilterUsageRepository: PostFilterUsageListingRepository()
             )
         )
     }

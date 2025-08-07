@@ -9,11 +9,11 @@ import Foundation
 import GRDB
 import Combine
 
-class PostFilterUsageViewModel: ObservableObject {
+class PostFilterUsageListingViewModel: ObservableObject {
     @Published var postFilterUsages: [PostFilterUsage] = []
     
     private let postFilterId: Int
-    private let postFilterUsageRepository: PostFilterUsageRepositoryProtocol
+    private let postFilterUsageRepository: PostFilterUsageListingRepositoryProtocol
     private let postFilterUsageDao: PostFilterUsageDao
     
     private var listener: AnyDatabaseCancellable?
@@ -22,7 +22,7 @@ class PostFilterUsageViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(postFilterId: Int, postFilterUsageRepository: PostFilterUsageRepositoryProtocol) {
+    init(postFilterId: Int, postFilterUsageRepository: PostFilterUsageListingRepositoryProtocol) {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Failed to resolve DatabasePool")
         }

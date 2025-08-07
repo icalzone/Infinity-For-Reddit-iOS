@@ -7,7 +7,7 @@
 
 import GRDB
 
-public class PostFilterUsageRepository: PostFilterUsageRepositoryProtocol {
+public class PostFilterUsageListingRepository: PostFilterUsageListingRepositoryProtocol {
     private let postFilterUsageDao: PostFilterUsageDao
     
     init() {
