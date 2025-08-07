@@ -20,6 +20,8 @@ struct Infinity: App {
     @StateObject var customThemeViewModel: CustomThemeViewModel
     @StateObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     
+    @Environment(\.scenePhase) private var scenePhase
+    
     init() {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Failed to resolve DatabasePool")
@@ -29,6 +31,8 @@ struct Infinity: App {
         _accountViewModel = StateObject(wrappedValue: AccountViewModel.shared)
         _customThemeViewModel = StateObject(wrappedValue: CustomThemeViewModel())
         _fullScreenMediaViewModel = StateObject(wrappedValue: FullScreenMediaViewModel())
+        
+        BackgroundTasksManager.shared.registerBackgroundTask()
     }
 
     var body: some Scene {
@@ -39,6 +43,11 @@ struct Infinity: App {
                 .environmentObject(customThemeViewModel)
                 .environmentObject(fullScreenMediaViewModel)
                 .environment(\.defaultMinListRowHeight, 0)
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background  {
+                BackgroundTasksManager.shared.scheduleAppRefresh()
+            }
         }
     }
 }
