@@ -25,10 +25,16 @@ struct CommentFilterItemView: View {
                 RowText(commentFilterItemViewModel.commentFilter.name)
                     .primaryText()
                 
-                ForEach(commentFilterItemViewModel.commentFilterUsages.prefix(5), id: \.self) { commentFilterUsage in
-                    RowText(commentFilterUsage.description)
+                if commentFilterItemViewModel.commentFilterUsages.isEmpty {
+                    RowText("Applied to all subreddits")
                         .secondaryText()
                         .padding(.leading, 32)
+                } else {
+                    ForEach(commentFilterItemViewModel.commentFilterUsages.prefix(5), id: \.self) { commentFilterUsage in
+                        RowText(commentFilterUsage.description)
+                            .secondaryText()
+                            .padding(.leading, 32)
+                    }
                 }
             }
             .contentShape(Rectangle())
