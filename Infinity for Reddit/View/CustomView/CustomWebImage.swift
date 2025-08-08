@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import Kingfisher
 
 //struct CustomWebImage<Content: View>: View {
 //    @EnvironmentObject var navigationManager: NavigationManager
@@ -253,48 +254,58 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
             if shouldLoadFallbackImage || urlString == nil {
                 fallbackViewBuilder() // Call the non-optional fallback builder
             } else {
-                WebImage(url: URL(string: urlString!)) { image in
-                    image
-                        .resizable()
-                        //.indicator(.activity)
-                        //.clipShape(circleClipped ? AnyShape(Circle()) : AnyShape(Rectangle()))
-                        .transition(.fade(duration: 0.5))
-                        .applyIf(blur) { $0.blur(radius: 20) }
-                        .applyIf(centerCrop) {
-                            $0.scaledToFill().clipped()
-                        }
-                        .applyIf(!centerCrop) {
-                            $0.scaledToFit()
-                        }
-                        .applyIf(imageAspectRatio != nil) {
-                            $0.aspectRatio(imageAspectRatio!.width / imageAspectRatio!.height, contentMode: centerCrop ? .fill : .fit)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(maxHeight: .infinity)
-                        .frame(width: width, height: height) // CRITICAL: Frame applied here!
-                        // Removed matchedGeometryEffectId application from here; re-evaluate its placement
-                        // based on your animation needs if it's causing issues. Usually applied to the ZStack.
-                } placeholder: {
-                    placeholderViewBuilder() // Call the non-optional placeholder builder
-                }
-                .onSuccess { image, data, cacheType in
-                    // ...
-                }
-                .onFailure { _ in
-                    DispatchQueue.main.async {
-                        shouldLoadFallbackImage = true
+                KFImage(URL(string: urlString!))
+                    .resizable()
+                    .onSuccess { result in
+                        print("Image loaded from cache: \(result.cacheType)")
                     }
-                }
-                .frame(maxWidth: .infinity)
-                .frame(width: width, height: height) // CRITICAL: Frame applied here!
+                    .onFailure { error in
+                        DispatchQueue.main.async {
+                            shouldLoadFallbackImage = true
+                        }
+                    }
+                    .clipShape(circleClipped ? AnyShape(Circle()) : AnyShape(Rectangle()))
+                    .applyIf(imageAspectRatio != nil) {
+                        $0.aspectRatio(imageAspectRatio!.width / imageAspectRatio!.height, contentMode: centerCrop ? .fill : .fit)
+                    }
+                    .frame(width: width, height: height)
+                    
+//                WebImage(url: URL(string: urlString!)) { image in
+//                    image
+//                        .resizable()
+//                        //.indicator(.activity)
+//                        .clipShape(circleClipped ? AnyShape(Circle()) : AnyShape(Rectangle()))
+//                        .transition(.fade(duration: 0.5))
+//                        .applyIf(blur) { $0.blur(radius: 20) }
+//                        .applyIf(centerCrop) {
+//                            $0.scaledToFill().clipped()
+//                        }
+//                        .applyIf(!centerCrop) {
+//                            $0.scaledToFit()
+//                        }
+//                        .applyIf(imageAspectRatio != nil) {
+//                            $0.aspectRatio(imageAspectRatio!.width / imageAspectRatio!.height, contentMode: centerCrop ? .fill : .fit)
+//                        }
+//                        .frame(maxWidth: .infinity)
+//                        .frame(maxHeight: .infinity)
+//                        .frame(width: width, height: height)
+//                } placeholder: {
+//                    placeholderViewBuilder() // Call the non-optional placeholder builder
+//                }
+//                .onSuccess { image, data, cacheType in
+//                    
+//                }
+//                .onFailure { _ in
+//                    DispatchQueue.main.async {
+//                        shouldLoadFallbackImage = true
+//                    }
+//                }
+//                .frame(maxWidth: .infinity)
+//                .frame(width: width, height: height)
             }
         }
         .applyIf(handleImageTapGesture) {
             $0.mediaTapGesture(post: post, aspectRatio: imageAspectRatio, matchedGeometryEffectId: matchedGeometryEffectId)
         }
-        // If matchedGeometryEffectId applies to the whole CustomWebImage, place it here:
-//        .applyIf(matchedGeometryEffectId != nil && namespaceManager.animation != nil) {
-//            $0.matchedGeometryEffect(id: matchedGeometryEffectId!, in: namespaceManager.animation!)
-//        }
     }
 }
