@@ -13,6 +13,7 @@ import SDWebImageSwiftUI
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var accountViewModel: AccountViewModel
     @EnvironmentObject var customThemeViewModel: CustomThemeViewModel
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
@@ -27,8 +28,9 @@ struct HomeView: View {
     
     @State private var selectedTab: Tab = .home
     @State private var showProfile: Bool = false
+    @State private var timerIsActive = true
     
-    let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 5 * 60, on: .main, in: .common).autoconnect()
     
     @Namespace private var animation
     
@@ -147,18 +149,26 @@ struct HomeView: View {
                 }
             }
         }
-        .task {
-            await homeViewModel.refreshInbox()
-        }
-        .onReceive(timer) { _ in
-            Task {
-                await homeViewModel.refreshInbox()
-            }
-        }
         .onChange(of: colorScheme) {
             customThemeViewModel.isDarkTheme = colorScheme == .dark
         }
         .environmentObject(NamespaceManager(animation))
+        .task {
+            await homeViewModel.refreshInbox()
+        }
+        .onReceive(timer) { _ in
+            guard timerIsActive else { return }
+            Task {
+                await homeViewModel.refreshInbox()
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                timerIsActive = true
+            } else {
+                timerIsActive = false
+            }
+        }
     }
     
     enum Tab {

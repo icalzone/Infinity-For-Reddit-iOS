@@ -27,13 +27,13 @@ class BackgroundTasksManager {
     
     // MARK: - Public Methods
     public func checkForNewData() async throws -> Bool {
-        let repository = InboxListingRepository()
+        let inboxListingRepository = InboxListingRepository()
         
         let messageWhere = MessageWhere.inbox
         let pathComponents: [String: String] = [:]
         let queries: [String: String] = ["limit": "1"]
         
-        let inboxListing = try await repository.fetchInboxListing(
+        let inboxListing = try await inboxListingRepository.fetchInboxListing(
                     messageWhere: messageWhere,
                     pathComponents: pathComponents,
                     queries: queries
@@ -71,7 +71,7 @@ class BackgroundTasksManager {
     func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
         
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60)
         
         do {
             try BGTaskScheduler.shared.submit(request)

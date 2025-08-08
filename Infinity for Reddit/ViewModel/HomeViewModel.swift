@@ -51,12 +51,12 @@ class HomeViewModel: ObservableObject {
         
         Task {
             do {
-                let repository = InboxListingRepository()
-                let listing = try await repository.fetchInboxListing(messageWhere: .inbox, pathComponents: [:], queries: ["limit": "1"])
+                let inboxListingRepository = InboxListingRepository()
+                let listing = try await inboxListingRepository.fetchInboxListing(messageWhere: .inbox, pathComponents: [:], queries: ["limit": "1"])
                 if let latestMessageID = listing.inboxes?.first?.id {
                     self.userDefaults.set(latestMessageID, forKey: "lastSeenMessageID")
-                                    print("Updated last seen message ID to: \(latestMessageID)")
-                                }
+                    print("Updated last seen message ID to: \(latestMessageID)")
+                }
             } catch {
                 print("Failed to update last seen message ID: \(error)")
             }
