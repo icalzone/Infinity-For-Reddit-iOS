@@ -11,6 +11,7 @@ import GRDB
 
 struct MoreView: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var accountViewModel: AccountViewModel
     @Environment(\.dependencyManager) private var dependencyManager: Container
     
     var body: some View {
@@ -29,10 +30,12 @@ struct MoreView: View {
             .listPlainItem()
             
             Section(header: Text("Account").listSectionHeader()) {
-                SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
-                    navigationManager.path.append(MoreViewNavigation.profile)
+                if !accountViewModel.account.isAnonymous() {
+                    SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
+                        navigationManager.path.append(MoreViewNavigation.profile)
+                    }
+                    .listPlainItemNoInsets()
                 }
-                .listPlainItemNoInsets()
                 
                 SimpleTouchItemRow(text: "History", icon: "clock") {
                     navigationManager.path.append(MoreViewNavigation.history)
@@ -41,28 +44,30 @@ struct MoreView: View {
             }
             .listPlainItem()
             
-            Section(header: Text("Post").listSectionHeader()) {
-                SimpleTouchItemRow(text: "Upvoted", icon:"arrowshape.up") {
-                    navigationManager.path.append(MoreViewNavigation.upvoted)
+            if !accountViewModel.account.isAnonymous() {
+                Section(header: Text("Post").listSectionHeader()) {
+                    SimpleTouchItemRow(text: "Upvoted", icon:"arrowshape.up") {
+                        navigationManager.path.append(MoreViewNavigation.upvoted)
+                    }
+                    .listPlainItemNoInsets()
+                    
+                    SimpleTouchItemRow(text: "Downvoted", icon: "arrowshape.down") {
+                        navigationManager.path.append(MoreViewNavigation.downvoted)
+                    }
+                    .listPlainItemNoInsets()
+                    
+                    SimpleTouchItemRow(text: "Hidden", icon: "eye.slash") {
+                        navigationManager.path.append(MoreViewNavigation.hidden)
+                    }
+                    .listPlainItemNoInsets()
+                    
+                    SimpleTouchItemRow(text: "Saved", icon: "bookmark.fill") {
+                        navigationManager.path.append(MoreViewNavigation.saved)
+                    }
+                    .listPlainItemNoInsets()
                 }
-                .listPlainItemNoInsets()
-                
-                SimpleTouchItemRow(text: "Downvoted", icon: "arrowshape.down") {
-                    navigationManager.path.append(MoreViewNavigation.downvoted)
-                }
-                .listPlainItemNoInsets()
-                
-                SimpleTouchItemRow(text: "Hidden", icon: "eye.slash") {
-                    navigationManager.path.append(MoreViewNavigation.hidden)
-                }
-                .listPlainItemNoInsets()
-                
-                SimpleTouchItemRow(text: "Saved", icon: "bookmark.fill") {
-                    navigationManager.path.append(MoreViewNavigation.saved)
-                }
-                .listPlainItemNoInsets()
+                .listPlainItem()
             }
-            .listPlainItem()
             
             Section(header: Text("Preferences").listSectionHeader()) {
                 SimpleTouchItemRow(text: "Settings", icon: "gearshape") {

@@ -27,6 +27,9 @@ class BackgroundTasksManager {
     
     // MARK: - Public Methods
     public func checkForNewData() async throws -> Bool {
+        if AccountViewModel.shared.account.isAnonymous() {
+            return true
+        }
         let inboxListingRepository = InboxListingRepository()
         
         let messageWhere = MessageWhere.inbox
