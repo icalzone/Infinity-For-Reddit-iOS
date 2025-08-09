@@ -44,7 +44,7 @@ public class PostListingViewModel: ObservableObject {
         }
     }
     
-    private let postListingMetadata: PostListingMetadata
+    private var postListingMetadata: PostListingMetadata
     private var postFilter: PostFilter?
     private var lastLoadedSortType: SortType? = nil
     private var allPostIds = Set<String>()
@@ -130,6 +130,24 @@ public class PostListingViewModel: ObservableObject {
         
         do {
             try Task.checkCancellation()
+            
+            if case .anonymousFrontPage(let concatenatedSubscriptions) = postListingMetadata.postListingType {
+                if let subscriptions = concatenatedSubscriptions {
+                    if subscriptions.isEmpty {
+                        // No anonymous subscriptions
+                    } else {
+                        postListingMetadata.pathComponents = ["subreddit": subscriptions]
+                    }
+                } else {
+                    let fetchedSubscriptions = postListingRepository.getAnonymousSubscriptionsConcatenated()
+                    postListingMetadata.postListingType = .anonymousFrontPage(concatenatedSubscriptions: fetchedSubscriptions)
+                    if fetchedSubscriptions.isEmpty {
+                        // No anonymous subscriptions
+                    } else {
+                        postListingMetadata.pathComponents = ["subreddit": fetchedSubscriptions]
+                    }
+                }
+            }
             
             let postListing: PostListing
             switch postListingMetadata.postListingType.sortEmbeddingStyle {
@@ -272,7 +290,7 @@ public class PostListingViewModel: ObservableObject {
     }
     
     func fetchPostFilter() {
-        self.postFilter = postListingRepository.fetchPostFilter(postListingType: postListingMetadata.postListingType)
+        self.postFilter = postListingRepository.getPostFilter(postListingType: postListingMetadata.postListingType)
         self.postFilter?.allowSensitive = sensitiveContent
         self.postFilter?.allowSpoiler = spoilerContent
     }

@@ -19,6 +19,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     private let session: Session
     private let subredditDao: SubredditDao
     private let postFilterDao: PostFilterDao
+    private let subscribedSubredditDao: SubscribedSubredditDao
     private var subredditOrUserIcons: [String: String] = [:]
     
     public init() {
@@ -31,6 +32,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         self.session = resolvedSession
         self.subredditDao = SubredditDao(dbPool: resolvedDBPool)
         self.postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
+        self.subscribedSubredditDao = SubscribedSubredditDao(dbPool: resolvedDBPool)
     }
     
     public func fetchPosts(
@@ -72,7 +74,18 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         return PostListingRootClass(fromJson: json).data
     }
     
-    public func fetchPostFilter(postListingType: PostListingType) -> PostFilter {
+    public func getAnonymousSubscriptionsConcatenated() -> String {
+        do {
+            let subscribedSubreddits = try subscribedSubredditDao.getAllSubscribedSubredditsList(accountName: Account.ANONYMOUS_ACCOUNT.username)
+            return subscribedSubreddits.map {
+                $0.name
+            }.joined(separator: "+")
+        } catch {
+            return ""
+        }
+    }
+    
+    public func getPostFilter(postListingType: PostListingType) -> PostFilter {
         do {
             let postFilters = try postFilterDao.getValidPostFilters(usage: postListingType.postFilterUsageType.rawValue, nameOfUsage: postListingType.postFilterNameOfUsage)
             return PostFilter.mergePostFilter(postFilters)

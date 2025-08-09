@@ -42,7 +42,8 @@ struct HomeView: View {
                         PostListingView(
                             account: accountViewModel.account,
                             postListingMetadata: PostListingMetadata(
-                                postListingType: .frontPage,
+                                // Anonymous subscriptions will be fetched later in PostListingViewModel
+                                postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
                                 headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
                                 queries: nil,
                                 params: nil
