@@ -233,6 +233,8 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var userReports : [[Any]]! = [[Any]]()
     
     var isCollasped: Bool = false
+    var hasExpandedBefore: Bool = false
+    var isFilteredOut: Bool = false
     @Published var authorIconUrl: URL? = nil
     
     /**

@@ -82,7 +82,7 @@ struct CommentViewCard: View {
                 .padding(.top, 8)
                 .padding(.bottom, 8)
                 
-                if !(commentViewModel.comment.isCollasped && fullyCollapseComment) {
+                if !((commentViewModel.comment.isCollasped && fullyCollapseComment) || (commentViewModel.comment.isFilteredOut && !commentViewModel.comment.hasExpandedBefore)) {
                     Group {
                         if commentViewModel.comment.bodyProcessedMarkdown != nil {
                             Markdown(commentViewModel.comment.bodyProcessedMarkdown!)

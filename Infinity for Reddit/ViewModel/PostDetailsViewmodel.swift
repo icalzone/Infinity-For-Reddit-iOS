@@ -267,23 +267,47 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     func postProcessComments(_ comments: [CommentItem]) -> [CommentItem] {
+        var lastRemovedCommentDepth: Int? = nil
         return comments.compactMap {
             switch $0 {
             case .comment(let comment):
                 let isCommentAllowed = CommentFilter.isCommentAllowed(comment, commentFilter)
                 if isCommentAllowed {
+                    if let depth = lastRemovedCommentDepth {
+                        if depth < comment.depth {
+                            // Child comment of a filtered out comment
+                            print("Comment not allowed because it's a child of a filtered out comment")
+                            return nil
+                        } else {
+                            lastRemovedCommentDepth = nil
+                        }
+                    }
                     print("Comment allowed")
                     modifyCommentBody(comment)
                     comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
                     return $0
-                } else if commentFilter?.displayMode == .collapseComment {
-                    print("Comment collapsed")
-                    comment.collapsed = true
-                    return $0
+                } else {
+                    if commentFilter?.displayMode == .collapseComment {
+                        print("Comment not allowed but collapsed")
+                        comment.collapsed = true
+                        comment.isFilteredOut = true
+                        return $0
+                    } else {
+                        lastRemovedCommentDepth = comment.depth
+                        print("Comment not allowed")
+                        return nil
+                    }
                 }
-                print("Comment not allowed")
-                return nil
-            default:
+            case .more(let commentMore):
+                if let depth = lastRemovedCommentDepth {
+                    if depth < commentMore.depth {
+                        if commentFilter?.displayMode != .collapseComment {
+                            print("Comment more not allowed because it's a child of a filtered out comment")
+                            return nil
+                        }
+                    }
+                }
+                print("Comment more allowed")
                 return $0
             }
         }
@@ -351,6 +375,7 @@ public class PostDetailsViewModel: ObservableObject {
         }
         
         comment.isCollasped = false
+        comment.hasExpandedBefore = true
     }
     
     func fetchCommentFilter() {

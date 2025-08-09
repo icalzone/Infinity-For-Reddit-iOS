@@ -81,11 +81,11 @@ struct CommentFilterDao {
     func getValidCommentFilters(usageType: CommentFilterUsage.UsageType, nameOfUsage: String) throws -> [CommentFilter] {
         try dbPool.read { db in
             let sql = """
-                SELECT * FROM comment_filter WHERE (comment_filter.name IN 
-                    (SELECT comment_filter_usage.name FROM comment_filter_usage 
-                     WHERE (usage = ? AND name_of_usage = ? COLLATE NOCASE))) 
-                OR (comment_filter.name NOT IN 
-                    (SELECT comment_filter_usage.name FROM comment_filter_usage))
+                SELECT * FROM comment_filter WHERE (comment_filter.id IN 
+                    (SELECT comment_filter_usage.comment_filter_id FROM comment_filter_usage 
+                     WHERE (usage_type = ? AND name_of_usage = ? COLLATE NOCASE))) 
+                OR (comment_filter.id NOT IN 
+                    (SELECT comment_filter_usage.comment_filter_id FROM comment_filter_usage))
             """
             return try CommentFilter.fetchAll(db, sql: sql, arguments: [usageType.rawValue, nameOfUsage])
         }
