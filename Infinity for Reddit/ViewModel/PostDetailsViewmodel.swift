@@ -174,6 +174,7 @@ public class PostDetailsViewModel: ObservableObject {
             }
             
             let processedComments = postProcessComments(moreChildren.commentItems)
+            let commentsToBeAppendedToVisibleComments = pickVisibleComments(processedComments)
             
             try Task.checkCancellation()
             
@@ -185,7 +186,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.visibleComments.remove(at: visibleIndex)
                 self.allComments.remove(at: allIndex)
                 
-                self.visibleComments.insert(contentsOf: processedComments, at: visibleIndex)
+                self.visibleComments.insert(contentsOf: commentsToBeAppendedToVisibleComments, at: visibleIndex)
                 self.allComments.insert(contentsOf: processedComments, at: allIndex)
             }
         } catch {
@@ -204,9 +205,10 @@ public class PostDetailsViewModel: ObservableObject {
             case .comment(let comment):
                 if comment.isCollasped {
                     lastCollapsedDepth = comment.depth
+                    result.append(commentItem)
                 } else {
                     if let depth = lastCollapsedDepth {
-                        if depth > comment.depth {
+                        if depth < comment.depth {
                             // Child comment
                             comment.isCollasped = true
                         } else {
@@ -219,8 +221,9 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             case .more:
                 if let depth = lastCollapsedDepth {
-                    if depth <= commentItem.depth {
-                        // Child CommentMore
+                    if depth >= commentItem.depth {
+                        // Not a child CommentMore of a collapsed parent
+                        lastCollapsedDepth = nil
                         result.append(commentItem)
                     }
                 } else {
@@ -289,7 +292,7 @@ public class PostDetailsViewModel: ObservableObject {
                 } else {
                     if commentFilter?.displayMode == .collapseComment {
                         print("Comment not allowed but collapsed")
-                        comment.collapsed = true
+                        comment.isCollasped = true
                         comment.isFilteredOut = true
                         return $0
                     } else {
@@ -333,6 +336,10 @@ public class PostDetailsViewModel: ObservableObject {
             guard item.depth > (parentDepth ?? 0) else {
                 break
             }
+            
+            if case .comment(let comment) = item {
+                comment.isCollasped = true
+            }
 
             endIndex += 1
         }
@@ -365,6 +372,9 @@ public class PostDetailsViewModel: ObservableObject {
 
             // Avoid inserting if already visible
             if !visibleComments.contains(where: { $0.id == child.id }) {
+                if case .comment(let comment) = child {
+                    comment.isCollasped = false
+                }
                 visibleComments.insert(child, at: insertIndex)
                 insertIndex += 1
             } else {

@@ -180,6 +180,6 @@ struct CommentViewCard: View {
             }
         }
         .contentShape(Rectangle())
-        .background(commentViewModel.comment.isCollasped && fullyCollapseComment ? Color(hex: customThemeViewModel.currentCustomTheme.fullyCollapsedCommentBackgroundColor) : Color.clear)
+        .background((commentViewModel.comment.isCollasped && fullyCollapseComment) || (commentViewModel.comment.isFilteredOut && !commentViewModel.comment.hasExpandedBefore) ? Color(hex: customThemeViewModel.currentCustomTheme.fullyCollapsedCommentBackgroundColor) : Color.clear)
     }
 }
