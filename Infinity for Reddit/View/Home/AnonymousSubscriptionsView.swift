@@ -1,8 +1,8 @@
 //
-//  SubscriptionsView.swift
+//  AnonymousSubscriptionsView.swift
 //  Infinity for Reddit
 //
-//  Created by Docile Alligator on 2024-12-03.
+//  Created by Docile Alligator on 2025-08-08.
 //
 
 import SwiftUI
@@ -10,19 +10,17 @@ import Swinject
 import GRDB
 import Alamofire
 
-struct SubscriptionsView: View {
+struct AnonymousSubscriptionsView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.dependencyManager) private var dependencyManager: Container
     
-    @StateObject var subscriptionListingViewModel: SubscriptionListingViewModel
+    @StateObject var anonymousSubscriptionListingViewModel: AnonymousSubscriptionListingViewModel
 
     @State private var selectedOption = 0
     
     init() {
-        _subscriptionListingViewModel = StateObject(
-            wrappedValue: SubscriptionListingViewModel(
-                subscriptionListingRepository: SubscriptionListingRepository()
-            )
+        _anonymousSubscriptionListingViewModel = StateObject(
+            wrappedValue: AnonymousSubscriptionListingViewModel()
         )
     }
 
@@ -32,41 +30,35 @@ struct SubscriptionsView: View {
                 .padding(4)
             
             TabView(selection: $selectedOption) {
-                SubredditsView(subscriptionListingViewModel: subscriptionListingViewModel)
+                AnonymousSubredditsView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel)
                     .tag(0)
                 
-                UsersView(subscriptionListingViewModel: subscriptionListingViewModel)
+                AnonymousUsersView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel)
                     .tag(1)
                 
-                CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel)
+                AnonymousCustomFeedView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel)
                     .tag(2)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .navigationTitle("Subscriptions")
-        .task {
-            await subscriptionListingViewModel.loadSubscriptionsOnline()
-            await subscriptionListingViewModel.loadMyCustomFeedsOnline()
-        }
         .onDisappear {
-            subscriptionListingViewModel.cancelAllCancellables()
+            anonymousSubscriptionListingViewModel.cancelAllCancellables()
         }
     }
     
-    struct SubredditsView: View {
+    struct AnonymousSubredditsView: View {
         @EnvironmentObject var navigationManager: NavigationManager
-        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+        @ObservedObject var anonymousSubscriptionListingViewModel: AnonymousSubscriptionListingViewModel
         
         var body: some View {
             Group {
-                if subscriptionListingViewModel.isLoadingSubscriptions {
-                    ProgressIndicator()
-                } else if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
+                if anonymousSubscriptionListingViewModel.subredditSubscriptions.isEmpty {
                     Text("No subscribed subreddits")
                         .primaryText()
                 } else {
                     List {
-                        ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.fullName) { subscription in
+                        ForEach(anonymousSubscriptionListingViewModel.subredditSubscriptions, id: \.fullName) { subscription in
                             SimpleWebImageTouchItemRow(text: subscription.name, iconUrl: subscription.iconUrl) {
                                 navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                             }
@@ -80,20 +72,18 @@ struct SubscriptionsView: View {
         }
     }
 
-    struct UsersView: View {
+    struct AnonymousUsersView: View {
         @EnvironmentObject var navigationManager: NavigationManager
-        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+        @ObservedObject var anonymousSubscriptionListingViewModel: AnonymousSubscriptionListingViewModel
         
         var body: some View {
             Group {
-                if subscriptionListingViewModel.isLoadingSubscriptions {
-                    ProgressIndicator()
-                } else if subscriptionListingViewModel.userSubscriptions.isEmpty {
+                if anonymousSubscriptionListingViewModel.userSubscriptions.isEmpty {
                     Text("No subscribed users")
                         .primaryText()
                 } else {
                     List {
-                        ForEach(subscriptionListingViewModel.userSubscriptions, id: \.name) { subscription in
+                        ForEach(anonymousSubscriptionListingViewModel.userSubscriptions, id: \.name) { subscription in
                             SimpleWebImageTouchItemRow(text: subscription.name, iconUrl: subscription.iconUrl) {
                                 navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
                             }
@@ -107,20 +97,18 @@ struct SubscriptionsView: View {
         }
     }
 
-    struct CustomFeedView: View {
+    struct AnonymousCustomFeedView: View {
         @EnvironmentObject var navigationManager: NavigationManager
-        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+        @ObservedObject var anonymousSubscriptionListingViewModel: AnonymousSubscriptionListingViewModel
         
         var body: some View {
             Group {
-                if subscriptionListingViewModel.isLoadingMyCustomFeeds {
-                    ProgressIndicator()
-                } else if subscriptionListingViewModel.myCustomFeeds.isEmpty {
+                if anonymousSubscriptionListingViewModel.myCustomFeeds.isEmpty {
                     Text("No custom feeds")
                         .primaryText()
                 } else {
                     List {
-                        ForEach(subscriptionListingViewModel.myCustomFeeds, id: \.path) { customFeed in
+                        ForEach(anonymousSubscriptionListingViewModel.myCustomFeeds, id: \.path) { customFeed in
                             SimpleWebImageTouchItemRow(text: customFeed.displayName, iconUrl: customFeed.iconUrl) {
                                 navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                             }

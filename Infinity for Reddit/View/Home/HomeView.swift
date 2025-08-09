@@ -60,9 +60,17 @@ struct HomeView: View {
                     .environmentObject(tab1NavigationBarMenuManager)
                     
                     CustomNavigationStack {
-                        SubscriptionsView()
-                            .setUpHomeTabViewChildNavigationBar()
-                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        Group {
+                            if accountViewModel.account.isAnonymous() {
+                                AnonymousSubscriptionsView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            } else {
+                                SubscriptionsView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            }
+                        }
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {
