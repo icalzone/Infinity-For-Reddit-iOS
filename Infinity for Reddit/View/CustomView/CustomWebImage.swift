@@ -120,7 +120,7 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
                         ProgressIndicator()
                     }
                     .onSuccess { result in
-                        print("Image loaded from cache: \(result.cacheType)")
+                        
                     }
                     .onFailure { error in
                         DispatchQueue.main.async {

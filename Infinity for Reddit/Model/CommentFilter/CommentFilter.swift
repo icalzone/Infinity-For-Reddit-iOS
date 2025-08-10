@@ -54,7 +54,10 @@ public struct CommentFilter: Codable, FetchableRecord, PersistableRecord, Hashab
     }
     
     static func mergeCommentFilter(_ commentFilterList: [CommentFilter]) -> CommentFilter {
-        guard commentFilterList.count > 1 else {
+        guard !commentFilterList.isEmpty else {
+            return CommentFilter()
+        }
+        if commentFilterList.count == 1 {
             return commentFilterList.first!
         }
 

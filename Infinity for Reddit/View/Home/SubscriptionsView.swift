@@ -73,7 +73,9 @@ struct SubscriptionsView: View {
                                         navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                     }) {
                                         subscription.isFavorite.toggle()
-                                        subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                        Task {
+                                            await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                        }
                                     }
                                     .listPlainItemNoInsets()
                                 }
@@ -81,26 +83,15 @@ struct SubscriptionsView: View {
                             .listPlainItem()
                         }
                         
-                        Section(header: Text("Favorite").listSectionHeader()) {
-                            ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
-                                SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
-                                }) {
-                                    subscription.isFavorite.toggle()
-                                    subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
-                                }
-                                .listPlainItemNoInsets()
-                            }
-                        }
-                        .listPlainItem()
-                        
                         Section(header: Text("All").listSectionHeader()) {
                             ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                     navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                 }) {
                                     subscription.isFavorite.toggle()
-                                    subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                    Task {
+                                        await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                    }
                                 }
                                 .listPlainItemNoInsets()
                             }
@@ -136,7 +127,9 @@ struct SubscriptionsView: View {
                                         navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
                                     }) {
                                         subscription.isFavorite.toggle()
-                                        subscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                        Task {
+                                            await subscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                        }
                                     }
                                     .listPlainItemNoInsets()
                                 }
@@ -150,7 +143,9 @@ struct SubscriptionsView: View {
                                     navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
                                 }) {
                                     subscription.isFavorite.toggle()
-                                    subscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                    Task {
+                                        await subscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                    }
                                 }
                                 .listPlainItemNoInsets()
                             }
@@ -186,7 +181,9 @@ struct SubscriptionsView: View {
                                         navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                     }) {
                                         customFeed.isFavorite.toggle()
-                                        subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                        Task {
+                                            await subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                        }
                                     }
                                     .listPlainItemNoInsets()
                                 }
@@ -200,7 +197,9 @@ struct SubscriptionsView: View {
                                     navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                 }) {
                                     customFeed.isFavorite.toggle()
-                                    subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                    Task {
+                                        await subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                    }
                                 }
                                 .listPlainItemNoInsets()
                             }

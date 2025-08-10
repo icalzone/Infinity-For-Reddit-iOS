@@ -496,21 +496,33 @@ public class SubscriptionListingViewModel: ObservableObject {
         }
     }
     
-    func toggleFavoriteSubreddit(_ subscribedSubreddit: SubscribedSubredditData) {
-        if !subscriptionListingRepository.toggleFavoriteSubreddit(subscribedSubreddit) {
+    func toggleFavoriteSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async {
+        do {
+            try await subscriptionListingRepository.toggleFavoriteSubreddit(subscribedSubreddit)
+        } catch {
             // TODO handle error
+            print("Toggle favorite subreddit error: \(error)")
+            self.error = error
         }
     }
     
-    func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) {
-        if !subscriptionListingRepository.toggleFavoriteUser(subscribedUser) {
+    func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) async {
+        do {
+            try await subscriptionListingRepository.toggleFavoriteUser(subscribedUser)
+        } catch {
             // TODO handle error
+            print("Toggle favorite user error: \(error)")
+            self.error = error
         }
     }
     
-    func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) {
-        if !subscriptionListingRepository.toggleFavoriteCustomFeed(myCustomFeed) {
+    func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) async {
+        do {
+            try await subscriptionListingRepository.toggleFavoriteCustomFeed(myCustomFeed)
+        } catch {
             // TODO handle error
+            print("Toggle favorite custom feed error: \(error)")
+            self.error = error
         }
     }
 }

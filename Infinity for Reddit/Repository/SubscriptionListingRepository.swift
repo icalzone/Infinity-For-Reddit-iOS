@@ -69,33 +69,36 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
         return MyCustomFeedListing(fromJson: json)
     }
     
-    func toggleFavoriteSubreddit(_ subscribedSubreddit: SubscribedSubredditData) -> Bool {
-        do {
-            try subscribedSubredditDao.insert(subscribedSubredditData: subscribedSubreddit)
-            return true
-        } catch {
-            print("Failed to toggle favorite subreddit: \(error)")
-            return false
-        }
+    func toggleFavoriteSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async throws {
+        try Task.checkCancellation()
+        let params = ["sr_name": subscribedSubreddit.name, "make_favorite": String(subscribedSubreddit.isFavorite)]
+        _ = try await self.session.request(RedditOAuthAPI.favoriteThing(params: params))
+            .validate()
+            .serializingDecodable(Empty.self, automaticallyCancelling: true)
+            .value
+        
+        try subscribedSubredditDao.insert(subscribedSubredditData: subscribedSubreddit)
     }
     
-    func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) -> Bool {
-        do {
-            try subscribedUserDao.insert(subscribedUserData: subscribedUser)
-            return true
-        } catch {
-            print("Failed to toggle favorite user: \(error)")
-            return false
-        }
+    func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) async throws {
+        try Task.checkCancellation()
+        let params = ["sr_name": "u_" + subscribedUser.name, "make_favorite": String(subscribedUser.isFavorite)]
+        _ = try await self.session.request(RedditOAuthAPI.favoriteThing(params: params))
+            .validate()
+            .serializingDecodable(Empty.self, automaticallyCancelling: true)
+            .value
+        
+        try subscribedUserDao.insert(subscribedUserData: subscribedUser)
     }
     
-    func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) -> Bool {
-        do {
-            try myCustomFeedDao.insert(myCustomFeed: myCustomFeed)
-            return true
-        } catch {
-            print("Failed to toggle favorite custom feed: \(error)")
-            return false
-        }
+    func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) async throws {
+        try Task.checkCancellation()
+        let params = ["multipath": myCustomFeed.path, "make_favorite": String(myCustomFeed.isFavorite), "api_type": "json"]
+        _ = try await self.session.request(RedditOAuthAPI.favoriteCustomFeed(params: params))
+            .validate()
+            .serializingDecodable(Empty.self, automaticallyCancelling: true)
+            .value
+        
+        try myCustomFeedDao.insert(myCustomFeed: myCustomFeed)
     }
 }

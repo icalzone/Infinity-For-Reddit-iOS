@@ -32,6 +32,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case unsaveThing(params: [String: String])
     case getMoreCommentsForCommentMore(params: [String: String])
     case sendCommentOrReplyToMessage(params: [String: String])
+    case favoriteThing(params: [String: String])
+    case favoriteCustomFeed(params: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -41,7 +43,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox:
             return .get
-        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage:
+        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed:
             return .post
         }
     }
@@ -94,6 +96,10 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/api/morechildren.json"
         case .sendCommentOrReplyToMessage:
             return "/api/comment"
+        case .favoriteThing:
+            return "/api/favorite"
+        case .favoriteCustomFeed:
+            return "/api/multi/favorite"
         }
     }
     
@@ -101,7 +107,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox:
             return nil
-        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params):
+        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params), .favoriteThing(let params), .favoriteCustomFeed(let params):
             return params
         }
     }
@@ -116,7 +122,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"]
         case .getSubredditData:
             return ["raw_json": "1"]
-        case .vote, .getMyCustomFeeds, .saveThing, .unsaveThing:
+        case .vote, .getMyCustomFeeds, .saveThing, .unsaveThing, .subsrcribeToSubreddit, .sendCommentOrReplyToMessage, .favoriteThing:
             return nil
         case .getSubredditPosts(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
@@ -132,8 +138,6 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserComments(_, let queries):
             return ["raw_json": "1", "sort": "best"].merging(queries, uniquingKeysWith: { _, new in new })
-        case .subsrcribeToSubreddit(_):
-            return nil
         case .getPostAndCommentsById(_, let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getPostAndCommentsSingleThreadById(_, _, let queries):
@@ -146,8 +150,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1", "limit": "100"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getMoreCommentsForCommentMore:
             return ["raw_json": "1", "api_type": "json"]
-        case .sendCommentOrReplyToMessage:
-            return nil
+        case .favoriteCustomFeed:
+            return ["raw_json": "1", "gilding_detail": "1"]
         }
     }
     
@@ -155,14 +159,14 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo(let headers):
             return headers
-        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage:
+        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed:
             return nil
         }
     }
     
     var encoding: ParameterEncoding {
         switch self {
-        case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getMultiredditPosts, .getSubredditConcatPosts, .vote, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage:
+        default:
             return URLEncoding.default
         }
     }
