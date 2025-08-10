@@ -8,7 +8,8 @@
 import Combine
 import Alamofire
 
-public protocol PostRepositoryProtocol {
+protocol PostRepositoryProtocol {
     func votePost(post: Post, point: String) async throws
     func savePost(post: Post, save: Bool) async throws
+    func readPost(post: Post, account: Account) throws
 }

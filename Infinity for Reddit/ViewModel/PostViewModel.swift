@@ -10,7 +10,7 @@ import Alamofire
 import Combine
 
 @MainActor
-public class PostViewModel: ObservableObject {
+class PostViewModel: ObservableObject {
     let account: Account
     @Published var post: Post
     @Published var error: Error?
@@ -20,7 +20,7 @@ public class PostViewModel: ObservableObject {
     
     let postRepository: PostRepositoryProtocol
     
-    public init(account: Account, post: Post, postRepository: PostRepositoryProtocol) {
+    init(account: Account, post: Post, postRepository: PostRepositoryProtocol) {
         self.account = account
         self.post = post
         self.postRepository = postRepository
@@ -83,6 +83,18 @@ public class PostViewModel: ObservableObject {
             self.post.saved = previousSaved
             self.error = error
             print("Error (un)saving post: \(error)")
+        }
+    }
+    
+    func readPost() {
+        guard !post.isRead else {
+            return
+        }
+        
+        do {
+            try postRepository.readPost(post: post, account: AccountViewModel.shared.account)
+        } catch {
+            print("Mark post as read failed with error: \(error)")
         }
     }
 }

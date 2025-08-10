@@ -9,23 +9,29 @@ import Combine
 import Alamofire
 import SwiftyJSON
 import Foundation
+import GRDB
 
-public class PostRepository: PostRepositoryProtocol {
+class PostRepository: PostRepositoryProtocol {
     enum PostRepositoryError: Error {
         case NetworkError(String)
         case JSONDecodingError(String)
     }
     
     private let session: Session
+    private let readPostDao: ReadPostDao
     
-    public init() {
+    init() {
         guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
             fatalError("Failed to resolve Session")
         }
+        guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
+            fatalError("Failed to resolve DatabasePool")
+        }
         self.session = resolvedSession
+        self.readPostDao = ReadPostDao(dbPool: resolvedDBPool)
     }
     
-    public func votePost(
+    func votePost(
         post: Post,
         point: String
     ) async throws {
@@ -41,7 +47,7 @@ public class PostRepository: PostRepositoryProtocol {
         }
     }
     
-    public func savePost(
+    func savePost(
         post: Post,
         save: Bool
     ) async throws {
@@ -55,5 +61,21 @@ public class PostRepository: PostRepositoryProtocol {
                 .serializingDecodable(Empty.self, automaticallyCancelling: true)
                 .value
         }
+    }
+    
+    func readPost(post: Post, account: Account) throws {
+        guard !account.isAnonymous() else {
+            return
+        }
+        
+        try readPostDao.insert(
+            readPost: ReadPost(
+                username: account.username,
+                postId: post.id,
+                time: Int64(Date().timeIntervalSince1970)
+            )
+        )
+        
+        post.isRead = true
     }
 }

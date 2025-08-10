@@ -7,16 +7,35 @@
 
 import GRDB
 
-struct ReadPost: Codable, FetchableRecord, PersistableRecord {
+struct ReadPost: Codable, FetchableRecord, PersistableRecord, Equatable, Hashable {
     static let databaseTableName = "read_posts"
     
-    var username: String
-    var id: String
-    var time: Int64?
+    let username: String
+    let postId: String
+    var time: Int64
     
-    init(username: String, id: String, time: Int64? = nil) {
+    init(username: String, postId: String, time: Int64) {
         self.username = username
-        self.id = id
+        self.postId = postId
         self.time = time
+    }
+    
+    private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+        case username
+        case postId = "post_id"
+        case time
+    }
+
+    public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
+    
+    // Equatable conformance
+    static func == (lhs: ReadPost, rhs: ReadPost) -> Bool {
+        return lhs.username == rhs.username && lhs.postId == rhs.postId
+    }
+    
+    // Hashable conformance
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(username)
+        hasher.combine(postId)
     }
 }

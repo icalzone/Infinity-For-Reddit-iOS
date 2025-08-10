@@ -96,7 +96,7 @@ struct ReadPostDao {
         try dbPool.read { db in
             try String.fetchAll(db, sql: """
                 SELECT id FROM read_posts
-                WHERE id IN (\(ids.map { "'" + $0 + "'" }.joined(separator: ",")))
+                WHERE post_id IN (\(ids.map { "'" + $0 + "'" }.joined(separator: ",")))
                 AND username = ?
                 """, arguments: [username])
         }

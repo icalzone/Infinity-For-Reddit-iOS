@@ -140,6 +140,7 @@ struct PostViewCard: View {
                         .noPreviewPostTypeIndicator()
                         .onTapGesture {
                             LinkHandler.shared.handle(url: url)
+                            postViewModel.readPost()
                         }
                 }
             default:
@@ -176,7 +177,12 @@ struct PostViewCard: View {
                             post: postViewModel.post,
                             blur: (postViewModel.post.over18 && blurSensitiveImages) || (postViewModel.post.spoiler && blurSpoilerImages)
                         )
-                        //.id(url)
+                        .simultaneousGesture(
+                            TapGesture()
+                                .onEnded {
+                                    postViewModel.readPost()
+                                }
+                        )
                         
                         switch postViewModel.post.postType {
                         case .video, .imgurVideo, .redgifs, .streamable:
@@ -293,13 +299,14 @@ struct PostViewCard: View {
         .background {
             TouchRipple(backgroundShape: RoundedRectangle(cornerRadius: 20)) {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(hex: themeViewModel.currentCustomTheme.cardViewBackgroundColor))
+                    .fill(Color(hex: postViewModel.post.isRead ? themeViewModel.currentCustomTheme.readPostCardViewBackgroundColor : themeViewModel.currentCustomTheme.cardViewBackgroundColor))
                     .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: -1)
                     .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 4)
             }
         }
         .padding(.vertical, 8)
         .onTapGesture {
+            postViewModel.readPost()
             navigationManager.path.append(AppNavigation.postDetails(postDetailsInput: .post(postViewModel.post), isFromSubredditPostListing: isSubredditPostListing))
         }
     }
