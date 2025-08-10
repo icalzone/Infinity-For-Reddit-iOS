@@ -55,15 +55,33 @@ struct AnonymousSubscriptionsView: View {
                         .primaryText()
                 } else {
                     List {
-                        ForEach(anonymousSubscriptionListingViewModel.subredditSubscriptions, id: \.fullName) { subscription in
-                            SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
-                            }) {
-                                subscription.isFavorite.toggle()
-                                anonymousSubscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                        if !anonymousSubscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
+                            Section(header: Text("Favorite").listSectionHeader()) {
+                                ForEach(anonymousSubscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
+                                    SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
+                                        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                    }) {
+                                        subscription.isFavorite.toggle()
+                                        anonymousSubscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                    }
+                                    .listPlainItemNoInsets()
+                                }
                             }
-                            .listPlainItemNoInsets()
+                            .listPlainItem()
                         }
+                        
+                        Section(header: Text("All").listSectionHeader()) {
+                            ForEach(anonymousSubscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
+                                SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
+                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                }) {
+                                    subscription.isFavorite.toggle()
+                                    anonymousSubscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
+                                }
+                                .listPlainItemNoInsets()
+                            }
+                        }
+                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
@@ -83,15 +101,33 @@ struct AnonymousSubscriptionsView: View {
                         .primaryText()
                 } else {
                     List {
-                        ForEach(anonymousSubscriptionListingViewModel.userSubscriptions, id: \.name) { subscription in
-                            SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
-                            }) {
-                                subscription.isFavorite.toggle()
-                                anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
+                        if !anonymousSubscriptionListingViewModel.favoriteUserSubscriptions.isEmpty {
+                            Section(header: Text("Favorite").listSectionHeader()) {
+                                ForEach(anonymousSubscriptionListingViewModel.favoriteUserSubscriptions, id: \.name) { subscription in
+                                    SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
+                                        navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                    }) {
+                                        subscription.isFavorite.toggle()
+                                        anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                    }
+                                    .listPlainItemNoInsets()
+                                }
                             }
-                            .listPlainItemNoInsets()
+                            .listPlainItem()
                         }
+                        
+                        Section(header: Text("All").listSectionHeader()) {
+                            ForEach(anonymousSubscriptionListingViewModel.userSubscriptions, id: \.name) { subscription in
+                                SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
+                                    navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                }) {
+                                    subscription.isFavorite.toggle()
+                                    anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
+                                }
+                                .listPlainItemNoInsets()
+                            }
+                        }
+                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
@@ -111,15 +147,33 @@ struct AnonymousSubscriptionsView: View {
                         .primaryText()
                 } else {
                     List {
-                        ForEach(anonymousSubscriptionListingViewModel.myCustomFeeds, id: \.path) { customFeed in
-                            SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
-                                navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
-                            }) {
-                                customFeed.isFavorite.toggle()
-                                anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                        if !anonymousSubscriptionListingViewModel.favoriteMyCustomFeeds.isEmpty {
+                            Section(header: Text("Favorite").listSectionHeader()) {
+                                ForEach(anonymousSubscriptionListingViewModel.favoriteMyCustomFeeds, id: \.path) { customFeed in
+                                    SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
+                                        navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                    }) {
+                                        customFeed.isFavorite.toggle()
+                                        anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                    }
+                                    .listPlainItemNoInsets()
+                                }
                             }
-                            .listPlainItemNoInsets()
+                            .listPlainItem()
                         }
+                        
+                        Section(header: Text("All").listSectionHeader()) {
+                            ForEach(anonymousSubscriptionListingViewModel.myCustomFeeds, id: \.path) { customFeed in
+                                SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
+                                    navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                }) {
+                                    customFeed.isFavorite.toggle()
+                                    anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
+                                }
+                                .listPlainItemNoInsets()
+                            }
+                        }
+                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
