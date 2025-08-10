@@ -25,6 +25,12 @@ struct ReadPost: Codable, FetchableRecord, PersistableRecord, Equatable, Hashabl
         case postId = "post_id"
         case time
     }
+    
+    enum Columns {
+        static let username = Column(CodingKeys.username)
+        static let postId = Column(CodingKeys.postId)
+        static let time = Column(CodingKeys.time)
+    }
 
     public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
     

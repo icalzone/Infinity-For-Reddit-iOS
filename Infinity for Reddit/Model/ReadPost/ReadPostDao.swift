@@ -60,7 +60,7 @@ struct ReadPostDao {
             try ReadPost.fetchOne(db, sql: """
             SELECT *
             FROM read_posts
-            WHERE id = ?
+            WHERE post_id = ?
             LIMIT 1
             """, arguments: [id])
         }
@@ -92,19 +92,23 @@ struct ReadPostDao {
         }
     }
     
-    func getReadPostsIdsByIds(ids: [String], username: String) throws -> [String] {
-        try dbPool.read { db in
-            try String.fetchAll(db, sql: """
-                SELECT id FROM read_posts
-                WHERE post_id IN (\(ids.map { "'" + $0 + "'" }.joined(separator: ",")))
+    func getReadPostsIdsByIds(ids: [String], username: String) throws -> Set<String> {
+        try dbPool.write { db in
+            let placeholders = Array(repeating: "?", count: ids.count).joined(separator: ", ")
+            
+            let arguments: [DatabaseValueConvertible?] = ids + [username]
+            
+            return try String.fetchSet(db, sql: """
+                SELECT post_id FROM read_posts
+                WHERE post_id IN (\(placeholders))
                 AND username = ?
-                """, arguments: [username])
+                """, arguments: StatementArguments(arguments))
         }
     }
     
     func getMaxReadPostEntrySize() -> Int { // in bytes
         return 20 + // max username size
-               10 + // id size
+               10 + // post_id size
                8   // time size
     }
 }

@@ -41,7 +41,8 @@ struct PostListingView: View {
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
                 postListingMetadata: postListingMetadata,
-                postListingRepository: PostListingRepository()
+                postListingRepository: PostListingRepository(),
+                readPostsRepository: ReadPostsRepository()
             )
         )
     }
@@ -58,7 +59,8 @@ struct PostListingView: View {
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
                 postListingMetadata: postListingMetadata,
-                postListingRepository: PostListingRepository()
+                postListingRepository: PostListingRepository(),
+                readPostsRepository: ReadPostsRepository()
             )
         )
     }

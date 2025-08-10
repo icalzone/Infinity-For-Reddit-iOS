@@ -53,8 +53,10 @@ public class PostListingViewModel: ObservableObject {
     // UserDefaults
     private var sensitiveContent: Bool
     private var spoilerContent: Bool
+    private var readPostEnabled: Bool = true
     
-    public let postListingRepository: PostListingRepositoryProtocol
+    private let postListingRepository: PostListingRepositoryProtocol
+    private let readPostsRepository: ReadPostsRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -63,13 +65,18 @@ public class PostListingViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(postListingMetadata: PostListingMetadata, postListingRepository: PostListingRepositoryProtocol) {
+    init(
+        postListingMetadata: PostListingMetadata,
+        postListingRepository: PostListingRepositoryProtocol,
+        readPostsRepository: ReadPostsRepositoryProtocol
+    ) {
         self.sortType = SortType(
             type: postListingMetadata.postListingType.availableSortTypeKinds[0],
             time: postListingMetadata.postListingType.defaultSortTime
         )
         self.postListingMetadata = postListingMetadata
         self.postListingRepository = postListingRepository
+        self.readPostsRepository = readPostsRepository
         
         self.sensitiveContent = ContentSensitivityFilterUserDetailsUtils.sensitiveContent
         self.spoilerContent = ContentSensitivityFilterUserDetailsUtils.spoilerContent
@@ -273,6 +280,11 @@ public class PostListingViewModel: ObservableObject {
     }
     
     func postProcessPosts(_ posts: [Post]) -> [Post] {
+        let readPostIds = readPostsRepository.getReadPostsIdsByIds(
+            readPostEnabled: readPostEnabled,
+            account: AccountViewModel.shared.account,
+            postIds: posts.map { $0.id }
+        )
         return posts.filter { post in
             print(PostFilter.isPostAllowed(post: post, postFilter: postFilter))
             return PostFilter.isPostAllowed(post: post, postFilter: postFilter)
@@ -281,6 +293,11 @@ public class PostListingViewModel: ObservableObject {
                 modifyPostBody($0)
                 $0.selftextProcessedMarkdown = MarkdownContent($0.selftext)
             }
+            
+            if readPostIds.contains($0.id) {
+                $0.isRead = true
+            }
+            
             return $0
         }
     }

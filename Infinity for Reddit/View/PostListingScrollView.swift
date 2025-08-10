@@ -28,7 +28,8 @@ struct PostListingScrollView: View {
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
                 postListingMetadata: postListingMetadata,
-                postListingRepository: PostListingRepository()
+                postListingRepository: PostListingRepository(),
+                readPostsRepository: ReadPostsRepository()
             )
         )
     }
@@ -40,7 +41,8 @@ struct PostListingScrollView: View {
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
                 postListingMetadata: postListingMetadata,
-                postListingRepository: PostListingRepository()
+                postListingRepository: PostListingRepository(),
+                readPostsRepository: ReadPostsRepository()
             )
         )
     }
