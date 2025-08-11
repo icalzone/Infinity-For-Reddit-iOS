@@ -36,19 +36,22 @@ struct PostHistorySettingsView: View {
             TogglePreference(isEnabled: $limitReadPosts, title: "Limit Read Posts")
                 .listPlainItemNoInsets()
             
-            CustomTextField(
-                "Read Posts Limit",
-                text: Binding(
-                    get: { String(self.readPostsLimit) },
-                    set: { self.readPostsLimit = Int($0) ?? 500 }
-                ),
-                singleLine: true,
-                keyboardType: .numberPad
-            )
-            .padding(.leading, 60)
-            .padding(.trailing, 16)
-            .padding(.vertical, 8)
-            .listPlainItemNoInsets()
+            if limitReadPosts {
+                CustomTextField(
+                    "Read Posts Limit",
+                    text: Binding(
+                        get: { String(self.readPostsLimit) },
+                        set: { self.readPostsLimit = Int($0) ?? 500 }
+                    ),
+                    singleLine: true,
+                    keyboardType: .numberPad
+                )
+                .padding(.leading, 60)
+                .padding(.trailing, 16)
+                .padding(.vertical, 8)
+                .listPlainItemNoInsets()
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
 
             TogglePreference(isEnabled: $markPostsAsReadAfterVoting, title: "Mark Posts as Read After Voting")
                 .listPlainItemNoInsets()
