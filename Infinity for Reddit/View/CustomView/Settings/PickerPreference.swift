@@ -11,11 +11,13 @@ struct PickerPreference: View {
     @Binding var selectedIndex: Int
     let items: [String]
     let title: String
-    var subtitle: String? = nil
     var icon: String? = nil
     
     private var selectedItem: String {
-        guard items.indices.contains(selectedIndex) else { return "Select" }
+        guard items.indices.contains(selectedIndex) else {
+            return "Select"
+        }
+        
         return items[selectedIndex]
     }
     
@@ -26,6 +28,7 @@ struct PickerPreference: View {
                     selectedIndex = i
                 } label: {
                     Text(items[i])
+                        .primaryText()
                 }
             }
         } label: {
