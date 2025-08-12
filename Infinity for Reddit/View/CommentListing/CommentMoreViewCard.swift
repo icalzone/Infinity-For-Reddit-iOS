@@ -8,19 +8,25 @@
 import SwiftUI
 
 struct CommentMoreViewCard: View {
+    @AppStorage(InterfaceCommentUserDefaultsUtils.showCommentDividerKey, store: .interfaceCommentFilter)
+    private var showCommentDivider: Bool = false
+    
     let commentMore: CommentMore
     
     var body: some View {
         HStack(spacing: 0) {
             CommentIndentationView(depth: commentMore.depth)
             
-            Spacer()
-            
-            Text(commentMore.children.count > 0 ? "Load more comments" : "Continue Thread")
-                .commentText()
-                .padding(.horizontal, 16)
-            
-            Spacer()
+            VStack(spacing: 0) {
+                Text(commentMore.children.count > 0 ? "Load more comments" : "Continue Thread")
+                    .commentText()
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                
+                if showCommentDivider {
+                    Divider()
+                }
+            }
         }
     }
 }

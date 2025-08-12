@@ -13,11 +13,14 @@ struct CommentViewCard: View {
     @EnvironmentObject var customThemeViewModel: CustomThemeViewModel
     @EnvironmentObject var navigationManager: NavigationManager
     
+    @AppStorage(InterfaceCommentUserDefaultsUtils.showCommentDividerKey, store: .interfaceCommentFilter)
+    private var showCommentDivider: Bool = false
+    @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceCommentFilter)
+    private var fullyCollapseComment: Bool = false
+    
     @StateObject var commentViewModel: CommentViewModel
     @State private var voteTask: Task<Void, Never>? = nil
     @State private var saveTask: Task<Void, Never>? = nil
-    
-    @State private var fullyCollapseComment: Bool = true
     
     let formatter = DateFormatter()
     private let isInPostDetails: Bool
@@ -34,7 +37,7 @@ struct CommentViewCard: View {
         HStack(spacing: 0) {
             CommentIndentationView(depth: commentViewModel.comment.depth)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
                     if isInPostDetails {
                         CustomWebImage(
@@ -176,6 +179,10 @@ struct CommentViewCard: View {
                     .padding(.horizontal, 16)
                     .padding(.top, 8)
                     .padding(.bottom, 8)
+                }
+                
+                if showCommentDivider {
+                    Divider()
                 }
             }
         }
