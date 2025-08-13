@@ -23,6 +23,8 @@ struct PostDetailsView: View {
     
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
+    @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
+    private var showAuthorAvatar: Bool = false
     
     private let account: Account
     private let isFromSubredditPostListing: Bool
@@ -120,7 +122,9 @@ struct PostDetailsView: View {
                             }
                             .transition(.slide)
                             .onAppear {
-                                postDetailsViewModel.loadIcon(comment: comment)
+                                if showAuthorAvatar {
+                                    postDetailsViewModel.loadIcon(comment: comment)
+                                }
                             }
                         } else if case let .more(commentMore) = commentItem {
                             CommentMoreViewCard(commentMore: commentMore)

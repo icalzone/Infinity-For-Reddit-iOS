@@ -21,6 +21,8 @@ struct CommentViewCard: View {
     private var hideToolbar: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.hideNVotesKey, store: .interfaceComment)
     private var hideNVotes: Bool = false
+    @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
+    private var showAuthorAvatar: Bool = false
     
     @StateObject var commentViewModel: CommentViewModel
     @State private var voteTask: Task<Void, Never>? = nil
@@ -45,7 +47,7 @@ struct CommentViewCard: View {
             
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
-                    if isInPostDetails {
+                    if isInPostDetails && showAuthorAvatar {
                         CustomWebImage(
                             commentViewModel.comment.authorIconUrl?.absoluteString,
                             width: 24,
