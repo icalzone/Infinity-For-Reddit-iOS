@@ -319,21 +319,20 @@ public class PostDetailsViewModel: ObservableObject {
                         }
                     }
                     print("Comment allowed")
-                    modifyCommentBody(comment)
-                    comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
-                    return $0
                 } else {
                     if commentFilter?.displayMode == .collapseComment {
                         print("Comment not allowed but collapsed")
                         comment.isCollasped = true
                         comment.isFilteredOut = true
-                        return $0
                     } else {
                         lastRemovedCommentDepth = comment.depth
                         print("Comment not allowed")
                         return nil
                     }
                 }
+                modifyCommentBody(comment)
+                comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
+                return $0
             case .more(let commentMore):
                 if let depth = lastRemovedCommentDepth {
                     if depth < commentMore.depth {
