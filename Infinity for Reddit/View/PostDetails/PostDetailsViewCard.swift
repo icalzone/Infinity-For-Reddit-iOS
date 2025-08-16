@@ -11,6 +11,7 @@ import MarkdownUI
 import Flow
 
 struct PostDetailsViewCard: View {
+    @EnvironmentObject private var accountViewModel: AccountViewModel
     @EnvironmentObject var navigationManager: NavigationManager
     
     @StateObject var postViewModel: PostViewModel
@@ -218,14 +219,16 @@ struct PostDetailsViewCard: View {
             
             HStack(alignment: .center) {
                 Button(action: {
-                    voteTask?.cancel()
-                    voteTask = Task {
-                        await postViewModel.votePost(vote: 1)
+                    if !accountViewModel.account.isAnonymous() {
+                        voteTask?.cancel()
+                        voteTask = Task {
+                            await postViewModel.votePost(vote: 1)
+                        }
                     }
                 }) {
-                    SwiftUI.Image(systemName: postViewModel.post.likes == 1 ? "arrowshape.up.fill" : "arrowshape.up")
+                    SwiftUI.Image(systemName: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous() ? "arrowshape.up.fill" : "arrowshape.up")
                         .postIconTemplateRendering()
-                        .postUpvoteIcon(isUpvoted: postViewModel.post.likes == 1)
+                        .postUpvoteIcon(isUpvoted: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous())
                 }
                 .buttonStyle(.borderless)
                 
@@ -234,14 +237,16 @@ struct PostDetailsViewCard: View {
                     .postInfo()
                 
                 Button(action: {
-                    voteTask?.cancel()
-                    voteTask = Task {
-                        await postViewModel.votePost(vote: -1)
+                    if !accountViewModel.account.isAnonymous() {
+                        voteTask?.cancel()
+                        voteTask = Task {
+                            await postViewModel.votePost(vote: -1)
+                        }
                     }
                 }) {
-                    SwiftUI.Image(systemName: postViewModel.post.likes == -1 ? "arrowshape.down.fill" : "arrowshape.down")
+                    SwiftUI.Image(systemName: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous() ? "arrowshape.down.fill" : "arrowshape.down")
                         .postIconTemplateRendering()
-                        .postDownvoteIcon(isDownvoted: postViewModel.post.likes == -1)
+                        .postDownvoteIcon(isDownvoted: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous())
                 }
                 .padding(.trailing, 16)
                 .buttonStyle(.borderless)
