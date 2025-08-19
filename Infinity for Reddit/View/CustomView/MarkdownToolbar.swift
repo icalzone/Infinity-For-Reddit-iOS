@@ -12,9 +12,9 @@ struct MarkdownToolbar: View {
     @Binding var selectedRange: NSRange
     @Binding var toolbarHeight: CGFloat
     
-    @State var isInsertingLink: Bool = false
-    @State var linkText: String = ""
-    @State var linkURL: String = ""
+    @State private var activeAlert: ActiveAlert? = nil
+    @State private var linkText: String = ""
+    @State private var linkURL: String = ""
 
     var body: some View {
         VStack {
@@ -44,7 +44,7 @@ struct MarkdownToolbar: View {
                         linkURL = ""
                         
                         withAnimation(.linear(duration: 0.2)) {
-                            isInsertingLink = true
+                            activeAlert = .link
                         }
                     }) {
                         SwiftUI.Image(systemName: "link")
@@ -125,14 +125,35 @@ struct MarkdownToolbar: View {
         }
         .frame(maxHeight: .infinity)
         .overlay(
-            CustomAlert(title: "Insert Link", isPresented: $isInsertingLink) {
-                VStack(spacing: 20) {
-                    CustomTextField("Text", text: $linkText, singleLine: true)
-                    
-                    CustomTextField("URL", text: $linkURL, singleLine: true)
+            CustomAlert(title: activeAlert?.title ?? "", isPresented: Binding(
+                get: { activeAlert != nil },
+                set: { newValue in
+                    if !newValue {
+                        activeAlert = nil
+                    }
+                }
+            )) {
+                switch activeAlert {
+                case .link:
+                    VStack(spacing: 20) {
+                        CustomTextField("Text", text: $linkText, singleLine: true)
+                        
+                        CustomTextField("URL", text: $linkURL, singleLine: true)
+                    }
+                case .header:
+                    EmptyView()
+                case nil:
+                    EmptyView()
                 }
             } onConfirm: {
-                insertLink()
+                switch activeAlert {
+                case .link:
+                    insertLink()
+                case .header:
+                    break
+                case nil:
+                    break
+                }
             }
         )
     }
@@ -192,5 +213,20 @@ struct MarkdownToolbar: View {
         let linkSyntax = "[\(linkURL)](\(linkURL))"
         text = text.inserting(linkSyntax, at: selectedRange.location)
         selectedRange = NSRange(location: selectedRange.location + 1, length: 4)
+    }
+}
+
+private enum ActiveAlert: Identifiable {
+    case link, header
+
+    var id: Int {
+        hashValue
+    }
+    
+    var title: String {
+        switch self {
+        case .link: return "Insert Link"
+        case .header: return "Insert Header"
+        }
     }
 }
