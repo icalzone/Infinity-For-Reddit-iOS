@@ -187,16 +187,17 @@ struct HomeView: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .inboxDeepLink)) { note in
-            selectedTab = .inbox
-
-            let rebroadcasted = (note.userInfo?["rebroadcast"] as? Bool) ?? false
-            guard !rebroadcasted else { return }
-
-            var info = note.userInfo ?? [:]
-            info["rebroadcast"] = true
-
+            let accountName = (note.userInfo?["accountName"] as? String) ?? ""
             Task { @MainActor in
-                NotificationCenter.default.post(name: .inboxDeepLink, object: nil, userInfo: info)
+                if !accountName.isEmpty {
+                    await accountViewModel.switchToAccountIfNeeded(accountName)
+                }
+                selectedTab = .inbox
+                NotificationCenter.default.post(
+                    name: .inboxDeepLinkForwarded,
+                    object: nil,
+                    userInfo: note.userInfo
+                )
             }
         }
     }

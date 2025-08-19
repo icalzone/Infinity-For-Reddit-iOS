@@ -125,4 +125,13 @@ public class AccountViewModel: ObservableObject {
         _shared = AccountViewModel(dbPool: resolvedDBPool)
         print("Access Token: \(_shared?.account.accessToken ?? "")")
     }
+    
+    @MainActor
+    func switchToAccountIfNeeded(_ username: String) async {
+        guard account.username.caseInsensitiveCompare(username) != .orderedSame else { return }
+        if let target = try? accountDao.getAccount(username: username) {
+            self.account = target
+        }
+    }
 }
+

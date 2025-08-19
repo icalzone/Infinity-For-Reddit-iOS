@@ -87,13 +87,6 @@ class LinkHandler {
     private func handleRedditPath(_ path: String, segments: [String], url: URL) {
         if path == "/report" {
             openInSafari(url)
-        } else if path == "/media", let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
-                  let realURLString = query.first(where: { $0.name == "url" })?.value,
-                  let realURL = URL(string: realURLString) {
-            openImage(realURL)
-        } else if let subredditMatch = path.range(of: "/r/[\\w-]+", options: .regularExpression) {
-            let subreddit = String(path[subredditMatch]).components(separatedBy: "/")[2]
-            openSubreddit(subreddit)
         } else if segments.contains("comments"), let index = segments.lastIndex(of: "comments"), index + 1 < segments.count {
             let postId = segments[index + 1]
             if segments.count > index + 2 {
@@ -102,6 +95,13 @@ class LinkHandler {
             } else {
                 openPost(postId)
             }
+        } else if path == "/media", let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
+                  let realURLString = query.first(where: { $0.name == "url" })?.value,
+                  let realURL = URL(string: realURLString) {
+            openImage(realURL)
+        } else if let subredditMatch = path.range(of: "/r/[\\w-]+", options: .regularExpression) {
+            let subreddit = String(path[subredditMatch]).components(separatedBy: "/")[2]
+            openSubreddit(subreddit)
         } else if let userMatch = path.range(of: "/(u|user)/[\\w-]+", options: .regularExpression) {
             let username = String(path[userMatch]).components(separatedBy: "/").last!
             openUser(username)

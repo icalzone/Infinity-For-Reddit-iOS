@@ -6,10 +6,6 @@
         
 import Foundation
 
-extension Notification.Name {
-    static let inboxDeepLink = Notification.Name("inboxDeepLink")
-}
-
 struct AppDeepLink {
     static let scheme = "infinity"
     
