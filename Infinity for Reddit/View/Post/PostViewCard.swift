@@ -308,7 +308,6 @@ struct PostViewCard: View {
             .padding(.top, 8)
             .padding(.bottom, 16)
         }
-        
         .background {
             TouchRipple(backgroundShape: RoundedRectangle(cornerRadius: 20)) {
                 RoundedRectangle(cornerRadius: 20)

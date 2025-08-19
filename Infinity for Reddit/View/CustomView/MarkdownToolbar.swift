@@ -10,89 +10,116 @@ import SwiftUI
 struct MarkdownToolbar: View {
     @Binding var text: String
     @Binding var selectedRange: NSRange
+    
+    @State var isInsertingLink: Bool = false
+    @State var linkText: String = ""
+    @State var linkURL: String = ""
 
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 0) {
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("**") }) {
-                    SwiftUI.Image(systemName: "bold")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("*") }) {
-                    SwiftUI.Image(systemName: "italic")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { insertLink() }) {
-                    SwiftUI.Image(systemName: "link")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("~~") }) {
-                    SwiftUI.Image(systemName: "strikethrough")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("^(", ")") }) {
-                    SwiftUI.Image(systemName: "textformat.superscript")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: {}) {
-                    SwiftUI.Image(systemName: "h.circle")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(left: "1. ") }) {
-                    SwiftUI.Image(systemName: "list.number")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(left: "* ") }) {
-                    SwiftUI.Image(systemName: "list.bullet")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(">!", "!<")}) {
-                    SwiftUI.Image(systemName: "exclamationmark.triangle.fill")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("> ", "\n\n")}) {
-                    SwiftUI.Image(systemName: "quote.opening")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("```\n", "\n```\n")}) {
-                    SwiftUI.Image(systemName: "chevron.left.forwardslash.chevron.right")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: {}) {
-                    SwiftUI.Image(systemName: "photo")
-                        .primaryIcon()
-                        .padding(16)
-                }
-                
-                TouchRipple(backgroundShape: Circle(), action: {}) {
-                    SwiftUI.Image("gif")
-                        .primaryIcon()
-                        .padding(16)
+        VStack {
+            Spacer()
+            
+            ScrollView(.horizontal) {
+                HStack(spacing: 0) {
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("**") }) {
+                        SwiftUI.Image(systemName: "bold")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("*") }) {
+                        SwiftUI.Image(systemName: "italic")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: {
+                        if let range = Range(selectedRange, in: text) {
+                            linkText = String(text[range])
+                        }
+                        
+                        isInsertingLink = true
+                    }) {
+                        SwiftUI.Image(systemName: "link")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("~~") }) {
+                        SwiftUI.Image(systemName: "strikethrough")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("^(", ")") }) {
+                        SwiftUI.Image(systemName: "textformat.superscript")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: {}) {
+                        SwiftUI.Image(systemName: "h.circle")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(left: "1. ") }) {
+                        SwiftUI.Image(systemName: "list.number")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(left: "* ") }) {
+                        SwiftUI.Image(systemName: "list.bullet")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown(">!", "!<")}) {
+                        SwiftUI.Image(systemName: "exclamationmark.triangle.fill")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("> ", "\n\n")}) {
+                        SwiftUI.Image(systemName: "quote.opening")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: { applyMarkdown("```\n", "\n```\n")}) {
+                        SwiftUI.Image(systemName: "chevron.left.forwardslash.chevron.right")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: {}) {
+                        SwiftUI.Image(systemName: "photo")
+                            .primaryIcon()
+                            .padding(16)
+                    }
+                    
+                    TouchRipple(backgroundShape: Circle(), action: {}) {
+                        SwiftUI.Image("gif")
+                            .primaryIcon()
+                            .padding(16)
+                    }
                 }
             }
         }
+        .frame(maxHeight: .infinity)
+        .overlay(
+            CustomAlert(title: "Insert Link", isPresented: $isInsertingLink) {
+                VStack(spacing: 16) {
+                    CustomTextField("Text", text: $linkText, singleLine: true)
+                    
+                    CustomTextField("URL", text: $linkURL, singleLine: true)
+                }
+                .padding(16)
+            } onConfirm: {
+                insertLink()
+            }
+        )
     }
     
     private func applyMarkdown(_ wrapper: String) {
@@ -147,7 +174,7 @@ struct MarkdownToolbar: View {
     }
     
     private func insertLink() {
-        let linkSyntax = "[text](url)"
+        let linkSyntax = "[\(linkURL)](\(linkURL))"
         text = text.inserting(linkSyntax, at: selectedRange.location)
         selectedRange = NSRange(location: selectedRange.location + 1, length: 4)
     }

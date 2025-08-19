@@ -21,7 +21,7 @@ struct SubmitCommentView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
             ScrollView {
                 VStack(spacing: 0) {
                     if let title = submitCommentViewModel.commentParent.title {
@@ -43,7 +43,7 @@ struct SubmitCommentView: View {
                             .markdownLinkHandler { url in
                                 LinkHandler.shared.handle(url: url)
                             }
-                    } else if let body = submitCommentViewModel.commentParent.body {
+                    } else if let body = submitCommentViewModel.commentParent.body, !body.isEmpty {
                         Markdown(body)
                             .markdownImageProvider(WebImageProvider(mediaMetadata: submitCommentViewModel.commentParent.mediaMetadata))
                             .font(.system(size: 24))
@@ -54,6 +54,9 @@ struct SubmitCommentView: View {
                             .markdownLinkHandler { url in
                                 LinkHandler.shared.handle(url: url)
                             }
+                    } else {
+                        Spacer()
+                            .frame(height: 8)
                     }
                     
                     Divider()
@@ -72,6 +75,9 @@ struct SubmitCommentView: View {
                         }
                     }
                     .padding(16)
+                    
+                    Spacer()
+                        .frame(height: 32)
                 }
             }
             
@@ -80,6 +86,7 @@ struct SubmitCommentView: View {
                 selectedRange: $selectedRange
             )
         }
+        .frame(maxHeight: .infinity)
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Send Comment")
         .toolbar {
