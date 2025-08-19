@@ -25,7 +25,10 @@ struct MarkdownTextField: UIViewRepresentable {
         }
 
         func textViewDidChangeSelection(_ textView: UITextView) {
-            parent.selectedRange = textView.selectedRange
+            let range = textView.selectedRange
+            DispatchQueue.main.async {
+                self.parent.selectedRange = range
+            }
         }
     }
 
