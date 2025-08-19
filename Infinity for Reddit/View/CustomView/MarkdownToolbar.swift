@@ -219,9 +219,20 @@ struct MarkdownToolbar: View {
     }
     
     private func insertLink() {
-        let linkSyntax = "[\(linkURL)](\(linkURL))"
-        text = text.inserting(linkSyntax, at: selectedRange.location)
-        selectedRange = NSRange(location: selectedRange.location + 1, length: 4)
+        guard let range = Range(selectedRange, in: text) else { return }
+        
+        let linkSyntax = "[\(linkText)](\(linkURL))"
+        let newText: String
+        if selectedRange.length > 0 {
+            newText = text.replacingCharacters(in: range, with: linkSyntax)
+            selectedRange = NSRange(location: selectedRange.location,
+                                    length: linkSyntax.count)
+        } else {
+            newText = text.inserting(linkSyntax, at: selectedRange.location)
+            selectedRange = NSRange(location: selectedRange.location + linkSyntax.count,
+                                    length: 0)
+        }
+        text = newText
     }
 }
 
