@@ -63,33 +63,51 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         }
         
         let userInfo = response.notification.request.content.userInfo
-        let account  = (userInfo["accountName"] as? String) ?? ""
-        let kindRaw  = (userInfo["kind"] as? String) ?? ""
-        let fullname = userInfo["messageFullname"] as? String
         
-        if let s = userInfo["context"] as? String,
-           let external = URL(string: s),
-           let deep = AppDeepLink.wrap(external) {
-            Task { @MainActor in
-                UIApplication.shared.open(deep)
-            }
+        guard let accountName = userInfo["accountName"] as? String,
+              let kindRaw = userInfo["kind"] as? String else {
             completion()
             return
         }
         
-        let viewMessage = (MsgKind.parse(kindRaw) == .message)
-        if let deep = AppDeepLink.toInbox(account: account, viewMessage: viewMessage, fullname: fullname) {
-            Task { @MainActor in
-                UIApplication.shared.open(deep)
+        let messageKind = MsgKind.parse(kindRaw)
+        let fullname = userInfo["messageFullname"] as? String
+        
+        var deepLinkUrl: URL?
+        
+        switch messageKind {
+        case .comment, .link:
+            if let context = userInfo["context"] as? String,
+               let externalUrl = URL(string: context) {
+                deepLinkUrl = AppDeepLink.toExternalLink(
+                    url: externalUrl,
+                    account: accountName,
+                    fullname: fullname
+                )
             }
-            completion(); return
+            
+        case .message, .account, .subreddit, .other:
+            let viewMessage = (messageKind == .message)
+            deepLinkUrl = AppDeepLink.toInbox(
+                account: accountName,
+                viewMessage: viewMessage,
+                fullname: fullname
+            )
+        }
+        
+        if let url = deepLinkUrl {
+            Task { @MainActor in
+                UIApplication.shared.open(url)
+            }
         }
         
         completion()
     }
 }
 
-private enum MsgKind { case comment, link, message, account, subreddit, other
+private enum MsgKind {
+    case comment, link, message, account, subreddit, other
+    
     static func parse(_ raw: String) -> MsgKind {
         switch raw.lowercased() {
         case "t1": return .comment
