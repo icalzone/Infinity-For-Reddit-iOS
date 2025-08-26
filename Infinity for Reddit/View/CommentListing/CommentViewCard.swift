@@ -96,8 +96,8 @@ struct CommentViewCard: View {
                 
                 if !((commentViewModel.comment.isCollasped && fullyCollapseComment && commentViewModel.comment.hasExpandedBefore) || (commentViewModel.comment.isFilteredOut && !commentViewModel.comment.hasExpandedBefore)) {
                     Group {
-                        if commentViewModel.comment.bodyProcessedMarkdown != nil {
-                            Markdown(commentViewModel.comment.bodyProcessedMarkdown!)
+                        if let processedMarkdown = commentViewModel.comment.bodyProcessedMarkdown {
+                            Markdown(processedMarkdown)
                                 .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
                                 .font(.system(size: 24))
                                 .padding(.horizontal, 16)
