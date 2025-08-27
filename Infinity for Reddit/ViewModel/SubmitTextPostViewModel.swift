@@ -8,7 +8,8 @@ import Foundation
 import MarkdownUI
 
 class SubmitTextPostViewModel: ObservableObject {
-    @Published var text: String = ""
+    @Published var title: String = ""  
+    @Published var content: String = ""
     @Published var selectedAccount: Account
     
     init() {

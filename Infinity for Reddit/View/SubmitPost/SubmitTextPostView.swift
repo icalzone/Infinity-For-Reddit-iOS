@@ -44,10 +44,10 @@ struct SubmitTextPostView: View {
                 Divider()
                 
                 ZStack(alignment: .topLeading) {
-                    MarkdownTextField(text: $submitTextPostViewModel.text, selectedRange: $selectedRange)
+                    MarkdownTextField(text: $submitTextPostViewModel.title, selectedRange: $selectedRange)
                         .frame(maxHeight: 10)
                     
-                    if submitTextPostViewModel.text.isEmpty {
+                    if submitTextPostViewModel.title.isEmpty {
                         Text("Title")
                             .primaryText()
                     }
@@ -55,10 +55,10 @@ struct SubmitTextPostView: View {
                 .padding(16)
                 
                 ZStack(alignment: .topLeading) {
-                    MarkdownTextField(text: $submitTextPostViewModel.text, selectedRange: $selectedRange)
+                    MarkdownTextField(text: $submitTextPostViewModel.content, selectedRange: $selectedRange)
                         .frame(minHeight: 300)
                     
-                    if submitTextPostViewModel.text.isEmpty {
+                    if submitTextPostViewModel.content.isEmpty {
                         Text("Content")
                             .secondaryText()
                     }
@@ -69,7 +69,7 @@ struct SubmitTextPostView: View {
             }
             
             MarkdownToolbar(
-                text: $submitTextPostViewModel.text,
+                text: $submitTextPostViewModel.content,
                 selectedRange: $selectedRange,
                 toolbarHeight: $toolbarHeight
             )
