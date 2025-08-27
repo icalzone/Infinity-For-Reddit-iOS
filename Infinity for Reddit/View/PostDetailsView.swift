@@ -171,7 +171,6 @@ struct PostDetailsView: View {
                 if let sentCommentParent = self.sentCommentParent {
                     postDetailsViewModel.insertSubmittedComment(sentComment, commentParent: sentCommentParent)
                 }
-                print(commentSubmissionShareableViewModel.sentComment?.body ?? "No body")
                 commentSubmissionShareableViewModel.sentComment = nil
                 sentCommentParent = nil
             }

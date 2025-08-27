@@ -39,17 +39,23 @@ struct HomeView: View {
             TabView(selection: $selectedTab) {
                 Group {
                     CustomNavigationStack {
-                        PostListingView(
-                            account: accountViewModel.account,
-                            postListingMetadata: PostListingMetadata(
-                                // Anonymous subscriptions will be fetched later in PostListingViewModel
-                                postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
-                                headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                                queries: nil,
-                                params: nil
-                            ),
-                            handleToolbarMenu: false
-                        )
+                        ZStack {
+                            PostListingView(
+                                account: accountViewModel.account,
+                                postListingMetadata: PostListingMetadata(
+                                    // Anonymous subscriptions will be fetched later in PostListingViewModel
+                                    postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
+                                    headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                                    queries: nil,
+                                    params: nil
+                                ),
+                                handleToolbarMenu: false
+                            )
+                            
+                            VStack {
+                                Spacer()
+                            }
+                        }
                         .setUpHomeTabViewChildNavigationBar()
                         .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
                     }
