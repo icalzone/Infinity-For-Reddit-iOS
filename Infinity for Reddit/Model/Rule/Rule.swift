@@ -10,19 +10,14 @@ public struct Rule: Codable, FetchableRecord, PersistableRecord, Identifiable {
     public static let databaseTableName = "rules"
     
     let shortName: String
-    let descriptionHtml: String
+    let description: String
     
     public var id: String {
         return self.shortName
     }
     
-    init(shortName: String, descriptionHtml: String) {
+    init(shortName: String, description: String) {
         self.shortName = shortName
-        self.descriptionHtml = descriptionHtml
-    }
-    
-    private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
-        case shortName = "short_name"
-        case descriptionHtml = "description_html"
+        self.description = description
     }
 }

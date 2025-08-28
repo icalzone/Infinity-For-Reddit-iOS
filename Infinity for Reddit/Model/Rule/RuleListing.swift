@@ -102,9 +102,9 @@ class RuleRootClass : NSObject, NSCoding {
         
         return rules.compactMap { rule in
             guard let shortName = rule.shortName else { return nil }
-            let descriptionHtml = rule.descriptionHtml ?? ""
+            let description = rule.descriptionField
             
-            return Rule(shortName: shortName, descriptionHtml: descriptionHtml)
+            return Rule(shortName: shortName, description: description ?? "")
         }
     }
 }
@@ -366,12 +366,12 @@ class NextStepReason : NSObject, NSCoding {
 
 class RuleListing : NSObject, NSCoding{
 
-    var createdUtc : Int!
-    var descriptionField : String!
+    var createdUtc : Double?
+    var descriptionField : String?
     var descriptionHtml : String!
     var kind : String!
     var priority : Int!
-    var shortName : String!
+    var shortName : String?
     var violationReason : String!
 
 
@@ -382,7 +382,7 @@ class RuleListing : NSObject, NSCoding{
         if json.isEmpty{
             return
         }
-        createdUtc = json["created_utc"].intValue
+        createdUtc = json["created_utc"].doubleValue
         descriptionField = json["description"].stringValue
         descriptionHtml = json["description_html"].stringValue
         kind = json["kind"].stringValue
@@ -427,7 +427,7 @@ class RuleListing : NSObject, NSCoding{
     */
     @objc required init(coder aDecoder: NSCoder)
     {
-         createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Int
+         createdUtc = aDecoder.decodeObject(forKey: "created_utc") as? Double
          descriptionField = aDecoder.decodeObject(forKey: "description") as? String
          descriptionHtml = aDecoder.decodeObject(forKey: "description_html") as? String
          kind = aDecoder.decodeObject(forKey: "kind") as? String

@@ -12,6 +12,7 @@ struct SubredditChooseView: View {
     @EnvironmentObject var navigationManager: NavigationManager
     
     @State private var showNoSubredditAlert = false
+    @State private var showRulesSheet = false
     
     var text: String
     var iconUrl: String?
@@ -52,7 +53,7 @@ struct SubredditChooseView: View {
                             await subredditChooseViewModel.fetchRules(
                                 isAnonymous: false
                             )
-                            navigationManager.path.append(AppNavigation.subredditRules)
+                            showRulesSheet = true
                         }
                     }
                 }
@@ -72,6 +73,10 @@ struct SubredditChooseView: View {
                    actions: { Button("OK", role: .cancel) { } },
                    message: { Text("Please select a subreddit first") }
             )
+            .sheet(isPresented: $showRulesSheet) {
+                SubredditRulesView()
+                    .environmentObject(subredditChooseViewModel)
+            }
         }
     }
 }

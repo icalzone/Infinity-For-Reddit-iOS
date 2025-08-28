@@ -9,21 +9,27 @@ import MarkdownUI
 
 struct SubredditRulesView: View {
     @EnvironmentObject private var subredditChooseViewModel: SubredditChooseViewModel
-
+    
     var body: some View {
-        Group {
-            if !subredditChooseViewModel.rules.isEmpty {
-                VStack {
-                    ForEach(subredditChooseViewModel.rules, id: \.id) { rule in
-                        Text(rule.shortName)
-                        Markdown(rule.descriptionHtml)
-                            .themedMarkdown()
-                    }
+        ScrollView {
+            VStack {
+                ForEach(subredditChooseViewModel.rules, id: \.id) { rule in
+                    Markdown(rule.shortName)
+                        .markdownTextStyle {
+                            FontSize(16)
+                        }
+                        .themedMarkdown()
+                        .padding(.vertical, 22)
+                    
+                    Markdown(rule.description)
+                        .markdownTextStyle {
+                            FontSize(14)
+                        }
+                        .themedMarkdown()
                 }
-            } else {
-                Text("No rules")
             }
         }
+        .padding(.horizontal, 12)
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Rules")
     }

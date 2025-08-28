@@ -22,5 +22,4 @@ enum AppNavigation: Hashable {
     case submitGalleryPost
     case submitPollPost
     case chooseSubredditForNewPost
-    case subredditRules
 }
