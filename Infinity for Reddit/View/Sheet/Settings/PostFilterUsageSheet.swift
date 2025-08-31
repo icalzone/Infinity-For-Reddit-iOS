@@ -10,6 +10,8 @@ import SwiftUI
 struct PostFilterUsageSheet: View {
     @Environment(\.dismiss) var dismiss
     
+    @FocusState private var focusedField: FieldType?
+    
     @State private var step: Step = .selectUsageType
     @State private var nameOfUsage: String = ""
     
@@ -73,7 +75,10 @@ struct PostFilterUsageSheet: View {
                     .primaryText()
                     .padding(16)
                 
-                CustomTextField(selectedType.textFieldPlaceholder, text: $nameOfUsage)
+                CustomTextField(selectedType.textFieldPlaceholder,
+                                text: $nameOfUsage,
+                                fieldType: .nameOfUsage,
+                                focusedField: $focusedField)
                     .padding(16)
             }
             
@@ -84,5 +89,9 @@ struct PostFilterUsageSheet: View {
     private enum Step: Equatable {
         case selectUsageType
         case nameOfUsage(selectedType: PostFilterUsage.UsageType)
+    }
+    
+    private enum FieldType: Hashable {
+        case nameOfUsage
     }
 }

@@ -7,26 +7,33 @@
 
 import SwiftUI
 
-struct CustomTextField: View {
+struct CustomTextField<FieldType: Hashable>: View {
     @EnvironmentObject var customThemeViewModel: CustomThemeViewModel
     
-    @Binding var text: String
-    var placeholder: String
+    @FocusState.Binding private var focusedField: FieldType?
+    
+    @Binding private var text: String
+    private var placeholder: String
     private let singleLine: Bool
     private let keyboardType: UIKeyboardType
     private let showBorder: Bool
+    private let fieldType: FieldType
     
     init(_ placeholder: String = "",
          text: Binding<String>,
          singleLine: Bool = false,
          keyboardType: UIKeyboardType = .default,
-         showBorder: Bool = true
+         showBorder: Bool = true,
+         fieldType: FieldType,
+         focusedField: FocusState<FieldType?>.Binding
     ) {
         self.placeholder = placeholder
         _text = text
         self.singleLine = singleLine
         self.keyboardType = keyboardType
         self.showBorder = showBorder
+        self.fieldType = fieldType
+        self._focusedField = focusedField
     }
     
     var body: some View {
@@ -48,5 +55,6 @@ struct CustomTextField: View {
                         .stroke(Color(hex: customThemeViewModel.currentCustomTheme.primaryTextColor), lineWidth: 1)
                 )
         }
+        .focused($focusedField, equals: fieldType)
     }
 }

@@ -30,9 +30,15 @@ struct KeyboardToolbar: View {
             .padding(.vertical, 8)
             .padding(.horizontal, 16)
             .background(Color(hex: customThemeViewModel.currentCustomTheme.backgroundColor))
-            //.background(Color.blue)
             .transition(.move(edge: .bottom).combined(with: .opacity))
             .animation(.easeInOut(duration: 0.25), value: keyboard.isVisible)
         }
+    }
+}
+
+struct KeyboardToolbarHeightKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
     }
 }

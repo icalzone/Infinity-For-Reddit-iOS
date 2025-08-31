@@ -10,6 +10,8 @@ import SwiftUI
 struct CommentFilterUsageSheet: View {
     @Environment(\.dismiss) var dismiss
     
+    @FocusState private var focusedField: FieldType?
+    
     @State private var step: Step = .selectUsageType
     @State private var nameOfUsage: String = ""
     
@@ -57,7 +59,10 @@ struct CommentFilterUsageSheet: View {
                     .primaryText()
                     .padding(16)
                 
-                CustomTextField(selectedType.textFieldPlaceholder, text: $nameOfUsage)
+                CustomTextField(selectedType.textFieldPlaceholder,
+                                text: $nameOfUsage,
+                                fieldType: .nameOfUsage,
+                                focusedField: $focusedField)
                     .padding(16)
             }
             
@@ -68,5 +73,9 @@ struct CommentFilterUsageSheet: View {
     private enum Step: Equatable {
         case selectUsageType
         case nameOfUsage(selectedType: CommentFilterUsage.UsageType)
+    }
+    
+    private enum FieldType: Hashable {
+        case nameOfUsage
     }
 }

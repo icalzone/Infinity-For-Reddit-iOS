@@ -28,6 +28,8 @@ struct PostHistorySettingsView: View {
     @AppStorage(PostHistoryUserDefaultsUtils.hideReadPostsKey, store: .postHistory)
     private var hideReadPosts: Bool = false
     
+    @FocusState private var focusedField: FieldType?
+    
     var body: some View {
         List {
             TogglePreference(isEnabled: $markPostsAsRead, title: "Mark Posts as Read")
@@ -44,7 +46,9 @@ struct PostHistorySettingsView: View {
                         set: { self.readPostsLimit = Int($0) ?? 500 }
                     ),
                     singleLine: true,
-                    keyboardType: .numberPad
+                    keyboardType: .numberPad,
+                    fieldType: .readPostsLimit,
+                    focusedField: $focusedField
                 )
                 .padding(.leading, 60)
                 .padding(.trailing, 16)
@@ -65,5 +69,9 @@ struct PostHistorySettingsView: View {
         .themedList()
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Post History")
+    }
+    
+    private enum FieldType: Hashable {
+        case readPostsLimit
     }
 }

@@ -15,6 +15,8 @@ struct CustomizePostFilterView: View {
     
     @StateObject private var customizePostFilterViewModel: CustomizePostFilterViewModel
     
+    @FocusState private var focusedField: FieldType?
+    
     init(_ postFilter: PostFilter?) {
         _customizePostFilterViewModel = StateObject(
             wrappedValue: CustomizePostFilterViewModel(
@@ -32,7 +34,10 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Post Filter Name", text: $customizePostFilterViewModel.name)
+                    CustomTextField("Post Filter Name",
+                                    text: $customizePostFilterViewModel.name,
+                                    fieldType: .postFilterName,
+                                    focusedField: $focusedField)
                 }
                 .padding(16)
             }
@@ -91,14 +96,20 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Title: excludes keywords (key1,key2)", text: $customizePostFilterViewModel.excludesKeywords)
+                    CustomTextField("Title: excludes keywords (key1,key2)",
+                                    text: $customizePostFilterViewModel.excludesKeywords,
+                                    fieldType: .excludeKeywords,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                     
                     Text("Posts will be filtered out if they do not contain the following keywords in their title.")
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Title: contains keywords (key1,key2)", text: $customizePostFilterViewModel.containsKeywords)
+                    CustomTextField("Title: contains keywords (key1,key2)",
+                                    text: $customizePostFilterViewModel.containsKeywords,
+                                    fieldType: .containKeywords,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                 }
                 .padding(16)
@@ -113,14 +124,20 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Title: excludes regex", text: $customizePostFilterViewModel.excludesRegex)
+                    CustomTextField("Title: excludes regex",
+                                    text: $customizePostFilterViewModel.excludesRegex,
+                                    fieldType: .titleExcludeRegex,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                     
                     Text("Posts will be filtered out if their title does not match the following regular expression.")
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Title: contains regex", text: $customizePostFilterViewModel.containsRegex)
+                    CustomTextField("Title: contains regex",
+                                    text: $customizePostFilterViewModel.containsRegex,
+                                    fieldType: .titleContainRegex,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                 }
                 .padding(16)
@@ -136,7 +153,10 @@ struct CustomizePostFilterView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack(spacing: 0) {
-                        CustomTextField("E.g. funny,AskReddit", text: $customizePostFilterViewModel.excludeSubreddits)
+                        CustomTextField("E.g. funny,AskReddit",
+                                        text: $customizePostFilterViewModel.excludeSubreddits,
+                                        fieldType: .excludeSubreddits,
+                                        focusedField: $focusedField)
                             .lineLimit(1...5)
                         
                         Button(action: {}) {
@@ -151,7 +171,10 @@ struct CustomizePostFilterView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack {
-                        CustomTextField("E.g. Hostilenemy,random", text: $customizePostFilterViewModel.excludeUsers)
+                        CustomTextField("E.g. Hostilenemy,random",
+                                        text: $customizePostFilterViewModel.excludeUsers,
+                                        fieldType: .excludeUsers,
+                                        focusedField: $focusedField)
                             .lineLimit(1...5)
                         
                         Button(action: {}) {
@@ -173,14 +196,20 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Exclude flairs (e.g., flair1,flair2)", text: $customizePostFilterViewModel.excludeFlairs)
+                    CustomTextField("Exclude flairs (e.g., flair1,flair2)",
+                                    text: $customizePostFilterViewModel.excludeFlairs,
+                                    fieldType: .excludeFlairs,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                     
                     Text("Posts that do not have the following flairs will be filtered out.")
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Contain flairs (e.g., flair1,flair2)", text: $customizePostFilterViewModel.containFlairs)
+                    CustomTextField("Contain flairs (e.g., flair1,flair2)",
+                                    text: $customizePostFilterViewModel.containFlairs,
+                                    fieldType: .containFlairs,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                 }
                 .padding(16)
@@ -195,14 +224,20 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Exclude domains", text: $customizePostFilterViewModel.excludeDomains)
+                    CustomTextField("Exclude domains",
+                                    text: $customizePostFilterViewModel.excludeDomains,
+                                    fieldType: .excludeDomains,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                     
                     Text("Link posts that do not have the following urls will be filtered out.")
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Contain domains", text: $customizePostFilterViewModel.containDomains)
+                    CustomTextField("Contain domains",
+                                    text: $customizePostFilterViewModel.containDomains,
+                                    fieldType: .containDomains,
+                                    focusedField: $focusedField)
                         .lineLimit(1...5)
                 }
                 .padding(16)
@@ -217,7 +252,11 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Min vote (-1: no restriction)", text: $customizePostFilterViewModel.minVoteString, singleLine: true)
+                    CustomTextField("Min vote (-1: no restriction)",
+                                    text: $customizePostFilterViewModel.minVoteString,
+                                    singleLine: true,
+                                    fieldType: .minVotes,
+                                    focusedField: $focusedField)
                         .onReceive(Just(customizePostFilterViewModel.minVoteString)) { newValue in
                             var sanitized = ""
                             if newValue.hasPrefix("-") {
@@ -242,7 +281,11 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Max vote (-1: no restriction)", text: $customizePostFilterViewModel.maxVoteString, singleLine: true)
+                    CustomTextField("Max vote (-1: no restriction)",
+                                    text: $customizePostFilterViewModel.maxVoteString,
+                                    singleLine: true,
+                                    fieldType: .maxVotes,
+                                    focusedField: $focusedField)
                         .onReceive(Just(customizePostFilterViewModel.maxVoteString)) { newValue in
                             var sanitized = ""
                             if newValue.hasPrefix("-") {
@@ -275,7 +318,11 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Min comments (-1: no restriction)", text: $customizePostFilterViewModel.minCommentsString, singleLine: true)
+                    CustomTextField("Min comments (-1: no restriction)",
+                                    text: $customizePostFilterViewModel.minCommentsString,
+                                    singleLine: true,
+                                    fieldType: .minComments,
+                                    focusedField: $focusedField)
                         .onReceive(Just(customizePostFilterViewModel.minCommentsString)) { newValue in
                             var sanitized = ""
                             if newValue.hasPrefix("-") {
@@ -300,7 +347,11 @@ struct CustomizePostFilterView: View {
                         .primaryText()
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    CustomTextField("Max comments (-1: no restriction)", text: $customizePostFilterViewModel.maxCommentsString, singleLine: true)
+                    CustomTextField("Max comments (-1: no restriction)",
+                                    text: $customizePostFilterViewModel.maxCommentsString,
+                                    singleLine: true,
+                                    fieldType: .maxComments,
+                                    focusedField: $focusedField)
                         .onReceive(Just(customizePostFilterViewModel.maxCommentsString)) { newValue in
                             var sanitized = ""
                             if newValue.hasPrefix("-") {
@@ -339,5 +390,10 @@ struct CustomizePostFilterView: View {
                 }
             }
         }
+    }
+    
+    private enum FieldType: Hashable {
+        case postFilterName, excludeKeywords, containKeywords, titleExcludeRegex, titleContainRegex, excludeSubreddits, excludeUsers,
+             excludeFlairs, containFlairs, excludeDomains, containDomains, minVotes, maxVotes, minComments, maxComments
     }
 }
