@@ -189,8 +189,10 @@ struct CustomizeCommentFilterView: View {
                 .themedList()
                 .onChange(of: focusedField) { oldField, newField in
                     guard let field = newField else { return }
-                    withAnimation {
-                        proxy.scrollTo(field, anchor: .center)
+                    DispatchQueue.main.async {
+                        withAnimation {
+                            proxy.scrollTo(field, anchor: .center)
+                        }
                     }
                 }
             }
