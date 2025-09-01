@@ -9,13 +9,56 @@ import Foundation
 import AVFoundation
 
 class VideoFullScreenViewModel: ObservableObject {
-    @Published var player: AVPlayer
+    @Published var player: AVPlayer = .init()
+    @Published var isLoading: Bool = false
+    @Published var isLoaded: Bool = false
     
-    init(url: URL) {
-        self.player = AVPlayer(url: url)
+    func loadAndPlay(url: URL) async {
+        guard !isLoaded, !isLoading else {
+            return
+        }
+        
+        await MainActor.run {
+            isLoading = true
+        }
+        
+        let item = AVPlayerItem(url: url)
+        
+        player.replaceCurrentItem(with: item)
+        
+        await MainActor.run {
+            isLoaded = true
+            isLoading = true
+            
+            player.play()
+            
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                                                   object: player.currentItem,
+                                                   queue: .main) { _ in
+                self.player.seek(to: .zero)
+                self.player.play()
+            }
+        }
+    }
+    
+    func play() {
+        player.play()
+    }
+    
+    func pause() {
+        player.pause()
+    }
+    
+    func resetState() {
+        NotificationCenter.default.removeObserver(self)
+        self.player.replaceCurrentItem(with: nil)
+        
+        isLoaded = false
+        isLoading = false
     }
     
     deinit {
-        player.replaceCurrentItem(with: nil)
+        NotificationCenter.default.removeObserver(self)
+        self.player.replaceCurrentItem(with: nil)
     }
 }

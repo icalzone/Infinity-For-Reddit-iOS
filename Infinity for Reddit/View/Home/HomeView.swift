@@ -32,6 +32,8 @@ struct HomeView: View {
     
     @StateObject private var homeViewModel = HomeViewModel()
     
+    @StateObject private var videoFullScreenViewModel = VideoFullScreenViewModel()
+    
     @State private var selectedTab: Tab = .home
     @State private var showProfile: Bool = false
     @State private var timerIsActive = true
@@ -160,18 +162,19 @@ struct HomeView: View {
                     ImageFullScreenView(url: URL(string: urlString), aspectRatio: aspectRatio, matchedGeometryEffectId: matchedGeometryEffectId) {
                         fullScreenMediaViewModel.dismiss()
                     }
-                    .id(UUID())
+                    .id(urlString)
                 } else if case let .gallery(currentUrl, items, mediaMetadata, galleryScrollState) = media {
                     GalleryFullScreenView(items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState) {
                         fullScreenMediaViewModel.dismiss()
                     }
-                    .id(UUID())
+                    .id(currentUrl)
                 } else if case let .video(videoUrl, post) = media {
                     if let url = URL(string: videoUrl) {
-                        VideoFullScreenView(url: url) {
+                        VideoFullScreenView(url: url, videoFullScreenViewModel: videoFullScreenViewModel) {
                             fullScreenMediaViewModel.dismiss()
+                            videoFullScreenViewModel.resetState()
                         }
-                        .id(UUID())
+                        .id(url)
                     }
                 }
             }

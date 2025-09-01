@@ -12,7 +12,9 @@ struct VideoFullScreenView: View {
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     @EnvironmentObject var namespaceManager: NamespaceManager
     
-    @StateObject private var videoFullScreenViewModel: VideoFullScreenViewModel
+    @Environment(\.scenePhase) private var scenePhase
+    
+    @ObservedObject private var videoFullScreenViewModel: VideoFullScreenViewModel
     @State private var scale: CGFloat = 1.0
     @GestureState private var dragOffset: CGSize = .zero
     @State private var currentDragOffset = 0.0
@@ -22,10 +24,10 @@ struct VideoFullScreenView: View {
     let url: URL
     let onDismiss: () -> Void
     
-    init(url: URL, onDismiss: @escaping () -> Void) {
+    init(url: URL, videoFullScreenViewModel: VideoFullScreenViewModel, onDismiss: @escaping () -> Void) {
         self.url = url
+        self.videoFullScreenViewModel = videoFullScreenViewModel
         self.onDismiss = onDismiss
-        _videoFullScreenViewModel = StateObject(wrappedValue: VideoFullScreenViewModel(url: url))
     }
     
     var body: some View {
@@ -37,23 +39,20 @@ struct VideoFullScreenView: View {
                 .ignoresSafeArea()
             
             VideoPlayer(player: videoFullScreenViewModel.player)
-                .onDisappear {
-                    videoFullScreenViewModel.player.pause()
-                    
-                    NotificationCenter.default.removeObserver(self)
-                }
-                .onAppear {
-                    videoFullScreenViewModel.player.play()
-                    
-                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-                                                           object: videoFullScreenViewModel.player.currentItem,
-                                                           queue: .main) { _ in
-                        videoFullScreenViewModel.player.seek(to: .zero)
-                        videoFullScreenViewModel.player.play()
-                    }
-                }
                 .frame(height: 400)
                 .offset(y: currentDragOffset)
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            switch newPhase {
+            case .background, .inactive:
+                videoFullScreenViewModel.pause()
+            case .active:
+                videoFullScreenViewModel.play()
+            @unknown default: break
+            }
+        }
+        .task {
+            await videoFullScreenViewModel.loadAndPlay(url: url)
         }
         .gesture(
             DragGesture()
