@@ -145,6 +145,15 @@ struct PostListingView: View {
                 
                 NavigationBarMenuItem(title: "Sort") {
                     showSortTypeKindSheet = true
+                },
+                
+                NavigationBarMenuItem(title: "Filter Posts") {
+                    navigationManager.path.append(
+                        AppNavigation.filterPosts(
+                            postListingMetadata: postListingMetadata,
+                            postFilter: PostFilter()
+                        )
+                    )
                 }
             ])
         }

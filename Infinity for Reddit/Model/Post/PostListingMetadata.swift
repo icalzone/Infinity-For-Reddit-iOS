@@ -7,7 +7,7 @@
 
 import Alamofire
 
-public struct PostListingMetadata {
+public struct PostListingMetadata: Hashable {
     var postListingType: PostListingType
     var pathComponents: [String: String]
     var headers: HTTPHeaders?
@@ -28,7 +28,7 @@ public struct PostListingMetadata {
     }
 }
 
-public enum PostListingType: Codable {
+public enum PostListingType: Codable, Hashable {
     case frontPage, subreddit(subredditName: String), user(username: String, userWhere: UserWhere), search(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: Int), multireddit(path: String), anonymousFrontPage(concatenatedSubscriptions: String?)
 }
 

@@ -77,6 +77,12 @@ struct CustomNavigationStack<Content: View>: View {
                         SubredditSelectionView()
                             .environmentObject(navigationManager)
                             .environmentObject(subredditChooseViewModel)
+                    case .filterPosts(let postListingMetadata, let postFilter):
+                        FilteredPostsView(
+                            postListingMetadata: postListingMetadata,
+                            postFilter: postFilter
+                        )
+                        .environmentObject(navigationManager)
                     }
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in

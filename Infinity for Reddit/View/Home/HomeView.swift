@@ -140,7 +140,7 @@ struct HomeView: View {
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {
-                        Label("More", systemImage: "person")
+                        Label("More", systemImage: "ellipsis.circle.fill")
                     }
                     .tag(Tab.more)
                     .environmentObject(tab5NavigationBarMenuManager)
