@@ -24,77 +24,61 @@ struct CustomThemeSettingsView: View {
     
     var body: some View {
         List {
-            Picker("Theme", systemImage: "paintbrush.fill", selection: $customThemeSettingsViewModel.theme) {
-                ForEach(0..<customThemeSettingsViewModel.themeOptions.count, id: \.self) { index in
-                    Text(customThemeSettingsViewModel.themeOptions[index]).tag(index)
-                }
-            }
-            .themedPicker()
-            .listPlainItem()
+            PickerPreference(
+                selectedIndex: $customThemeSettingsViewModel.theme,
+                items: customThemeSettingsViewModel.themeOptions,
+                title: "Theme",
+                icon: "paintbrush.fill"
+            )
+            .listPlainItemNoInsets()
             
-            Toggle("AMOLED Dark", systemImage: "moon.fill", isOn: $customThemeSettingsViewModel.amoledDark)
-                .themedToggle()
-                .listPlainItem()
+            TogglePreference(
+                isEnabled: $customThemeSettingsViewModel.amoledDark,
+                title: "AMOLED Dark",
+                icon: "moon.fill"
+            )
+            .listPlainItemNoInsets()
 
-            Section(header: Text("Customization")) {
-                themeListItem(
-                    themeType: "Light Theme",
-                    themeName: customThemeViewModel.currentLightCustomTheme?.name ?? "Indigo",
-                    icon: "upvoted")
-                .onTapGesture {
+            Section(header: Text("Customization").listSectionHeader()) {
+                PreferenceEntry(
+                    title: "Light Theme",
+                    subtitle: customThemeViewModel.currentLightCustomTheme?.name ?? "Indigo",
+                    icon: "sun.max"
+                ) {
                     navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
                 }
+                .listPlainItemNoInsets()
                 
-                themeListItem(
-                    themeType: "Dark Theme",
-                    themeName: customThemeViewModel.currentDarkCustomTheme?.name ?? "Indigo Dark",
-                    icon: "upvoted")
-                .onTapGesture {
-                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentDarkCustomTheme ?? CustomTheme.getIndigoDark()))
+                PreferenceEntry(
+                    title: "Dark Theme",
+                    subtitle: customThemeViewModel.currentDarkCustomTheme?.name ?? "Indigo Dark",
+                    icon: "moon"
+                ) {
+                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
                 }
+                .listPlainItemNoInsets()
                 
-                themeListItem(
-                    themeType: "Amoled Theme",
-                    themeName: customThemeViewModel.currentAmoledCustomTheme?.name ?? "Indigo Amoled",
-                    icon: "upvoted")
-                .onTapGesture {
-                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentAmoledCustomTheme ?? CustomTheme.getIndigoAmoled()))
+                PreferenceEntry(
+                    title: "Amoled Theme",
+                    subtitle: customThemeViewModel.currentAmoledCustomTheme?.name ?? "Indigo Amoled",
+                    icon: "moon"
+                ) {
+                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
                 }
+                .listPlainItemNoInsets()
                 
-                HStack {
-                    SwiftUI.Image("upvote")
-                    
-                    Spacer()
-                        .frame(width: 16)
-                    
-                    Text("Manage Themes")
-                }
-                .onTapGesture {
+                PreferenceEntry(
+                    title: "Manage Themes",
+                    icon: "pencil"
+                ) {
                     navigationManager.path.append(CustomThemeSettingsViewNavigation.customThemeListing)
                 }
+                .listPlainItemNoInsets()
             }
             .listPlainItem()
         }
         .themedList()
         .themedNavigationBar()
-        .addTitleToInlineNavigationBar("Theme", 1.0)
-    }
-    
-    func themeListItem(themeType: String, themeName: String, icon: String) -> some View {
-        HStack {
-            SwiftUI.Image(icon)
-            
-            Spacer()
-                .frame(width: 16)
-            
-            VStack(alignment: .leading) {
-                Text(themeType)
-                
-                Spacer()
-                    .frame(height: 8)
-                
-                Text(themeName)
-            }
-        }
+        .addTitleToInlineNavigationBar("Theme")
     }
 }
