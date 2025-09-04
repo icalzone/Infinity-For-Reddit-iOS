@@ -11,19 +11,10 @@ import GRDB
 
 struct CustomThemeSettingsView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
-    @Environment(\.dependencyManager) private var dependencyManager: Container
-    
-    @StateObject private var customThemeSettingsViewModel = CustomThemeSettingsViewModel()
-    @StateObject private var customThemeViewModel: CustomThemeViewModel
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     @AppStorage(CustomThemeUserDefaultsUtils.themeKey, store: .theme) private var theme: Int = CustomThemeUserDefaultsUtils.themeDeviceDefault
     @AppStorage(CustomThemeUserDefaultsUtils.amoledDarkKey, store: .theme) private var amoledDark: Bool = false
-    
-    init() {
-        _customThemeViewModel = StateObject(
-            wrappedValue: CustomThemeViewModel()
-        )
-    }
     
     var body: some View {
         List {
@@ -57,7 +48,7 @@ struct CustomThemeSettingsView: View {
                     subtitle: customThemeViewModel.currentDarkCustomTheme?.name ?? "Indigo Dark",
                     icon: "moon"
                 ) {
-                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
+                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentDarkCustomTheme ?? CustomTheme.getIndigoDark()))
                 }
                 .listPlainItemNoInsets()
                 
@@ -66,7 +57,7 @@ struct CustomThemeSettingsView: View {
                     subtitle: customThemeViewModel.currentAmoledCustomTheme?.name ?? "Indigo Amoled",
                     icon: "moon"
                 ) {
-                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
+                    navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentAmoledCustomTheme ?? CustomTheme.getIndigoAmoled()))
                 }
                 .listPlainItemNoInsets()
                 
