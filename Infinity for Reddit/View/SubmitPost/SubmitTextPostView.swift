@@ -22,6 +22,7 @@ struct SubmitTextPostView: View {
     @State private var showSelectSubredditView: Bool = false
     @State private var showFlairSheet: Bool = false
     @State private var isSpoiler: Bool = false
+    @State private var isNSFW: Bool = false
     
     init() {
         _submitTextPostViewModel = StateObject(
@@ -74,6 +75,22 @@ struct SubmitTextPostView: View {
                                 defaultForeGround: themeViewModel.currentCustomTheme.primaryTextColor,
                                 defaultBorder: themeViewModel.currentCustomTheme.primaryTextColor
                             )
+                    }
+                    
+                    if submitTextPostViewModel.subredditAllowsNSFW {
+                        Button(action: {
+                            isNSFW.toggle()
+                        }) {
+                            Text("Sensitive")
+                                .themedPillButton(
+                                    isSelected: isNSFW,
+                                    selectedBackGround: themeViewModel.currentCustomTheme.nsfwBackgroundColor,
+                                    selectedForeGround: themeViewModel.currentCustomTheme.nsfwTextColor,
+                                    defaultBackGround: themeViewModel.currentCustomTheme.backgroundColor,
+                                    defaultForeGround: themeViewModel.currentCustomTheme.primaryTextColor,
+                                    defaultBorder: themeViewModel.currentCustomTheme.primaryTextColor
+                                )
+                        }
                     }
                     
                     Spacer()
