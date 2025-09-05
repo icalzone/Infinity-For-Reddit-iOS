@@ -48,7 +48,11 @@ struct SubmitTextPostView: View {
                 HStack(spacing: 16) {
                     if !subredditChooseViewModel.flairs.isEmpty {
                         Button(action: {
-                            showFlairSheet = true
+                            if submitTextPostViewModel.selectedFlair != nil {
+                                submitTextPostViewModel.selectedFlair = nil
+                            } else {
+                                showFlairSheet = true
+                            }
                         }) {
                             Text(submitTextPostViewModel.selectedFlair?.text ?? "Flair")
                                 .themedPillButton(
