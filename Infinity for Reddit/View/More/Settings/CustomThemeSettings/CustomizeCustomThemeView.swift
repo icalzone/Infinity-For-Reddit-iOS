@@ -13,36 +13,51 @@ struct CustomizeCustomThemeView: View {
     @StateObject var customizeCustomThemeViewModel: CustomizeCustomThemeViewModel
     @State var title: String?
     @State var showColorPicker: Bool = false
+    @FocusState private var focusedField: FieldType?
     
     init(customTheme: CustomTheme) {
         _customizeCustomThemeViewModel = StateObject(wrappedValue: CustomizeCustomThemeViewModel(customTheme: customTheme))
     }
     
     var body: some View {
-        List {
-            NameEntry(customizeCustomThemeViewModel: customizeCustomThemeViewModel)
-            
-            ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
-                if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
-                    if let binding = getBooleanBinding(for: fieldName) {
-                        BooleanEntry(
-                            fieldName: fieldName,
-                            title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
-                            // Notice we use the same string as the title
-                            description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
-                            isEnabled: binding
-                        )
-                    }
-                } else {
-                    if let colorBinding = getIntBinding(for: fieldName) {
-                        ColorEntry(
-                            fieldName: fieldName,
-                            title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
-                            description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? "",
-                            color: getWrappedBinding(for: colorBinding)
-                        )
+        VStack {
+            List {
+                VStack(alignment: .leading, spacing: 0) {
+                    CustomTextField("Name", text: $customizeCustomThemeViewModel.customTheme.name, singleLine: true, fieldType: FieldType.name, focusedField: $focusedField)
+                        .padding(16)
+                    
+                    Divider()
+                }
+                .listPlainItemNoInsets()
+                
+                ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
+                    if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
+                        if let binding = getBooleanBinding(for: fieldName) {
+                            BooleanEntry(
+                                fieldName: fieldName,
+                                title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
+                                // Notice we use the same string as the title
+                                description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
+                                isEnabled: binding
+                            )
+                            .listPlainItemNoInsets()
+                        }
+                    } else {
+                        if let colorBinding = getIntBinding(for: fieldName) {
+                            ColorEntry(
+                                fieldName: fieldName,
+                                title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
+                                description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? "",
+                                color: getWrappedBinding(for: colorBinding)
+                            )
+                            .listPlainItemNoInsets()
+                        }
                     }
                 }
+            }
+            
+            KeyboardToolbar {
+                focusedField = nil
             }
         }
         .toolbar {
@@ -61,26 +76,6 @@ struct CustomizeCustomThemeView: View {
         .addTitleToInlineNavigationBar("Customize", 1.0)
     }
     
-    private struct NameEntry: View {
-        @ObservedObject var customizeCustomThemeViewModel: CustomizeCustomThemeViewModel
-        
-        var body: some View {
-            HStack(alignment: .center) {
-                VStack(alignment: .leading) {
-                    Text(customizeCustomThemeViewModel.customTheme.name)
-                        .primaryText()
-                    
-                    Spacer()
-                        .frame(height: 8)
-                    
-                    Text(NSLocalizedString("theme_name_description", comment: ""))
-                        .font(.system(size: 14))
-                        .secondaryText()
-                }
-            }
-        }
-    }
-    
     private struct ColorEntry: View {
         let fieldName: String
         let title: String
@@ -88,31 +83,38 @@ struct CustomizeCustomThemeView: View {
         let color: IdentifiableBinding<Int>
         
         var body: some View {
-            HStack(alignment: .center) {
-                VStack(alignment: .leading) {
-                    Text(title)
-                        .primaryText()
+            VStack(spacing: 0) {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(title)
+                            .primaryText()
+                        
+                        Spacer()
+                            .frame(height: 8)
+                        
+                        Text(description)
+                            .font(.system(size: 14))
+                            .secondaryText()
+                    }
+                    .padding(16)
                     
                     Spacer()
-                        .frame(height: 8)
                     
-                    Text(description)
-                        .font(.system(size: 14))
-                        .secondaryText()
+                    ColorPicker("Choose color", selection: Binding(
+                        get: { Color(hex: color.binding.wrappedValue) },
+                        set: { newColor in
+                            color.binding.wrappedValue = newColor.toHex()
+                        }
+                    ))
+                    .frame(width: 24, height: 24)
+                    .padding(.vertical, 16)
+                    .padding(.trailing, 16)
+                    .labelsHidden()
                 }
+                .frame(maxWidth: .infinity)
                 
-                Spacer()
-                
-                ColorPicker("Select a color", selection: Binding(
-                    get: { Color(hex: color.binding.wrappedValue) },
-                    set: { newColor in
-                        color.binding.wrappedValue = newColor.toHex()
-                    }
-                ))
-                .frame(width: 24, height: 24)
-                .labelsHidden()
+                Divider()
             }
-            .frame(maxWidth: .infinity)
         }
     }
     
@@ -123,26 +125,33 @@ struct CustomizeCustomThemeView: View {
         let isEnabled: Binding<Bool>
         
         var body: some View {
-            HStack(alignment: .center) {
-                VStack(alignment: .leading) {
-                    Text(title)
-                        .primaryText()
+            VStack(spacing: 0) {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        Text(title)
+                            .primaryText()
+                        
+                        Spacer()
+                            .frame(height: 8)
+                        
+                        Text(description)
+                            .font(.system(size: 14))
+                            .secondaryText()
+                    }
+                    .padding(16)
                     
                     Spacer()
-                        .frame(height: 8)
                     
-                    Text(description)
-                        .font(.system(size: 14))
-                        .secondaryText()
+                    Toggle(isOn: isEnabled) {}
+                        .padding(.vertical, 16)
+                        .padding(.trailing, 16)
+                        .labelsHidden()
+                        .themedToggle()
                 }
+                .frame(maxWidth: .infinity)
                 
-                Spacer()
-                
-                Toggle(isOn: isEnabled) {}
-                    .labelsHidden()
-                    .themedToggle()
+                Divider()
             }
-            .frame(maxWidth: .infinity)
         }
     }
     
@@ -346,5 +355,9 @@ struct CustomizeCustomThemeView: View {
         default:
             return nil
         }
+    }
+    
+    private enum FieldType: Hashable {
+        case name
     }
 }
