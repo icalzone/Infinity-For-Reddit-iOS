@@ -5,6 +5,7 @@
 // Created by joeylr2042 on 2025-08-21
 
 import SwiftUI
+import MarkdownUI
 
 enum PostField: Hashable {
     case title
@@ -30,6 +31,7 @@ struct SubmitTextPostView: View {
     @State private var isNSFW: Bool = false
     @State private var titleSelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var bodySelectedRange: NSRange = NSRange(location: 0, length: 0)
+    @State private var showMarkdownPreview: Bool = false
     
     init() {
         _submitTextPostViewModel = StateObject(
@@ -124,6 +126,7 @@ struct SubmitTextPostView: View {
                                 MarkdownTextField(text: $submitTextPostViewModel.title, selectedRange: $titleSelectedRange, canFocus: $titleTextViewCanFocus)
                                     .frame(maxHeight: 10)
                                     .focused($focusedField, equals: .title)
+                                    .contentShape(Rectangle())
                                 
                                 if submitTextPostViewModel.title.isEmpty {
                                     Text("Title")
@@ -137,6 +140,7 @@ struct SubmitTextPostView: View {
                                 MarkdownTextField(text: $submitTextPostViewModel.content, selectedRange: $bodySelectedRange, canFocus: $contentTextViewCanFocus)
                                     .frame(minHeight: 300)
                                     .focused($focusedField, equals: .body)
+                                    .contentShape(Rectangle())
                                 
                                 if submitTextPostViewModel.content.isEmpty {
                                     Text("Content")
@@ -176,7 +180,7 @@ struct SubmitTextPostView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button {
-                    
+                    showMarkdownPreview = true
                 } label: {
                     SwiftUI.Image(systemName: "eye")
                 }
@@ -202,6 +206,9 @@ struct SubmitTextPostView: View {
             submitTextPostViewModel.selectedFlair = nil
             isSpoiler = false
             isNSFW = false
+        }
+        .sheet(isPresented: $showMarkdownPreview) {
+            MarkdownViewerSheet(markdown: submitTextPostViewModel.content)
         }
     }
 }
