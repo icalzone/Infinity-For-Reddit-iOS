@@ -471,8 +471,7 @@ public class PostDetailsViewModel: ObservableObject {
         if sortTypeKind != self.sortTypeKind {
             self.sortTypeKind = sortTypeKind
             loadPostAndCommentsTaskId = UUID()
-            if UserDefaults.sortTypeSettings.bool(forKey: SortTypeSettingsUserDefaultsUtils.saveSortTypeKey)
-                && !UserDefaults.sortTypeSettings.bool(forKey: SortTypeSettingsUserDefaultsUtils.respectSubredditRecommendedCommentSortTypeKey) {
+            if SortTypeSettingsUserDefaultsUtils.saveSortType && !SortTypeSettingsUserDefaultsUtils.respectSubredditRecommendedCommentSortType {
                 UserDefaults.sortType?.set(sortTypeKind.rawValue, forKey: SortTypeUserDetailsUtils.postCommentSortTypeKey)
             }
         }

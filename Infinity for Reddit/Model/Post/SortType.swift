@@ -68,7 +68,9 @@ struct SortType: Equatable {
             }
         }
         
-        var description: String { rawValue }
+        static func from(_ raw: String, _ kind: Kind) -> Kind {
+            Kind(rawValue: raw) ?? kind
+        }
     }
 
     enum Time: String {

@@ -10,7 +10,7 @@ import Foundation
 class SortTypeSettingsUserDefaultsUtils {
     static let saveSortTypeKey = "save_sort_type"
     static var saveSortType: Bool {
-        return UserDefaults.sortTypeSettings.bool(forKey: saveSortTypeKey)
+        return UserDefaults.sortTypeSettings.bool(forKey: saveSortTypeKey, true)
     }
     
     static let subredditDefaultSortTypeKey = "subreddit_default_sort_type"
@@ -38,6 +38,6 @@ class SortTypeSettingsUserDefaultsUtils {
     
     static let respectSubredditRecommendedCommentSortTypeKey = "respect_subreddit_recommended_comment_sort_type"
     static var respectSubredditRecommendedCommentSortType: Bool {
-        return UserDefaults.sortTypeSettings.bool(forKey: respectSubredditRecommendedCommentSortTypeKey)
+        return UserDefaults.sortTypeSettings.bool(forKey: respectSubredditRecommendedCommentSortTypeKey, false)
     }
 }
