@@ -72,17 +72,19 @@ private struct MarkdownVideoAVPlayer: UIViewControllerRepresentable {
 private struct MarkdownVideoPlayerWithControls: View {
     @StateObject private var manager: VideoPlayerViewModel
     
+    private let url: URL
     private let aspectRatio: CGSize?
 
     init(url: URL, aspectRatio: CGSize?) {
-        _manager = StateObject(wrappedValue: VideoPlayerViewModel(url: url))
+        _manager = StateObject(wrappedValue: VideoPlayerViewModel())
+        self.url = url
         self.aspectRatio = aspectRatio
     }
 
     var body: some View {
         ZStack() {
             MarkdownVideoAVPlayer(player: manager.player)
-                .contentShape(Rectangle()) // makes the whole area tappable
+                .contentShape(Rectangle())
                 .onTapGesture {
                     manager.toggleControls()
                 }
@@ -139,8 +141,19 @@ private struct MarkdownVideoPlayerWithControls: View {
             $0.aspectRatio(aspectRatio!, contentMode: .fit)
         }
         .onAppear {
-            manager.player.play()
+            manager.play()
         }
+        .onDisappear {
+            manager.pause()
+        }
+        .task {
+            await manager.loadAndPlay(url: url)
+        }
+        .appForegroundBackgroundListener(onAppEntersForeground: {
+            manager.play()
+        }, onAppEntersBackground: {
+            manager.pause()
+        })
     }
 
     private func formatTime(_ seconds: Double) -> String {

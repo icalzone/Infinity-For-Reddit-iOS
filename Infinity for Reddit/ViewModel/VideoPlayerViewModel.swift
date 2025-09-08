@@ -9,9 +9,12 @@ import Foundation
 import AVFoundation
 
 class VideoPlayerViewModel: NSObject, ObservableObject {
-    let player: AVPlayer
+    let player: AVPlayer = .init()
+    @Published private var isLoading: Bool = false
+    @Published private var isLoaded: Bool = false
     private var timer: Timer?
-    
+
+    private var currentItemObserver: NSKeyValueObservation?
     private var statusObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
     private var timeControlStatusObserver: NSKeyValueObservation?
@@ -22,35 +25,53 @@ class VideoPlayerViewModel: NSObject, ObservableObject {
     @Published var duration: Double = 1
     @Published var isDragging = false
     
-    init(url: URL) {
-        self.player = AVPlayer(url: url)
-        super.init()
-        observeCurrentItem()
-        observeTime()
-        observeTimeControlStatus()
+    func loadAndPlay(url: URL) async {
+        guard !isLoaded, !isLoading else {
+            return
+        }
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(playerDidFinishPlaying),
-            name: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem
-        )
-    }
-    
-    @objc private func playerDidFinishPlaying() {
-        player.seek(to: .zero)
-        player.play()
+        await MainActor.run {
+            isLoading = true
+        }
+        
+        let item = AVPlayerItem(url: url)
+        
+        player.replaceCurrentItem(with: item)
+        
+        await MainActor.run {
+            isLoaded = true
+            isLoading = true
+            
+            player.play()
+            
+//            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+//                                                   object: player.currentItem,
+//                                                   queue: .main) { _ in
+//                self.player.seek(to: .zero)
+//                self.player.play()
+//            }
+            
+            observeCurrentItem()
+            observeTime()
+            observeTimeControlStatus()
+            
+            NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                                                   object: player.currentItem,
+                                                   queue: .main) { _ in
+                self.player.seek(to: .zero)
+                self.player.play()
+            }
+        }
     }
     
     private func observeCurrentItem() {
-        player.addObserver(self, forKeyPath: "currentItem", options: [.new, .initial], context: nil)
-    }
-    
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?,
-                               change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-        if keyPath == "currentItem", let item = player.currentItem {
-            statusObserver = item.observe(\.status, options: [.new]) { [weak self] item, _ in
+        currentItemObserver = player.observe(\.currentItem, options: [.new, .initial]) { [weak self] player, _ in
+            guard let self = self, let item = player.currentItem else { return }
+            
+            // When we get a new item, observe its status
+            self.statusObserver = item.observe(\.status, options: [.new]) { [weak self] item, _ in
                 guard let self = self else { return }
+                
                 if item.status == .readyToPlay {
                     let durationSec = item.duration.seconds
                     if durationSec.isFinite {
@@ -88,6 +109,14 @@ class VideoPlayerViewModel: NSObject, ObservableObject {
         }
     }
     
+    func play() {
+        player.play()
+    }
+    
+    func pause() {
+        player.pause()
+    }
+    
     func seek(to time: Double) {
         let cmTime = CMTime(seconds: time, preferredTimescale: 600)
         player.seek(to: cmTime)
@@ -112,11 +141,11 @@ class VideoPlayerViewModel: NSObject, ObservableObject {
     deinit {
         timer?.invalidate()
         NotificationCenter.default.removeObserver(self)
+        currentItemObserver?.invalidate()
         statusObserver?.invalidate()
         timeControlStatusObserver?.invalidate()
         if let token = timeObserverToken {
             player.removeTimeObserver(token)
         }
-        player.removeObserver(self, forKeyPath: "currentItem")
     }
 }
