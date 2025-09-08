@@ -45,6 +45,17 @@ class VideoSettingsUserDefaultsUtils {
         return UserDefaults.video.integer(forKey: videoAutoplayKey)
     }
     static let videoAutoplayOptions: [Int] = [0, 1, 2]
+    static let videoAutoplayOptionsText: [String] = ["Never", "Only on Wi-Fi", "Always On"]
+    static func canAutoplayVideo(videoAutoplay: Int, isWifiConnected: Bool) -> Bool {
+        print("iswificonnected: \(isWifiConnected) videoAutoplay: \(videoAutoplay)")
+        if videoAutoplay == 0 {
+            return false
+        } else if videoAutoplay == 1 {
+            return isWifiConnected
+        } else {
+            return true
+        }
+    }
     
     static let muteAutoplayingVideoKey = "mute_autoplaying_video"
     static var muteAutoplayingVideo: Bool {

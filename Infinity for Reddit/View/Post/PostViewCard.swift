@@ -176,7 +176,7 @@ struct PostViewCard: View {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrl: videoUrl, blurSensitiveImages: $blurSensitiveImages, blurSpoilerImages: $blurSpoilerImages) {
+                PostVideoView(post: postViewModel.post, videoUrl: videoUrl) {
                     Task {
                         await postViewModel.readPost()
                     }

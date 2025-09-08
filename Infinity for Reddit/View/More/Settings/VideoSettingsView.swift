@@ -35,7 +35,7 @@ struct VideoSettingsView: View {
                     items: VideoSettingsUserDefaultsUtils.playbackSpeeds,
                     title: "Default Playback Speed"
                 ) { speed in
-                    String(speed)
+                    "\(speed)x"
                 }
                 
                 BarebonePickerPreference(
@@ -46,22 +46,16 @@ struct VideoSettingsView: View {
                     if resolution == 0 {
                         "Auto"
                     } else {
-                        String(resolution)
+                        "\(resolution)p"
                     }
                 }
                 
                 BarebonePickerPreference(
-                    selected: $redditVideoDefaultResolution,
+                    selected: $videoAutoplay,
                     items: VideoSettingsUserDefaultsUtils.videoAutoplayOptions,
                     title: "Video Autoplay"
                 ) { option in
-                    if option == 0 {
-                        "Never"
-                    } else if option == 1 {
-                        "Only on Wi-Fi"
-                    } else {
-                        "Always On"
-                    }
+                    VideoSettingsUserDefaultsUtils.videoAutoplayOptionsText[option]
                 }
                 
                 TogglePreference(isEnabled: $muteAutoplayingVideo, title: "Mute Autoplaying Video")

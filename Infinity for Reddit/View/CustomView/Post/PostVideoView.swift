@@ -8,15 +8,20 @@
 import SwiftUI
 
 struct PostVideoView: View {
+    @EnvironmentObject private var networkManager: NetworkManager
+    
+    @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
+    @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
+    @AppStorage(VideoSettingsUserDefaultsUtils.videoAutoplayKey, store: .video) private var videoAutoplay: Int = 0
+    @AppStorage(VideoSettingsUserDefaultsUtils.autoplaySensitiveVideoKey, store: .video) private var autoplaySensitiveVideo: Bool = true
+    
     let post: Post
     let videoUrl: String
-    var videoAutoplay: Bool = true
-    @Binding var blurSensitiveImages: Bool
-    @Binding var blurSpoilerImages: Bool
     let onReadPost: () -> Void
     
     var body: some View {
-        if videoAutoplay {
+        if VideoSettingsUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
+            && ((post.over18 && autoplaySensitiveVideo) || !post.over18) {
             if let preview = post.preview, preview.images.count > 0 {
                 MarkdownVideoPlayer(videoURL: URL(string: videoUrl)!, aspectRatio: preview.images[0].source.aspectRatio)
             } else {

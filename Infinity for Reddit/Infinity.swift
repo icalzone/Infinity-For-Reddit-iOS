@@ -19,6 +19,7 @@ struct Infinity: App {
     @StateObject var accountViewModel: AccountViewModel
     @StateObject var customThemeViewModel: CustomThemeViewModel
     @StateObject var fullScreenMediaViewModel: FullScreenMediaViewModel
+    @StateObject var networkManager: NetworkManager = NetworkManager()
     
     @Environment(\.scenePhase) private var scenePhase
     
@@ -51,6 +52,7 @@ struct Infinity: App {
                 .environmentObject(accountViewModel)
                 .environmentObject(customThemeViewModel)
                 .environmentObject(fullScreenMediaViewModel)
+                .environmentObject(networkManager)
                 .environment(\.defaultMinListRowHeight, 0)
                 .onOpenURL { url in
                     guard let parsed = AppDeepLink.parse(url) else { return }
