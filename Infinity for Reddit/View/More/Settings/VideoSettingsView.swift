@@ -20,36 +20,42 @@ struct VideoSettingsView: View {
     @AppStorage(VideoSettingsUserDefaultsUtils.autoplaySensitiveVideoKey, store: .video) private var autoplaySensitiveVideo: Bool = true
     
     var body: some View {
-        ScrollView {
-            VStack {
-                TogglePreference(isEnabled: $muteVideo, title: "Mute Video")
-                
-                TogglePreference(isEnabled: $muteSensitiveVideo, title: "Mute Sensitive Video")
-                
-                TogglePreference(isEnabled: $switchToLandscapeInVideoPlayer, title: "Switch to Landscape in Video Player")
-                
-                TogglePreference(isEnabled: $loopVideo, title: "Loop Video")
-                
-                BarebonePickerPreference(
-                    selected: $defaultPlaybackSpeed,
-                    items: VideoSettingsUserDefaultsUtils.playbackSpeeds,
-                    title: "Default Playback Speed"
-                ) { speed in
-                    "\(speed)x"
+        List {
+            TogglePreference(isEnabled: $muteVideo, title: "Mute Video")
+                .listPlainItemNoInsets()
+            
+            TogglePreference(isEnabled: $muteSensitiveVideo, title: "Mute Sensitive Video")
+                .listPlainItemNoInsets()
+            
+            TogglePreference(isEnabled: $switchToLandscapeInVideoPlayer, title: "Switch to Landscape in Video Player")
+                .listPlainItemNoInsets()
+            
+            TogglePreference(isEnabled: $loopVideo, title: "Loop Video")
+                .listPlainItemNoInsets()
+            
+            BarebonePickerPreference(
+                selected: $defaultPlaybackSpeed,
+                items: VideoSettingsUserDefaultsUtils.playbackSpeeds,
+                title: "Default Playback Speed"
+            ) { speed in
+                "\(speed)x"
+            }
+            .listPlainItemNoInsets()
+            
+            BarebonePickerPreference(
+                selected: $redditVideoDefaultResolution,
+                items: VideoSettingsUserDefaultsUtils.redditVideoDefaultResolutions,
+                title: "Reddit Video Default Resolution"
+            ) { resolution in
+                if resolution == 0 {
+                    "Auto"
+                } else {
+                    "\(resolution)p"
                 }
-                
-                BarebonePickerPreference(
-                    selected: $redditVideoDefaultResolution,
-                    items: VideoSettingsUserDefaultsUtils.redditVideoDefaultResolutions,
-                    title: "Reddit Video Default Resolution"
-                ) { resolution in
-                    if resolution == 0 {
-                        "Auto"
-                    } else {
-                        "\(resolution)p"
-                    }
-                }
-                
+            }
+            .listPlainItemNoInsets()
+            
+            Section(header: Text("Video Autoplay").listSectionHeader()) {
                 BarebonePickerPreference(
                     selected: $videoAutoplay,
                     items: VideoSettingsUserDefaultsUtils.videoAutoplayOptions,
@@ -57,14 +63,20 @@ struct VideoSettingsView: View {
                 ) { option in
                     VideoSettingsUserDefaultsUtils.videoAutoplayOptionsText[option]
                 }
+                .listPlainItemNoInsets()
                 
                 TogglePreference(isEnabled: $muteAutoplayingVideo, title: "Mute Autoplaying Video")
+                    .listPlainItemNoInsets()
                 
                 TogglePreference(isEnabled: $syncMuteAcrossFeed, title: "Sync Mute Across Feed")
+                    .listPlainItemNoInsets()
                 
                 TogglePreference(isEnabled: $autoplaySensitiveVideo, title: "Autoplay Sensitive Video")
+                    .listPlainItemNoInsets()
             }
+            .listPlainItem()
         }
+        .themedList()
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Video")
     }
