@@ -49,12 +49,14 @@ enum InterfaceCommentUserDefaultsUtils {
     }
     
     static let showFewerToolbarOptionsThresholdKey = "show_fewer_toolbar_options_threshold"
-    static var showFewerToolbarOptionsThreshold: Bool {
-        return UserDefaults.interfaceComment.bool(forKey: showFewerToolbarOptionsThresholdKey)
+    static var showFewerToolbarOptionsThreshold: Int {
+        return UserDefaults.interfaceComment.integer(forKey: showFewerToolbarOptionsThresholdKey, 5)
     }
     
-    static let embeddedMediaTypeKey = "embedded_media_type"
-    static var embeddedMediaType: Bool {
-        return UserDefaults.interfaceComment.bool(forKey: embeddedMediaTypeKey)
+    static let markdownEmbeddedMediaTypeKey = "embedded_media_type"
+    static var markdownEmbeddedMediaType: Bool {
+        return UserDefaults.interfaceComment.bool(forKey: markdownEmbeddedMediaTypeKey)
     }
+    static let markdownEmbeddedMediaTypes = [15, 7, 6, 5, 3, 2, 1, 0]
+    static let markdownEmbeddedMediaTypesText = ["All", "Image and Gif", "Image and Emote", "Gif and Emote", "Image", "Gif", "Emote", "None"]
 }

@@ -59,6 +59,9 @@
     "Click here to browse all comments" : {
 
     },
+    "Collapse" : {
+
+    },
     "Collapse Account Section" : {
 
     },
@@ -126,6 +129,9 @@
 
     },
     "Enable Bottom Navigation" : {
+
+    },
+    "Expand" : {
 
     },
     "Failed to load image — tap to retry." : {
@@ -341,6 +347,9 @@
     "Remove" : {
 
     },
+    "Reply" : {
+
+    },
     "Restart the app to see the changes" : {
 
     },
@@ -363,6 +372,9 @@
 
     },
     "Sensitive" : {
+
+    },
+    "Share" : {
 
     },
     "Show Absolute Number of Votes" : {
@@ -2178,6 +2190,9 @@
 
     },
     "u/%@" : {
+
+    },
+    "Unsave" : {
 
     },
     "Use Bottom Toolbar in Media Viewer" : {

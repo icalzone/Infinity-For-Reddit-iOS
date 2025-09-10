@@ -35,12 +35,10 @@ struct InterfaceCommentSettingsView: View {
     private var hideNVotes: Bool = false
 
     @AppStorage(InterfaceCommentUserDefaultsUtils.showFewerToolbarOptionsThresholdKey, store: .interfaceComment)
-    private var showFewerToolbarOptionsThreshold: Int = 0
+    private var showFewerToolbarOptionsThreshold: Int = 5
 
-    @AppStorage(InterfaceCommentUserDefaultsUtils.embeddedMediaTypeKey, store: .interfaceComment)
-    private var embeddedMediaType: Int = 0
-    
-    let embeddedMediaTypes = ["All", "Image and GIF", "Image and emote", "GIF and emote", "Image", "GIF", "Emote", "None"]
+    @AppStorage(InterfaceCommentUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfaceComment)
+    private var markdownEmbeddedMediaType: Int = 15
     
     var body: some View {
         List {
@@ -83,11 +81,13 @@ struct InterfaceCommentSettingsView: View {
             )
             .listPlainItemNoInsets()
             
-            PickerPreference(
-                selectedIndex: $embeddedMediaType,
-                items: embeddedMediaTypes,
-                title: "Embedded Media Type"
-            )
+            BarebonePickerPreference(
+                selected: $markdownEmbeddedMediaType,
+                items: InterfaceCommentUserDefaultsUtils.markdownEmbeddedMediaTypes,
+                title: "Markdown Embedded Media Type"
+            ) { layout in
+                InterfaceCommentUserDefaultsUtils.markdownEmbeddedMediaTypesText[InterfaceCommentUserDefaultsUtils.markdownEmbeddedMediaTypes.firstIndex(of: layout) ?? 0]
+            }
             .listPlainItemNoInsets()
         }
         .themedList()

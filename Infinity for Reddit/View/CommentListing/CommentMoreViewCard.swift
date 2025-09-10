@@ -27,6 +27,7 @@ struct CommentMoreViewCard: View {
                     Divider()
                 }
             }
+            .frame(maxWidth: .infinity)
         }
         .contentShape(Rectangle())
     }

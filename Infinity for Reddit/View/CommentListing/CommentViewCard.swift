@@ -23,6 +23,8 @@ struct CommentViewCard: View {
     private var hideNVotes: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
     private var showAuthorAvatar: Bool = false
+    @AppStorage(InterfaceCommentUserDefaultsUtils.showFewerToolbarOptionsThresholdKey, store: .interfaceComment)
+    private var showFewerToolbarOptionsThreshold: Int = 5
     
     @StateObject var commentViewModel: CommentViewModel
     @State private var voteTask: Task<Void, Never>? = nil
@@ -154,50 +156,81 @@ struct CommentViewCard: View {
                             
                             Spacer()
                             
-                            if let onToggleExpand, commentViewModel.comment.hasReplies {
+                            if commentViewModel.comment.depth < showFewerToolbarOptionsThreshold && isInPostDetails {
+                                if let onToggleExpand, commentViewModel.comment.hasReplies {
+                                    Button(action: {
+                                        onToggleExpand()
+                                    }) {
+                                        SwiftUI.Image(systemName: "chevron.up")
+                                            .commentIconTemplateRendering()
+                                            .commentIcon()
+                                            .rotationEffect(.degrees(commentViewModel.comment.isCollasped ? 180 : 0))
+                                            .animation(.easeInOut(duration: 0.25), value: commentViewModel.comment.isCollasped)
+                                    }
+                                    .padding(.trailing, 16)
+                                    .buttonStyle(.borderless)
+                                }
+                                
                                 Button(action: {
-                                    onToggleExpand()
+                                    saveTask?.cancel()
+                                    saveTask = Task {
+                                        await commentViewModel.saveComment(save: !commentViewModel.comment.saved)
+                                    }
                                 }) {
-                                    SwiftUI.Image(systemName: "chevron.up")
+                                    SwiftUI.Image(systemName: commentViewModel.comment.saved ? "bookmark.fill" : "bookmark")
                                         .commentIconTemplateRendering()
                                         .commentIcon()
-                                        .rotationEffect(.degrees(commentViewModel.comment.isCollasped ? 180 : 0))
-                                        .animation(.easeInOut(duration: 0.25), value: commentViewModel.comment.isCollasped)
                                 }
                                 .padding(.trailing, 16)
                                 .buttonStyle(.borderless)
-                            }
-                            
-                            Button(action: {
-                                saveTask?.cancel()
-                                saveTask = Task {
-                                    await commentViewModel.saveComment(save: !commentViewModel.comment.saved)
-                                }
-                            }) {
-                                SwiftUI.Image(systemName: commentViewModel.comment.saved ? "bookmark.fill" : "bookmark")
-                                    .commentIconTemplateRendering()
-                                    .commentIcon()
-                            }
-                            .padding(.trailing, 16)
-                            .buttonStyle(.borderless)
-                            
-                            ShareLink(item: "https://reddit.com" + commentViewModel.comment.permalink) {
-                                SwiftUI.Image(systemName: "square.and.arrow.up")
-                                    .commentIconTemplateRendering()
-                                    .commentIcon()
-                            }
-                            .padding(.trailing, 16)
-                            .buttonStyle(.borderless)
-                            
-                            if isInPostDetails {
-                                Button(action: {
-                                    onReply?()
-                                }) {
-                                    SwiftUI.Image(systemName: "arrowshape.turn.up.left.fill")
+                                
+                                ShareLink(item: "https://reddit.com" + commentViewModel.comment.permalink) {
+                                    SwiftUI.Image(systemName: "square.and.arrow.up")
                                         .commentIconTemplateRendering()
                                         .commentIcon()
                                 }
+                                .padding(.trailing, 16)
                                 .buttonStyle(.borderless)
+                                
+                                if isInPostDetails {
+                                    Button(action: {
+                                        onReply?()
+                                    }) {
+                                        SwiftUI.Image(systemName: "arrowshape.turn.up.left.fill")
+                                            .commentIconTemplateRendering()
+                                            .commentIcon()
+                                    }
+                                    .buttonStyle(.borderless)
+                                }
+                            } else {
+                                Menu {
+                                    if let onToggleExpand, commentViewModel.comment.hasReplies {
+                                        Button(commentViewModel.comment.isCollasped ? "Expand" : "Collapse") {
+                                            onToggleExpand()
+                                        }
+                                    }
+                                    
+                                    Button(commentViewModel.comment.saved ? "Unsave" : "Save") {
+                                        saveTask?.cancel()
+                                        saveTask = Task {
+                                            await commentViewModel.saveComment(save: !commentViewModel.comment.saved)
+                                        }
+                                    }
+                                    
+                                    ShareLink(item: "https://reddit.com" + commentViewModel.comment.permalink) {
+                                        Text("Share")
+                                    }
+                                    
+                                    if isInPostDetails {
+                                        Button("Reply") {
+                                            onReply?()
+                                        }
+                                    }
+                                } label: {
+                                    SwiftUI.Image(systemName: "ellipsis.circle")
+                                        .commentIconTemplateRendering()
+                                        .commentIcon()
+                                }
                             }
                         }
                         .padding(.horizontal, 16)
