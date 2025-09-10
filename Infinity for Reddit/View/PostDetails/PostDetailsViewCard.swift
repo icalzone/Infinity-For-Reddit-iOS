@@ -28,13 +28,11 @@ struct PostDetailsViewCard: View {
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNVotesKey, store: .interfacePostDetails) private var hideNVotes: Bool = false
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNCommentsKey, store: .interfacePostDetails) private var hideNComments: Bool = false
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfacePostDetails) private var markdownEmbeddedMediaType: Int = 15
-    
-    let formatter = DateFormatter()
+
     let isFromSubredditPostListing: Bool
     let onSendComment: () -> Void
     
     init(account: Account, post: Post, isFromSubredditPostListing: Bool, onSendComment: @escaping () -> Void) {
-        formatter.dateFormat = "y-MM-dd H:mm"
         self.isFromSubredditPostListing = isFromSubredditPostListing
         self.onSendComment = onSendComment
         _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post, postRepository: PostRepository()))
@@ -77,7 +75,7 @@ struct PostDetailsViewCard: View {
                 
                 Spacer()
                 
-                Text(formatter.string(from: Date(timeIntervalSince1970: TimeInterval(postViewModel.post.createdUtc))))
+                TimeText(timeUTCInSeconds: postViewModel.post.createdUtc)
                     .secondaryText()
             }
             .padding(.horizontal, 16)

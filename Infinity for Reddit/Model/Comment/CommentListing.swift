@@ -200,7 +200,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var commentType : String!
     var controversiality : Int!
     var created : Float!
-    var createdUtc : Float!
+    var createdUtc : Int64!
     var depth : Int!
     var distinguished : String!
     var downs : Int!
@@ -299,7 +299,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         commentType = json["comment_type"].stringValue
         controversiality = json["controversiality"].intValue
         created = json["created"].floatValue
-        createdUtc = json["created_utc"].floatValue
+        createdUtc = json["created_utc"].int64Value
         depth = json["depth"].intValue
         distinguished = json["distinguished"].stringValue
         downs = json["downs"].intValue

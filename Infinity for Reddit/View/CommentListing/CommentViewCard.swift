@@ -30,14 +30,12 @@ struct CommentViewCard: View {
     @State private var voteTask: Task<Void, Never>? = nil
     @State private var saveTask: Task<Void, Never>? = nil
     @State private var isToolbarHidden: Bool
-    
-    let formatter = DateFormatter()
+
     private let isInPostDetails: Bool
     let onToggleExpand: (() -> Void)?
     let onReply: (() -> Void)?
     
     init(account: Account, comment: Comment, isInPostDetails: Bool, onToggleExpand: (() -> Void)? = nil, onReply: (() -> Void)? = nil) {
-        formatter.dateFormat = "y-MM-dd H:mm"
         self.isInPostDetails = isInPostDetails
         self.onToggleExpand = onToggleExpand
         self.onReply = onReply
@@ -88,10 +86,8 @@ struct CommentViewCard: View {
                     
                     Spacer()
                     
-                    Text(
-                        formatter.string(from: Date(timeIntervalSince1970: TimeInterval(commentViewModel.comment.createdUtc)))
-                    )
-                    .secondaryText()
+                    TimeText(timeUTCInSeconds: commentViewModel.comment.createdUtc)
+                        .secondaryText()
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
