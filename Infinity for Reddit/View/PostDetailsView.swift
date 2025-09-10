@@ -49,15 +49,17 @@ struct PostDetailsView: View {
         Group {
             List {
                 if let post = postDetailsViewModel.post {
-                    PostDetailsViewCard(account: account, post: post, isFromSubredditPostListing: isFromSubredditPostListing)
-                        .listPlainItemNoInsets()
-                        .onAppear {
-                            if post.subredditOrUserIconInPostDetails == nil {
-                                Task {
-                                    await postDetailsViewModel.loadIcon(isFromSubredditPostListing: isFromSubredditPostListing)
-                                }
+                    PostDetailsViewCard(account: account, post: post, isFromSubredditPostListing: isFromSubredditPostListing) {
+                        sendComment()
+                    }
+                    .listPlainItemNoInsets()
+                    .onAppear {
+                        if post.subredditOrUserIconInPostDetails == nil {
+                            Task {
+                                await postDetailsViewModel.loadIcon(isFromSubredditPostListing: isFromSubredditPostListing)
                             }
                         }
+                    }
                     
                     if case .postAndCommentId = postDetailsViewModel.postDetailsInput {
                         TouchRipple(action: {
@@ -197,11 +199,7 @@ struct PostDetailsView: View {
                 },
                 
                 NavigationBarMenuItem(title: "Send comment") {
-                    if let post = postDetailsViewModel.post {
-                        let commentParent = CommentParent.post(parentPost: post)
-                        self.sentCommentParent = commentParent
-                        navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
-                    }
+                    sendComment()
                 }
             ])
         }
@@ -217,6 +215,14 @@ struct PostDetailsView: View {
                 postDetailsViewModel.changeSortTypeKind(sortTypeKind: sortTypeKind)
             }
             .presentationDetents([.medium, .large])
+        }
+    }
+    
+    private func sendComment() {
+        if let post = postDetailsViewModel.post {
+            let commentParent = CommentParent.post(parentPost: post)
+            self.sentCommentParent = commentParent
+            navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
         }
     }
 }

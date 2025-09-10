@@ -31,10 +31,12 @@ struct PostDetailsViewCard: View {
     
     let formatter = DateFormatter()
     let isFromSubredditPostListing: Bool
+    let onSendComment: () -> Void
     
-    init(account: Account, post: Post, isFromSubredditPostListing: Bool) {
+    init(account: Account, post: Post, isFromSubredditPostListing: Bool, onSendComment: @escaping () -> Void) {
         formatter.dateFormat = "y-MM-dd H:mm"
         self.isFromSubredditPostListing = isFromSubredditPostListing
+        self.onSendComment = onSendComment
         _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post, postRepository: PostRepository()))
     }
     
@@ -275,18 +277,19 @@ struct PostDetailsViewCard: View {
                 .padding(.trailing, 16)
                 .buttonStyle(.borderless)
                 
-                if !hideNComments {
-                    Button {
-                        
-                    } label: {
-                        SwiftUI.Image(systemName: "text.bubble")
-                            .postIconTemplateRendering()
-                            .postIcon()
-                    }
-                    .buttonStyle(.borderless)
+                HStack {
+                    SwiftUI.Image(systemName: "text.bubble")
+                        .postIconTemplateRendering()
+                        .postIcon()
                     
-                    Text(String(postViewModel.post.numComments))
-                        .postInfo()
+                    if !hideNComments {
+                        Text(String(postViewModel.post.numComments))
+                            .postInfo()
+                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onSendComment()
                 }
                 
                 Spacer()
