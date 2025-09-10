@@ -30,6 +30,9 @@ struct InterfacePostDetailsSettingsView: View {
             TogglePreference(isEnabled: $hidePostFlair, title: "Hide Post Flair")
                 .listPlainItemNoInsets()
             
+            TogglePreference(isEnabled: $hideUpvoteRatio, title: "Hide Upvote Ratio")
+                .listPlainItemNoInsets()
+            
             TogglePreference(isEnabled: $hideSubredditAndUserPrefix, title: "Hide Subreddit and User Prefix")
                 .listPlainItemNoInsets()
             

@@ -20,6 +20,14 @@ struct PostDetailsViewCard: View {
     
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.showPostAndCommentsInTwoColumnsInLandscapeKey, store: .interfacePostDetails) private var showPostAndCommentsInTwoColumnsInLandscape: Bool = true
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hidePostTypeKey, store: .interfacePostDetails) private var hidePostType: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hidePostFlairKey, store: .interfacePostDetails) private var hidePostFlair: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideUpvoteRatioKey, store: .interfacePostDetails) private var hideUpvoteRatio: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideSubredditAndUserPrefixKey, store: .interfacePostDetails) private var hideSubredditAndUserPrefix: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNVotesKey, store: .interfacePostDetails) private var hideNVotes: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNCommentsKey, store: .interfacePostDetails) private var hideNComments: Bool = false
+    @AppStorage(InterfacePostDetailsUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfacePostDetails) private var markdownEmbeddedMediaType: Int = 15
     
     let formatter = DateFormatter()
     let isFromSubredditPostListing: Bool
@@ -54,10 +62,10 @@ struct PostDetailsViewCard: View {
                 }
                 
                 VStack(alignment: .leading) {
-                    Text(postViewModel.post.subredditNamePrefixed)
+                    Text(hideSubredditAndUserPrefix ? postViewModel.post.subreddit : postViewModel.post.subredditNamePrefixed)
                         .subreddit()
                     
-                    Text("u/\(postViewModel.post.author)")
+                    Text(hideSubredditAndUserPrefix ? postViewModel.post.author : "u/\(postViewModel.post.author ?? "")")
                         .usernameOnPost(post: postViewModel.post)
                         .onTapGesture {
                             navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
@@ -80,7 +88,9 @@ struct PostDetailsViewCard: View {
                 .postTitle()
             
             HFlow(alignment: .center) {
-                PostTypeTag(post: postViewModel.post)
+                if !hidePostType {
+                    PostTypeTag(post: postViewModel.post)
+                }
                 
                 if postViewModel.post.spoiler {
                     SpoilerTag()
@@ -90,10 +100,14 @@ struct PostDetailsViewCard: View {
                     SensitiveTag()
                 }
                 
-                FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
-                          flairText: postViewModel.post.linkFlairText)
+                if !hidePostFlair {
+                    FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
+                              flairText: postViewModel.post.linkFlairText)
+                }
                 
-                UpvoteRatioTag(post: postViewModel.post)
+                if !hideUpvoteRatio {
+                    UpvoteRatioTag(post: postViewModel.post)
+                }
                 
                 if postViewModel.post.archived {
                     ArchivedTag()
@@ -242,7 +256,7 @@ struct PostDetailsViewCard: View {
                 }
                 .buttonStyle(.borderless)
                 
-                Text(String(postViewModel.post.score + postViewModel.post.likes))
+                Text(hideNVotes ? "Hidden" : String(postViewModel.post.score + postViewModel.post.likes))
                     .frame(width: 72, alignment: .center)
                     .postInfo()
                 
@@ -261,17 +275,19 @@ struct PostDetailsViewCard: View {
                 .padding(.trailing, 16)
                 .buttonStyle(.borderless)
                 
-                Button {
+                if !hideNComments {
+                    Button {
+                        
+                    } label: {
+                        SwiftUI.Image(systemName: "text.bubble")
+                            .postIconTemplateRendering()
+                            .postIcon()
+                    }
+                    .buttonStyle(.borderless)
                     
-                } label: {
-                    SwiftUI.Image(systemName: "text.bubble")
-                        .postIconTemplateRendering()
-                        .postIcon()
+                    Text(String(postViewModel.post.numComments))
+                        .postInfo()
                 }
-                .buttonStyle(.borderless)
-                
-                Text(String(postViewModel.post.numComments))
-                    .postInfo()
                 
                 Spacer()
                 
