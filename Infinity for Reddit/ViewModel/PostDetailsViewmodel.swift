@@ -41,12 +41,15 @@ public class PostDetailsViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
-    init(account: Account, postDetailsInput: PostDetailsInput, postDetailsRepository: PostDetailsRepositoryProtocol) {
+    init(account: Account, postDetailsInput: PostDetailsInput, postDetailsRepository: PostDetailsRepositoryProtocol, isContinueThread: Bool = false) {
         self.account = account
         self.postDetailsInput = postDetailsInput
         self.sortTypeKind = SortTypeUserDetailsUtils.postComment
         self.postDetailsRepository = postDetailsRepository
         self.showTopLevelCommentsFirst = InterfaceCommentUserDefaultsUtils.showTopLevelCommentsFirst
+        if isContinueThread {
+            self.singleThreadContext = 0
+        }
         
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in

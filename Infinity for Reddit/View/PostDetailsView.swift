@@ -32,7 +32,7 @@ struct PostDetailsView: View {
     private let account: Account
     private let isFromSubredditPostListing: Bool
     
-    init(account: Account, postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool) {
+    init(account: Account, postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false) {
         self.account = account
         self.isFromSubredditPostListing = isFromSubredditPostListing
         
@@ -40,7 +40,8 @@ struct PostDetailsView: View {
             wrappedValue: PostDetailsViewModel(
                 account: account,
                 postDetailsInput: postDetailsInput,
-                postDetailsRepository: PostDetailsRepository()
+                postDetailsRepository: PostDetailsRepository(),
+                isContinueThread: isContinueThread
             )
         )
     }
@@ -147,7 +148,13 @@ struct PostDetailsView: View {
                                     } else {
                                         // Continue thread
                                         if let postId = postDetailsViewModel.post?.id {
-                                            navigationManager.path.append(AppNavigation.postDetailsWithId(postId: postId, commentId: commentMore.parentFullname.substring(from: 3)))
+                                            navigationManager.path.append(
+                                                AppNavigation.postDetailsWithId(
+                                                    postId: postId,
+                                                    commentId: commentMore.parentFullname.substring(from: 3),
+                                                    isContinueThread: true
+                                                )
+                                            )
                                         }
                                     }
                                 }
