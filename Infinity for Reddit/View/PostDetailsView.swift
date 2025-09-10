@@ -145,7 +145,10 @@ struct PostDetailsView: View {
                                             await postDetailsViewModel.fetchMoreCommentsInCommentMore(commentMore: commentMore)
                                         }
                                     } else {
-                                        
+                                        // Continue thread
+                                        if let postId = postDetailsViewModel.post?.id {
+                                            navigationManager.path.append(AppNavigation.postDetailsWithId(postId: postId, commentId: commentMore.parentFullname.substring(from: 3)))
+                                        }
                                     }
                                 }
                         }

@@ -251,6 +251,12 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var isFilteredOut: Bool = false
     @Published var authorIconUrl: URL? = nil
     
+    //This is for Continue Thread
+    var commentMore: CommentMore?
+    var hasReplies: Bool {
+        return replies?.comments.count ?? -1 > 0 || commentMore != nil
+    }
+    
     /**
      * Instantiate the instance using the passed json values to set the properties values
      */

@@ -41,6 +41,9 @@ public class PostDetailsRootClass: NSObject, NSCoding, Validatable {
     
     private func makeCommentList(commentListing: CommentListing) {
         guard !commentListing.comments.isEmpty else {
+            if let commentMore = commentListing.commentMore {
+                comments.append(CommentItem.more(commentMore))
+            }
             return
         }
         
@@ -51,6 +54,8 @@ public class PostDetailsRootClass: NSObject, NSCoding, Validatable {
             }
             
             comments.append(CommentItem.comment(comment))
+            // This is to make checking if a comment has replies available
+            comment.commentMore = childrenCommentListing.commentMore
             makeCommentList(commentListing: childrenCommentListing)
         }
         

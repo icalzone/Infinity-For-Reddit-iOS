@@ -380,7 +380,7 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     public func collapseComments(comment: Comment) {
-        guard comment.replies?.comments.count ?? -1 > 0 else {
+        guard comment.hasReplies else {
             return
         }
         
@@ -408,7 +408,7 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     public func expandComments(comment: Comment) {
-        guard comment.replies?.comments.count ?? -1 > 0 else {
+        guard comment.hasReplies else {
             return
         }
         
