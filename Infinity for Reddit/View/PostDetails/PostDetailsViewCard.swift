@@ -28,6 +28,7 @@ struct PostDetailsViewCard: View {
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNVotesKey, store: .interfacePostDetails) private var hideNVotes: Bool = false
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.hideNCommentsKey, store: .interfacePostDetails) private var hideNComments: Bool = false
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfacePostDetails) private var markdownEmbeddedMediaType: Int = 15
+    @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
 
     let isFromSubredditPostListing: Bool
     let onSendComment: () -> Void
@@ -43,7 +44,7 @@ struct PostDetailsViewCard: View {
             Spacer()
                 .frame(height: 16)
             
-            HStack(alignment: .center) {
+            HStack {
                 CustomWebImage(
                     postViewModel.post.subredditOrUserIconInPostDetails,
                     width: 24,
@@ -241,56 +242,62 @@ struct PostDetailsViewCard: View {
                     }
             }
             
-            HStack(alignment: .center) {
-                Button(action: {
-                    if !accountViewModel.account.isAnonymous() {
-                        voteTask?.cancel()
-                        voteTask = Task {
-                            await postViewModel.votePost(vote: 1)
+            HStack {
+                HStack {
+                    Button(action: {
+                        if !accountViewModel.account.isAnonymous() {
+                            voteTask?.cancel()
+                            voteTask = Task {
+                                await postViewModel.votePost(vote: 1)
+                            }
                         }
+                    }) {
+                        SwiftUI.Image(systemName: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous() ? "arrowshape.up.fill" : "arrowshape.up")
+                            .postIconTemplateRendering()
+                            .postUpvoteIcon(isUpvoted: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous())
                     }
-                }) {
-                    SwiftUI.Image(systemName: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous() ? "arrowshape.up.fill" : "arrowshape.up")
-                        .postIconTemplateRendering()
-                        .postUpvoteIcon(isUpvoted: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous())
-                }
-                .buttonStyle(.borderless)
-
-                VotesText(votes: postViewModel.post.score + postViewModel.post.likes, hideNVotes: hideNVotes)
-                    .frame(width: 72, alignment: .center)
-                    .postInfo()
-                
-                Button(action: {
-                    if !accountViewModel.account.isAnonymous() {
-                        voteTask?.cancel()
-                        voteTask = Task {
-                            await postViewModel.votePost(vote: -1)
+                    .buttonStyle(.borderless)
+                    
+                    VotesText(votes: postViewModel.post.score + postViewModel.post.likes, hideNVotes: hideNVotes)
+                        .frame(width: 72, alignment: .center)
+                        .postInfo()
+                    
+                    Button(action: {
+                        if !accountViewModel.account.isAnonymous() {
+                            voteTask?.cancel()
+                            voteTask = Task {
+                                await postViewModel.votePost(vote: -1)
+                            }
                         }
+                    }) {
+                        SwiftUI.Image(systemName: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous() ? "arrowshape.down.fill" : "arrowshape.down")
+                            .postIconTemplateRendering()
+                            .postDownvoteIcon(isDownvoted: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous())
                     }
-                }) {
-                    SwiftUI.Image(systemName: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous() ? "arrowshape.down.fill" : "arrowshape.down")
-                        .postIconTemplateRendering()
-                        .postDownvoteIcon(isDownvoted: postViewModel.post.likes == -1 && !accountViewModel.account.isAnonymous())
+                    .buttonStyle(.borderless)
                 }
-                .padding(.trailing, 16)
-                .buttonStyle(.borderless)
+                .environment(\.layoutDirection, .leftToRight)
                 
                 HStack {
-                    SwiftUI.Image(systemName: "text.bubble")
-                        .postIconTemplateRendering()
-                        .postIcon()
-                    
-                    if !hideNComments {
-                        Text(String(postViewModel.post.numComments))
-                            .postInfo()
+                    HStack {
+                        SwiftUI.Image(systemName: "text.bubble")
+                            .postIconTemplateRendering()
+                            .postIcon()
+                        
+                        if !hideNComments {
+                            Text(String(postViewModel.post.numComments))
+                                .postInfo()
+                        }
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onSendComment()
+                    }
+                    
+                    Spacer()
                 }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    onSendComment()
-                }
-                
-                Spacer()
+                .padding(.leading, 16)
+                .environment(\.layoutDirection, .leftToRight)
                 
                 Button(action: {
                     saveTask?.cancel()
@@ -312,6 +319,7 @@ struct PostDetailsViewCard: View {
                 }
                 .buttonStyle(.borderless)
             }
+            .environment(\.layoutDirection, voteButtonsOnTheRight ? .rightToLeft : .leftToRight)
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 16)
