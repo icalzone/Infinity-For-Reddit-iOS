@@ -132,8 +132,8 @@ struct CommentViewCard: View {
                                     .commentUpvoteIcon(isUpvoted: commentViewModel.comment.likes == 1)
                             }
                             .buttonStyle(.borderless)
-                            
-                            Text(String(hideNVotes ? "Hidden" : String(commentViewModel.comment.score + commentViewModel.comment.likes)))
+
+                            VotesText(votes: commentViewModel.comment.score + commentViewModel.comment.likes, hideNVotes: hideNVotes)
                                 .frame(width: 72, alignment: .center)
                                 .commentInfo()
                             

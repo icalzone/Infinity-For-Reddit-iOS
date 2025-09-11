@@ -1,5 +1,5 @@
 //
-//  VideoSettingsUserDefaultsUtils.swift
+//  VideoUserDefaultsUtils.swift
 //  Infinity for Reddit
 //
 //  Created by Docile Alligator on 2025-09-08.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class VideoSettingsUserDefaultsUtils {
+class VideoUserDefaultsUtils {
     static let muteVideoKey = "mute_video"
     static var muteVideo: Bool {
         return UserDefaults.video.bool(forKey: muteVideoKey)

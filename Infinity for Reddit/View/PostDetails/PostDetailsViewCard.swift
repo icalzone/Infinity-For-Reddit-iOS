@@ -255,8 +255,8 @@ struct PostDetailsViewCard: View {
                         .postUpvoteIcon(isUpvoted: postViewModel.post.likes == 1 && !accountViewModel.account.isAnonymous())
                 }
                 .buttonStyle(.borderless)
-                
-                Text(hideNVotes ? "Hidden" : String(postViewModel.post.score + postViewModel.post.likes))
+
+                VotesText(votes: postViewModel.post.score + postViewModel.post.likes, hideNVotes: hideNVotes)
                     .frame(width: 72, alignment: .center)
                     .postInfo()
                 

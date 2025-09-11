@@ -128,9 +128,6 @@
     "Download Location" : {
 
     },
-    "Enable Bottom Navigation" : {
-
-    },
     "Expand" : {
 
     },
@@ -170,9 +167,6 @@
     "Hide Account Karma" : {
 
     },
-    "Hide FAB in Post Feed" : {
-
-    },
     "Hide Favorite Subreddits Section" : {
 
     },
@@ -195,9 +189,6 @@
 
     },
     "Inbox" : {
-
-    },
-    "Interface" : {
 
     },
     "Karma: %lld" : {
@@ -375,9 +366,6 @@
 
     },
     "Share" : {
-
-    },
-    "Show Absolute Number of Votes" : {
 
     },
     "Show Avatar on the Right" : {
@@ -2196,9 +2184,6 @@
 
     },
     "Video Autoplay" : {
-
-    },
-    "Vote Buttons on the Right" : {
 
     },
     "Your interesting thoughts here" : {

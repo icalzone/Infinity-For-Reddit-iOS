@@ -12,6 +12,9 @@ import GRDB
 struct InterfaceSettingsView: View {
     @StateObject private var interfaceSettingsViewModel = InterfaceSettingsViewModel()
     
+    @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
+    @AppStorage(InterfaceUserDefaultsUtils.showAbsoluteNumberOfVotesKey, store: .interface) private var showAbsoluteNumberOfVotes: Bool = true
+    
     var body: some View {
         List {
             NavigationLink(destination: FontInterfaceView()) {
@@ -23,8 +26,6 @@ struct InterfaceSettingsView: View {
             NavigationLink(destination: NavigationDrawerInterfaceView()) {
                 Text("Navigation Drawer").padding(.leading, 44.5)
             }
-            Toggle("Hide FAB in Post Feed", isOn: $interfaceSettingsViewModel.hideFABInPostFeed).padding(.leading, 44.5)
-            Toggle("Enable Bottom Navigation", isOn: $interfaceSettingsViewModel.enableBottomNavigation).padding(.leading, 44.5)
             Toggle("Hide Subreddit Description", isOn: $interfaceSettingsViewModel.hideSubredditDescription).padding(.leading, 44.5)
             Toggle("Use Bottom Toolbar in Media Viewer", isOn: $interfaceSettingsViewModel.useBottomToolbarInMediaViewer).padding(.leading, 44.5)
             Picker("Default Search Result Tab", selection: $interfaceSettingsViewModel.defaultSearchResultTab){
@@ -46,12 +47,18 @@ struct InterfaceSettingsView: View {
                 Text("Comment").padding(.leading, 44.5)
             }
             
-            Section(header: Text("Post and Comment")){
-                Toggle("Vote Buttons on the Right", isOn: $interfaceSettingsViewModel.voteButtonsOnTheRight).padding(.leading, 44.5)
-                Toggle("Show Absolute Number of Votes", isOn: $interfaceSettingsViewModel.showAbsoluteNumberOfVotes).padding(.leading, 44.5)
+            Section(header: Text("Post and Comment").listSectionHeader()) {
+                TogglePreference(isEnabled: $voteButtonsOnTheRight, title: "Vote Buttons on the Right")
+                    .listPlainItemNoInsets()
+                
+                TogglePreference(isEnabled: $showAbsoluteNumberOfVotes, title: "Show Absolute Number of Votes")
+                    .listPlainItemNoInsets()
             }
+            .listPlainItem()
         }
-        .navigationTitle("Interface")
+        .themedList()
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Interface")
     }
 }
 

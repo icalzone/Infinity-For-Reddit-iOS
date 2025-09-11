@@ -12,9 +12,9 @@ struct PostVideoView: View {
     
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
-    @AppStorage(VideoSettingsUserDefaultsUtils.videoAutoplayKey, store: .video) private var videoAutoplay: Int = 0
-    @AppStorage(VideoSettingsUserDefaultsUtils.autoplaySensitiveVideoKey, store: .video) private var autoplaySensitiveVideo: Bool = true
-    @AppStorage(VideoSettingsUserDefaultsUtils.muteAutoplayingVideoKey, store: .video) private var muteAutoplayingVideo: Bool = true
+    @AppStorage(VideoUserDefaultsUtils.videoAutoplayKey, store: .video) private var videoAutoplay: Int = 0
+    @AppStorage(VideoUserDefaultsUtils.autoplaySensitiveVideoKey, store: .video) private var autoplaySensitiveVideo: Bool = true
+    @AppStorage(VideoUserDefaultsUtils.muteAutoplayingVideoKey, store: .video) private var muteAutoplayingVideo: Bool = true
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     
     let post: Post
@@ -23,7 +23,7 @@ struct PostVideoView: View {
     let onReadPost: () -> Void
     
     var body: some View {
-        if VideoSettingsUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
+        if VideoUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
             && ((post.over18 && autoplaySensitiveVideo) || !post.over18) {
             if let preview = post.preview, preview.images.count > 0, !(limitMediaHeight && inPostListing) {
                 InlineVideoPlayer(videoURL: URL(string: videoUrl)!, aspectRatio: preview.images[0].source.aspectRatio, muteVideo: muteAutoplayingVideo)
