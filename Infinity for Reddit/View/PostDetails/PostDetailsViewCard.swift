@@ -59,17 +59,26 @@ struct PostDetailsViewCard: View {
                 )
                 .frame(width: 24, height: 24)
                 .onTapGesture {
-                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: postViewModel.post.subreddit))
+                    goToSubredditDetails()
                 }
                 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     Text(hideSubredditAndUserPrefix ? postViewModel.post.subreddit : postViewModel.post.subredditNamePrefixed)
                         .subreddit()
+                        .onTapGesture {
+                            goToSubredditDetails()
+                        }
                     
                     Text(hideSubredditAndUserPrefix ? postViewModel.post.author : "u/\(postViewModel.post.author ?? "")")
                         .usernameOnPost(post: postViewModel.post)
                         .onTapGesture {
-                            navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
+                            goToUserDetails()
+                        }
+                    
+                    AuthorFlairView(flairRichtext: postViewModel.post.authorFlairRichtext, flairText: postViewModel.post.authorFlairText)
+                        .padding(.top, 4)
+                        .onTapGesture {
+                            goToUserDetails()
                         }
                 }
                 .padding(.leading, 4)
@@ -347,5 +356,13 @@ struct PostDetailsViewCard: View {
             .padding(.bottom, 16)
         }
         .padding(.vertical, 0)
+    }
+    
+    private func goToSubredditDetails() {
+        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: postViewModel.post.subreddit))
+    }
+    
+    private func goToUserDetails() {
+        navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
     }
 }

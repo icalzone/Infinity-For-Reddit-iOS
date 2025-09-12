@@ -231,3 +231,13 @@ struct RootViewBackgroundViewModifier: ViewModifier {
             .background(Color(hex: themeViewModel.currentCustomTheme.backgroundColor))
     }
 }
+
+struct AuthorFlairTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundStyle(Color(hex: themeViewModel.currentCustomTheme.authorFlairTextColor))
+            .font(.system(size: 12))
+    }
+}

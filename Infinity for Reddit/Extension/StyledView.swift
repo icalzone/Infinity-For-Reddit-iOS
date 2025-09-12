@@ -279,4 +279,8 @@ extension View {
             onDragEnded: onDragEnded
         ))
     }
+    
+    func authorFlairText() -> some View {
+        self.modifier(AuthorFlairTextViewModifier())
+    }
 }

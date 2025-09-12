@@ -70,19 +70,22 @@ struct CommentViewCard: View {
                         }
                     }
                     
-                    VStack(alignment: .leading) {
-                        if !isInPostDetails {
-                            Text(commentViewModel.comment.subredditNamePrefixed)
-                                .subreddit()
-                                .onTapGesture {
-                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
-                                }
-                        } else {
+                    
+                    if !isInPostDetails {
+                        Text(commentViewModel.comment.subredditNamePrefixed)
+                            .subreddit()
+                            .onTapGesture {
+                                navigationManager.path.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
+                            }
+                    } else {
+                        VStack(alignment: .leading, spacing: 0) {
                             Text("u/\(commentViewModel.comment.author)")
                                 .username()
-                                .onTapGesture {
-                                    navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
-                                }
+                            
+                            AuthorFlairView(flairRichtext: commentViewModel.comment.authorFlairRichtext, flairText: commentViewModel.comment.authorFlairText)
+                        }
+                        .onTapGesture {
+                            navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
                         }
                     }
                     
