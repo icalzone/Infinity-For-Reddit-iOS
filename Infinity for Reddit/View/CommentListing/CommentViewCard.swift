@@ -107,7 +107,7 @@ struct CommentViewCard: View {
                                 .padding(.bottom, 12)
                                 .themedCommentMarkdown()
                                 .markdownLinkHandler { url in
-                                    LinkHandler.shared.handle(url: url)
+                                    navigationManager.openLink(url)
                                 }
                                 .id(commentViewModel.comment.id)
                         } else {
@@ -118,7 +118,7 @@ struct CommentViewCard: View {
                                 .padding(.bottom, 12)
                                 .themedCommentMarkdown()
                                 .markdownLinkHandler { url in
-                                    LinkHandler.shared.handle(url: url)
+                                    navigationManager.openLink(url)
                                 }
                                 .id(commentViewModel.comment.id)
                         }

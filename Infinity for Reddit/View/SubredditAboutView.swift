@@ -8,6 +8,8 @@ import SwiftUI
 import MarkdownUI
 
 struct SubredditAboutView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
     let description: String?
 
     var body: some View {
@@ -18,7 +20,7 @@ struct SubredditAboutView: View {
                         .themedMarkdown()
                         .padding(0)
                         .markdownLinkHandler { url in
-                            LinkHandler.shared.handle(url: url)
+                            navigationManager.openLink(url)
                         }
                 }
             }

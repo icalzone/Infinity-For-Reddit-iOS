@@ -17,22 +17,22 @@ class LinkHandler {
         return URL(string: full)!
     }
     
-    func handle(link: String) {
+    func handle(link: String) -> (any Hashable)? {
         guard let url = URL(string: link) else {
-            return
+            return nil
         }
         
-        handle(url: url)
+        return handle(url: url)
     }
     
-    func handle(url: URL) {
+    func handle(url: URL) -> (any Hashable)? {
         let finalURL: URL
         
         if url.scheme == nil && url.host == nil {
             let path = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !path.isEmpty else {
                 print("Invalid link: \(url)")
-                return
+                return nil
             }
             finalURL = constructRedditURL(from: path)
         } else {
@@ -41,7 +41,7 @@ class LinkHandler {
         
         guard let host = finalURL.host else {
             print("❌ Missing host in URL: \(finalURL)")
-            return
+            return nil
         }
         
         let path = finalURL.path
@@ -55,7 +55,7 @@ class LinkHandler {
             openUploadedRedditImage(finalURL)
             
         case _ where host.contains("reddit.com") || host.contains("redd.it") || host.contains("reddit.app"):
-            handleRedditPath(path, segments: segments, url: finalURL)
+            return handleRedditPath(path, segments: segments, url: finalURL)
             
         case _ where host.contains("imgur.com"):
             handleImgurURL(path: path, segments: segments, url: finalURL)
@@ -75,16 +75,18 @@ class LinkHandler {
             if path.hasPrefix("/CL0/") {
                 let newPath = String(path.dropFirst("/CL0/".count))
                 if let redirected = URL(string: newPath) {
-                    handle(url: redirected)
+                    return handle(url: redirected)
                 }
             }
             
         default:
             openInSafari(finalURL)
         }
+        
+        return nil
     }
     
-    private func handleRedditPath(_ path: String, segments: [String], url: URL) {
+    private func handleRedditPath(_ path: String, segments: [String], url: URL) -> (any Hashable)? {
         if path == "/report" {
             openInSafari(url)
         } else if segments.contains("comments"), let index = segments.lastIndex(of: "comments"), index + 1 < segments.count {
@@ -92,8 +94,10 @@ class LinkHandler {
             if segments.count > index + 2 {
                 let commentId = segments.last!
                 openPostWithComment(postId, commentId: commentId)
+                return AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId), isFromSubredditPostListing: false)
             } else {
                 openPost(postId)
+                return AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId), isFromSubredditPostListing: false)
             }
         } else if path == "/media", let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
                   let realURLString = query.first(where: { $0.name == "url" })?.value,
@@ -102,12 +106,16 @@ class LinkHandler {
         } else if let subredditMatch = path.range(of: "/r/[\\w-]+", options: .regularExpression) {
             let subreddit = String(path[subredditMatch]).components(separatedBy: "/")[2]
             openSubreddit(subreddit)
+            return AppNavigation.subredditDetails(subredditName: subreddit)
         } else if let userMatch = path.range(of: "/(u|user)/[\\w-]+", options: .regularExpression) {
             let username = String(path[userMatch]).components(separatedBy: "/").last!
             openUser(username)
+            return AppNavigation.userDetails(username: username)
         } else {
             openInSafari(url)
         }
+        
+        return nil
     }
     
     private func handleImgurURL(path: String, segments: [String], url: URL) {

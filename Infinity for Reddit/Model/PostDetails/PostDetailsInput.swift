@@ -7,5 +7,5 @@
 
 enum PostDetailsInput: Hashable {
     case post(Post)
-    case postAndCommentId(postId: String, commentId: String?)
+    case postAndCommentId(postId: String, commentId: String? = nil)
 }

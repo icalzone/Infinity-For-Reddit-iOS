@@ -104,6 +104,8 @@ struct InboxMessageItemView: View {
 }
 
 struct InboxNotificationItemView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
     @State var inbox: Inbox
     private let account: Account
     
@@ -115,7 +117,7 @@ struct InboxNotificationItemView: View {
     var body: some View {
         VStack(spacing: 0) {
             TouchRipple(action: {
-                LinkHandler.shared.handle(link: inbox.context)
+                navigationManager.openLink(inbox.context)
             }) {
                 VStack {
                     Text(inbox.author)

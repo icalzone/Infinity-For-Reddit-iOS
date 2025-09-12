@@ -12,6 +12,7 @@ struct SubredditDetailsView: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var navigationManager: NavigationManager
     
     @State private var isHeaderVisible = false
     @State private var isToolbarBackgroundVisible = true
@@ -146,7 +147,7 @@ struct SubredditDetailsView: View {
                                     .themedMarkdown()
                                     .padding(.bottom, 8)
                                     .markdownLinkHandler { url in
-                                        LinkHandler.shared.handle(url: url)
+                                        navigationManager.openLink(url)
                                     }
                             }
                         }

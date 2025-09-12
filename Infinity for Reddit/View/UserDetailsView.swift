@@ -11,6 +11,7 @@ import MarkdownUI
 
 struct UserDetailsView: View {
     @EnvironmentObject var accountViewModel: AccountViewModel
+    @EnvironmentObject private var navigationManager: NavigationManager
     
     @StateObject var userDetailsViewModel : UserDetailsViewModel
     @State private var selectedTab = 0
@@ -83,7 +84,7 @@ struct UserDetailsView: View {
                             .themedMarkdown()
                             .padding(0)
                             .markdownLinkHandler { url in
-                                LinkHandler.shared.handle(url: url)
+                                navigationManager.openLink(url)
                             }
                     }
                     

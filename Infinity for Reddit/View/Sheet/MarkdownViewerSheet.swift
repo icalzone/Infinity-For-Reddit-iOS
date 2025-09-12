@@ -9,6 +9,8 @@ import SwiftUI
 import MarkdownUI
 
 struct MarkdownViewerSheet: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
     let markdown: String
     
     var body: some View {
@@ -19,7 +21,7 @@ struct MarkdownViewerSheet: View {
                     .padding(16)
                     .themedCommentMarkdown()
                     .markdownLinkHandler { url in
-                        LinkHandler.shared.handle(url: url)
+                        navigationManager.openLink(url)
                     }
                 
                 Spacer()

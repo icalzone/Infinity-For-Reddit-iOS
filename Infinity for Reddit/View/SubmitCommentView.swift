@@ -11,6 +11,7 @@ import MarkdownUI
 struct SubmitCommentView: View {
     @EnvironmentObject private var commentSubmissionShareableViewModel: CommentSubmissionShareableViewModel
     @EnvironmentObject private var snackbarManager: SnackbarManager
+    @EnvironmentObject private var navigationManager: NavigationManager
     @Environment(\.dismiss) var dismiss
     
     @StateObject private var submitCommentViewModel: SubmitCommentViewModel
@@ -53,7 +54,7 @@ struct SubmitCommentView: View {
                                     .padding(.bottom, 16)
                                     .themedPostCommentMarkdown()
                                     .markdownLinkHandler { url in
-                                        LinkHandler.shared.handle(url: url)
+                                        navigationManager.openLink(url)
                                     }
                             } else if let body = submitCommentViewModel.commentParent.body, !body.isEmpty {
                                 Markdown(body)
@@ -64,7 +65,7 @@ struct SubmitCommentView: View {
                                     .padding(.bottom, 16)
                                     .themedPostCommentMarkdown()
                                     .markdownLinkHandler { url in
-                                        LinkHandler.shared.handle(url: url)
+                                        navigationManager.openLink(url)
                                     }
                             } else {
                                 Spacer()

@@ -178,7 +178,7 @@ struct PostDetailsViewCard: View {
                         .noPreviewPostTypeIndicatorBackground()
                         .noPreviewPostTypeIndicator()
                         .onTapGesture {
-                            LinkHandler.shared.handle(url: url)
+                            navigationManager.openLink(url)
                         }
                 }
             default:
@@ -269,7 +269,7 @@ struct PostDetailsViewCard: View {
                     .padding(.top, 6)
                     .themedPostCommentMarkdown()
                     .markdownLinkHandler { url in
-                        LinkHandler.shared.handle(url: url)
+                        navigationManager.openLink(url)
                     }
             }
             

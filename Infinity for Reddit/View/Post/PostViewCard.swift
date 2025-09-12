@@ -161,7 +161,7 @@ struct PostViewCard: View {
                         .noPreviewPostTypeIndicatorBackground()
                         .noPreviewPostTypeIndicator()
                         .onTapGesture {
-                            LinkHandler.shared.handle(url: url)
+                            navigationManager.openLink(url)
                             Task {
                                 await postViewModel.readPost()
                             }
