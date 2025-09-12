@@ -26,6 +26,16 @@ public struct PostListingMetadata: Hashable {
         self.queries = queries
         self.params = pathComponents
     }
+    
+    static func getSubredditMetadadata(subredditName: String, accountViewModel: AccountViewModel) -> PostListingMetadata {
+        return PostListingMetadata(
+            postListingType:.subreddit(subredditName: subredditName),
+            pathComponents: ["subreddit": subredditName],
+            headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+            queries: nil,
+            params: nil
+        )
+    }
 }
 
 public enum PostListingType: Codable, Hashable {

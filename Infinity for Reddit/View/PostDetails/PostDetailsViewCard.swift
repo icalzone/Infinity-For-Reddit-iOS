@@ -91,6 +91,16 @@ struct PostDetailsViewCard: View {
             HFlow(alignment: .center) {
                 if !hidePostType {
                     PostTypeTag(post: postViewModel.post)
+                        .onTapGesture {
+                            navigationManager.path.append(
+                                AppNavigation.filteredPosts(
+                                    postListingMetadata: PostListingMetadata.getSubredditMetadadata(
+                                        subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
+                                    ),
+                                    postFilter: PostFilter.constructPostFilter(postType: postViewModel.post.postType)
+                                )
+                            )
+                        }
                 }
                 
                 if postViewModel.post.spoiler {
