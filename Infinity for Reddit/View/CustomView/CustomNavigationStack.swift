@@ -67,6 +67,7 @@ struct CustomNavigationStack<Content: View>: View {
                     case .submitLinkPost:
                         SubmitLinkPostView()
                             .environmentObject(navigationManager)
+                            .environmentObject(subredditChooseViewModel)
                     case .submitVideoPost:
                         SubmitVideoPostView()
                             .environmentObject(navigationManager)
