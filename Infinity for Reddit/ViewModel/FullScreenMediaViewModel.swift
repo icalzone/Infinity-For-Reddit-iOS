@@ -18,6 +18,7 @@ enum FullScreenMediaType {
 }
 
 enum VideoType {
+    case direct
     case vReddIt
     case redgifs(id: String)
     case streamable(shortCode: String)
