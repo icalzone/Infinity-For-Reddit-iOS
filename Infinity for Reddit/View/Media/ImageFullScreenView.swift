@@ -17,6 +17,13 @@ struct ImageFullScreenView: View {
     let matchedGeometryEffectId: String?
     let onDismiss: () -> Void
     
+    init(url: URL?, aspectRatio: CGSize? = nil, matchedGeometryEffectId: String? = nil, onDismiss: @escaping () -> Void) {
+        self.url = url
+        self.aspectRatio = aspectRatio
+        self.matchedGeometryEffectId = matchedGeometryEffectId
+        self.onDismiss = onDismiss
+    }
+    
     var body: some View {
         CustomWebImage(
             url?.absoluteString ?? "",

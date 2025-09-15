@@ -12,6 +12,7 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var player: AVPlayer = .init()
     @Published private var isLoading: Bool = false
     @Published private var isLoaded: Bool = false
+    @Published private var error: Error?
     
     func loadAndPlay(url: URL) async {
         guard !isLoaded, !isLoading else {
@@ -43,9 +44,11 @@ class VideoFullScreenViewModel: ObservableObject {
                 }
             }
         } catch {
+            print(error)
             await MainActor.run {
-                isLoaded = true
-                isLoading = false
+                self.error = error
+                self.isLoaded = true
+                self.isLoading = false
             }
         }
     }

@@ -184,14 +184,19 @@ struct HomeView: View {
                         fullScreenMediaViewModel.dismiss()
                     }
                     .id(currentUrl)
-                } else if case let .video(videoUrl, post) = media {
+                } else if case let .video(videoUrl, post, videoType) = media {
                     if let url = URL(string: videoUrl) {
-                        VideoFullScreenView(url: url, videoFullScreenViewModel: videoFullScreenViewModel) {
+                        VideoFullScreenView(url: url, videoType: videoType, videoFullScreenViewModel: videoFullScreenViewModel) {
                             fullScreenMediaViewModel.dismiss()
                             videoFullScreenViewModel.resetState()
                         }
                         .id(url)
                     }
+                } else if case let .gif(urlString, post) = media {
+                    ImageFullScreenView(url: URL(string: urlString)) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(urlString)
                 }
             }
         }
