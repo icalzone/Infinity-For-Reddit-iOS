@@ -76,7 +76,7 @@ class APIUtils {
         ]
     }
     
-    static func getRedgifsOAuthHeader(redgifsAccessToken: String) -> [String: String] {
+    static func getRedgifsOAuthHeader(redgifsAccessToken: String) -> HTTPHeaders {
         return [
             AUTHORIZATION_KEY: "\(AUTHORIZATION_BASE)\(redgifsAccessToken)"
         ]

@@ -32,6 +32,11 @@ struct DependencyManager {
             return Session(configuration: configuration)
         }.inObjectScope(.container)
         
+        c.register(Session.self, name: "redgifs") { _ in
+            let configuration = URLSessionConfiguration.af.default
+            return Session(configuration: configuration, interceptor: RedgifsAccessTokenInterceptor())
+        }.inObjectScope(.container)
+        
         c.register(DatabasePool.self) { _ in
             do {
                 return try RedditGRDBDatabase.create()

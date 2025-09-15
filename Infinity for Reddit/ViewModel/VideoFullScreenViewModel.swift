@@ -14,7 +14,7 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published private var isLoaded: Bool = false
     @Published private var error: Error?
     
-    func loadAndPlay(url: URL) async {
+    func loadAndPlay(url: URL, videoType: VideoType) async {
         guard !isLoaded, !isLoading else {
             if player.currentItem != nil {
                 player.play()
@@ -27,20 +27,33 @@ class VideoFullScreenViewModel: ObservableObject {
         }
         
         do {
-            let item = try await loadPlayerItem(from: url)
-            player.replaceCurrentItem(with: item)
-            
-            await MainActor.run {
-                isLoaded = true
-                isLoading = false
+            var finalURL: URL? = url
+            switch videoType {
+            case .vReddIt:
+                break
+            case .redgifs(id: let id):
+                finalURL = try await loadRedgifsVideo(id)
+            case .streamable(shortCode: let shortCode):
+                break
+            default:
+                break
+            }
+            if let url = finalURL {
+                let item = try await loadPlayerItem(from: url)
+                player.replaceCurrentItem(with: item)
                 
-                player.play()
-                
-                NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
-                                                       object: player.currentItem,
-                                                       queue: .main) { _ in
-                    self.player.seek(to: .zero)
-                    self.player.play()
+                await MainActor.run {
+                    isLoaded = true
+                    isLoading = false
+                    
+                    player.play()
+                    
+                    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime,
+                                                           object: player.currentItem,
+                                                           queue: .main) { _ in
+                        self.player.seek(to: .zero)
+                        self.player.play()
+                    }
                 }
             }
         } catch {
@@ -60,6 +73,22 @@ class VideoFullScreenViewModel: ObservableObject {
             throw NSError(domain: "VideoLoadingError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Asset is not playable."])
         }
         return AVPlayerItem(asset: asset)
+    }
+    
+    private func loadRedgifsVideo(_ id: String) async throws -> URL? {
+        return try await VideoFetcher.shared.fetchRedgifsVideo(id: id)
+    }
+    
+    private func loadStreamableVideo(_ url: URL) async -> URL? {
+        do {
+            return try await VideoFetcher.shared.fetchStreamableVideo(url: url)
+        } catch {
+            await MainActor.run {
+                self.error = error
+            }
+            print(error)
+            return nil
+        }
     }
     
     func play() {

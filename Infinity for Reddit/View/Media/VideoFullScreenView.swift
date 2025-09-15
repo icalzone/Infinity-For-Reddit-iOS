@@ -20,10 +20,10 @@ struct VideoFullScreenView: View {
     @State private var isAnimatingBack: Bool = false
     
     let url: URL
-    let videoType: VideoType?
+    let videoType: VideoType
     let onDismiss: () -> Void
     
-    init(url: URL, videoType: VideoType? = nil, videoFullScreenViewModel: VideoFullScreenViewModel, onDismiss: @escaping () -> Void) {
+    init(url: URL, videoType: VideoType, videoFullScreenViewModel: VideoFullScreenViewModel, onDismiss: @escaping () -> Void) {
         self.url = url
         self.videoType = videoType
         self.videoFullScreenViewModel = videoFullScreenViewModel
@@ -48,7 +48,7 @@ struct VideoFullScreenView: View {
             videoFullScreenViewModel.pause()
         })
         .task {
-            await videoFullScreenViewModel.loadAndPlay(url: url)
+            await videoFullScreenViewModel.loadAndPlay(url: url, videoType: videoType)
         }
         .gesture(
             DragGesture()

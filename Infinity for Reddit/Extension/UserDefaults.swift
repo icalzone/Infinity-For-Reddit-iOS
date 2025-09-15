@@ -20,6 +20,7 @@ extension UserDefaults {
     static let interfacePostDetails = UserDefaults(suiteName: "com.docilealligator.infinityforreddit.interface_post_details")!
     static let interfaceTimeFormat = UserDefaults.standard
     static let interface = UserDefaults.standard
+    static let token = UserDefaults(suiteName: "com.docilealligator.infinityforreddit.token")!
 }
 
 extension UserDefaults {

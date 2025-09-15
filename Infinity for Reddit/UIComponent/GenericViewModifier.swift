@@ -73,6 +73,7 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
                                 print("gif")
                             case .redgifs(let redgifsId):
                                 print("redgifs")
+                                fullScreenMediaViewModel.show(.video(url: post?.url ?? "", videoType: .redgifs(id: redgifsId)))
                             case .streamable(let shortCode):
                                 print("streamable")
                             default:

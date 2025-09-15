@@ -10,7 +10,7 @@ import Foundation
 enum FullScreenMediaType {
     case image(url: String, aspectRatio: CGSize? = nil, post: Post? = nil, matchedGeometryEffectId: String? = nil)
     case gif(url: String, post: Post? = nil)
-    case video(url: String, post: Post? = nil, videoType: VideoType? = nil)
+    case video(url: String, post: Post? = nil, videoType: VideoType = .reddit)
     case gallery(currentUrl: String, items: [GalleryItem], mediaMetadata: [String: MediaMetadata], galleryScrollState: GalleryScrollState)
     case imgurGallery(url: URL)
     case imgurAlbum(url: URL)
@@ -18,6 +18,7 @@ enum FullScreenMediaType {
 }
 
 enum VideoType {
+    case reddit
     case direct
     case vReddIt
     case redgifs(id: String)

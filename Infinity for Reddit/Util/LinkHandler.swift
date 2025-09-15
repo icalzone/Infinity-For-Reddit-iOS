@@ -80,7 +80,7 @@ class LinkHandler {
         default:
             if path.hasSuffix(".mp4") {
                 return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: finalURL.absoluteString, videoType: .direct))
-            } else if path.hasSuffix(".jpg") || path.hasSuffix(".jpeg") || path.hasSuffix(".png") {
+            } else if path.hasSuffix(".jpg") || path.hasSuffix(".JPG") || path.hasSuffix(".jpeg") || path.hasSuffix(".png") {
                 return LinkDestination.fullScreenMedia(FullScreenMediaType.image(url: finalURL.absoluteString))
             } else if path.hasSuffix(".gif") {
                 return LinkDestination.fullScreenMedia(FullScreenMediaType.gif(url: finalURL.absoluteString))
