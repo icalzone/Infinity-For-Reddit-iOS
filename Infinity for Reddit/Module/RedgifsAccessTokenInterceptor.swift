@@ -42,7 +42,8 @@ final class RedgifsAccessTokenInterceptor: RequestInterceptor {
         
         lock.lock()
         
-        if request.request?.value(forHTTPHeaderField: "Authorization")?.contains(TokenUserDefaultsUtils.redgifs) != true {
+        let tokenInUserDefaults = TokenUserDefaultsUtils.redgifs
+        if !tokenInUserDefaults.isEmpty && request.request?.value(forHTTPHeaderField: "Authorization")?.contains(tokenInUserDefaults) != true {
             lock.unlock()
             return completion(.retry)
         }
@@ -67,7 +68,7 @@ final class RedgifsAccessTokenInterceptor: RequestInterceptor {
     func refreshAccessToken(completion: @escaping (Result<String, Error>) -> Void) {
         let headers: HTTPHeaders = ["User-Agent": APIUtils.USER_AGENT]
         
-        AF.request("https://api.redgifs.com", method: .get, encoding: URLEncoding.default, headers: headers)
+        AF.request("https://api.redgifs.com/v2/auth/temporary", method: .get, encoding: URLEncoding.default, headers: headers)
             .validate()
             .responseDecodable(of: AccessTokenResponse.self) { response in
                 switch response.result {

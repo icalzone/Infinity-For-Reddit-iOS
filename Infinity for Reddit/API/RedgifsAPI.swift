@@ -10,7 +10,6 @@ import Foundation
 
 enum RedgifsAPI: URLRequestConvertible {
     case getRedgifsData(id: String)
-    case getRedgifsTemporaryToken
     
     private var baseURL: String {
         return APIUtils.REDGIFS_API_BASE_URI
@@ -24,8 +23,6 @@ enum RedgifsAPI: URLRequestConvertible {
         switch self {
         case .getRedgifsData(let id):
             return "/v2/gifs/\(id)"
-        case .getRedgifsTemporaryToken:
-            return "/v2/auth/temporary"
         }
     }
     
@@ -37,8 +34,6 @@ enum RedgifsAPI: URLRequestConvertible {
         switch self {
         case .getRedgifsData:
             return ["user-agent": APIUtils.USER_AGENT]
-        case .getRedgifsTemporaryToken:
-            return nil
         }
     }
     
@@ -46,8 +41,6 @@ enum RedgifsAPI: URLRequestConvertible {
         switch self {
         case .getRedgifsData:
             return APIUtils.getRedgifsOAuthHeader(redgifsAccessToken: TokenUserDefaultsUtils.redgifs)
-        case .getRedgifsTemporaryToken:
-            return nil
         }
     }
     
