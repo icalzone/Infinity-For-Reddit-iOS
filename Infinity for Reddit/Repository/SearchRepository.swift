@@ -16,16 +16,19 @@ class SearchRepository: SearchRepositoryProtocol {
         self.operationQueue = operationQueue
     }
     
-    func saveSearchQuery(username: String, query: String, searchInSubredditOrUserName: String?, multiRedditPath: String?, searchInThingType: Int, time: Int64) {
+    func saveSearchQuery(username: String, query: String, searchInSubredditOrUserName: String?, multiRedditPath: String?, searchInThingType: SearchInThingType, time: Int64) {
         operationQueue.addOperation {
             do {
-                try self.recentSearchQueryDao.insert(recentSearchQuery:
-                                                    RecentSearchQuery(username: username,
-                                                                      searchQuery: query,
-                                                                      searchInSubredditOrUserName: searchInSubredditOrUserName,
-                                                                      multiRedditPath: multiRedditPath,
-                                                                      searchInThingType: searchInThingType,
-                                                                      time: time)
+                try self.recentSearchQueryDao.insert(
+                    recentSearchQuery:
+                        RecentSearchQuery(
+                            username: username,
+                            searchQuery: query,
+                            searchInSubredditOrUserName: searchInSubredditOrUserName,
+                            multiRedditPath: multiRedditPath,
+                            searchInThingType: searchInThingType,
+                            time: time
+                        )
                 )
             } catch {
                 // No need to handle error

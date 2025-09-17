@@ -12,8 +12,6 @@ import Alamofire
 
 struct SubscriptionsView: View {
     @EnvironmentObject private var accountViewModel: AccountViewModel
-    @Environment(\.colorScheme) var colorScheme
-    @Environment(\.dependencyManager) private var dependencyManager: Container
     
     @StateObject var subscriptionListingViewModel: SubscriptionListingViewModel
 
@@ -33,7 +31,7 @@ struct SubscriptionsView: View {
                 .padding(4)
             
             TabView(selection: $selectedOption) {
-                SubredditsView(subscriptionListingViewModel: subscriptionListingViewModel)
+                SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
                     .tag(0)
                 
                 UsersView(subscriptionListingViewModel: subscriptionListingViewModel)
@@ -49,60 +47,6 @@ struct SubscriptionsView: View {
         .task {
             await subscriptionListingViewModel.loadSubscriptionsOnline()
             await subscriptionListingViewModel.loadMyCustomFeedsOnline()
-        }
-    }
-    
-    struct SubredditsView: View {
-        @EnvironmentObject var navigationManager: NavigationManager
-        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
-        
-        var body: some View {
-            Group {
-                if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
-                    if subscriptionListingViewModel.isLoadingSubscriptions {
-                        ProgressIndicator()
-                    } else {
-                        Text("No subscribed subreddits")
-                            .primaryText()
-                    }
-                } else {
-                    List {
-                        if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
-                                ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
-                                    SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
-                                    }) {
-                                        subscription.isFavorite.toggle()
-                                        Task {
-                                            await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
-                                        }
-                                    }
-                                    .listPlainItemNoInsets()
-                                }
-                            }
-                            .listPlainItem()
-                        }
-                        
-                        Section(header: Text("All").listSectionHeader()) {
-                            ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
-                                SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
-                                }) {
-                                    subscription.isFavorite.toggle()
-                                    Task {
-                                        await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
-                                    }
-                                }
-                                .listPlainItemNoInsets()
-                            }
-                        }
-                        .listPlainItem()
-                    }
-                    .scrollBounceBehavior(.basedOnSize)
-                    .themedList()
-                }
-            }
         }
     }
 

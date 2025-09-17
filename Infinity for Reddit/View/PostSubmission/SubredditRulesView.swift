@@ -8,7 +8,7 @@ import SwiftUI
 import MarkdownUI
 
 struct SubredditRulesView: View {
-    @EnvironmentObject private var subredditChooseViewModel: SubredditChooseViewModel
+    @EnvironmentObject private var subredditChooseViewModel: PostSubmissionContextViewModel
     
     var body: some View {
         ScrollView {

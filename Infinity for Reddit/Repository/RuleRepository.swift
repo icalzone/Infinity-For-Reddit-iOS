@@ -24,28 +24,13 @@ public class RuleRepository: RuleRepositoryProtocol {
         self.session = resolvedSession
     }
     
-    func fetchRules(subreddit: String, isAnonymous: Bool) async throws -> [Rule] {
+    func fetchRules(subredditName: String) async throws -> [Rule] {
         try Task.checkCancellation()
-        let request: DataRequest
         
-        if isAnonymous {
-            print("Fetching rules anonymously for r/\(subreddit)")
-            request = self.session.request(
-                RedditAPI.getRules(subredditName: subreddit)
-            )
-        } else {
-            print("Fetching rules as a logged-in user for r/\(subreddit)")
-            request = self.session.request(
-                RedditOAuthAPI.getRules(subredditName: subreddit)
-            )
-        }
-        
-        let data = try await request
+        let data = try await session.request(RedditOAuthAPI.getRules(subredditName: subredditName))
             .validate()
             .serializingData()
             .value
-        
-        try Task.checkCancellation()
         
         let json = JSON(data)
         if let error = json.error {

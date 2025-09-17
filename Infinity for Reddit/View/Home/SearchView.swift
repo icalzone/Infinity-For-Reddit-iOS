@@ -14,8 +14,11 @@ struct SearchView: View {
     @StateObject private var searchViewModel: SearchViewModel
     @FocusState private var isTextFieldFocused: Bool
     
-    init(username: String) {
-        _searchViewModel = StateObject(wrappedValue: SearchViewModel(username: username))
+    private let onSearchCustomAction: ((String) -> Void)?
+    
+    init(onSearchCustomAction: ((String) -> Void)? = nil) {
+        self.onSearchCustomAction = onSearchCustomAction
+        _searchViewModel = StateObject(wrappedValue: SearchViewModel())
     }
     
     var body: some View {
@@ -37,7 +40,11 @@ struct SearchView: View {
                             if !accountViewModel.account.isAnonymous() {
                                 searchViewModel.saveSearchQuery()
                             }
-                            navigationManager.path.append(AppNavigation.search(query: searchViewModel.query, searchInSubredditOrUserName: "", searchInMultiReddit: "", searchInThingType: SearchInThingType.all.rawValue))
+                            if let onSearch = onSearchCustomAction {
+                                onSearch(searchViewModel.query)
+                            } else {
+                                navigationManager.path.append(AppNavigation.searchResults(query: searchViewModel.query, searchInSubredditOrUserName: "", searchInMultiReddit: "", searchInThingType: SearchInThingType.all))
+                            }
                         }
                 }
                 .padding(.vertical, 8)
@@ -66,23 +73,27 @@ struct SearchView: View {
                 VStack(spacing: 12) {
                     ForEach(searchViewModel.recentSearchQueries, id: \.time) { search in
                         TouchRipple(action: {
-                            navigationManager.path.append(AppNavigation.search(query: search.searchQuery, searchInSubredditOrUserName: search.searchInSubredditOrUserName, searchInMultiReddit: search.multiRedditPath, searchInThingType: search.searchInThingType))
+                            if let onSearch = onSearchCustomAction {
+                                onSearch(search.searchQuery)
+                            } else {
+                                navigationManager.path.append(AppNavigation.searchResults(query: search.searchQuery, searchInSubredditOrUserName: search.searchInSubredditOrUserName, searchInMultiReddit: search.multiRedditPath, searchInThingType: search.searchInThingType))
+                            }
                         }) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(search.searchQuery)
                                     .primaryText()
                                 
                                 switch search.searchInThingType {
-                                case SearchInThingType.all.rawValue:
+                                case .all:
                                     Text("All subreddits")
                                         .secondaryText()
-                                case SearchInThingType.subreddit.rawValue:
+                                case .subreddit:
                                     Text("r/\(search.searchInSubredditOrUserName ?? "")")
                                         .subreddit()
-                                case SearchInThingType.user.rawValue:
+                                case .user:
                                     Text("u/\(search.searchInSubredditOrUserName ?? "")")
                                         .username()
-                                case SearchInThingType.multireddit.rawValue:
+                                case .multireddit:
                                     Text(search.multiRedditDisplayName ?? "")
                                         .secondaryText()
                                 default:

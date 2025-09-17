@@ -16,3 +16,14 @@ struct NavigationBarButtonViewModifier: ViewModifier {
             .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.toolbarPrimaryTextAndIconColor))
     }
 }
+
+struct FilledButtonViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.buttonTextColor))
+            .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimary))
+            .buttonStyle(.borderedProminent)
+    }
+}

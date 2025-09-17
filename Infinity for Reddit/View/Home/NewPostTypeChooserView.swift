@@ -14,11 +14,11 @@ struct NewPostTypeChooserView: View {
         ScrollView {
             VStack(spacing: 0) {
                 SimpleTouchItemRow(text: "Text", icon: "text.page") {
-                    navigationManager.path.append(AppNavigation.submitTextPost(resetSelectedSubreddit: true))
+                    navigationManager.path.append(AppNavigation.submitTextPost)
                 }
                 
                 SimpleTouchItemRow(text: "Link", icon: "link") {
-                    navigationManager.path.append(AppNavigation.submitLinkPost(resetSelectedSubreddit: true))
+                    navigationManager.path.append(AppNavigation.submitLinkPost)
                 }
                 
                 SimpleTouchItemRow(text: "Video", icon: "video") {

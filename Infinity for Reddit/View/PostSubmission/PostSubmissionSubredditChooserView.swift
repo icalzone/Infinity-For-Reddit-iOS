@@ -1,13 +1,13 @@
 //
-// SubredditChooseView.swift
+// PostSubmissionSubredditChooserView.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2025-08-21
         
 import SwiftUI
 
-struct SubredditChooseView: View {
-    @EnvironmentObject var subredditChooseViewModel: SubredditChooseViewModel
+struct PostSubmissionSubredditChooserView: View {
+    @EnvironmentObject var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @EnvironmentObject var accountViewModel: AccountViewModel
     @EnvironmentObject var navigationManager: NavigationManager
     @StateObject var themeViewModel = CustomThemeViewModel()
@@ -17,13 +17,14 @@ struct SubredditChooseView: View {
     
     var text: String
     var iconUrl: String?
-    var iconSize: CGFloat = 24
     var action: () -> Void
     
+    private let iconSize: CGFloat = 24
+    
     var body: some View {
-        TouchRipple {
+        TouchRipple(action: action) {
             HStack(spacing: 0) {
-                if let icon = subredditChooseViewModel.selectedSubreddit?.iconUrl {
+                if let icon = postSubmissionContextViewModel.selectedSubreddit?.iconUrl {
                     CustomWebImage(
                         icon,
                         width: iconSize,
@@ -39,42 +40,37 @@ struct SubredditChooseView: View {
                 Spacer()
                     .frame(width: 24)
                 
-                Text(subredditChooseViewModel.selectedSubreddit?.name ?? text)
+                RowText(postSubmissionContextViewModel.selectedSubreddit?.name ?? text)
                     .primaryText()
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Spacer()
+                    .frame(width: 24)
                 
                 Button("Rules") {
-                    if subredditChooseViewModel.selectedSubreddit == nil {
+                    if postSubmissionContextViewModel.selectedSubreddit == nil {
                         showNoSubredditAlert = true
                     } else {
+                        showRulesSheet = true
                         Task {
-                            await subredditChooseViewModel.fetchRules(isAnonymous: false)
-                            showRulesSheet = true
+                            await postSubmissionContextViewModel.fetchRules()
                         }
                     }
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimary))
-                .controlSize(.regular)
+                .filledButton()
+                .excludeFromTouchRipple()
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
+            .padding(16)
             .contentShape(Rectangle())
-            .onTapGesture {
-                action()
-            }
-            .alert("No Subreddit Selected",
-                   isPresented: $showNoSubredditAlert,
-                   actions: { Button("OK", role: .cancel) { } },
-                   message: { Text("Please select a subreddit first") }
-            )
-            .sheet(isPresented: $showRulesSheet) {
-                SubredditRulesView()
-                    .environmentObject(subredditChooseViewModel)
-            }
+        }
+        .alert("No Subreddit Selected",
+               isPresented: $showNoSubredditAlert,
+               actions: { Button("OK", role: .cancel) { } },
+               message: { Text("Please select a subreddit first") }
+        )
+        .sheet(isPresented: $showRulesSheet) {
+            SubredditRulesView()
+                .environmentObject(postSubmissionContextViewModel)
         }
     }
 }

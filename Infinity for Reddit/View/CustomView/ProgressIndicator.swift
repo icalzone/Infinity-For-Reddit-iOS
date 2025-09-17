@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProgressIndicator: View {
-    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    @EnvironmentObject private var themeViewModel: CustomThemeViewModel
     
     var body: some View {
         ProgressView()

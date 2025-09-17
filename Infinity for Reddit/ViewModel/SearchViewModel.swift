@@ -21,7 +21,7 @@ class SearchViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(username: String) {
+    init() {
         guard let resolvedOperationQueue = DependencyManager.shared.container.resolve(OperationQueue.self) else {
             fatalError("Could not resolve OperationQueue")
         }
@@ -30,7 +30,7 @@ class SearchViewModel: ObservableObject {
             fatalError("Could not resolve DatabasePool")
         }
         
-        self.username = username
+        self.username = AccountViewModel.shared.account.username
         self.dbPool = resolvedDatabasePool
         
         let recentSearchQueryDao = RecentSearchQueryDao(dbPool: dbPool)
@@ -58,7 +58,7 @@ class SearchViewModel: ObservableObject {
     }
     
     func saveSearchQuery() {
-        searchRepository.saveSearchQuery(username: username, query: query, searchInSubredditOrUserName: nil, multiRedditPath: nil, searchInThingType: SearchInThingType.all.rawValue, time: Int64(Date().timeIntervalSince1970))
+        searchRepository.saveSearchQuery(username: username, query: query, searchInSubredditOrUserName: nil, multiRedditPath: nil, searchInThingType: SearchInThingType.all, time: Int64(Date().timeIntervalSince1970))
     }
     
     func clearAllRecentSearchQueries() {

@@ -15,11 +15,11 @@ public struct RecentSearchQuery: Codable, FetchableRecord, PersistableRecord {
     var searchInSubredditOrUserName: String?
     var multiRedditPath: String?
     var multiRedditDisplayName: String?
-    var searchInThingType: Int  
+    var searchInThingType: SearchInThingType
     var time: Int64
     
     init(username: String, searchQuery: String, searchInSubredditOrUserName: String? = nil, multiRedditPath: String? = nil,
-         multiRedditDisplayName: String? = nil, searchInThingType: Int, time: Int64) {
+         multiRedditDisplayName: String? = nil, searchInThingType: SearchInThingType, time: Int64) {
         self.username = username
         self.searchQuery = searchQuery
         self.searchInSubredditOrUserName = searchInSubredditOrUserName

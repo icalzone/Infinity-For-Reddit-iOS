@@ -39,7 +39,7 @@ public struct PostListingMetadata: Hashable {
 }
 
 public enum PostListingType: Codable, Hashable {
-    case frontPage, subreddit(subredditName: String), user(username: String, userWhere: UserWhere), search(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: Int), multireddit(path: String), anonymousFrontPage(concatenatedSubscriptions: String?)
+    case frontPage, subreddit(subredditName: String), user(username: String, userWhere: UserWhere), search(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: SearchInThingType), multireddit(path: String), anonymousFrontPage(concatenatedSubscriptions: String?)
 }
 
 public enum UserWhere: String, Codable {

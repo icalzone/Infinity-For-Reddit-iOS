@@ -21,4 +21,3 @@ struct Flair: Codable, Identifiable, Hashable {
         case richtext
     }
 }
-

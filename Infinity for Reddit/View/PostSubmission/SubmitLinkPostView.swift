@@ -9,7 +9,7 @@ import MarkdownUI
 
 struct SubmitLinkPostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
-    @EnvironmentObject private var subredditChooseViewModel: SubredditChooseViewModel
+    @EnvironmentObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @EnvironmentObject private var themeViewModel: CustomThemeViewModel
     @StateObject private var submitLinkPostViewModel: SubmitLinkPostViewModel
     
@@ -19,21 +19,17 @@ struct SubmitLinkPostView: View {
     @State private var titleTextViewCanFocus: Bool = true
     @State private var contentTextViewCanFocus: Bool = true
     @State private var markdownToolbarHeight: CGFloat = 0
-    @State private var receiveReplyNotification: Bool = false
     @State private var showSelectSubredditView: Bool = false
     @State private var showFlairSheet: Bool = false
-    @State private var isSpoiler: Bool = false
-    @State private var isNSFW: Bool = false
     @State private var titleSelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var bodySelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showMarkdownPreview: Bool = false
-    @State private var resetSelectedSubreddit: Bool
+    @State private var resetSelectedSubreddit: Bool = true
     
-    init(resetSelectedSubreddit: Bool = false) {
+    init() {
         _submitLinkPostViewModel = StateObject(
             wrappedValue: SubmitLinkPostViewModel()
         )
-        self.resetSelectedSubreddit = resetSelectedSubreddit
     }
     
     var body: some View {
@@ -46,77 +42,50 @@ struct SubmitLinkPostView: View {
                                 submitLinkPostViewModel.selectedAccount = $0
                             }
                             
-                            SubredditChooseView(text: "Choose a subreddit", iconUrl: nil, action: {
-                                navigationManager.path.append(AppNavigation.chooseSubredditForNewPost)
+                            PostSubmissionSubredditChooserView(text: "Choose a subreddit", iconUrl: nil, action: {
+                                navigationManager.path.append(AppNavigation.selectSubredditForPostSubmission)
                             })
                             .environmentObject(navigationManager)
                             
                             Divider()
                             
                             HStack(spacing: 16) {
-                                Button(action: {
-                                    if submitLinkPostViewModel.selectedFlair != nil {
-                                        submitLinkPostViewModel.selectedFlair = nil
-                                    } else {
-                                        Task {
-                                            await subredditChooseViewModel.fetchFlairs()
-                                            showFlairSheet = true
+                                if postSubmissionContextViewModel.selectedSubreddit != nil {
+                                    FlairFilledButton(selectedFlair: submitLinkPostViewModel.selectedFlair) {
+                                        if submitLinkPostViewModel.selectedFlair != nil {
+                                            submitLinkPostViewModel.selectedFlair = nil
+                                        } else {
+                                            Task {
+                                                await postSubmissionContextViewModel.fetchFlairs()
+                                                showFlairSheet = true
+                                            }
                                         }
                                     }
-                                }) {
-                                    Text(submitLinkPostViewModel.selectedFlair?.text ?? "Flair")
-                                        .themedPillButton(
-                                            isSelected: submitLinkPostViewModel.selectedFlair != nil,
-                                            selectedBackGround: themeViewModel.currentCustomTheme.flairBackgroundColor,
-                                            selectedForeGround: themeViewModel.currentCustomTheme.flairTextColor,
-                                            defaultBackGround: themeViewModel.currentCustomTheme.backgroundColor,
-                                            defaultForeGround: themeViewModel.currentCustomTheme.primaryTextColor,
-                                            defaultBorder: themeViewModel.currentCustomTheme.primaryTextColor
-                                        )
-                                    
                                 }
                                 
-                                Button(action: {
-                                    isSpoiler.toggle()
-                                }) {
-                                    Text("Spoiler")
-                                        .themedPillButton(
-                                            isSelected: isSpoiler,
-                                            selectedBackGround: themeViewModel.currentCustomTheme.spoilerBackgroundColor,
-                                            selectedForeGround: themeViewModel.currentCustomTheme.spoilerTextColor,
-                                            defaultBackGround: themeViewModel.currentCustomTheme.backgroundColor,
-                                            defaultForeGround: themeViewModel.currentCustomTheme.primaryTextColor,
-                                            defaultBorder: themeViewModel.currentCustomTheme.primaryTextColor
-                                        )
-                                }
-
-                                Button(action: {
-                                    isNSFW.toggle()
-                                }) {
-                                    Text("Sensitive")
-                                        .themedPillButton(
-                                            isSelected: isNSFW,
-                                            selectedBackGround: themeViewModel.currentCustomTheme.nsfwBackgroundColor,
-                                            selectedForeGround: themeViewModel.currentCustomTheme.nsfwTextColor,
-                                            defaultBackGround: themeViewModel.currentCustomTheme.backgroundColor,
-                                            defaultForeGround: themeViewModel.currentCustomTheme.primaryTextColor,
-                                            defaultBorder: themeViewModel.currentCustomTheme.primaryTextColor
-                                        )
-                                }
+                                SpoilerFilledButton(isSpoiler: $submitLinkPostViewModel.isSpoiler)
+                                
+                                SensitiveFilledButton(isSensitive: $submitLinkPostViewModel.isSensitive)
                         
                                 Spacer()
                             }
                             .padding(16)
                             
-                            Toggle(isOn: $receiveReplyNotification) {
-                                Text("Receive post reply notifications")
-                                    .secondaryText()
-                                    .onTapGesture {
-                                        receiveReplyNotification.toggle()
-                                    }
+                            TouchRipple(action: {
+                                submitLinkPostViewModel.receiveReplyNotification.toggle()
+                            }) {
+                                HStack {
+                                    RowText("Receive post reply notifications")
+                                        .secondaryText()
+                                    
+                                    Toggle(isOn: $submitLinkPostViewModel.receiveReplyNotification) {}
+                                        .labelsHidden()
+                                        .themedToggle()
+                                        .excludeFromTouchRipple()
+                                }
+                                .padding(16)
                             }
-                            .padding(16)
-                            .themedToggle()
+                            
                             
                             Divider()
                             
@@ -198,28 +167,25 @@ struct SubmitLinkPostView: View {
                 }
                 
                 Button {
-                    print("Submit Text Post")
+                    print("Submit Link Post")
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
             }
         }
         .sheet(isPresented: $showFlairSheet) {
-            FlairChooseSheet(
-                   flairs: subredditChooseViewModel.flairs
-               ) { flair in
-                   submitLinkPostViewModel.selectedFlair = flair
-               }
-               .presentationDetents([.medium, .large])
-               .presentationDragIndicator(.visible)
-               .environmentObject(submitLinkPostViewModel)
+            FlairChooserSheet(postSubmissionContextViewModel: postSubmissionContextViewModel) { flair in
+                submitLinkPostViewModel.selectedFlair = flair
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitLinkPostViewModel.content)
         }
         .onAppear {
             if resetSelectedSubreddit {
-                subredditChooseViewModel.reset()
+                postSubmissionContextViewModel.reset()
             }
             resetSelectedSubreddit = false
         }

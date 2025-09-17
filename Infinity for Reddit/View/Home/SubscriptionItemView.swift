@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SubscriptionItemView: View {
     @Environment(\.dismiss) private var dismiss 
-    @EnvironmentObject private var subredditChooseViewModel: SubredditChooseViewModel
+    @EnvironmentObject private var subredditChooseViewModel: PostSubmissionContextViewModel
     
     var text: String
     var iconUrl: String?

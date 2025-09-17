@@ -236,27 +236,19 @@ extension View {
         ))
     }
     
-    func themedPillButton(
-        isSelected: Bool,
-        selectedBackGround: Int,
-        selectedForeGround: Int,
-        defaultBackGround: Int,
-        defaultForeGround: Int,
-        defaultBorder: Int,
+    func customFilledButton(
+        backgroundColor: Color,
+        textColor: Color,
+        borderColor: Color,
         cornerRadius: CGFloat = 6,
-        fontSize: CGFloat = 12,
-        borderWidth: CGFloat = 0.5
+        borderWidth: CGFloat = 1
     ) -> some View {
         self.modifier(
-            PillButtonViewModifier(
-                isSelected: isSelected,
-                selectedBackGround: selectedBackGround,
-                selectedForeGround: selectedForeGround,
-                defaultBackGround: defaultBackGround,
-                defaultForeGround: defaultForeGround,
-                defaultBorder: defaultBorder,
+            CustomFilledTextButtonViewModifier(
+                backgroundColor: backgroundColor,
+                textColor: textColor,
+                borderColor: borderColor,
                 cornerRadius: cornerRadius,
-                fontSize: fontSize,
                 borderWidth: borderWidth
             )
         )
@@ -284,7 +276,7 @@ extension View {
         self.modifier(AuthorFlairTextViewModifier())
     }
     
-    func flairRowText() -> some View {
-        self.modifier(FlairRowTextViewModifier())
+    func filledButton() -> some View {
+        self.modifier(FilledButtonViewModifier())
     }
 }

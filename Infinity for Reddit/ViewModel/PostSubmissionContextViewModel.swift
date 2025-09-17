@@ -1,5 +1,5 @@
 //
-// SubredditChooseViewModel.swift
+// PostSubmissionContextViewModel.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2025-08-24
@@ -7,32 +7,31 @@
 import Foundation
 
 @MainActor
-class SubredditChooseViewModel: ObservableObject {
-    
+class PostSubmissionContextViewModel: ObservableObject {
     @Published var selectedSubreddit: SubscribedSubredditData? = nil {
         didSet {
-            errorMessage = nil
+            error = nil
             isLoadingRules = false
             isLoadingFlairs = false
             
             if let name = selectedSubreddit?.name {
-                rules = rulesDict[name] ?? []
-                flairs = flairsDict[name] ?? []
+                rules = allRules[name] ?? []
+                flairs = allFlairs[name] ?? []
             } else {
                 rules = []
                 flairs = []
             }
         }
     }
-    @Published var errorMessage: String?
+    @Published var error: Error?
     @Published var rules: [Rule] = []
     @Published var flairs: [Flair] = []
     
     @Published var isLoadingRules: Bool = false
     @Published var isLoadingFlairs: Bool = false
     
-    private var rulesDict: [String: [Rule]] = [:]
-    private var flairsDict: [String: [Flair]] = [:]
+    private var allRules: [String: [Rule]] = [:]
+    private var allFlairs: [String: [Flair]] = [:]
     
     private var ruleRepository: RuleRepositoryProtocol
     private var flairRepository: FlairRepositoryProtocol
@@ -42,58 +41,56 @@ class SubredditChooseViewModel: ObservableObject {
         self.flairRepository = flairRepository
     }
     
-    func fetchRules(isAnonymous: Bool, force: Bool = false) async {
-        guard let name = selectedSubreddit?.name, !name.isEmpty else {
+    func fetchRules(forceFetch: Bool = false) async {
+        guard let subredditName = selectedSubreddit?.name, !subredditName.isEmpty else {
             self.rules = []
             return
         }
         
-        if !force, let cached = rulesDict[name] {
+        if !forceFetch, let cached = allRules[subredditName] {
             self.rules = cached
             return
         }
         
         isLoadingRules = true
-        errorMessage = nil
+        error = nil
         
         do {
             try Task.checkCancellation()
-            let fetched = try await ruleRepository.fetchRules(subreddit: name, isAnonymous: isAnonymous)
-            try Task.checkCancellation()
+            
+            let fetched = try await ruleRepository.fetchRules(subredditName: subredditName)
             
             rules = fetched
-            rulesDict[name] = fetched
+            allRules[subredditName] = fetched
         } catch {
             rules = []
-            errorMessage = "Failed to load rules: \(error.localizedDescription)"
-            rulesDict[name] = []
+            self.error = error
         }
         
         isLoadingRules = false
     }
     
-    func fetchFlairs(force: Bool = false) async {
-        guard let name = selectedSubreddit?.name, !name.isEmpty else { return }
+    func fetchFlairs(forceFetch: Bool = false) async {
+        guard let subredditName = selectedSubreddit?.name, !subredditName.isEmpty else { return }
         
-        if !force, let cached = flairsDict[name] {
+        if !forceFetch, let cached = allFlairs[subredditName] {
             self.flairs = cached
             return
         }
         
         isLoadingFlairs = true
-        errorMessage = nil
+        error = nil
         
         do {
             try Task.checkCancellation()
-            let fetched = try await flairRepository.fetchFlairs(subreddit: name)
-            try Task.checkCancellation()
+            
+            let fetched = try await flairRepository.fetchFlairs(subreddit: subredditName)
             
             flairs = fetched
-            flairsDict[name] = fetched
+            allFlairs[subredditName] = fetched
         } catch {
+            self.error = error
             flairs = []
-            errorMessage = "Failed to load flairs: \(error.localizedDescription)"
-            flairsDict[name] = []
         }
         
         isLoadingFlairs = false

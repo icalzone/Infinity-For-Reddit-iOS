@@ -12,7 +12,7 @@ struct CustomNavigationStack<Content: View>: View {
     
     @StateObject private var navigationManager: NavigationManager
     @StateObject var commentSubmissionShareableViewModel: CommentSubmissionShareableViewModel = CommentSubmissionShareableViewModel()
-    @StateObject var subredditChooseViewModel: SubredditChooseViewModel = SubredditChooseViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
+    @StateObject var postSubmissionContextViewModel: PostSubmissionContextViewModel = PostSubmissionContextViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
     
     let content: () -> Content
     
@@ -47,9 +47,13 @@ struct CustomNavigationStack<Content: View>: View {
                     case .userDetails(let username):
                         UserDetailsView(username: username)
                             .environmentObject(navigationManager)
-                    case .search(let query, let searchInSubredditOrUserName, searchInMultiReddit: let searchInMultiReddit, searchInThingType: let searchInThingType):
-                        SearchResultsView(query: query, searchInSubredditOrUserName: searchInSubredditOrUserName, searchInMultiReddit: searchInMultiReddit, searchInThingType: searchInThingType)
-                            .environmentObject(navigationManager)
+                    case .searchResults(let query, let searchInSubredditOrUserName, let searchInMultiReddit, let searchInThingType):
+                        SearchResultsView(query: query,
+                                          searchInSubredditOrUserName: searchInSubredditOrUserName,
+                                          searchInMultiReddit: searchInMultiReddit,
+                                          searchInThingType: searchInThingType
+                        )
+                        .environmentObject(navigationManager)
                     case .customFeed(let myCustomFeed):
                         CustomFeedDetailsView(myCustomFeed: myCustomFeed)
                             .environmentObject(navigationManager)
@@ -60,14 +64,14 @@ struct CustomNavigationStack<Content: View>: View {
                         SubmitCommentView(parent: commentParent)
                             .environmentObject(navigationManager)
                             .environmentObject(commentSubmissionShareableViewModel)
-                    case .submitTextPost(let resetSelectedSubreddit):
-                        SubmitTextPostView(resetSelectedSubreddit: resetSelectedSubreddit)
+                    case .submitTextPost:
+                        SubmitTextPostView()
                             .environmentObject(navigationManager)
-                            .environmentObject(subredditChooseViewModel)
-                    case .submitLinkPost(let resetSelectedSubreddit):
-                        SubmitLinkPostView(resetSelectedSubreddit: resetSelectedSubreddit)
+                            .environmentObject(postSubmissionContextViewModel)
+                    case .submitLinkPost:
+                        SubmitLinkPostView()
                             .environmentObject(navigationManager)
-                            .environmentObject(subredditChooseViewModel)
+                            .environmentObject(postSubmissionContextViewModel)
                     case .submitVideoPost:
                         SubmitVideoPostView()
                             .environmentObject(navigationManager)
@@ -80,10 +84,10 @@ struct CustomNavigationStack<Content: View>: View {
                     case .submitPollPost:
                         SubmitPollPostView()
                             .environmentObject(navigationManager)
-                    case .chooseSubredditForNewPost:
+                    case .selectSubredditForPostSubmission:
                         SubredditSelectionView()
                             .environmentObject(navigationManager)
-                            .environmentObject(subredditChooseViewModel)
+                            .environmentObject(postSubmissionContextViewModel)
                     case .filterPosts(let postListingMetadata):
                         CustomizePostFilterView(PostFilter()) { postFilter in
                             navigationManager.path.removeLast()
@@ -101,14 +105,14 @@ struct CustomNavigationStack<Content: View>: View {
                             postFilter: postFilter
                         )
                         .environmentObject(navigationManager)
-                    case .searchSubreddits(let query, let searchInSubredditOrUserName, searchInMultiReddit: let searchInMultiReddit, searchInThingType: let searchInThingType):
-                        SubredditSearchResultView(query: query, searchInSubredditOrUserName: searchInSubredditOrUserName, searchInMultiReddit: searchInMultiReddit, searchInThingType: searchInThingType)
+                    case .searchSubreddit:
+                        SearchSubredditsView()
                             .environmentObject(navigationManager)
-                            .environmentObject(subredditChooseViewModel)
-                    case .subredditSearch(let username):
-                            SubredditSearchView(username: username)
-                                .environmentObject(accountViewModel)
-                                .environmentObject(navigationManager)
+                    case .searchSubredditsResults(let query):
+                        // TODO May need to use a more generic view model to pass ther selected subreddit
+                        SubredditSearchResultView(query: query)
+                            .environmentObject(navigationManager)
+                            .environmentObject(postSubmissionContextViewModel)
                     }
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in

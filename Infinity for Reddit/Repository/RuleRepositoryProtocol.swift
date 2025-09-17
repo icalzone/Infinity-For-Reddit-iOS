@@ -8,5 +8,5 @@ import Combine
 import Alamofire
 
 protocol RuleRepositoryProtocol {
-    func fetchRules(subreddit: String, isAnonymous: Bool) async throws -> [Rule]
+    func fetchRules(subredditName: String) async throws -> [Rule]
 }

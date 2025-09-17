@@ -12,7 +12,7 @@ struct SearchResultsView: View {
     @StateObject private var searchResultsViewModel: SearchResultsViewModel
     @State private var selectedOption = 0
     
-    init(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: Int) {
+    init(query: String, searchInSubredditOrUserName: String?, searchInMultiReddit: String?, searchInThingType: SearchInThingType) {
         _searchResultsViewModel = StateObject(wrappedValue: SearchResultsViewModel(query: query, searchInSubredditOrUserName: searchInSubredditOrUserName, searchInMultiReddit: searchInMultiReddit, searchInThingType: searchInThingType))
     }
     

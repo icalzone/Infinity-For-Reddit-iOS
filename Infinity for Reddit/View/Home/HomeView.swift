@@ -127,7 +127,7 @@ struct HomeView: View {
                         .environmentObject(tab4SnackbarManager)
                     } else {
                         CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                            SearchView(username: accountViewModel.account.username)
+                            SearchView()
                                 .setUpHomeTabViewChildNavigationBar()
                                 .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
                         }

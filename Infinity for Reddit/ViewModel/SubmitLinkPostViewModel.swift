@@ -16,6 +16,10 @@ class SubmitLinkPostViewModel: ObservableObject {
     @Published var selectedFlair: Flair?
     @Published var url: String = ""
     
+    @Published var receiveReplyNotification: Bool = false
+    @Published var isSpoiler: Bool = false
+    @Published var isSensitive: Bool = false
+    
     init() {
         self.selectedAccount = AccountViewModel.shared.account
     }

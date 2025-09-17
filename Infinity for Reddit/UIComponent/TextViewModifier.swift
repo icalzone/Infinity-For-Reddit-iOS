@@ -188,3 +188,29 @@ struct NeutralTextButtonViewModifier: ViewModifier {
             .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
     }
 }
+
+struct CustomFilledTextButtonViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    let backgroundColor: Color
+    let textColor: Color
+    let borderColor: Color
+    
+    let cornerRadius: CGFloat
+    let borderWidth: CGFloat
+    
+    func body(content: Content) -> some View {
+        content
+            .foregroundColor(textColor)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius).fill(backgroundColor)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(borderColor, lineWidth: borderWidth)
+            )
+    }
+}
+
