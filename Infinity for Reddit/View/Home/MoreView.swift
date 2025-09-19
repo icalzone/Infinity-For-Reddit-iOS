@@ -26,6 +26,13 @@ struct MoreView: View {
                     navigationManager.path.append(MoreViewNavigation.all)
                 }
                 .listPlainItemNoInsets()
+                
+                if !accountViewModel.account.isAnonymous() {
+                    SimpleTouchItemRow(text: "Search", icon: "magnifyingglass") {
+                        navigationManager.path.append(AppNavigation.search)
+                    }
+                    .listPlainItemNoInsets()
+                }
             }
             .listPlainItem()
             

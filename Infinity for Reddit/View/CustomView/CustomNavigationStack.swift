@@ -47,6 +47,9 @@ struct CustomNavigationStack<Content: View>: View {
                     case .userDetails(let username):
                         UserDetailsView(username: username)
                             .environmentObject(navigationManager)
+                    case .search:
+                        SearchView()
+                            .environmentObject(navigationManager)
                     case .searchResults(let query, let searchInSubredditOrUserName, let searchInMultiReddit, let searchInThingType):
                         SearchResultsView(query: query,
                                           searchInSubredditOrUserName: searchInSubredditOrUserName,

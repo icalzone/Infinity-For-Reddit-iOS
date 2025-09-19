@@ -114,5 +114,7 @@ struct SearchView: View {
             }
         }
         .rootViewBackground()
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Search")
     }
 }
