@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SelectSearchInThingView: View {
     @EnvironmentObject private var accountViewModel: AccountViewModel
+    @Environment(\.dismiss) private var dismiss
     
     let onSelectThing: (SearchInThing) -> Void
     
@@ -16,12 +17,16 @@ struct SelectSearchInThingView: View {
         Group {
             if accountViewModel.account.isAnonymous() {
                 AnonymousSubscriptionsView() { searchInThing in
-                    
+                    onSelectThing(searchInThing)
+                    dismiss()
                 }
-                    .setUpHomeTabViewChildNavigationBar()
+                .setUpHomeTabViewChildNavigationBar()
             } else {
-                SubscriptionsView()
-                    .setUpHomeTabViewChildNavigationBar()
+                SubscriptionsView()  { searchInThing in
+                    onSelectThing(searchInThing)
+                    dismiss()
+                }
+                .setUpHomeTabViewChildNavigationBar()
             }
         }
         .themedNavigationBar()

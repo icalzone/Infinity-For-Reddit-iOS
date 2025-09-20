@@ -54,12 +54,17 @@ struct SearchView: View {
             TouchRipple(action: {
                 navigationManager.path.append(ThingSelectionNavigation.selectThing)
             }) {
-                HStack(spacing: 0) {
+                HStack(spacing: 32) {
                     Text("Search in")
                         .colorAccentText()
                     
-//                    RowText(postSubmissionContextViewModel.selectedSubreddit?.name ?? text)
-//                        .primaryText()
+                    if let searchInThing = searchViewModel.searchInThing {
+                        RowText(searchInThing.displayName)
+                            .primaryText()
+                    } else {
+                        RowText("All subreddits")
+                            .primaryText()
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(16)

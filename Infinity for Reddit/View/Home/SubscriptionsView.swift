@@ -17,12 +17,15 @@ struct SubscriptionsView: View {
 
     @State private var selectedOption = 0
     
-    init() {
+    private let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
+    
+    init(customOnTapForSearchInThing: ((SearchInThing) -> Void)? = nil) {
         _subscriptionListingViewModel = StateObject(
             wrappedValue: SubscriptionListingViewModel(
                 subscriptionListingRepository: SubscriptionListingRepository()
             )
         )
+        self.customOnTapForSearchInThing = customOnTapForSearchInThing
     }
 
     var body: some View {
@@ -31,13 +34,19 @@ struct SubscriptionsView: View {
                 .padding(4)
             
             TabView(selection: $selectedOption) {
-                SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
+                if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                    SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
+                        customOnTapForSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
+                    }
                     .tag(0)
+                } else {
+                    SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
+                }
                 
-                UsersView(subscriptionListingViewModel: subscriptionListingViewModel)
+                UsersView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
                     .tag(1)
                 
-                CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel)
+                CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
                     .tag(2)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -54,6 +63,8 @@ struct SubscriptionsView: View {
         @EnvironmentObject var navigationManager: NavigationManager
         @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
         
+        let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
+        
         var body: some View {
             Group {
                 if subscriptionListingViewModel.userSubscriptions.isEmpty {
@@ -69,7 +80,11 @@ struct SubscriptionsView: View {
                             Section(header: Text("Favorite").listSectionHeader()) {
                                 ForEach(subscriptionListingViewModel.favoriteUserSubscriptions, id: \.identityInView) { subscription in
                                     SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                        navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                        if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                                            customOnTapForSearchInThing(SearchInThing.user(subscription))
+                                        } else {
+                                            navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                        }
                                     }) {
                                         subscription.isFavorite.toggle()
                                         Task {
@@ -85,7 +100,11 @@ struct SubscriptionsView: View {
                         Section(header: Text("All").listSectionHeader()) {
                             ForEach(subscriptionListingViewModel.userSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                    navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                    if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                                        customOnTapForSearchInThing(SearchInThing.user(subscription))
+                                    } else {
+                                        navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                    }
                                 }) {
                                     subscription.isFavorite.toggle()
                                     Task {
@@ -108,6 +127,8 @@ struct SubscriptionsView: View {
         @EnvironmentObject var navigationManager: NavigationManager
         @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
         
+        let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
+        
         var body: some View {
             Group {
                 if subscriptionListingViewModel.myCustomFeeds.isEmpty {
@@ -123,7 +144,11 @@ struct SubscriptionsView: View {
                             Section(header: Text("Favorite").listSectionHeader()) {
                                 ForEach(subscriptionListingViewModel.favoriteMyCustomFeeds, id: \.identityInView) { customFeed in
                                     SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
-                                        navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                        if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                                            customOnTapForSearchInThing(SearchInThing.customFeed(customFeed))
+                                        } else {
+                                            navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                        }
                                     }) {
                                         customFeed.isFavorite.toggle()
                                         Task {
@@ -139,7 +164,11 @@ struct SubscriptionsView: View {
                         Section(header: Text("All").listSectionHeader()) {
                             ForEach(subscriptionListingViewModel.myCustomFeeds, id: \.identityInView) { customFeed in
                                 SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
-                                    navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                    if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                                        customOnTapForSearchInThing(SearchInThing.customFeed(customFeed))
+                                    } else {
+                                        navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                    }
                                 }) {
                                     customFeed.isFavorite.toggle()
                                     Task {

@@ -16,4 +16,15 @@ enum SearchInThing {
     case subreddit(SubscribedSubredditData)
     case user(SubscribedUserData)
     case customFeed(MyCustomFeed)
+    
+    var displayName: String {
+        switch self {
+        case .subreddit(let subscribedSubredditData):
+            return "r/\(subscribedSubredditData.name)"
+        case .user(let subscribedUserData):
+            return "u/\(subscribedUserData.name)"
+        case .customFeed(let myCustomFeed):
+            return myCustomFeed.name
+        }
+    }
 }
