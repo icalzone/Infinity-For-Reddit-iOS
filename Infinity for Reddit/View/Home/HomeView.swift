@@ -36,9 +36,6 @@ struct HomeView: View {
     
     @State private var selectedTab: Tab = .home
     @State private var showProfile: Bool = false
-    @State private var timerIsActive = true
-    
-    let timer = Timer.publish(every: 15 * 60, on: .main, in: .common).autoconnect()
     
     @Namespace private var animation
     
@@ -169,7 +166,7 @@ struct HomeView: View {
                 print("Tab selection changed to: \(newTab)")
                 
                 if newTab == .inbox {
-                    homeViewModel.userViewedInbox()
+                    homeViewModel.markInboxAsRead()
                 }
             }
             
@@ -209,21 +206,11 @@ struct HomeView: View {
             }
         }
         .environmentObject(NamespaceManager(animation))
-        .task {
-//            try? await Task.sleep(nanoseconds: 3 * 1_000_000_000)
-            await homeViewModel.refreshInbox()
-        }
-        .onReceive(timer) { _ in
-            guard timerIsActive else { return }
-            Task {
-                await homeViewModel.refreshInbox()
-            }
-        }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
-                timerIsActive = true
+                homeViewModel.startAutoRefresh()
             } else {
-                timerIsActive = false
+                homeViewModel.stopAutoRefresh()
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .inboxDeepLink)) { note in
@@ -236,7 +223,7 @@ struct HomeView: View {
                 }
                 selectedTab = .inbox
                 Task { @MainActor in
-                    homeViewModel.pendingInboxRoute = .init(viewMessage: viewMessage)
+                    homeViewModel.inboxNavigationTarget = .init(viewMessage: viewMessage)
                 }
             }
         }

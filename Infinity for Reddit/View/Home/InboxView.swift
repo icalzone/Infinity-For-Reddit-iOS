@@ -41,15 +41,15 @@ struct InboxView: View {
         .onAppear {
             applyPendingRouteIfAny()
         }
-        .onChange(of: homeViewModel.pendingInboxRoute, initial: true) { _, _  in
+        .onChange(of: homeViewModel.inboxNavigationTarget, initial: true) { _, _  in
             applyPendingRouteIfAny()
         }
     }
     
     private func applyPendingRouteIfAny() {
-        if let route = homeViewModel.pendingInboxRoute {
+        if let route = homeViewModel.inboxNavigationTarget {
             selectedOption = route.viewMessage ? 1 : 0
-            homeViewModel.pendingInboxRoute = nil 
+            homeViewModel.inboxNavigationTarget = nil 
         }
     }
 }

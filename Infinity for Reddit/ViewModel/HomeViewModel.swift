@@ -6,13 +6,15 @@
 
 import Foundation
 import SwiftUI
+import Combine
 
 @MainActor
 class HomeViewModel: ObservableObject {
     @Published var hasNewMessages: Bool = false
-    @Published var pendingInboxRoute: InboxRoute?
+    @Published var inboxNavigationTarget: InboxNavigationTarget?
+    private var refreshTimer: AnyCancellable?
     
-    struct InboxRoute: Equatable {
+    struct InboxNavigationTarget: Equatable {
         let viewMessage: Bool
     }
     
@@ -25,16 +27,32 @@ class HomeViewModel: ObservableObject {
         self.userDefaults = resolvedUserDefaults
     }
     
-    func refreshInbox() async {
+    func refreshInboxMessages() async {
         print("Foreground Refresh: Pull & notify via unified pipeline.")
-        let anySent = await BackgroundTasksManager.shared.refreshAndNotifyAllAccounts()
-        if hasNewMessages != anySent { hasNewMessages = anySent}
-        print(anySent ? "Foreground Refresh: New message found! UI will be updated."
+        let newMessagesAvailable = await BackgroundTasksManager.shared.refreshAndNotifyAllAccounts()
+        if hasNewMessages != newMessagesAvailable { hasNewMessages = newMessagesAvailable}
+        print(newMessagesAvailable ? "Foreground Refresh: New message found! UI will be updated."
               : "Foreground Refresh: No new message.")
     }
     
-    func userViewedInbox() {
+    func markInboxAsRead() {
         print("User viewed inbox, clearing badge and advancing last seen.")
         hasNewMessages = false
+    }
+    
+    func startAutoRefresh() {
+        refreshTimer = Timer.publish(every: 30, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                guard let self else { return }
+                _ = Task {
+                    await self.refreshInboxMessages()
+                }
+            }
+    }
+    
+    func stopAutoRefresh() {
+        refreshTimer?.cancel()
+        refreshTimer = nil
     }
 }

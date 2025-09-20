@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUICore
+import SwiftUI
 
 class NamespaceManager: ObservableObject {
     var animation: Namespace.ID
