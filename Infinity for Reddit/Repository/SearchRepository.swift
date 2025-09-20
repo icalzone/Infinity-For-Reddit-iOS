@@ -47,4 +47,15 @@ class SearchRepository: SearchRepositoryProtocol {
             }
         }
     }
+    
+    func deleteRecentSearchQueries(recentSearchQuery: RecentSearchQuery) {
+        operationQueue.addOperation {
+            do {
+                try self.recentSearchQueryDao.deleteRecentSearchQuery(recentSearchQuery: recentSearchQuery)
+            } catch {
+                // No need to handle error
+                print(error)
+            }
+        }
+    }
 }

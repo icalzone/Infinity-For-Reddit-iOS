@@ -64,4 +64,8 @@ class SearchViewModel: ObservableObject {
     func clearAllRecentSearchQueries() {
         searchRepository.clearAllRecentSearchQueries(username: username)
     }
+    
+    func deleteSearchQuery(recentSearchQuery: RecentSearchQuery) {
+        searchRepository.deleteRecentSearchQueries(recentSearchQuery: recentSearchQuery)
+    }
 }

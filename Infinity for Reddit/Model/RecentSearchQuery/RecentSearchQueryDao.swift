@@ -63,7 +63,7 @@ struct RecentSearchQueryDao {
         }
     }
     
-    func deleteRecentSearchQueries(recentSearchQuery: RecentSearchQuery) throws {
+    func deleteRecentSearchQuery(recentSearchQuery: RecentSearchQuery) throws {
         _ = try dbPool.write { db in
             try recentSearchQuery.delete(db)
         }
