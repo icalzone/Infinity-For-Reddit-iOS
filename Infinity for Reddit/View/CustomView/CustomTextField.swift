@@ -23,7 +23,7 @@ struct CustomTextField<FieldType: Hashable>: View {
          text: Binding<String>,
          singleLine: Bool = false,
          keyboardType: UIKeyboardType = .default,
-         showBorder: Bool = true,
+         showBorder: Bool = false,
          fieldType: FieldType,
          focusedField: FocusState<FieldType?>.Binding
     ) {
@@ -55,6 +55,11 @@ struct CustomTextField<FieldType: Hashable>: View {
                         .stroke(Color(hex: customThemeViewModel.currentCustomTheme.primaryTextColor), lineWidth: 1)
                 )
         }
+        .background(Color(.systemGray5))
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .background(Color(.systemGray5))
+        .cornerRadius(10)
         .focused($focusedField, equals: fieldType)
     }
 }
