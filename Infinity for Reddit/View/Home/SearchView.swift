@@ -14,7 +14,7 @@ struct SearchView: View {
     @StateObject private var searchViewModel: SearchViewModel
     @FocusState var focusedField: FieldType?
     
-    @State private var showSelectSearchInThingView: Bool = false
+    @State private var showSelectSearchInThingSheet: Bool = false
     @State private var showSearchSubredditsAndUsersView: Bool = false
     @State private var showSubredditAndUserSearchResultView: Bool = false
     @State private var searchThingQuery: String = ""
@@ -63,25 +63,26 @@ struct SearchView: View {
             .cornerRadius(10)
             .padding(16)
             
-            TouchRipple(action: {
-                //navigationManager.path.append(ThingSelectionNavigation.selectThing)
-                showSelectSearchInThingView = true
-            }) {
-                HStack(spacing: 32) {
-                    Text("Search in")
-                        .colorAccentText()
-                    
-                    if let searchInThing = searchViewModel.searchInThing {
-                        RowText(searchInThing.displayName)
-                            .primaryText()
-                    } else {
-                        RowText("All subreddits")
-                            .primaryText()
+            if onSearchCustomAction == nil {
+                TouchRipple(action: {
+                    showSelectSearchInThingSheet = true
+                }) {
+                    HStack(spacing: 32) {
+                        Text("Search in")
+                            .colorAccentText()
+                        
+                        if let searchInThing = searchViewModel.searchInThing {
+                            RowText(searchInThing.displayName)
+                                .primaryText()
+                        } else {
+                            RowText("All subreddits")
+                                .primaryText()
+                        }
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(16)
+                    .contentShape(Rectangle())
                 }
-                .frame(maxWidth: .infinity)
-                .padding(16)
-                .contentShape(Rectangle())
             }
             
             // Recent Searches Header
@@ -148,15 +149,15 @@ struct SearchView: View {
         .rootViewBackground()
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Search")
-        .sheet(isPresented: $showSelectSearchInThingView) {
-            SelectSearchInThingView(onSearchThing: {
+        .sheet(isPresented: $showSelectSearchInThingSheet) {
+            SelectSearchInThingSheet(onSearchThing: {
                 showSearchSubredditsAndUsersView = true
             }) { searchInThing in
                 searchViewModel.searchInThing = searchInThing
             }
         }
         .sheet(isPresented: $showSearchSubredditsAndUsersView) {
-            SearchSubredditsAndUsersView(onSearch: { query in
+            SearchSubredditsAndUsersSheet(onSearch: { query in
                 self.searchThingQuery = query
                 showSubredditAndUserSearchResultView = true
             }) { searchInThing in
@@ -165,7 +166,7 @@ struct SearchView: View {
             }
         }
         .sheet(isPresented: $showSubredditAndUserSearchResultView) {
-            SubredditAndUserSearchResultView(query: searchThingQuery) { searchInThing in
+            SubredditAndUserSearchResultSheet(query: searchThingQuery) { searchInThing in
                 searchViewModel.searchInThing = searchInThing
                 showSubredditAndUserSearchResultView = false
             }
