@@ -87,12 +87,14 @@ struct CustomNavigationStack<Content: View>: View {
                     case .filterPosts(let postListingMetadata):
                         CustomizePostFilterView(PostFilter()) { postFilter in
                             navigationManager.path.removeLast()
-                            navigationManager.path.append(
-                                AppNavigation.filteredPosts(
-                                    postListingMetadata: postListingMetadata,
-                                    postFilter: postFilter
+                            DispatchQueue.main.async {
+                                navigationManager.path.append(
+                                    AppNavigation.filteredPosts(
+                                        postListingMetadata: postListingMetadata,
+                                        postFilter: postFilter
+                                    )
                                 )
-                            )
+                            }
                         }
                         .environmentObject(navigationManager)
                     case .filteredPosts(let postListingMetadata, let postFilter):

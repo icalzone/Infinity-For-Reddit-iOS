@@ -14,6 +14,11 @@ struct SearchView: View {
     @StateObject private var searchViewModel: SearchViewModel
     @FocusState var focusedField: FieldType?
     
+    @State private var showSelectSearchInThingView: Bool = false
+    @State private var showSearchSubredditsAndUsersView: Bool = false
+    @State private var showSubredditAndUserSearchResultView: Bool = false
+    @State private var searchThingQuery: String = ""
+    
     private let onSearchCustomAction: ((String) -> Void)?
     
     init(onSearchCustomAction: ((String) -> Void)? = nil) {
@@ -59,7 +64,8 @@ struct SearchView: View {
             .padding(16)
             
             TouchRipple(action: {
-                navigationManager.path.append(ThingSelectionNavigation.selectThing)
+                //navigationManager.path.append(ThingSelectionNavigation.selectThing)
+                showSelectSearchInThingView = true
             }) {
                 HStack(spacing: 32) {
                     Text("Search in")
@@ -142,12 +148,26 @@ struct SearchView: View {
         .rootViewBackground()
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Search")
-        .navigationDestination(for: ThingSelectionNavigation.self) { destination in
-            switch destination {
-            case .selectThing:
-                SelectSearchInThingView { searchInThing in
-                    searchViewModel.searchInThing = searchInThing
-                }
+        .sheet(isPresented: $showSelectSearchInThingView) {
+            SelectSearchInThingView(onSearchThing: {
+                showSearchSubredditsAndUsersView = true
+            }) { searchInThing in
+                searchViewModel.searchInThing = searchInThing
+            }
+        }
+        .sheet(isPresented: $showSearchSubredditsAndUsersView) {
+            SearchSubredditsAndUsersView(onSearch: { query in
+                self.searchThingQuery = query
+                showSubredditAndUserSearchResultView = true
+            }) { searchInThing in
+                searchViewModel.searchInThing = searchInThing
+                showSearchSubredditsAndUsersView = false
+            }
+        }
+        .sheet(isPresented: $showSubredditAndUserSearchResultView) {
+            SubredditAndUserSearchResultView(query: searchThingQuery) { searchInThing in
+                searchViewModel.searchInThing = searchInThing
+                showSubredditAndUserSearchResultView = false
             }
         }
     }

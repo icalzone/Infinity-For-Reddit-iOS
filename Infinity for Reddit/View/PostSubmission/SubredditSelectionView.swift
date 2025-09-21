@@ -43,15 +43,21 @@ struct SubredditSelectionView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     navigationManager.path.removeLast()
-                    navigationManager.path.append(SearchSubredditNavigation.searchSubreddit)
+                    DispatchQueue.main.async {
+                        navigationManager.path.append(SearchSubredditNavigation.searchSubreddit)
+                    }
                 } label: {
                     SwiftUI.Image(systemName: "magnifyingglass")
                 }
             }
         }
         .navigationDestination(for: SearchSubredditNavigation.self) { destination in
-            SearchSubredditsView { subscribedSubredditData in
-                onSubscribedSubredditSelected(subscribedSubredditData)
+            switch destination {
+            case .searchSubreddit:
+                SearchSubredditsView { subscribedSubredditData in
+                    onSubscribedSubredditSelected(subscribedSubredditData)
+                }
+                .environmentObject(navigationManager)
             }
         }
     }

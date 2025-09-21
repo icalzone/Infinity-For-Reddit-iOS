@@ -29,7 +29,6 @@ public class SubredditDetailsRepository: SubredditDetailsRepositoryProtocol {
         
         let data = try await self.session.request(
             RedditAPI.getSubredditData(subredditName: subredditName)
-//            RedditOAuthAPI.getSubredditData(subredditName: subredditName)
         )
         .validate()
         .serializingData()
@@ -42,7 +41,7 @@ public class SubredditDetailsRepository: SubredditDetailsRepositoryProtocol {
             throw SubredditDetailsRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-        return SubredditDetailRootClass(fromJson: json).toSubredditData()
+        return try SubredditDetailRootClass(fromJson: json).toSubredditData()
     }
     
     public func subsribeSubreddit(subredditName: String, action: String) async throws {

@@ -11,17 +11,16 @@ import SwiftyJSON
 class SubredditListingRootClass: NSObject {
     var kind: String!
     var data: SubredditListing!
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!) {
+
+    init(fromJson json: JSON!) throws {
         if json.isEmpty {
-            return
+            throw JSONError.invalidData
         }
         let dataJson = json["data"]
-        if !dataJson.isEmpty{
-            data = SubredditListing(fromJson: dataJson)
+        if !dataJson.isEmpty {
+            data = try SubredditListing(fromJson: dataJson)
+        } else {
+            throw JSONError.invalidData
         }
         kind = json["kind"].stringValue
     }
@@ -32,19 +31,20 @@ public class SubredditListing : NSObject {
     var after : String!
     var before : String!
     var dist : Int!
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!) {
+
+    init(fromJson json: JSON!) throws {
         if json.isEmpty {
-            return
+            throw JSONError.invalidData
         }
         let childrenArray = json["children"].arrayValue
         for childJSON in childrenArray {
             let dataJson = childJSON["data"]
-            if !dataJson.isEmpty{
-                subreddits.append(Subreddit(fromJson: dataJson))
+            if !dataJson.isEmpty {
+                do {
+                    subreddits.append(try Subreddit(fromJson: dataJson))
+                } catch {
+                    print(error.localizedDescription)
+                }
             }
         }
         after = json["after"].stringValue
@@ -157,9 +157,9 @@ class Subreddit : NSObject {
         return iconImg.isEmpty ? communityIcon : iconImg
     }
     
-    init(fromJson json: JSON!) {
+    init(fromJson json: JSON!) throws {
         if json.isEmpty {
-            return
+            throw JSONError.invalidData
         }
         acceptFollowers = json["accept_followers"].boolValue
         advertiserCategory = json["advertiser_category"].stringValue

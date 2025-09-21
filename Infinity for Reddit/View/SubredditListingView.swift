@@ -17,7 +17,7 @@ struct SubredditListingView: View {
     @State private var navigationBarMenuKey: UUID?
     private let account: Account
     private let iconSize: CGFloat = 28
-    var onSelect: ((Subreddit) -> Void)?
+    private var onSelect: ((Subreddit) -> Void)?
     
     init(account: Account, query: String, onSelect: ((Subreddit) -> Void)? = nil) {
         self.account = account

@@ -188,7 +188,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         }
         
         await MainActor.run {
-            post.subredditOrUserIcon = SubredditDetailRootClass(fromJson: json).toSubredditData().iconUrl ?? ""
+            post.subredditOrUserIcon = try? SubredditDetailRootClass(fromJson: json).toSubredditData().iconUrl ?? ""
             subredditOrUserIcons[post.subreddit] = post.subredditOrUserIcon
         }
     }

@@ -165,7 +165,7 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         }
         
         await MainActor.run {
-            post.subredditOrUserIconInPostDetails = SubredditDetailRootClass(fromJson: json).toSubredditData().iconUrl ?? ""
+            post.subredditOrUserIconInPostDetails = try? SubredditDetailRootClass(fromJson: json).toSubredditData().iconUrl ?? ""
         }
     }
     

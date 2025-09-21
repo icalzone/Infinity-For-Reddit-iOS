@@ -170,6 +170,7 @@ struct SubmitTextPostView: View {
                 SubredditSelectionView { subscribedSubreddit in
                     postSubmissionContextViewModel.selectedSubreddit = subscribedSubreddit
                 }
+                .environmentObject(navigationManager)
             }
         }
     }

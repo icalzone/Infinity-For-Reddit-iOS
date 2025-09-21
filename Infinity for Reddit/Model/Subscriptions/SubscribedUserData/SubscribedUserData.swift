@@ -34,3 +34,14 @@ class SubscribedUserData: Codable, FetchableRecord, PersistableRecord {
     
     public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }
 }
+
+extension SubscribedUserData {
+    static func fromUser(_ u: User, username: String) -> SubscribedUserData {
+        return SubscribedUserData(
+            name: u.name ?? "",
+            iconUrl: u.iconUrl,
+            username: username,
+            isFavorite: false
+        )
+    }
+}

@@ -41,6 +41,6 @@ public class UserListingRepository: UserListingRepositoryProtocol {
             throw UserListingRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-        return UserListingRootClass(fromJson: json).data
+        return try UserListingRootClass(fromJson: json).data
     }
 }

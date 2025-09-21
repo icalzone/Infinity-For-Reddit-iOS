@@ -12,13 +12,15 @@ class SubredditDetailRootClass : NSObject {
     var data : Subreddit!
     var kind : String!
 
-    init(fromJson json: JSON!) {
+    init(fromJson json: JSON!) throws {
         if json.isEmpty {
-            return
+            throw JSONError.invalidData
         }
         let dataJson = json["data"]
         if !dataJson.isEmpty {
-            data = Subreddit(fromJson: dataJson)
+            data = try Subreddit(fromJson: dataJson)
+        } else {
+            throw JSONError.invalidData
         }
         kind = json["kind"].stringValue
     }

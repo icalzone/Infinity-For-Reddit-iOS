@@ -15,7 +15,9 @@ struct SearchSubredditsView: View {
     var body: some View {
         SearchView { query in
             navigationManager.path.removeLast()
-            navigationManager.path.append(SubredditSearchResultNavigation.subredditSearchResult(query: query))
+            DispatchQueue.main.async {
+                navigationManager.path.append(SubredditSearchResultNavigation.subredditSearchResult(query: query))
+            }
         }
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Search Subreddits")

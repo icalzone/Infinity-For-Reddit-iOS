@@ -7,10 +7,10 @@
 import SwiftUI
 
 struct PostSubmissionSubredditChooserView: View {
-    @EnvironmentObject var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @EnvironmentObject var accountViewModel: AccountViewModel
     @EnvironmentObject var navigationManager: NavigationManager
-    @StateObject var themeViewModel = CustomThemeViewModel()
+    
+    @StateObject var postSubmissionContextViewModel: PostSubmissionContextViewModel
     
     @State private var showNoSubredditAlert = false
     @State private var showRulesSheet = false
@@ -20,6 +20,15 @@ struct PostSubmissionSubredditChooserView: View {
     var action: () -> Void
     
     private let iconSize: CGFloat = 24
+    
+    init(text: String, iconUrl: String?, action: @escaping () -> Void) {
+        self.text = text
+        self.iconUrl = iconUrl
+        self.action = action
+        _postSubmissionContextViewModel = StateObject(
+            wrappedValue: PostSubmissionContextViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
+        )
+    }
     
     var body: some View {
         TouchRipple(action: action) {

@@ -41,6 +41,6 @@ public class SubredditListingRepository: SubredditListingRepositoryProtocol {
             throw SubredditListingRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-        return SubredditListingRootClass(fromJson: json).data
+        return try SubredditListingRootClass(fromJson: json).data
     }
 }

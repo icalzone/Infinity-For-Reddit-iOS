@@ -17,9 +17,11 @@ struct UserListingView: View {
     @State private var navigationBarMenuKey: UUID?
     private let account: Account
     private let iconSize: CGFloat = 28
+    private var onSelect: ((User) -> Void)?
     
-    init(account: Account, query: String) {
+    init(account: Account, query: String, onSelect: ((User) -> Void)? = nil) {
         self.account = account
+        self.onSelect = onSelect
         
         _userListingViewModel = StateObject(
             wrappedValue: UserListingViewModel(
@@ -62,7 +64,11 @@ struct UserListingView: View {
                         .contentShape(Rectangle())
                         .listPlainItem()
                         .onTapGesture {
-                            navigationManager.path.append(AppNavigation.userDetails(username: user.name))
+                            if let onSelect {
+                                onSelect(user)
+                            } else {
+                                navigationManager.path.append(AppNavigation.userDetails(username: user.name))
+                            }
                         }
                     }
                     if userListingViewModel.hasMorePages {
