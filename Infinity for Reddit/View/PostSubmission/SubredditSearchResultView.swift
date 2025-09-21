@@ -29,7 +29,18 @@ struct SubredditSearchResultSheet: View {
         .addTitleToInlineNavigationBar("Subreddits")
         .id(accountViewModel.account.username)
         .toolbar {
-            NavigationBarMenu()
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    Text("Cancel")
+                        .navigationBarPrimaryText()
+                }
+            }
+            
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationBarMenu()
+            }
         }
     }
 }
