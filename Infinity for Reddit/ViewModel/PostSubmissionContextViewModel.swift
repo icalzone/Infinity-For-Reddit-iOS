@@ -10,6 +10,7 @@ import Foundation
 class PostSubmissionContextViewModel: ObservableObject {
     @Published var selectedSubreddit: SubscribedSubredditData? = nil {
         didSet {
+            selectedFlair = nil
             error = nil
             isLoadingRules = false
             isLoadingFlairs = false
@@ -23,6 +24,11 @@ class PostSubmissionContextViewModel: ObservableObject {
             }
         }
     }
+    @Published var selectedFlair: Flair?
+    @Published var isSpoiler: Bool = false
+    @Published var isSensitive: Bool = false
+    @Published var receiveReplyNotification: Bool = false
+    
     @Published var error: Error?
     @Published var rules: [Rule] = []
     @Published var flairs: [Flair] = []

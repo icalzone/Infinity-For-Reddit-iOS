@@ -16,11 +16,8 @@ struct SubmitLinkPostView: View {
     @FocusState private var markdownToolbarFocusedField: MarkdownFieldType?
     @FocusState private var focusedField: FieldType?
     
-    @State private var titleTextViewCanFocus: Bool = true
     @State private var contentTextViewCanFocus: Bool = true
     @State private var markdownToolbarHeight: CGFloat = 0
-    @State private var showSelectSubredditView: Bool = false
-    @State private var showFlairSheet: Bool = false
     @State private var titleSelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var bodySelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showMarkdownPreview: Bool = false
@@ -50,43 +47,7 @@ struct SubmitLinkPostView: View {
                             
                             Divider()
                             
-                            HStack(spacing: 16) {
-                                if postSubmissionContextViewModel.selectedSubreddit != nil {
-                                    FlairFilledButton(selectedFlair: submitLinkPostViewModel.selectedFlair) {
-                                        if submitLinkPostViewModel.selectedFlair != nil {
-                                            submitLinkPostViewModel.selectedFlair = nil
-                                        } else {
-                                            Task {
-                                                await postSubmissionContextViewModel.fetchFlairs()
-                                                showFlairSheet = true
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                SpoilerFilledButton(isSpoiler: $submitLinkPostViewModel.isSpoiler)
-                                
-                                SensitiveFilledButton(isSensitive: $submitLinkPostViewModel.isSensitive)
-                        
-                                Spacer()
-                            }
-                            .padding(16)
-                            
-                            TouchRipple(action: {
-                                submitLinkPostViewModel.receiveReplyNotification.toggle()
-                            }) {
-                                HStack {
-                                    RowText("Receive post reply notifications")
-                                        .secondaryText()
-                                    
-                                    Toggle(isOn: $submitLinkPostViewModel.receiveReplyNotification) {}
-                                        .labelsHidden()
-                                        .themedToggle()
-                                        .excludeFromTouchRipple()
-                                }
-                                .padding(16)
-                            }
-                            
+                            PostSubmissionContextView(postSubmissionContextViewModel: postSubmissionContextViewModel)
                             
                             Divider()
                             
@@ -173,13 +134,6 @@ struct SubmitLinkPostView: View {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
             }
-        }
-        .sheet(isPresented: $showFlairSheet) {
-            FlairChooserSheet(postSubmissionContextViewModel: postSubmissionContextViewModel) { flair in
-                submitLinkPostViewModel.selectedFlair = flair
-            }
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitLinkPostViewModel.content)
