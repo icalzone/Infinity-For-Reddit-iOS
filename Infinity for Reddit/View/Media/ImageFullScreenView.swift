@@ -25,21 +25,35 @@ struct ImageFullScreenView: View {
     }
     
     var body: some View {
-        CustomWebImage(
-            url?.absoluteString ?? "",
-            aspectRatio: aspectRatio,
-            handleImageTapGesture: false,
-            matchedGeometryEffectId: matchedGeometryEffectId
-        )
-        .mediaGesture(
-            outOfBoundsColor: .black,
-            onDragEnded: { transform in
-                if transform.scaleX == 1 && transform.scaleY == 1 && abs(transform.ty) > 100 {
-                    onDismiss()
-                    return true
+        ZStack {
+            CustomWebImage(
+                url?.absoluteString ?? "",
+                aspectRatio: aspectRatio,
+                handleImageTapGesture: false,
+                matchedGeometryEffectId: matchedGeometryEffectId
+            )
+            .mediaGesture(
+                outOfBoundsColor: .black,
+                onDragEnded: { transform in
+                    if transform.scaleX == 1 && transform.scaleY == 1 && abs(transform.ty) > 100 {
+                        onDismiss()
+                        return true
+                    }
+                    return false
                 }
-                return false
+            )
+            
+            VStack {
+                Spacer()
+                
+                ImageFullScreenToolbar(onDownload: {
+                    print("download")
+                }, onSetAsWallpaper: {
+                    print("wallpaper")
+                }, onShare: {
+                    print("share")
+                })
             }
-        )
+        }
     }
 }
