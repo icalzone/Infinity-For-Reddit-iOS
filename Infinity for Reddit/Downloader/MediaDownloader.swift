@@ -17,6 +17,8 @@ class MediaDownloader {
         case saveToPhotosLibraryFailed
     }
     
+    static let shared = MediaDownloader()
+    
     private let session: Session
     
     private init() {

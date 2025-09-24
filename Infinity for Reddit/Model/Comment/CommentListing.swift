@@ -9,16 +9,13 @@ import Foundation
 import SwiftyJSON
 import MarkdownUI
 
-public class CommentListingRootClass: NSObject, NSCoding{
+public class CommentListingRootClass: NSObject {
     var kind: String!
     var data: CommentListing!
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
+
     init(fromJson json: JSON!) throws {
-        if json.isEmpty{
-            return
+        if json.isEmpty {
+            throw JSONError.invalidData
         }
         let dataJson = json["data"]
         if !dataJson.isEmpty{
@@ -26,64 +23,20 @@ public class CommentListingRootClass: NSObject, NSCoding{
         }
         kind = json["kind"].stringValue
     }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the appropriate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if data != nil{
-            dictionary["data"] = data.toDictionary()
-        }
-        if kind != nil{
-            dictionary["kind"] = kind
-        }
-        return dictionary
-    }
-    
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required public init(coder aDecoder: NSCoder)
-    {
-        data = aDecoder.decodeObject(forKey: "data") as? CommentListing
-        kind = aDecoder.decodeObject(forKey: "kind") as? String
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    public func encode(with aCoder: NSCoder)
-    {
-        if data != nil{
-            aCoder.encode(data, forKey: "data")
-        }
-        if kind != nil{
-            aCoder.encode(kind, forKey: "kind")
-        }
-        
-    }
 }
 
-public class CommentListing : NSObject, NSCoding, Validatable {
+public class CommentListing : NSObject, Validatable {
     var comments : [Comment] = [Comment]()
     var commentMore: CommentMore?
     var after : String!
     var before : String!
     var dist : Int!
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
+
     init(fromJson json: JSON!) throws {
         try Self.validate(json: json)
         
         if json.isEmpty {
-            return
+            throw JSONError.invalidData
         }
         
         let childrenArray = json["children"].arrayValue
@@ -118,52 +71,6 @@ public class CommentListing : NSObject, NSCoding, Validatable {
         after = ""
         before = ""
         dist = 0
-    }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if after != nil{
-            dictionary["after"] = after
-        }
-        if before != nil{
-            dictionary["before"] = before
-        }
-        if dist != nil{
-            dictionary["dist"] = dist
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc public required init(coder aDecoder: NSCoder)
-    {
-        after = aDecoder.decodeObject(forKey: "after") as? String
-        before = aDecoder.decodeObject(forKey: "before") as? String
-        dist = aDecoder.decodeObject(forKey: "dist") as? Int
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    public func encode(with aCoder: NSCoder)
-    {
-        if after != nil{
-            aCoder.encode(after, forKey: "after")
-        }
-        if before != nil{
-            aCoder.encode(before, forKey: "before")
-        }
-        if dist != nil{
-            aCoder.encode(dist, forKey: "dist")
-        }
     }
 }
 
@@ -348,12 +255,10 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         permalink = json["permalink"].stringValue
         quarantine = json["quarantine"].boolValue
         removalReason = json["removal_reason"].stringValue
-        if let repliesData = json["replies"].dictionary?["data"], !repliesData.isEmpty {
-            do {
-                replies = try CommentListing(fromJson: repliesData)
-            } catch {
-                print("Failed to parse replies: \(error)")
-            }
+        do {
+            replies = try CommentListing(fromJson: json["replies"]["data"])
+        } catch {
+            print("Failed to parse replies: \(error)")
         }
         reportReasons = json["report_reasons"].stringValue
         saved = json["saved"].boolValue
