@@ -43,19 +43,18 @@ struct ImageFullScreenView: View {
                 }
             )
             
-            VStack {
-                Spacer()
-                
-                ImageFullScreenToolbar(
-                    downloadMediaType: DownloadMediaType.image(downloadUrlString: urlString, fileName: "test.jpg"),
-                    onSetAsWallpaper: {
-                        print("wallpaper")
-                    },
-                    onShare: {
-                        print("share")
-                    }
-                )
-            }
+            ImageFullScreenToolbar(
+                downloadMediaType: DownloadMediaType.image(downloadUrlString: urlString, fileName: "test.jpg"),
+                onSetAsWallpaper: {
+                    print("wallpaper")
+                },
+                onShare: {
+                    print("share")
+                },
+                onClose: {
+                    onDismiss()
+                }
+            )
         }
     }
 }
