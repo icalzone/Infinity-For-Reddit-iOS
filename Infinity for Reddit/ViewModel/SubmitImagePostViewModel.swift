@@ -6,11 +6,13 @@
         
 import Foundation
 import MarkdownUI
+import SwiftUI
 
 class SubmitImagePostViewModel: ObservableObject {
     @Published var title: String = ""
     @Published var content: String = ""
     @Published var selectedAccount: Account
+    @Published var capturedImage: UIImage?
     
     init() {
         self.selectedAccount = AccountViewModel.shared.account
