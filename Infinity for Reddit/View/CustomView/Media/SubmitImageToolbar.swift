@@ -9,11 +9,13 @@ import SwiftUI
 struct SubmitImageToolbar: View {
     
     private let buttonSize: CGFloat = 24
+    let onCameraTap: () -> Void
+    let onPhotoPickerTap: () -> Void
 
     var body: some View {
         HStack(spacing: 32) {
             Button {
-                print("Camera button tapped")
+                onCameraTap()
             } label: {
                 SwiftUI.Image(systemName: "camera.fill")
                     .font(.system(size: buttonSize))
@@ -23,7 +25,7 @@ struct SubmitImageToolbar: View {
             }
 
             Button {
-                print("Photo picker button tapped")
+                onPhotoPickerTap()
             } label: {
                 SwiftUI.Image(systemName: "photo.fill.on.rectangle.fill")
                     .font(.system(size: buttonSize))

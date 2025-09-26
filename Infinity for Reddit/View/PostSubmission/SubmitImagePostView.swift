@@ -6,6 +6,7 @@
 
 import SwiftUI
 import MarkdownUI
+import MijickCamera
 
 struct SubmitImagePostView: View {
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
@@ -20,6 +21,7 @@ struct SubmitImagePostView: View {
     @State private var bodySelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showMarkdownPreview: Bool = false
     @State private var cursorPosition: CGPoint = .zero
+    @State private var showCamera: Bool = false
     
     init() {
         _postSubmissionContextViewModel = StateObject(
@@ -72,8 +74,15 @@ struct SubmitImagePostView: View {
                                 }
                                 .padding(16)
                                 
-                                SubmitImageToolbar()
-                                    .frame(maxWidth: .infinity)
+                                SubmitImageToolbar(
+                                    onCameraTap: {
+                                        showCamera = true
+                                    },
+                                    onPhotoPickerTap: {
+                                        print("Photo Picker Button Tapped")
+                                    }
+                                )
+                                .frame(maxWidth: .infinity)
                             }
                         }
                     }
@@ -117,6 +126,26 @@ struct SubmitImagePostView: View {
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitImagePostViewModel.content)
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            MCamera()
+                .onImageCaptured { image, controller in
+                    submitImagePostViewModel.capturedImage = image
+                    controller.closeMCamera()
+                }
+                .setCloseMCameraAction {
+                    showCamera = false
+                }
+                .setCameraOutputType(.photo)
+                .setAudioAvailability(false)
+                .setCameraScreen { cameraManager, id, closeMCameraAction in
+                    DefaultCameraScreen(
+                        cameraManager: cameraManager,
+                        namespace: id,
+                        closeMCameraAction: closeMCameraAction
+                    ).cameraOutputSwitchAllowed(false)
+                }
+                .startSession()
         }
     }
     
