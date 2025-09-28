@@ -33,6 +33,7 @@ class VideoUserDefaultsUtils {
         return UserDefaults.video.double(forKey: defaultPlaybackSpeedKey, 1)
     }
     static let playbackSpeeds: [Double] = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+    static let playbackSpeedsText: [String] = ["0.25x", "0.5x", "0.75x", "1x", "1.25x", "1.5x", "1.75x", "2x"]
     
     static let redditVideoDefaultResolutionKey = "reddit_video_default_resolution"
     static var redditVideoDefaultResolution: Int {

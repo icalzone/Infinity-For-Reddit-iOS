@@ -13,6 +13,9 @@ struct VideoFullScreenView: View {
     @EnvironmentObject var namespaceManager: NamespaceManager
     
     @ObservedObject private var videoFullScreenViewModel: VideoFullScreenViewModel
+    
+    @AppStorage(VideoUserDefaultsUtils.defaultPlaybackSpeedKey, store: .video) private var defaultPlaybackSpeed: Double = 1.0
+    
     @State private var scale: CGFloat = 1.0
     @GestureState private var dragOffset: CGSize = .zero
     @State private var currentDragOffset = 0.0
@@ -20,6 +23,7 @@ struct VideoFullScreenView: View {
     @State private var isAnimatingBack: Bool = false
     @State private var isShowingController: Bool = false
     @State private var isPlaying: Bool = true
+    @State private var playbackSpeed: Double = 1
     
     let url: URL
     let videoType: VideoType
@@ -56,6 +60,7 @@ struct VideoFullScreenView: View {
                     isSeekingProgress: $videoFullScreenViewModel.isSeekingProgress,
                     hasAudio: $videoFullScreenViewModel.hasAudio,
                     isMuted: $videoFullScreenViewModel.isMuted,
+                    playbackSpeed: $playbackSpeed,
                     onDismiss: {
                         withAnimation {
                             onDismiss()
@@ -103,6 +108,9 @@ struct VideoFullScreenView: View {
         }
         .onChange(of: videoFullScreenViewModel.isMuted) { _, newValue in
             videoFullScreenViewModel.player.isMuted = newValue
+        }
+        .onChange(of: playbackSpeed) { _, newValue in
+            videoFullScreenViewModel.player.rate = Float(newValue)
         }
         .task {
             await videoFullScreenViewModel.loadAndPlay(url: url, videoType: videoType)
@@ -160,6 +168,7 @@ struct VideoController: View {
     @Binding var isSeekingProgress: Bool
     @Binding var hasAudio: Bool
     @Binding var isMuted: Bool
+    @Binding var playbackSpeed: Double
     
     let onDismiss: () -> Void
     
@@ -182,6 +191,32 @@ struct VideoController: View {
                             isMuted.toggle()
                         } label: {
                             SwiftUI.Image(systemName: isMuted ? "speaker.slash" : "speaker.wave.2")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    
+                    Menu {
+                        ForEach(Array(VideoUserDefaultsUtils.playbackSpeeds.indices), id: \.self) { index in
+                            Button {
+                                playbackSpeed = VideoUserDefaultsUtils.playbackSpeeds[index]
+                            } label: {
+                                HStack {
+                                    Text(VideoUserDefaultsUtils.playbackSpeedsText[index])
+                                        .primaryText()
+                                    
+                                    Spacer()
+                                    
+                                    if playbackSpeed == VideoUserDefaultsUtils.playbackSpeeds[index] {
+                                        SwiftUI.Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        Button {
+                        } label: {
+                            SwiftUI.Image(systemName: "gauge.with.dots.needle.67percent")
                                 .font(.system(size: 24))
                                 .foregroundStyle(.white)
                         }
