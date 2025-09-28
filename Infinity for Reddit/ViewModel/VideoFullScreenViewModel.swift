@@ -142,7 +142,7 @@ class VideoFullScreenViewModel: ObservableObject {
             }
             
             self.audioTrackObserver = item.observe(\.tracks, options: [.new]) { [weak self] item, _ in
-                guard let self = self else { return }
+                guard let self = self, !self.isSeekingProgress else { return }
                 var hasAudio = false
                 for playerItem in item.tracks {
                     hasAudio = playerItem.assetTrack?.mediaType == .audio

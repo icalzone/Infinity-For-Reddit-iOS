@@ -61,6 +61,18 @@ struct VideoFullScreenView: View {
                     hasAudio: $videoFullScreenViewModel.hasAudio,
                     isMuted: $videoFullScreenViewModel.isMuted,
                     playbackSpeed: $playbackSpeed,
+                    onFastForward: {
+                        let newTime = videoFullScreenViewModel.currentTime + 5
+                        videoFullScreenViewModel.player.seek(
+                            to: CMTime(seconds: min(videoFullScreenViewModel.duration, newTime), preferredTimescale: 600)
+                        )
+                    },
+                    onRewind: {
+                        let newTime = videoFullScreenViewModel.currentTime - 5
+                        videoFullScreenViewModel.player.seek(
+                            to: CMTime(seconds: min(videoFullScreenViewModel.duration, newTime), preferredTimescale: 600)
+                        )
+                    },
                     onDismiss: {
                         withAnimation {
                             onDismiss()
@@ -170,6 +182,8 @@ struct VideoController: View {
     @Binding var isMuted: Bool
     @Binding var playbackSpeed: Double
     
+    let onFastForward: () -> Void
+    let onRewind: () -> Void
     let onDismiss: () -> Void
     
     var body: some View {
@@ -187,12 +201,19 @@ struct VideoController: View {
                     Spacer()
                     
                     if hasAudio {
-                        Button {
-                            isMuted.toggle()
-                        } label: {
-                            SwiftUI.Image(systemName: isMuted ? "speaker.slash" : "speaker.wave.2")
+                        ZStack {
+                            SwiftUI.Image(systemName: "speaker.slash")
                                 .font(.system(size: 24))
                                 .foregroundStyle(.white)
+                                .opacity(isMuted ? 1 : 0)
+                            
+                            SwiftUI.Image(systemName: "speaker.wave.2")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                                .opacity(isMuted ? 0 : 1)
+                        }
+                        .onTapGesture {
+                            isMuted.toggle()
                         }
                     }
                     
@@ -229,12 +250,30 @@ struct VideoController: View {
             }
             .padding(.top, 48)
             
-            Button {
-                isPlaying.toggle()
-            } label: {
-                SwiftUI.Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.white)
+            HStack(spacing: 48) {
+                Button {
+                    onRewind()
+                } label: {
+                    SwiftUI.Image(systemName: "backward.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(.white)
+                }
+                
+                Button {
+                    isPlaying.toggle()
+                } label: {
+                    SwiftUI.Image(systemName: isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: 48))
+                        .foregroundStyle(.white)
+                }
+                
+                Button {
+                    onFastForward()
+                } label: {
+                    SwiftUI.Image(systemName: "forward.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(.white)
+                }
             }
             
             VStack {
