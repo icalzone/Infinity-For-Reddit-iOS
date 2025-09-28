@@ -77,17 +77,35 @@ struct SubmitImagePostView: View {
                                 }
                                 .padding(16)
                                 
-                                SubmitImageToolbar(
-                                    onCameraTap: { showCamera = true },
-                                    onPhotoPickerTap: { showPhotoPicker = true }
-                                )
-                                .frame(maxWidth: .infinity)
-                                .photosPicker(
-                                    isPresented: $showPhotoPicker,
-                                    selection: $selectedPhotoItem,
-                                    matching: .images,
-                                    photoLibrary: .shared()
-                                )
+                                if let previewImage = submitImagePostViewModel.capturedImage {
+                                    VStack {
+                                        Button(action: {
+                                            submitImagePostViewModel.capturedImage = nil
+                                        }) {
+                                            Text("Select again")
+                                                .subreddit()
+                                        }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        
+                                        SwiftUI.Image(uiImage: previewImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .cornerRadius(8)
+                                    }
+                                    .padding(.horizontal, 16)
+                                } else {
+                                    SubmitImageToolbar(
+                                        onCameraTap: { showCamera = true },
+                                        onPhotoPickerTap: { showPhotoPicker = true }
+                                    )
+                                    .frame(maxWidth: .infinity)
+                                    .photosPicker(
+                                        isPresented: $showPhotoPicker,
+                                        selection: $selectedPhotoItem,
+                                        matching: .images,
+                                        photoLibrary: .shared()
+                                    )
+                                }
                             }
                         }
                     }
