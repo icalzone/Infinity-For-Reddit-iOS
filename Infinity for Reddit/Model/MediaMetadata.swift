@@ -32,10 +32,7 @@ class MediaMetadata : NSObject, ObservableObject, Identifiable {
     var dashUrl: String!
     var hlsUrl: String!
     var isGif: Bool!
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
+
     init(fromJson json: JSON!) {
         if json.isEmpty{
             return
@@ -61,7 +58,7 @@ class MediaMetadata : NSObject, ObservableObject, Identifiable {
     }
 }
 
-class MediaMetadataPreview : NSObject, NSCoding, ObservableObject, Identifiable {
+class MediaMetadataPreview : NSObject, ObservableObject, Identifiable {
     
     //URL
     var u : String!
@@ -72,71 +69,18 @@ class MediaMetadataPreview : NSObject, NSCoding, ObservableObject, Identifiable 
     var aspectRatio : CGSize {
         return CGSize(width: x, height: y)
     }
-    
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
-    init(fromJson json: JSON!){
-        if json.isEmpty{
+
+    init(fromJson json: JSON!) {
+        if json.isEmpty {
             return
         }
         u = json["u"].stringValue
         x = json["x"].intValue
         y = json["y"].intValue
     }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if u != nil{
-            dictionary["u"] = u
-        }
-        if x != nil{
-            dictionary["x"] = x
-        }
-        if y != nil{
-            dictionary["y"] = y
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required init(coder aDecoder: NSCoder)
-    {
-        u = aDecoder.decodeObject(forKey: "u") as? String
-        x = aDecoder.decodeObject(forKey: "x") as? Int
-        y = aDecoder.decodeObject(forKey: "y") as? Int
-        
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    func encode(with aCoder: NSCoder)
-    {
-        if u != nil{
-            aCoder.encode(u, forKey: "u")
-        }
-        if x != nil{
-            aCoder.encode(x, forKey: "x")
-        }
-        if y != nil{
-            aCoder.encode(y, forKey: "y")
-        }
-        
-    }
-    
 }
 
-class MediaMetadataSource : NSObject, NSCoding{
+class MediaMetadataSource : NSObject {
     
     // Image URL
     var u : String?
@@ -149,11 +93,7 @@ class MediaMetadataSource : NSObject, NSCoding{
     var aspectRatio : CGSize {
         return CGSize(width: x, height: y)
     }
-    
-    
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
+
     init(fromJson json: JSON!) {
         if json.isEmpty {
             return
@@ -163,65 +103,5 @@ class MediaMetadataSource : NSObject, NSCoding{
         mp4 = json["mp4"].stringValue
         x = json["x"].intValue
         y = json["y"].intValue
-    }
-    
-    /**
-     * Returns all the available property values in the form of [String:Any] object where the key is the approperiate json key and the value is the value of the corresponding property
-     */
-    func toDictionary() -> [String:Any]
-    {
-        var dictionary = [String:Any]()
-        if u != nil{
-            dictionary["u"] = u
-        }
-        if gif != nil{
-            dictionary["gif"] = gif
-        }
-        if mp4 != nil{
-            dictionary["mp4"] = mp4
-        }
-        if x != nil{
-            dictionary["x"] = x
-        }
-        if y != nil{
-            dictionary["y"] = y
-        }
-        return dictionary
-    }
-    
-    /**
-     * NSCoding required initializer.
-     * Fills the data from the passed decoder
-     */
-    @objc required init(coder aDecoder: NSCoder)
-    {
-        u = aDecoder.decodeObject(forKey: "u") as? String
-        gif = aDecoder.decodeObject(forKey: "gif") as? String
-        mp4 = aDecoder.decodeObject(forKey: "mp4") as? String
-        x = aDecoder.decodeObject(forKey: "x") as? Int
-        y = aDecoder.decodeObject(forKey: "y") as? Int
-    }
-    
-    /**
-     * NSCoding required method.
-     * Encodes mode properties into the decoder
-     */
-    func encode(with aCoder: NSCoder)
-    {
-        if u != nil{
-            aCoder.encode(u, forKey: "u")
-        }
-        if gif != nil{
-            aCoder.encode(gif, forKey: "gif")
-        }
-        if mp4 != nil{
-            aCoder.encode(mp4, forKey: "mp4")
-        }
-        if x != nil{
-            aCoder.encode(x, forKey: "x")
-        }
-        if y != nil{
-            aCoder.encode(y, forKey: "y")
-        }
     }
 }

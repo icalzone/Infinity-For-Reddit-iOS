@@ -313,10 +313,26 @@ public class Post : NSObject, ObservableObject, Identifiable {
         domain = json["domain"].stringValue
         downs = json["downs"].intValue
         edited = json["edited"].boolValue
+        
+        if let mediaMetaData = json["media_metadata"].dictionary {
+            var parsedMediaMetadata = [String: MediaMetadata]()
+            
+            for (key, value) in mediaMetaData {
+                let media = MediaMetadata(fromJson: value)
+                parsedMediaMetadata[key] = media
+            }
+            mediaMetadata = parsedMediaMetadata
+        }
         let galleryDataJson = json["gallery_data"]
         if !galleryDataJson.isEmpty {
-            galleryData = GalleryData(fromJson: galleryDataJson)
+            print(json["title"].stringValue)
+            do {
+                galleryData = try GalleryData(fromJson: galleryDataJson, mediaMetadataDictionary: mediaMetadata)
+            } catch {
+                // Ignore
+            }
         }
+        
         hidden = json["hidden"].boolValue
         id = json["id"].stringValue
         isCrosspostable = json["is_crosspostable"].boolValue
@@ -336,15 +352,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
         if !mediaJson.isEmpty {
             media = PostMedia(fromJson: mediaJson)
         }
-        if let mediaMetaData = json["media_metadata"].dictionary {
-            var parsedMediaMetadata = [String: MediaMetadata]()
-            
-            for (key, value) in mediaMetaData {
-                let media = MediaMetadata(fromJson: value)
-                parsedMediaMetadata[key] = media
-            }
-            mediaMetadata = parsedMediaMetadata
-        }
+        
         mediaOnly = json["media_only"].boolValue
         modNote = json["mod_note"].stringValue
         modReasonBy = json["mod_reason_by"].stringValue

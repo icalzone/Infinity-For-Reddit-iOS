@@ -198,7 +198,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             if !postFilter.containGifType {
                 return false
             }
-        case .video:
+        case .redditVideo, .video:
             if !postFilter.containVideoType {
                 return false
             }

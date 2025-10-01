@@ -39,7 +39,7 @@ enum FullScreenMediaType {
 //                return DownloadMediaType.gif(downloadUrlString: urlString, fileName: "\(Utils.randomString()).gif")
 //            }
 //        case .video(url: let urlString, post: let post, videoType: let videoType):
-//            <#code#>
+//            
 //        case .gallery(let currentUrlString, let post, _, _, _):
 //            if let post {
 //                return DownloadMediaType.gif(downloadUrlString: currentUrlString, fileName: "\(post.fileNameWithoutExtension).jpg")
