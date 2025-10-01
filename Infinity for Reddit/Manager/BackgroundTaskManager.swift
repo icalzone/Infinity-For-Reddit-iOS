@@ -29,6 +29,14 @@ class BackgroundTasksManager {
             fatalError("Failed to resolve DatabasePool")
         }
         self.dbPool = resolvedDatabasePool
+        
+        NotificationCenter.default.addObserver(
+            forName: .notificationIntervalChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleAppRefresh()
+        }
     }
     
     func registerBackgroundTask() {
@@ -47,7 +55,8 @@ class BackgroundTasksManager {
     
     func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: taskIdentifier)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60)
+        let refreshInterval = userDefaults.double(forKey: NotificationUserDefaultsUtils.notificationIntervalKey, 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: refreshInterval * 60)
         
         do {
             try BGTaskScheduler.shared.submit(request)

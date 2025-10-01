@@ -48,7 +48,7 @@ struct NotificationSettingsView: View {
             notificationSettingsViewModel.enableNotification(enable: newValue)
         }
         .onChange(of: notificationInterval) { _, newValue in
-            notificationSettingsViewModel.updateNotificationInterval(interval: newValue)
+            notificationSettingsViewModel.updateNotificationInterval()
         }
     }
 }

@@ -25,6 +25,16 @@ class HomeViewModel: ObservableObject {
             fatalError("Failed to resolve UserDefaults")
         }
         self.userDefaults = resolvedUserDefaults
+        
+        NotificationCenter.default.addObserver(
+            forName: .notificationIntervalChanged,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.startAutoRefresh()
+            }
+        }
     }
     
     func refreshInboxMessages() async {
@@ -41,7 +51,10 @@ class HomeViewModel: ObservableObject {
     }
     
     func startAutoRefresh() {
-        refreshTimer = Timer.publish(every: 30, on: .main, in: .common)
+        stopAutoRefresh()
+        
+        let refreshInterval = userDefaults.double(forKey: NotificationUserDefaultsUtils.notificationIntervalKey, 60)
+        refreshTimer = Timer.publish(every: refreshInterval * 60, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }
