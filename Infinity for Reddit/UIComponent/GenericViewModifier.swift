@@ -44,26 +44,26 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
                         withAnimation {
                             switch post?.postType {
                             case .image:
-                                fullScreenMediaViewModel.show(.image(url: post?.url ?? "", aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
+                                fullScreenMediaViewModel.show(.image(urlString: post?.url ?? "", aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
                             case .imageWithUrlPreview(let urlPreview):
-                                fullScreenMediaViewModel.show(.image(url: post?.url ?? "", aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
+                                fullScreenMediaViewModel.show(.image(urlString: post?.url ?? "", aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
                             case .gif:
                                 print("gif")
                                 if post?.preview.images.isEmpty == false {
                                     if let previewImage = post?.preview.images.first {
                                         if let mp4 = previewImage.mp4Variant {
-                                            fullScreenMediaViewModel.show(.video(url: mp4.source.url, post: post))
+                                            fullScreenMediaViewModel.show(.video(urlString: mp4.source.url, post: post))
                                         } else if let gif = previewImage.gifVariant {
-                                            fullScreenMediaViewModel.show(.gif(url: gif.source.url, post: post))
+                                            fullScreenMediaViewModel.show(.gif(urlString: gif.source.url, post: post))
                                         }
                                     } else {
-                                        fullScreenMediaViewModel.show(.gif(url: post?.url ?? "", post: post))
+                                        fullScreenMediaViewModel.show(.gif(urlString: post?.url ?? "", post: post))
                                     }
                                 }
                             case .redditVideo(let videoUrlString, let downloadUrlString):
-                                fullScreenMediaViewModel.show(.video(url: videoUrlString, post: post))
+                                fullScreenMediaViewModel.show(.video(urlString: videoUrlString, post: post))
                             case .video(let videoUrlString, let downloadUrlString):
-                                fullScreenMediaViewModel.show(.video(url: videoUrlString, post: post))
+                                fullScreenMediaViewModel.show(.video(urlString: videoUrlString, post: post))
                             case .link:
                                 if let urlString = post?.url, let url = URL(string: urlString) {
                                     navigationManager.openLink(urlString)
@@ -75,7 +75,7 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
                                 print("gif")
                             case .redgifs(let redgifsId):
                                 print("redgifs")
-                                fullScreenMediaViewModel.show(.video(url: post?.url ?? "", videoType: .redgifs(id: redgifsId)))
+                                fullScreenMediaViewModel.show(.video(urlString: post?.url ?? "", videoType: .redgifs(id: redgifsId)))
                             case .streamable(let shortCode):
                                 print("streamable")
                             default:

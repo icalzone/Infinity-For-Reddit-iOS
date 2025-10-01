@@ -239,6 +239,10 @@ public class Post : NSObject, ObservableObject, Identifiable {
     @Published var subredditOrUserIconInPostDetails: String?
     @Published var isRead: Bool = false
     
+    var fileNameWithoutExtension: String {
+        return "\(subreddit ?? "Unknown")-\(name ?? "id")"
+    }
+    
     enum PostType: Equatable {
         case text
         case image

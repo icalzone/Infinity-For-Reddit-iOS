@@ -40,7 +40,7 @@ struct GalleryCarousel: View {
                             blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages),
                             customOnTapGesture: {
                                 withAnimation {
-                                    fullScreenMediaViewModel.show(.gallery(currentUrl: preview.u, items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState))
+                                    fullScreenMediaViewModel.show(.gallery(currentUrlString: preview.u, post: post, items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState))
                                 }
                                 onImageTap?()
                             }

@@ -177,17 +177,17 @@ struct HomeView: View {
                     }
                     .id(urlString)
                     .zIndex(1)
-                } else if case let .gallery(currentUrl, items, mediaMetadata, galleryScrollState) = media {
+                } else if case let .gallery(currentUrlString, post, items, mediaMetadata, galleryScrollState) = media {
                     GalleryFullScreenView(items: items, mediaMetadata: mediaMetadata, galleryScrollState: galleryScrollState) {
                         fullScreenMediaViewModel.dismiss()
                     }
-                    .id(currentUrl)
-                } else if case let .video(videoUrl, post, videoType) = media {
-                    VideoFullScreenView(urlString: videoUrl, post: post, videoType: videoType, videoFullScreenViewModel: videoFullScreenViewModel) {
+                    .id(currentUrlString)
+                } else if case let .video(urlString, post, videoType) = media {
+                    VideoFullScreenView(urlString: urlString, post: post, videoType: videoType, videoFullScreenViewModel: videoFullScreenViewModel) {
                         fullScreenMediaViewModel.dismiss()
                         videoFullScreenViewModel.resetState()
                     }
-                    .id(videoUrl)
+                    .id(urlString)
                     .zIndex(1)
                 } else if case let .gif(urlString, post) = media {
                     ImageFullScreenView(urlString: urlString) {

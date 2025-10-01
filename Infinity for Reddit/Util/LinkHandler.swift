@@ -49,7 +49,7 @@ class LinkHandler {
         
         switch host {
         case "v.redd.it":
-            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: finalURL.absoluteString, videoType: .vReddIt))
+            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: finalURL.absoluteString, videoType: .vReddIt))
             
         case "reddit-uploaded-media.s3-accelerate.amazonaws.com":
             return openUploadedRedditImage(finalURL)
@@ -79,11 +79,11 @@ class LinkHandler {
             
         default:
             if path.hasSuffix(".mp4") {
-                return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: finalURL.absoluteString, videoType: .direct))
+                return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: finalURL.absoluteString, videoType: .direct))
             } else if path.hasSuffix(".jpg") || path.hasSuffix(".JPG") || path.hasSuffix(".jpeg") || path.hasSuffix(".png") {
-                return LinkDestination.fullScreenMedia(FullScreenMediaType.image(url: finalURL.absoluteString))
+                return LinkDestination.fullScreenMedia(FullScreenMediaType.image(urlString: finalURL.absoluteString))
             } else if path.hasSuffix(".gif") {
-                return LinkDestination.fullScreenMedia(FullScreenMediaType.gif(url: finalURL.absoluteString))
+                return LinkDestination.fullScreenMedia(FullScreenMediaType.gif(urlString: finalURL.absoluteString))
             }
             
             return LinkDestination.openInBrowser(finalURL)
@@ -106,7 +106,7 @@ class LinkHandler {
         } else if path == "/media", let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
                   let realURLString = query.first(where: { $0.name == "url" })?.value,
                   let realURL = URL(string: realURLString) {
-            return LinkDestination.fullScreenMedia(FullScreenMediaType.image(url: realURL.absoluteString))
+            return LinkDestination.fullScreenMedia(FullScreenMediaType.image(urlString: realURL.absoluteString))
         } else if let subredditMatch = path.range(of: "/r/[\\w-]+", options: .regularExpression) {
             let subreddit = String(path[subredditMatch]).components(separatedBy: "/")[2]
             return LinkDestination.navigation(AppNavigation.subredditDetails(subredditName: subreddit))
@@ -133,7 +133,7 @@ class LinkHandler {
             if path.hasSuffix(".gifv") {
                 videoURL = videoURL.replacingOccurrences(of: ".gifv", with: ".mp4")
             }
-            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: url.absoluteString))
+            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: url.absoluteString, videoType: .direct))
         } else {
             return LinkDestination.openInBrowser(url)
         }
@@ -143,7 +143,7 @@ class LinkHandler {
         if path.matches("/watch/[\\w-]+$") {
             let id = path.components(separatedBy: "/").last!
             print("Open Redgifs video ID: \(id)")
-            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: url.absoluteString, videoType: .redgifs(id: id)))
+            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: url.absoluteString, videoType: .redgifs(id: id)))
         } else {
             print("Invalid Redgifs link")
             return LinkDestination.openInBrowser(url)
@@ -166,7 +166,7 @@ class LinkHandler {
         if path.matches("/\\w+/?") {
             let shortCode = segments[0]
             print("Open Streamable video: \(shortCode)")
-            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(url: url.absoluteString, videoType: VideoType.streamable(shortCode: shortCode)))
+            return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: url.absoluteString, videoType: VideoType.streamable(shortCode: shortCode)))
         } else {
             return LinkDestination.openInBrowser(url)
         }
@@ -176,7 +176,7 @@ class LinkHandler {
         let unescaped = url.absoluteString.replacingOccurrences(of: "%2F", with: "/")
         if let id = unescaped.components(separatedBy: "/").last {
             print("Uploaded image ID: \(id)")
-            return LinkDestination.fullScreenMedia(.image(url: unescaped))
+            return LinkDestination.fullScreenMedia(.image(urlString: unescaped))
         }
         return LinkDestination.openInBrowser(url)
     }

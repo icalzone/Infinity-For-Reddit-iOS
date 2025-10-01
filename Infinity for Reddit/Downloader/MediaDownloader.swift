@@ -237,7 +237,7 @@ enum DownloadMediaType {
         case .gif(_, let fileName):
             return fileName
         case .redditVideo(let post):
-            return post.subreddit + "-" + post.id + ".mp4"
+            return "\(post.fileNameWithoutExtension).mp4"
         case .video(_, let fileName):
             return fileName
         case .gallery(_, let fileName):

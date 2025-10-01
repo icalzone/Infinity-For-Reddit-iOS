@@ -8,13 +8,56 @@
 import Foundation
 
 enum FullScreenMediaType {
-    case image(url: String, aspectRatio: CGSize? = nil, post: Post? = nil, matchedGeometryEffectId: String? = nil)
-    case gif(url: String, post: Post? = nil)
-    case video(url: String, post: Post? = nil, videoType: VideoType = .reddit)
-    case gallery(currentUrl: String, items: [GalleryItem], mediaMetadata: [String: MediaMetadata], galleryScrollState: GalleryScrollState)
+    case image(urlString: String, aspectRatio: CGSize? = nil, post: Post? = nil, matchedGeometryEffectId: String? = nil)
+    case gif(urlString: String, post: Post? = nil)
+    case video(urlString: String, post: Post? = nil, videoType: VideoType = .reddit)
+    case gallery(currentUrlString: String, post: Post? = nil, items: [GalleryItem], mediaMetadata: [String: MediaMetadata], galleryScrollState: GalleryScrollState)
     case imgurGallery(url: URL)
     case imgurAlbum(url: URL)
     case imgurImage(url: URL)
+    
+//    var downloadMediaType: DownloadMediaType {
+//        switch self {
+//        case .image(let urlString, _, let post, _):
+//            if let post {
+//                return DownloadMediaType.image(downloadUrlString: urlString, fileName: "\(post.fileNameWithoutExtension).jpg")
+//            } else {
+//                let url = URL(string: urlString)
+//                if let url = url {
+//                    return DownloadMediaType.image(downloadUrlString: urlString, fileName: url.lastPathComponent)
+//                }
+//                return DownloadMediaType.image(downloadUrlString: urlString, fileName: "\(Utils.randomString()).jpg")
+//            }
+//        case .gif(let urlString, post: let post):
+//            if let post {
+//                return DownloadMediaType.gif(downloadUrlString: urlString, fileName: "\(post.fileNameWithoutExtension).gif")
+//            } else {
+//                let url = URL(string: urlString)
+//                if let url = url {
+//                    return DownloadMediaType.gif(downloadUrlString: urlString, fileName: url.lastPathComponent)
+//                }
+//                return DownloadMediaType.gif(downloadUrlString: urlString, fileName: "\(Utils.randomString()).gif")
+//            }
+//        case .video(url: let urlString, post: let post, videoType: let videoType):
+//            <#code#>
+//        case .gallery(let currentUrlString, let post, _, _, _):
+//            if let post {
+//                return DownloadMediaType.gif(downloadUrlString: currentUrlString, fileName: "\(post.fileNameWithoutExtension).jpg")
+//            } else {
+//                let url = URL(string: currentUrlString)
+//                if let url = url {
+//                    return DownloadMediaType.gif(downloadUrlString: currentUrlString, fileName: url.lastPathComponent)
+//                }
+//                return DownloadMediaType.gif(downloadUrlString: currentUrlString, fileName: "\(Utils.randomString()).jpg")
+//            }
+//        case .imgurGallery(let url):
+//            <#code#>
+//        case .imgurAlbum(let url):
+//            <#code#>
+//        case .imgurImage(let url):
+//            <#code#>
+//        }
+//    }
 }
 
 enum VideoType {
