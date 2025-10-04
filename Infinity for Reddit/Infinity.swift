@@ -76,7 +76,7 @@ struct Infinity: App {
                 }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background  {
+            if newPhase == .background, NotificationUserDefaultsUtils.enableNotification  {
                 BackgroundTasksManager.shared.scheduleAppRefresh()
             }
         }

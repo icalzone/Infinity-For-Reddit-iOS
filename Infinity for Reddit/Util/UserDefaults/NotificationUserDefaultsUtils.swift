@@ -10,7 +10,7 @@ import Foundation
 class NotificationUserDefaultsUtils {
     static let enableNotificationKey = "enable_notification"
     static var enableNotification: Bool {
-        return UserDefaults.video.bool(forKey: enableNotificationKey, true)
+        return UserDefaults.notification.bool(forKey: enableNotificationKey, true)
     }
     
     static let notificationIntervalKey = "notification_interval"

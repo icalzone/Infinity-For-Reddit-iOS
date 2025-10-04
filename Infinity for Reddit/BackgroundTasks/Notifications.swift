@@ -9,4 +9,5 @@ import Foundation
 extension Notification.Name {
     static let inboxDeepLink = Notification.Name("inboxDeepLink")
     static let notificationIntervalChanged = Notification.Name("notificationIntervalChanged")
+    static let notificationToggleChanged = Notification.Name("notificationToggleChanged")
 }

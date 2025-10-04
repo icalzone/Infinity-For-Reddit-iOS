@@ -6,10 +6,23 @@
 //
 
 import Foundation
+import BackgroundTasks
 
 class NotificationSettingsViewModel {
     func enableNotification(enable: Bool) {
+        if enable {
+            print("Notifications enabled — scheduling background refresh.")
+            BackgroundTasksManager.shared.scheduleAppRefresh()
+        } else {
+            print("Notifications disabled — cancelling background refresh.")
+            BGTaskScheduler.shared.cancelAllTaskRequests()
+        }
         
+        NotificationCenter.default.post(
+            name: .notificationToggleChanged,
+            object: nil,
+            userInfo: ["enabled": enable]
+        )
     }
     
     func updateNotificationInterval() {

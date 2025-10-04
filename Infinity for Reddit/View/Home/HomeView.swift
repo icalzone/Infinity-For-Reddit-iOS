@@ -208,10 +208,12 @@ struct HomeView: View {
         }
         .environmentObject(NamespaceManager(animation))
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .active {
-                homeViewModel.startAutoRefresh()
-            } else {
-                homeViewModel.stopAutoRefresh()
+            if NotificationUserDefaultsUtils.enableNotification {
+                if newPhase == .active {
+                    homeViewModel.startAutoRefresh()
+                } else {
+                    homeViewModel.stopAutoRefresh()
+                }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .inboxDeepLink)) { note in
@@ -226,6 +228,16 @@ struct HomeView: View {
                 Task { @MainActor in
                     homeViewModel.inboxNavigationTarget = .init(viewMessage: viewMessage)
                 }
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .notificationToggleChanged)) { note in
+            let enabled = (note.userInfo?["enabled"] as? Bool) ?? false
+            if enabled {
+                print("Foreground refresh enabled")
+                homeViewModel.startAutoRefresh()
+            } else {
+                print("Foreground refresh disabled")
+                homeViewModel.stopAutoRefresh()
             }
         }
     }
