@@ -11,10 +11,12 @@ import Kingfisher
 
 class FullScreenMediaToolbarViewModel: ObservableObject {
     @Published var downloadProgress: Double = 0
+    @Published var downloadGalleryAllMediaProgress: Double = 0
     @Published var error: Error?
     
     private let downloadMediaType: DownloadMediaType
     private var downloadTask: Task<Void, Never>?
+    private var downloadGalleryAllMediaTask: Task<Void, Never>?
     private var shareTask: Task<Void, Never>?
     
     enum FullScreenMediaToolbarError: Error {
@@ -50,6 +52,43 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
         await MainActor.run {
             self.downloadProgress = 0
             self.downloadTask = nil
+        }
+    }
+    
+    func downloadAllGalleryMedia(items: [GalleryItem], post: Post?) {
+        guard downloadGalleryAllMediaTask == nil else {
+            return
+        }
+        
+        downloadGalleryAllMediaTask = Task {
+            await withTaskGroup(of: Void.self) { group in
+                for item in items {
+                    group.addTask { [weak self] in
+                        await self?.downloadGalleryItemMediaAsync(downloadMediaType: item.toDownloadMediaType(post: post))
+                    }
+                }
+                
+                for await _ in group {
+                    await MainActor.run { [weak self] in
+                        self?.downloadGalleryAllMediaProgress = (self?.downloadGalleryAllMediaProgress ?? 0) + 1 / Double(items.count)
+                    }
+                }
+                
+                await MainActor.run {
+                    self.downloadGalleryAllMediaProgress = 0
+                    self.downloadGalleryAllMediaTask = nil
+                }
+            }
+        }
+    }
+    
+    private func downloadGalleryItemMediaAsync(downloadMediaType: DownloadMediaType) async {
+        do {
+            try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgress: { _ in })
+        } catch {
+            await MainActor.run {
+                self.error = error
+            }
         }
     }
     

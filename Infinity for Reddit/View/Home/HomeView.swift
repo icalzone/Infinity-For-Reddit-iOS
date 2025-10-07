@@ -178,7 +178,7 @@ struct HomeView: View {
                     .id(urlString)
                     .zIndex(1)
                 } else if case let .gallery(currentUrlString, post, items, galleryScrollState) = media {
-                    GalleryFullScreenView(items: items, galleryScrollState: galleryScrollState) {
+                    GalleryFullScreenView(post: post, items: items, galleryScrollState: galleryScrollState) {
                         fullScreenMediaViewModel.dismiss()
                     }
                     .id(currentUrlString)

@@ -1,0 +1,19 @@
+//
+//  GalleryItem.swift
+//  Infinity for Reddit
+//
+//  Created by Docile Alligator on 2025-10-07.
+//
+
+extension GalleryItem {
+    func toDownloadMediaType(post: Post?) -> DownloadMediaType {
+        switch mediaType {
+        case .image:
+            return .image(downloadUrlString: urlString, fileName: "\(post == nil ? "Gallery-" : post!.fileNameWithoutExtension + "-gallery-")\(mediaId ?? Utils.randomString()).jpg")
+        case .gif:
+            return .gif(downloadUrlString: urlString, fileName: "\(post == nil ? "Gallery-" : post!.fileNameWithoutExtension + "-gallery-")\(mediaId ?? Utils.randomString()).gif")
+        case .video:
+            return .video(downloadUrlString: urlString, fileName: "\(post == nil ? "Gallery-" : post!.fileNameWithoutExtension + "-gallery-")\(mediaId ?? Utils.randomString()).mp4")
+        }
+    }
+}

@@ -19,10 +19,12 @@ struct GalleryFullScreenView: View {
     @State private var hasStartedDragging: Bool = false
     @State private var isAnimatingBack: Bool = false
     
+    let post: Post?
     var items: [GalleryItem]
     let onDismiss: () -> Void
     
-    init(items: [GalleryItem], galleryScrollState: GalleryScrollState, onDismiss: @escaping () -> Void) {
+    init(post: Post?, items: [GalleryItem], galleryScrollState: GalleryScrollState, onDismiss: @escaping () -> Void) {
+        self.post = post
         self.items = items
         self.galleryScrollState = galleryScrollState
         self._tabViewDismissalViewModel = StateObject(wrappedValue: .init())
@@ -40,7 +42,11 @@ struct GalleryFullScreenView: View {
             TabView(selection: $galleryScrollState.scrollId) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if item.mediaType != .video {
-                        GalleryImageView(urlString: item.urlString) {
+                        GalleryImageView(
+                            urlString: item.urlString,
+                            items: items,
+                            post: post
+                        ) {
                             tabViewDismissalViewModel.isDismissed = true
                             onDismiss()
                         }
@@ -81,6 +87,8 @@ struct GalleryImageView: View {
     @State private var isToolbarVisible: Bool = true
     
     let urlString: String
+    let items: [GalleryItem]
+    let post: Post?
     let onDismiss: () -> Void
     
     var body: some View {
@@ -141,10 +149,11 @@ struct GalleryImageView: View {
             
             GalleryImageToolbar(
                 downloadMediaType: .image(downloadUrlString: urlString, fileName: "test.jpg"),
-                isVisible: $isToolbarVisible
-            ) {
-                onDismiss()
-            }
+                isVisible: $isToolbarVisible,
+                items: items,
+                post: post,
+                onDismiss: onDismiss
+            )
         }
     }
 }
@@ -154,18 +163,24 @@ struct GalleryImageToolbar: View {
     
     @Binding var isVisible: Bool
     
+    let items: [GalleryItem]
+    let post: Post?
     let onDismiss: () -> Void
     
     private let buttonSize: CGFloat = 18
     
     init(downloadMediaType: DownloadMediaType,
          isVisible: Binding<Bool>,
+         items: [GalleryItem],
+         post: Post?,
          onDismiss: @escaping () -> Void
     ) {
         _fullScreenMediaToolbarViewModel = StateObject(
             wrappedValue: FullScreenMediaToolbarViewModel(downloadMediaType: downloadMediaType)
         )
         self._isVisible = isVisible
+        self.items = items
+        self.post = post
         self.onDismiss = onDismiss
     }
     
@@ -228,7 +243,7 @@ struct GalleryImageToolbar: View {
                     
                     Menu {
                         Button("Download all media") {
-                            
+                            fullScreenMediaToolbarViewModel.downloadAllGalleryMedia(items: items, post: post)
                         }
                     } label: {
                         SwiftUI.Image(systemName: "ellipsis.circle")
