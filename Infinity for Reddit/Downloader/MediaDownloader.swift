@@ -35,15 +35,17 @@ class MediaDownloader {
         self.session = resolvedSession
     }
     
-    func download(downloadMediaType: DownloadMediaType, onProgress: @escaping (Double) async -> Void) async throws {
+    func download(downloadMediaType: DownloadMediaType, onProgressWithTitle: @escaping (String, Double) async -> Void) async throws {
         if case .redditVideo(let post) = downloadMediaType {
-            return try await downloadRedditVideo(post: post, fileName: downloadMediaType.fileName)
+            return try await downloadRedditVideo(post: post, fileName: downloadMediaType.fileName, onProgressWithTitle: onProgressWithTitle)
         }
         
         let downloadedFileURL = try await downloadFile(
             downloadURL: await downloadMediaType.getDownloadUrl(),
             fileName: downloadMediaType.fileName,
-            onProgress: onProgress
+            onProgress: { progress in
+                await onProgressWithTitle("Downloading...", progress)
+            }
         )
         
         switch downloadMediaType {
@@ -84,7 +86,10 @@ class MediaDownloader {
         
         Task {
             for await progress in request.downloadProgress() {
-                print("Progress: \(progress.fractionCompleted)")
+                if progress.isFinished {
+                    break
+                }
+                print("Progress: \(downloadURL.absoluteString) \(progress.fractionCompleted)")
                 await onProgress(progress.fractionCompleted)
             }
         }
@@ -92,12 +97,14 @@ class MediaDownloader {
         return try await request.serializingDownloadedFileURL().value
     }
     
-    private func downloadRedditVideo(post: Post, fileName: String) async throws {
+    private func downloadRedditVideo(post: Post, fileName: String, onProgressWithTitle: @escaping (String, Double) async -> Void) async throws {
         guard case .redditVideo(_, let downloadUrlString) = post.postType, let downloadURL = URL(string: downloadUrlString) else {
             throw MediaDownloaderError.invalidRedditVideo
         }
 
-        let videoTrackDownloadedFileURL = try await downloadFile(downloadURL: downloadURL, fileName: "video_track.mp4", onProgress: { _ in })
+        let videoTrackDownloadedFileURL = try await downloadFile(downloadURL: downloadURL, fileName: "video_track.mp4", onProgress: { progress in
+            await onProgressWithTitle("Downloading video track...", progress)
+        })
         var audioTrackDownloadedFileURL: URL?
         if let lastSlashIndex = downloadUrlString.lastIndex(of: "/") {
             let audioUrlPrefix = String(downloadUrlString[..<lastSlashIndex])
@@ -105,7 +112,9 @@ class MediaDownloader {
                 if let audioUrl = URL(string: audioUrlPrefix + suffix) {
                     print(audioUrl)
                     do {
-                        audioTrackDownloadedFileURL = try await downloadFile(downloadURL: audioUrl, fileName: "audio_track.mp4", onProgress: { _ in })
+                        audioTrackDownloadedFileURL = try await downloadFile(downloadURL: audioUrl, fileName: "audio_track.mp4", onProgress: { progress in
+                            await onProgressWithTitle("Downloading audio track...", progress)
+                        })
                         break
                     } catch {
                         // Ignore
@@ -115,6 +124,7 @@ class MediaDownloader {
         }
 
         if let audioTrackDownloadedFileURL {
+            await onProgressWithTitle("Muxing video and audio...", 0)
             let exportedMuxedVideoURL = try await muxVideoAndAudio(downloadedVideoURL: videoTrackDownloadedFileURL, downloadedAudioURL: audioTrackDownloadedFileURL, fileName: fileName)
             try await saveVideoToPhotosLibrary(exportedMuxedVideoURL)
         } else {

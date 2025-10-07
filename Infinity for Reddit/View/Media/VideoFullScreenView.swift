@@ -64,6 +64,9 @@ struct VideoFullScreenView: View {
                     isMuted: $videoFullScreenViewModel.isMuted,
                     playbackSpeed: $playbackSpeed,
                     title: post?.title,
+                    isDownloading: videoFullScreenViewModel.downloadTask != nil,
+                    downloadProgressTitle: videoFullScreenViewModel.downloadProgressTitle,
+                    downloadProgress: videoFullScreenViewModel.downloadProgress,
                     onFastForward: {
                         let newTime = videoFullScreenViewModel.currentTime + 5
                         videoFullScreenViewModel.player.seek(
@@ -197,6 +200,9 @@ struct VideoController: View {
     @State var showPlaybackSpeedSheet: Bool = false
     
     let title: String?
+    let isDownloading: Bool
+    let downloadProgressTitle: String
+    let downloadProgress: Double
     let onFastForward: () -> Void
     let onRewind: () -> Void
     let onDownload: () -> Void
@@ -289,13 +295,21 @@ struct VideoController: View {
                 }
             }
             
-            VStack {
+            VStack(spacing: 16) {
                 Spacer()
+                
+                VStack {
+                    Text(downloadProgressTitle)
+                        .foregroundStyle(.white)
+                    
+                    ProgressView(value: downloadProgress)
+                        .tint(.white)
+                }
+                .opacity(isDownloading ? 1 : 0)
                 
                 if let title {
                     RowText(title)
                         .foregroundStyle(.white)
-                        .padding(16)
                 }
                 
                 HStack {
@@ -311,8 +325,8 @@ struct VideoController: View {
                     Text(formatTime(duration))
                         .foregroundStyle(.white)
                 }
-                .padding(.horizontal, 16)
             }
+            .padding(.horizontal, 16)
             .padding(.bottom, 48)
         }
         .frame(maxWidth: .infinity)

@@ -39,9 +39,9 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
     
     private func downloadMediaAsync() async {
         do {
-            try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgress: { progress in
+            try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgressWithTitle: { _, progress in
                 await MainActor.run {
-                    self.downloadProgress = progress
+                    self.downloadProgress = progress ?? 0
                 }
             })
         } catch {
@@ -84,7 +84,7 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
     
     private func downloadGalleryItemMediaAsync(downloadMediaType: DownloadMediaType) async {
         do {
-            try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgress: { _ in })
+            try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgressWithTitle: { _, _ in })
         } catch {
             await MainActor.run {
                 self.error = error

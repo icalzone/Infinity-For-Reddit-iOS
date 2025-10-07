@@ -18,6 +18,8 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var isSeekingProgress: Bool = false
     @Published var hasAudio: Bool = false
     @Published var isMuted: Bool = false
+    @Published var downloadTask: Task<Void, Never>?
+    @Published var downloadProgressTitle: String = ""
     @Published var downloadProgress: Double = 0
     @Published var isShowingController: Bool = false
     @Published private var error: Error?
@@ -27,7 +29,6 @@ class VideoFullScreenViewModel: ObservableObject {
     private var timeObserverToken: Any?
     private var statusObserver: NSKeyValueObservation?
     private var audioTrackObserver: NSKeyValueObservation?
-    private var downloadTask: Task<Void, Never>?
     private var timer: Timer?
     
     enum VideoPlayerError: Error {
@@ -194,8 +195,9 @@ class VideoFullScreenViewModel: ObservableObject {
             
             try await MediaDownloader.shared.download(
                 downloadMediaType: downloadMediaType,
-                onProgress: { progress in
+                onProgressWithTitle: { title, progress in
                     await MainActor.run {
+                        self.downloadProgressTitle = title
                         self.downloadProgress = progress
                     }
                 })
