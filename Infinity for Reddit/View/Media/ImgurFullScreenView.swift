@@ -69,7 +69,12 @@ struct ImgurFullScreenView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
+            } else {
+                ProgressIndicator()
             }
+        }
+        .task {
+            await imgurFullScreenViewModel.fetchImgurMedia()
         }
     }
     

@@ -196,7 +196,23 @@ struct HomeView: View {
                     .id(urlString)
                     .zIndex(1)
                 } else if case let .imgurAlbum(imgurId, post) = media {
-                    
+                    ImgurFullScreenView(imgurMediaType: .imgurAlbum(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                    .zIndex(1)
+                } else if case let .imgurGallery(imgurId, post) = media {
+                    ImgurFullScreenView(imgurMediaType: .imgurGallery(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                    .zIndex(1)
+                } else if case let .imgurImage(imgurId, post) = media {
+                    ImgurFullScreenView(imgurMediaType: .imgurImage(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                    .zIndex(1)
                 }
             }
         }
