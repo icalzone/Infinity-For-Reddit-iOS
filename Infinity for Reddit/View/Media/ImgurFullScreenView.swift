@@ -82,6 +82,7 @@ struct ImgurFullScreenView: View {
         }
         .sheet(item: $sheetImgurMediaItem) { item in
             GalleryOrImgurDescriptionSheet(title: item.title, description: item.description, link: nil)
+                .presentationDetents([.medium, .large])
         }
     }
     

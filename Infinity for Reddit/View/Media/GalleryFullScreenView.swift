@@ -75,6 +75,7 @@ struct GalleryFullScreenView: View {
         }
         .sheet(item: $sheetGalleryItem) { item in
             GalleryOrImgurDescriptionSheet(title: nil, description: item.caption, link: item.captionUrl)
+                .presentationDetents([.medium, .large])
         }
     }
     
