@@ -23,7 +23,6 @@ struct VideoFullScreenView: View {
     @State private var isAnimatingBack: Bool = false
     
     @State private var isPlaying: Bool = true
-    @State private var playbackSpeed: Double = 1
     
     let urlString: String
     let post: Post?
@@ -74,7 +73,7 @@ struct VideoFullScreenView: View {
                     isSeekingProgress: $videoFullScreenViewModel.isSeekingProgress,
                     hasAudio: $videoFullScreenViewModel.hasAudio,
                     isMuted: $videoFullScreenViewModel.isMuted,
-                    playbackSpeed: $playbackSpeed,
+                    playbackSpeed: $videoFullScreenViewModel.playbackSpeed,
                     title: post?.title,
                     isDownloading: videoFullScreenViewModel.downloadTask != nil,
                     downloadProgressTitle: videoFullScreenViewModel.downloadProgressTitle,
@@ -148,7 +147,7 @@ struct VideoFullScreenView: View {
         .onChange(of: videoFullScreenViewModel.isMuted) { _, newValue in
             videoFullScreenViewModel.player.isMuted = newValue
         }
-        .onChange(of: playbackSpeed) { _, newValue in
+        .onChange(of: videoFullScreenViewModel.playbackSpeed) { _, newValue in
             videoFullScreenViewModel.player.rate = Float(newValue)
         }
         .task {

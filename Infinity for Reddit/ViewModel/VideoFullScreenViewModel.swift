@@ -18,6 +18,7 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var isSeekingProgress: Bool = false
     @Published var hasAudio: Bool = false
     @Published var isMuted: Bool = false
+    @Published var playbackSpeed: Double = 1
     @Published var downloadTask: Task<Void, Never>?
     @Published var downloadProgressTitle: String = ""
     @Published var downloadProgress: Double = 0
@@ -38,7 +39,7 @@ class VideoFullScreenViewModel: ObservableObject {
     func loadAndPlay(urlString: String, videoType: VideoType) async {
         guard !isLoaded, !isLoading else {
             if player.currentItem != nil {
-                player.play()
+                play()
             }
             return
         }
@@ -74,7 +75,7 @@ class VideoFullScreenViewModel: ObservableObject {
                     isLoaded = true
                     isLoading = false
                     
-                    player.play()
+                    play()
                     
                     observeCurrentItem()
                     observeTime()
@@ -83,7 +84,7 @@ class VideoFullScreenViewModel: ObservableObject {
                                                            object: player.currentItem,
                                                            queue: .main) { _ in
                         self.player.seek(to: .zero)
-                        self.player.play()
+                        self.play()
                     }
                 }
             }
@@ -120,6 +121,7 @@ class VideoFullScreenViewModel: ObservableObject {
     
     func play() {
         player.play()
+        player.rate = Float(playbackSpeed)
     }
     
     func pause() {
