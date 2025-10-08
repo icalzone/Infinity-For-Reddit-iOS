@@ -18,6 +18,7 @@ struct GalleryFullScreenView: View {
     @State private var currentDragOffset = 0.0
     @State private var hasStartedDragging: Bool = false
     @State private var isAnimatingBack: Bool = false
+    @State private var sheetGalleryItem: GalleryItem?
     
     let post: Post?
     var items: [GalleryItem]
@@ -43,9 +44,12 @@ struct GalleryFullScreenView: View {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                     if item.mediaType != .video {
                         GalleryImageView(
-                            urlString: item.urlString,
+                            item: item,
                             items: items,
-                            post: post
+                            post: post,
+                            onShowDescription: {
+                                sheetGalleryItem = item
+                            }
                         ) {
                             tabViewDismissalViewModel.isDismissed = true
                             onDismiss()
@@ -69,6 +73,9 @@ struct GalleryFullScreenView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
+        .sheet(item: $sheetGalleryItem) { item in
+            GalleryOrImgurDescriptionSheet(title: nil, description: item.caption, link: item.captionUrl)
+        }
     }
     
     private func opacityForBackground() -> Double {
@@ -86,9 +93,10 @@ struct GalleryImageView: View {
     @State private var isAnimatingBack: Bool = false
     @State private var isToolbarVisible: Bool = true
     
-    let urlString: String
+    let item: GalleryItem
     let items: [GalleryItem]
     let post: Post?
+    let onShowDescription: () -> Void
     let onDismiss: () -> Void
     
     var body: some View {
@@ -96,7 +104,7 @@ struct GalleryImageView: View {
             ZoomableScrollView(
                 content: {
                     CustomWebImage(
-                        urlString,
+                        item.urlString,
                         handleImageTapGesture: false
                     )
                     .offset(y: currentDragOffset)
@@ -148,10 +156,12 @@ struct GalleryImageView: View {
             )
             
             GalleryImageToolbar(
-                downloadMediaType: .image(downloadUrlString: urlString, fileName: "test.jpg"),
+                downloadMediaType: item.toDownloadMediaType(post: post),
                 isVisible: $isToolbarVisible,
                 items: items,
                 post: post,
+                hasDescription: !item.caption.isEmpty || !item.captionUrl.isEmpty,
+                onShowDescription: onShowDescription,
                 onDismiss: onDismiss
             )
         }
@@ -165,6 +175,8 @@ struct GalleryImageToolbar: View {
     
     let items: [GalleryItem]
     let post: Post?
+    let hasDescription: Bool
+    let onShowDescription: () -> Void
     let onDismiss: () -> Void
     
     private let buttonSize: CGFloat = 18
@@ -173,6 +185,8 @@ struct GalleryImageToolbar: View {
          isVisible: Binding<Bool>,
          items: [GalleryItem],
          post: Post?,
+         hasDescription: Bool,
+         onShowDescription: @escaping () -> Void,
          onDismiss: @escaping () -> Void
     ) {
         _fullScreenMediaToolbarViewModel = StateObject(
@@ -181,6 +195,8 @@ struct GalleryImageToolbar: View {
         self._isVisible = isVisible
         self.items = items
         self.post = post
+        self.hasDescription = hasDescription
+        self.onShowDescription = onShowDescription
         self.onDismiss = onDismiss
     }
     
@@ -240,6 +256,21 @@ struct GalleryImageToolbar: View {
                                     Circle()
                                         .fill(Color(hex: "#2E2E2E"))
                                 )
+                        }
+                        
+                        if hasDescription {
+                            Button {
+                                onShowDescription()
+                            } label: {
+                                SwiftUI.Image(systemName: "info.circle")
+                                    .font(.system(size: buttonSize))
+                                    .padding(10)
+                                    .foregroundColor(Color.white)
+                                    .background(
+                                        Circle()
+                                            .fill(Color(hex: "#2E2E2E"))
+                                    )
+                            }
                         }
                         
                         Menu {

@@ -104,13 +104,14 @@ class ImgurMedia {
     }
 }
 
-class ImgurMediaItem {
+class ImgurMediaItem: Identifiable {
 
     var adType : Int!
     var adUrl : String!
     var animated : Bool!
     var bandwidth : Int!
     var datetime : Int!
+    var description: String!
     var edited : String!
     var favorite : Bool!
     var gifv : String!
@@ -125,6 +126,7 @@ class ImgurMediaItem {
     var mp4 : String!
     var mp4Size : Int!
     var size : Int!
+    var title: String!
     var type : String!
     var views : Int!
     var width : Int!
@@ -151,6 +153,7 @@ class ImgurMediaItem {
         animated = json["animated"].boolValue
         bandwidth = json["bandwidth"].intValue
         datetime = json["datetime"].intValue
+        description = json["description"].stringValue
         edited = json["edited"].stringValue
         favorite = json["favorite"].boolValue
         gifv = json["gifv"].stringValue
@@ -165,6 +168,7 @@ class ImgurMediaItem {
         mp4 = json["mp4"].stringValue
         mp4Size = json["mp4_size"].intValue
         size = json["size"].intValue
+        title = json["title"].stringValue
         type = json["type"].stringValue
         views = json["views"].intValue
         width = json["width"].intValue

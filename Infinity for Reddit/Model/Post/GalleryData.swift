@@ -26,7 +26,7 @@ class GalleryData : NSObject, ObservableObject, Identifiable {
 }
 
 
-class GalleryItem : NSObject {
+class GalleryItem : NSObject, Identifiable {
     
     var caption : String!
     var id : Int!
@@ -36,7 +36,7 @@ class GalleryItem : NSObject {
     var urlString: String!
     var fallbackUrlString: String?
     var hasFallback: Bool = false
-    var captionUrl: String?
+    var captionUrl: String
     var mediaType: GalleryMediaType
     
     enum GalleryMediaType {
@@ -77,7 +77,7 @@ class GalleryItem : NSObject {
             mediaType = .video
         }
         
-        captionUrl = json["outbound_url"].string?.trimmingCharacters(in: .whitespacesAndNewlines)
+        captionUrl = json["outbound_url"].stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     func getFileName(subredditName: String) -> String {

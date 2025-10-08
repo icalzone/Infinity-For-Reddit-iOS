@@ -19,6 +19,7 @@ struct ImgurFullScreenView: View {
     @State private var hasStartedDragging: Bool = false
     @State private var isAnimatingBack: Bool = false
     @State private var selectedTab: Int = 0
+    @State private var sheetImgurMediaItem: ImgurMediaItem?
     
     let post: Post?
     let onDismiss: () -> Void
@@ -46,7 +47,10 @@ struct ImgurFullScreenView: View {
                             ImgurImageView(
                                 imgurMediaItem: item,
                                 imgurMedia: imgurMedia,
-                                post: post
+                                post: post,
+                                onShowDescription: {
+                                    sheetImgurMediaItem = item
+                                }
                             ) {
                                 tabViewDismissalViewModel.isDismissed = true
                                 onDismiss()
@@ -55,7 +59,7 @@ struct ImgurFullScreenView: View {
                             .tag(index)
                         } else {
                             TabVideoView(
-                                urlString: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+                                urlString: item.link,
                                 post: nil,
                                 videoType: .direct,
                                 isSelected: selectedTab == index,
@@ -75,6 +79,9 @@ struct ImgurFullScreenView: View {
         }
         .task {
             await imgurFullScreenViewModel.fetchImgurMedia()
+        }
+        .sheet(item: $sheetImgurMediaItem) { item in
+            GalleryOrImgurDescriptionSheet(title: item.title, description: item.description, link: nil)
         }
     }
     
@@ -96,6 +103,7 @@ struct ImgurImageView: View {
     let imgurMediaItem: ImgurMediaItem
     let imgurMedia: ImgurMedia
     let post: Post?
+    let onShowDescription: () -> Void
     let onDismiss: () -> Void
     
     var body: some View {
@@ -155,10 +163,12 @@ struct ImgurImageView: View {
             )
             
             ImgurImageToolbar(
-                downloadMediaType: .image(downloadUrlString: imgurMediaItem.link, fileName: "test.jpg"),
+                downloadMediaType: imgurMediaItem.toDownloadMediaType(post: post),
                 isVisible: $isToolbarVisible,
                 imgurMedia: imgurMedia,
                 post: post,
+                hasDescription: !imgurMediaItem.title.isEmpty || !imgurMediaItem.description.isEmpty,
+                onShowDescription: onShowDescription,
                 onDismiss: onDismiss
             )
         }
@@ -172,6 +182,8 @@ struct ImgurImageToolbar: View {
     
     let imgurMedia: ImgurMedia
     let post: Post?
+    let hasDescription: Bool
+    let onShowDescription: () -> Void
     let onDismiss: () -> Void
     
     private let buttonSize: CGFloat = 18
@@ -180,6 +192,8 @@ struct ImgurImageToolbar: View {
          isVisible: Binding<Bool>,
          imgurMedia: ImgurMedia,
          post: Post?,
+         hasDescription: Bool,
+         onShowDescription: @escaping () -> Void,
          onDismiss: @escaping () -> Void
     ) {
         _fullScreenMediaToolbarViewModel = StateObject(
@@ -188,6 +202,8 @@ struct ImgurImageToolbar: View {
         self._isVisible = isVisible
         self.imgurMedia = imgurMedia
         self.post = post
+        self.hasDescription = hasDescription
+        self.onShowDescription = onShowDescription
         self.onDismiss = onDismiss
     }
     
@@ -249,6 +265,21 @@ struct ImgurImageToolbar: View {
                                 )
                         }
                         
+                        if hasDescription {
+                            Button {
+                                onShowDescription()
+                            } label: {
+                                SwiftUI.Image(systemName: "info.circle")
+                                    .font(.system(size: buttonSize))
+                                    .padding(10)
+                                    .foregroundColor(Color.white)
+                                    .background(
+                                        Circle()
+                                            .fill(Color(hex: "#2E2E2E"))
+                                    )
+                            }
+                        }
+                        
                         Menu {
                             Button("Download all media") {
                                 fullScreenMediaToolbarViewModel.downloadAllImgurMedia(imgurMedia: imgurMedia, post: post)
@@ -291,7 +322,7 @@ struct ImgurImageToolbar: View {
                         Text("Downloading All Media...")
                             .foregroundStyle(.white)
                         
-                        ProgressView(value: fullScreenMediaToolbarViewModel.downloadGalleryAllMediaProgress)
+                        ProgressView(value: fullScreenMediaToolbarViewModel.downloadImgurAllMediaProgress)
                             .tint(.white)
                     }
                     .padding(.horizontal, 16)
@@ -300,7 +331,7 @@ struct ImgurImageToolbar: View {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color(hex: "#6B6B6B", opacity: 0.5))
                     )
-                    .opacity(fullScreenMediaToolbarViewModel.downloadGalleryAllMediaProgress == 0 ? 0 : 1)
+                    .opacity(fullScreenMediaToolbarViewModel.downloadImgurAllMediaProgress == 0 ? 0 : 1)
                 }
                 .padding(.horizontal, 32)
                 .padding(.bottom, 32)
