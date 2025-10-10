@@ -22,6 +22,7 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var downloadTask: Task<Void, Never>?
     @Published var downloadProgressTitle: String = ""
     @Published var downloadProgress: Double = 0
+    @Published var showDownloadFinishedMessage: Bool = false
     @Published var isShowingController: Bool = false
     @Published private var error: Error?
     
@@ -221,6 +222,17 @@ class VideoFullScreenViewModel: ObservableObject {
         }
         await MainActor.run {
             self.downloadProgress = 0
+            self.showDownloadFinishedMessage = true
+        }
+        
+        do {
+            try await Task.sleep(for: .seconds(1))
+        } catch {
+            // Ignore
+        }
+        
+        await MainActor.run {
+            self.showDownloadFinishedMessage = false
             self.downloadTask = nil
         }
     }

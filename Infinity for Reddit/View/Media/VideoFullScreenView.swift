@@ -85,9 +85,9 @@ struct VideoFullScreenView<Content: View>: View {
                     isMuted: $videoFullScreenViewModel.isMuted,
                     playbackSpeed: $videoFullScreenViewModel.playbackSpeed,
                     title: post?.title,
-                    isDownloading: videoFullScreenViewModel.downloadTask != nil,
                     downloadProgressTitle: videoFullScreenViewModel.downloadProgressTitle,
                     downloadProgress: videoFullScreenViewModel.downloadProgress,
+                    showDownloadFinishedMessage: videoFullScreenViewModel.showDownloadFinishedMessage,
                     hasDescription: hasDescription,
                     onFastForward: {
                         let newTime = videoFullScreenViewModel.currentTime + 5
@@ -226,9 +226,9 @@ struct VideoController<Content: View>: View {
     @State var showPlaybackSpeedSheet: Bool = false
     
     let title: String?
-    let isDownloading: Bool
     let downloadProgressTitle: String
     let downloadProgress: Double
+    let showDownloadFinishedMessage: Bool
     let hasDescription: Bool
     let onFastForward: () -> Void
     let onRewind: () -> Void
@@ -250,9 +250,9 @@ struct VideoController<Content: View>: View {
         playbackSpeed: Binding<Double>,
         showPlaybackSpeedSheet: Bool = false,
         title: String? = nil,
-        isDownloading: Bool,
         downloadProgressTitle: String,
         downloadProgress: Double,
+        showDownloadFinishedMessage: Bool,
         hasDescription: Bool,
         onFastForward: @escaping () -> Void,
         onRewind: @escaping () -> Void,
@@ -273,9 +273,9 @@ struct VideoController<Content: View>: View {
         _playbackSpeed = playbackSpeed
         _showPlaybackSpeedSheet = State(initialValue: showPlaybackSpeedSheet)
         self.title = title
-        self.isDownloading = isDownloading
         self.downloadProgressTitle = downloadProgressTitle
         self.downloadProgress = downloadProgress
+        self.showDownloadFinishedMessage = showDownloadFinishedMessage
         self.hasDescription = hasDescription
         self.onFastForward = onFastForward
         self.onRewind = onRewind
@@ -398,14 +398,37 @@ struct VideoController<Content: View>: View {
                 
                 downloadAllMediaMessageView()
                 
-                VStack {
-                    Text(downloadProgressTitle)
-                        .foregroundStyle(.white)
+                ZStack {
+                    VStack {
+                        Text(downloadProgressTitle)
+                            .foregroundStyle(.white)
+                        
+                        ProgressView(value: downloadProgress)
+                            .tint(.white)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(hex: "#6B6B6B", opacity: 0.5))
+                    )
+                    .opacity(downloadProgress == 0 ? 0 : 1)
                     
-                    ProgressView(value: downloadProgress)
-                        .tint(.white)
+                    HStack {
+                        SwiftUI.Image(systemName: "checkmark.seal")
+                            .foregroundStyle(.white)
+                        
+                        Text("Video downloaded")
+                            .foregroundStyle(.white)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color(hex: "#6B6B6B", opacity: 0.5))
+                    )
+                    .opacity(showDownloadFinishedMessage ? 1 : 0)
                 }
-                .opacity(isDownloading ? 1 : 0)
                 
                 if let title {
                     RowText(title)
