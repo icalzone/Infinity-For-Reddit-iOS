@@ -42,7 +42,7 @@ struct PostDetailsViewCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             Spacer()
                 .frame(height: 16)
             
@@ -89,7 +89,7 @@ struct PostDetailsViewCard: View {
                     .secondaryText()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
+            .padding(.bottom, 16)
             
             Text(postViewModel.post.title)
                 .font(.system(size: 24))
@@ -97,76 +97,83 @@ struct PostDetailsViewCard: View {
                 .padding(.bottom, 8)
                 .postTitle()
             
-            HFlow(alignment: .center) {
-                if !hidePostType {
-                    PostTypeTag(post: postViewModel.post)
-                        .onTapGesture {
-                            navigationManager.path.append(
-                                AppNavigation.filteredPosts(
-                                    postListingMetadata: PostListingMetadata.getSubredditMetadadata(
-                                        subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
-                                    ),
-                                    postFilter: PostFilter.constructPostFilter(postType: postViewModel.post.postType)
+            if hidePostType && !postViewModel.post.spoiler
+                && !postViewModel.post.over18 && hidePostFlair
+                && hideUpvoteRatio && !postViewModel.post.archived
+                && !postViewModel.post.locked && postViewModel.post.crosspostParent == nil
+                && postViewModel.post.postType != .link {
+                // Not showing post metadata
+                EmptyView()
+            } else {
+                HFlow(alignment: .center) {
+                    if !hidePostType {
+                        PostTypeTag(post: postViewModel.post)
+                            .onTapGesture {
+                                navigationManager.path.append(
+                                    AppNavigation.filteredPosts(
+                                        postListingMetadata: PostListingMetadata.getSubredditMetadadata(
+                                            subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
+                                        ),
+                                        postFilter: PostFilter.constructPostFilter(postType: postViewModel.post.postType)
+                                    )
                                 )
-                            )
-                        }
-                }
-                
-                if postViewModel.post.spoiler {
-                    SpoilerTag()
-                }
-                
-                if postViewModel.post.over18 {
-                    SensitiveTag()
-                        .onTapGesture {
-                            var postFilter = PostFilter()
-                            postFilter.onlySensitive = true
-                            navigationManager.path.append(
-                                AppNavigation.filteredPosts(
-                                    postListingMetadata: PostListingMetadata.getSubredditMetadadata(
-                                        subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
-                                    ),
-                                    postFilter: postFilter
-                                )
-                            )
-                        }
-                }
-                
-                if !hidePostFlair {
-                    FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
-                              flairText: postViewModel.post.linkFlairText)
-                }
-                
-                if !hideUpvoteRatio {
-                    UpvoteRatioTag(post: postViewModel.post)
-                }
-                
-                if postViewModel.post.archived {
-                    ArchivedTag()
-                }
-                
-                if postViewModel.post.locked {
-                    LockedTag()
-                }
-                
-                if postViewModel.post.crosspostParent != nil {
-                    CrosspostTag()
-                }
-                
-                switch postViewModel.post.postType {
-                case .link:
-                    if let url = URL(string: postViewModel.post.url), let domain = url.host {
-                        Text(domain)
-                            .secondaryText()
+                            }
                     }
-                default:
-                    EmptyView()
+                    
+                    if postViewModel.post.spoiler {
+                        SpoilerTag()
+                    }
+                    
+                    if postViewModel.post.over18 {
+                        SensitiveTag()
+                            .onTapGesture {
+                                var postFilter = PostFilter()
+                                postFilter.onlySensitive = true
+                                navigationManager.path.append(
+                                    AppNavigation.filteredPosts(
+                                        postListingMetadata: PostListingMetadata.getSubredditMetadadata(
+                                            subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
+                                        ),
+                                        postFilter: postFilter
+                                    )
+                                )
+                            }
+                    }
+                    
+                    if !hidePostFlair {
+                        FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
+                                  flairText: postViewModel.post.linkFlairText)
+                    }
+                    
+                    if !hideUpvoteRatio {
+                        UpvoteRatioTag(post: postViewModel.post)
+                    }
+                    
+                    if postViewModel.post.archived {
+                        ArchivedTag()
+                    }
+                    
+                    if postViewModel.post.locked {
+                        LockedTag()
+                    }
+                    
+                    if postViewModel.post.crosspostParent != nil {
+                        CrosspostTag()
+                    }
+                    
+                    switch postViewModel.post.postType {
+                    case .link:
+                        if let url = URL(string: postViewModel.post.url), let domain = url.host {
+                            Text(domain)
+                                .secondaryText()
+                        }
+                    default:
+                        EmptyView()
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal, 16)
-            
-            Spacer()
-                .frame(height: 8)
             
             switch postViewModel.post.postType {
             case .noPreviewLink:
@@ -367,8 +374,7 @@ struct PostDetailsViewCard: View {
                 .contentShape(Rectangle())
             }
             .environment(\.layoutDirection, voteButtonsOnTheRight ? .rightToLeft : .leftToRight)
-            .padding(.horizontal, 8)
-            .padding(.bottom, 8)
+            .padding(8)
         }
         .padding(.vertical, 0)
     }

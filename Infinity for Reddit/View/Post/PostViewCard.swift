@@ -47,7 +47,7 @@ struct PostViewCard: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             Spacer()
                 .frame(height: 16)
             
@@ -92,7 +92,7 @@ struct PostViewCard: View {
                     .secondaryText()
             }
             .padding(.horizontal, 16)
-            .padding(.bottom, 8)
+            .padding(.bottom, 16)
             
             Text(postViewModel.post.title)
                 .font(.system(size: 24))
@@ -100,56 +100,62 @@ struct PostViewCard: View {
                 .padding(.bottom, 8)
                 .postTitle()
             
-            HFlow(alignment: .center) {
-                if !hidePostType {
-                    PostTypeTag(post: postViewModel.post)
-                        .onTapGesture {
-                            onPostTypeClicked()
-                        }
-                }
-                
-                if postViewModel.post.spoiler {
-                    SpoilerTag()
-                }
-                
-                if postViewModel.post.over18 {
-                    SensitiveTag()
-                        .onTapGesture {
-                            onSensitiveClicked()
-                        }
-                }
-                
-                if !hidePostFlair {
-                    FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
-                              flairText: postViewModel.post.linkFlairText)
-                }
-                
-                if postViewModel.post.archived {
-                    ArchivedTag()
-                }
-                
-                if postViewModel.post.locked {
-                    LockedTag()
-                }
-                
-                if postViewModel.post.crosspostParent != nil {
-                    CrosspostTag()
-                }
-                
-                switch postViewModel.post.postType {
-                case .link:
-                    if let url = URL(string: postViewModel.post.url), let domain = url.host {
-                        Text(domain)
-                            .secondaryText()
+            if hidePostType && !postViewModel.post.spoiler
+                && !postViewModel.post.over18 && hidePostFlair
+                && !postViewModel.post.archived && !postViewModel.post.locked
+                && postViewModel.post.crosspostParent == nil && postViewModel.post.postType != .link {
+                // Not showing post metadata
+                EmptyView()
+            } else {
+                HFlow(alignment: .center) {
+                    if !hidePostType {
+                        PostTypeTag(post: postViewModel.post)
+                            .onTapGesture {
+                                onPostTypeClicked()
+                            }
                     }
-                default:
-                    EmptyView()
+                    
+                    if postViewModel.post.spoiler {
+                        SpoilerTag()
+                    }
+                    
+                    if postViewModel.post.over18 {
+                        SensitiveTag()
+                            .onTapGesture {
+                                onSensitiveClicked()
+                            }
+                    }
+                    
+                    if !hidePostFlair {
+                        FlairView(flairRichtext: postViewModel.post.linkFlairRichtext,
+                                  flairText: postViewModel.post.linkFlairText)
+                    }
+                    
+                    if postViewModel.post.archived {
+                        ArchivedTag()
+                    }
+                    
+                    if postViewModel.post.locked {
+                        LockedTag()
+                    }
+                    
+                    if postViewModel.post.crosspostParent != nil {
+                        CrosspostTag()
+                    }
+                    
+                    switch postViewModel.post.postType {
+                    case .link:
+                        if let url = URL(string: postViewModel.post.url), let domain = url.host {
+                            Text(domain)
+                                .secondaryText()
+                        }
+                    default:
+                        EmptyView()
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
             }
-            .padding(.horizontal, 16)
-            
-            Spacer()
-                .frame(height: 8)
             
             switch postViewModel.post.postType {
             case .noPreviewLink:
@@ -320,6 +326,9 @@ struct PostViewCard: View {
                     .contentShape(Rectangle())
                 }
                 .environment(\.layoutDirection, .leftToRight)
+                .padding(.vertical, 8)
+                .contentShape(Rectangle())
+                .onTapGesture {}
 
                 HStack {
                     if !hideNComments {
@@ -366,7 +375,6 @@ struct PostViewCard: View {
             }
             .environment(\.layoutDirection, voteButtonsOnTheRight ? .rightToLeft : .leftToRight)
             .padding(.horizontal, 8)
-            .padding(.bottom, 8)
         }
         .background {
             TouchRipple(backgroundShape: RoundedRectangle(cornerRadius: 20)) {
