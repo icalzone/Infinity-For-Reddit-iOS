@@ -28,6 +28,8 @@ struct VideoFullScreenView: View {
     let post: Post?
     let videoType: VideoType
     let hasDescription: Bool
+    // This is for wrapper view to control if the video can be played
+    let canPlay: Bool
     let onShowDescription: (() -> Void)?
     let onDismiss: () -> Void
     
@@ -37,6 +39,7 @@ struct VideoFullScreenView: View {
         videoType: VideoType,
         videoFullScreenViewModel: VideoFullScreenViewModel,
         hasDescription: Bool = false,
+        canPlay: Bool = true,
         onShowDescription: (() -> Void)? = nil,
         onDismiss: @escaping () -> Void
     ) {
@@ -45,6 +48,7 @@ struct VideoFullScreenView: View {
         self.videoType = videoType
         self.videoFullScreenViewModel = videoFullScreenViewModel
         self.hasDescription = hasDescription
+        self.canPlay = canPlay
         self.onShowDescription = onShowDescription
         self.onDismiss = onDismiss
     }
@@ -113,12 +117,13 @@ struct VideoFullScreenView: View {
             }
         }
         .appForegroundBackgroundListener(onAppEntersForeground: {
-            //videoFullScreenViewModel.play()
             isPlaying = true
         }, onAppEntersBackground: {
-            //videoFullScreenViewModel.pause()
             isPlaying = false
         })
+        .onAppear {
+            videoFullScreenViewModel.setCanPlay(to: canPlay)
+        }
         .onChange(of: isPlaying) { _, newValue in
             if newValue {
                 videoFullScreenViewModel.play()

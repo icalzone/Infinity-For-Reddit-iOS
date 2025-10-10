@@ -25,6 +25,7 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var isShowingController: Bool = false
     @Published private var error: Error?
     
+    private var canPlay: Bool = true
     private var loadedURL: URL?
     private var currentItemObserver: NSKeyValueObservation?
     private var timeObserverToken: Any?
@@ -119,7 +120,15 @@ class VideoFullScreenViewModel: ObservableObject {
         return try await VideoFetcher.shared.fetchVReddItVideo(url: url)
     }
     
+    func setCanPlay(to value: Bool) {
+        self.canPlay = value
+    }
+    
     func play() {
+        guard canPlay else {
+            return
+        }
+        
         player.play()
         player.rate = Float(playbackSpeed)
     }
@@ -132,6 +141,7 @@ class VideoFullScreenViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
         self.player.replaceCurrentItem(with: nil)
         
+        canPlay = true
         loadedURL = nil
         isLoaded = false
         isLoading = false

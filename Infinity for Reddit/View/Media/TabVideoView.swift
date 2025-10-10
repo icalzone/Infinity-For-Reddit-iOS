@@ -47,19 +47,21 @@ struct TabVideoView: View {
             videoType: .direct,
             videoFullScreenViewModel: videoFullScreenViewModel,
             hasDescription: hasDescription,
+            canPlay: isSelected,
             onShowDescription: onShowDescription
         ) {
             onDismiss()
         }
         .onChange(of: isSelected) { _, newValue in
+            videoFullScreenViewModel.setCanPlay(to: newValue)
             if newValue {
-                videoFullScreenViewModel.player.play()
+                videoFullScreenViewModel.play()
             } else {
-                videoFullScreenViewModel.player.pause()
+                videoFullScreenViewModel.pause()
             }
         }
         .onChange(of: tabViewDismissalViewModel.isDismissed) { _, newValue in
-            if newValue && !isSelected {
+            if newValue {
                 videoFullScreenViewModel.resetState()
             }
         }
