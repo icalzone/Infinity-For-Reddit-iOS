@@ -59,8 +59,10 @@ struct GalleryFullScreenView: View {
                     } else {
                         TabVideoView(
                             urlString: item.urlString,
+                            galleryItems: items,
                             post: nil,
                             videoType: .direct,
+                            downloadMediaType: item.toDownloadMediaType(post: post),
                             isSelected: galleryScrollState.scrollId == index,
                             tabViewDismissalViewModel: tabViewDismissalViewModel,
                             hasDescription: !item.caption.isEmpty || !item.captionUrl.isEmpty,

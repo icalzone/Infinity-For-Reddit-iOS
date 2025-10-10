@@ -60,8 +60,10 @@ struct ImgurFullScreenView: View {
                         } else {
                             TabVideoView(
                                 urlString: item.link,
+                                imgurMedia: imgurMedia,
                                 post: nil,
                                 videoType: .direct,
+                                downloadMediaType: item.toDownloadMediaType(post: post),
                                 isSelected: selectedTab == index,
                                 tabViewDismissalViewModel: tabViewDismissalViewModel,
                                 hasDescription: !item.title.isEmpty || !item.description.isEmpty,

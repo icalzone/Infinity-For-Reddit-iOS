@@ -8,7 +8,7 @@
 import SwiftUI
 import AVKit
 
-struct VideoFullScreenView: View {
+struct VideoFullScreenView<Content: View>: View {
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     @EnvironmentObject var namespaceManager: NamespaceManager
     
@@ -30,7 +30,9 @@ struct VideoFullScreenView: View {
     let hasDescription: Bool
     // This is for wrapper view to control if the video can be played
     let canPlay: Bool
+    let downloadAllMediaMessageView: () -> Content
     let onShowDescription: (() -> Void)?
+    let onDownloadAllMedia: (() -> Void)?
     let onDismiss: () -> Void
     
     init(
@@ -40,7 +42,9 @@ struct VideoFullScreenView: View {
         videoFullScreenViewModel: VideoFullScreenViewModel,
         hasDescription: Bool = false,
         canPlay: Bool = true,
+        @ViewBuilder downloadAllMediaMessageView: @escaping () -> Content = { EmptyView() },
         onShowDescription: (() -> Void)? = nil,
+        onDownloadAllMedia: (() -> Void)? = nil,
         onDismiss: @escaping () -> Void
     ) {
         self.urlString = urlString
@@ -49,7 +53,9 @@ struct VideoFullScreenView: View {
         self.videoFullScreenViewModel = videoFullScreenViewModel
         self.hasDescription = hasDescription
         self.canPlay = canPlay
+        self.downloadAllMediaMessageView = downloadAllMediaMessageView
         self.onShowDescription = onShowDescription
+        self.onDownloadAllMedia = onDownloadAllMedia
         self.onDismiss = onDismiss
     }
     
@@ -98,9 +104,11 @@ struct VideoFullScreenView: View {
                     onDownload: {
                         videoFullScreenViewModel.downloadMedia(urlString: urlString, post: post)
                     },
+                    downloadAllMediaMessageView: downloadAllMediaMessageView,
                     onResetControllerTimer: videoFullScreenViewModel.resetControllerTimer,
                     onRemoveControllerTimer: videoFullScreenViewModel.removeControllerTimer,
                     onShowDescription: onShowDescription,
+                    onDownloadAllMedia: onDownloadAllMedia,
                     onDismiss: {
                         videoFullScreenViewModel.resetState()
                         withAnimation {
@@ -206,7 +214,7 @@ struct VideoFullScreenView: View {
     }
 }
 
-struct VideoController: View {
+struct VideoController<Content: View>: View {
     @Binding var isPlaying: Bool
     @Binding var duration: Double
     @Binding var currentTime: Double
@@ -225,10 +233,60 @@ struct VideoController: View {
     let onFastForward: () -> Void
     let onRewind: () -> Void
     let onDownload: () -> Void
+    let downloadAllMediaMessageView: () -> Content
     let onResetControllerTimer: () -> Void
     let onRemoveControllerTimer: () -> Void
     let onShowDescription: (() -> Void)?
+    let onDownloadAllMedia: (() -> Void)?
     let onDismiss: () -> Void
+    
+    init(
+        isPlaying: Binding<Bool>,
+        duration: Binding<Double>,
+        currentTime: Binding<Double>,
+        isSeekingProgress: Binding<Bool>,
+        hasAudio: Binding<Bool>,
+        isMuted: Binding<Bool>,
+        playbackSpeed: Binding<Double>,
+        showPlaybackSpeedSheet: Bool = false,
+        title: String? = nil,
+        isDownloading: Bool,
+        downloadProgressTitle: String,
+        downloadProgress: Double,
+        hasDescription: Bool,
+        onFastForward: @escaping () -> Void,
+        onRewind: @escaping () -> Void,
+        onDownload: @escaping () -> Void,
+        @ViewBuilder downloadAllMediaMessageView: @escaping () -> Content = { EmptyView() },
+        onResetControllerTimer: @escaping () -> Void,
+        onRemoveControllerTimer: @escaping () -> Void,
+        onShowDescription: (() -> Void)? = nil,
+        onDownloadAllMedia: (() -> Void)? = nil,
+        onDismiss: @escaping () -> Void
+    ) {
+        _isPlaying = isPlaying
+        _duration = duration
+        _currentTime = currentTime
+        _isSeekingProgress = isSeekingProgress
+        _hasAudio = hasAudio
+        _isMuted = isMuted
+        _playbackSpeed = playbackSpeed
+        _showPlaybackSpeedSheet = State(initialValue: showPlaybackSpeedSheet)
+        self.title = title
+        self.isDownloading = isDownloading
+        self.downloadProgressTitle = downloadProgressTitle
+        self.downloadProgress = downloadProgress
+        self.hasDescription = hasDescription
+        self.onFastForward = onFastForward
+        self.onRewind = onRewind
+        self.onDownload = onDownload
+        self.downloadAllMediaMessageView = downloadAllMediaMessageView
+        self.onResetControllerTimer = onResetControllerTimer
+        self.onRemoveControllerTimer = onRemoveControllerTimer
+        self.onShowDescription = onShowDescription
+        self.onDownloadAllMedia = onDownloadAllMedia
+        self.onDismiss = onDismiss
+    }
     
     var body: some View {
         ZStack {
@@ -288,6 +346,16 @@ struct VideoController: View {
                                 .foregroundStyle(.white)
                         }
                     }
+                    
+                    if let onDownloadAllMedia {
+                        Button {
+                            onDownloadAllMedia()
+                        } label: {
+                            SwiftUI.Image(systemName: "photo.on.rectangle.angled")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                        }
+                    }
                 }
                 .padding(16)
                 .transition(.move(edge: .top).combined(with: .opacity))
@@ -327,6 +395,8 @@ struct VideoController: View {
             
             VStack(spacing: 16) {
                 Spacer()
+                
+                downloadAllMediaMessageView()
                 
                 VStack {
                     Text(downloadProgressTitle)
