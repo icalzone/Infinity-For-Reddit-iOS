@@ -44,6 +44,9 @@ struct SubmitCommentView: View {
                                     .padding(.horizontal, 16)
                                     .padding(.top, 16)
                                     .padding(.bottom, 8)
+                            } else {
+                                Spacer()
+                                    .frame(height: 8)
                             }
                             
                             if let bodyProcessedMarkdown = submitCommentViewModel.commentParent.bodyProcessedMarkdown {
