@@ -13,9 +13,12 @@ class VideoFullScreenViewModel: ObservableObject {
     @Published var player: AVPlayer = .init()
     @Published private var isLoading: Bool = false
     @Published private var isLoaded: Bool = false
+    @Published var isPlaying: Bool = true
+    @Published var userPaused: Bool = false
     @Published var currentTime: Double = 0
     @Published var duration: Double = 1
     @Published var isSeekingProgress: Bool = false
+    @Published var wasPlayingBeforeSeeking: Bool = false
     @Published var hasAudio: Bool = false
     @Published var isMuted: Bool = false
     @Published var playbackSpeed: Double = 1
@@ -125,17 +128,23 @@ class VideoFullScreenViewModel: ObservableObject {
         self.canPlay = value
     }
     
-    func play() {
-        guard canPlay else {
+    func play(respectUserPaused: Bool = false) {
+        guard canPlay && !(userPaused && respectUserPaused) else {
             return
         }
         
         player.play()
         player.rate = Float(playbackSpeed)
+        isPlaying = true
+        userPaused = false
     }
     
-    func pause() {
+    func pause(userPaused: Bool = false) {
         player.pause()
+        isPlaying = false
+        if userPaused {
+            self.userPaused = true
+        }
     }
     
     func resetState() {
@@ -143,6 +152,8 @@ class VideoFullScreenViewModel: ObservableObject {
         self.player.replaceCurrentItem(with: nil)
         
         canPlay = true
+        isPlaying = false
+        userPaused = false
         loadedURL = nil
         isLoaded = false
         isLoading = false

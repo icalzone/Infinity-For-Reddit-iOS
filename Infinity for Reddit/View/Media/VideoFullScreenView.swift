@@ -22,8 +22,6 @@ struct VideoFullScreenView<Content: View>: View {
     @State private var hasStartedDragging: Bool = false
     @State private var isAnimatingBack: Bool = false
     
-    @State private var isPlaying: Bool = true
-    
     let urlString: String
     let post: Post?
     let videoType: VideoType
@@ -77,7 +75,7 @@ struct VideoFullScreenView<Content: View>: View {
             
             if videoFullScreenViewModel.isShowingController {
                 VideoController(
-                    isPlaying: $isPlaying,
+                    isPlaying: videoFullScreenViewModel.isPlaying,
                     duration: $videoFullScreenViewModel.duration,
                     currentTime: $videoFullScreenViewModel.currentTime,
                     isSeekingProgress: $videoFullScreenViewModel.isSeekingProgress,
@@ -89,6 +87,13 @@ struct VideoFullScreenView<Content: View>: View {
                     downloadProgress: videoFullScreenViewModel.downloadProgress,
                     showDownloadFinishedMessage: videoFullScreenViewModel.showDownloadFinishedMessage,
                     hasDescription: hasDescription,
+                    onTogglePlayPause: {
+                        if videoFullScreenViewModel.isPlaying {
+                            videoFullScreenViewModel.pause(userPaused: true)
+                        } else {
+                            videoFullScreenViewModel.play()
+                        }
+                    },
                     onFastForward: {
                         let newTime = videoFullScreenViewModel.currentTime + 5
                         videoFullScreenViewModel.player.seek(
@@ -125,19 +130,12 @@ struct VideoFullScreenView<Content: View>: View {
             }
         }
         .appForegroundBackgroundListener(onAppEntersForeground: {
-            isPlaying = true
+            videoFullScreenViewModel.play(respectUserPaused: true)
         }, onAppEntersBackground: {
-            isPlaying = false
+            videoFullScreenViewModel.pause()
         })
         .onAppear {
             videoFullScreenViewModel.setCanPlay(to: canPlay)
-        }
-        .onChange(of: isPlaying) { _, newValue in
-            if newValue {
-                videoFullScreenViewModel.play()
-            } else {
-                videoFullScreenViewModel.pause()
-            }
         }
         .onReceive(videoFullScreenViewModel.$currentTime
             .removeDuplicates()
@@ -151,9 +149,11 @@ struct VideoFullScreenView<Content: View>: View {
             }
         }
         .onChange(of: videoFullScreenViewModel.isSeekingProgress) { _, newValue in
-            if newValue && isPlaying {
+            if newValue && videoFullScreenViewModel.isPlaying {
+                videoFullScreenViewModel.wasPlayingBeforeSeeking = true
                 videoFullScreenViewModel.pause()
-            } else if !newValue && isPlaying {
+            } else if !newValue && videoFullScreenViewModel.wasPlayingBeforeSeeking {
+                videoFullScreenViewModel.wasPlayingBeforeSeeking = false
                 videoFullScreenViewModel.play()
             }
         }
@@ -215,7 +215,7 @@ struct VideoFullScreenView<Content: View>: View {
 }
 
 struct VideoController<Content: View>: View {
-    @Binding var isPlaying: Bool
+    let isPlaying: Bool
     @Binding var duration: Double
     @Binding var currentTime: Double
     @Binding var isSeekingProgress: Bool
@@ -230,6 +230,7 @@ struct VideoController<Content: View>: View {
     let downloadProgress: Double
     let showDownloadFinishedMessage: Bool
     let hasDescription: Bool
+    let onTogglePlayPause: () -> Void
     let onFastForward: () -> Void
     let onRewind: () -> Void
     let onDownload: () -> Void
@@ -241,7 +242,7 @@ struct VideoController<Content: View>: View {
     let onDismiss: () -> Void
     
     init(
-        isPlaying: Binding<Bool>,
+        isPlaying: Bool,
         duration: Binding<Double>,
         currentTime: Binding<Double>,
         isSeekingProgress: Binding<Bool>,
@@ -254,6 +255,7 @@ struct VideoController<Content: View>: View {
         downloadProgress: Double,
         showDownloadFinishedMessage: Bool,
         hasDescription: Bool,
+        onTogglePlayPause: @escaping () -> Void,
         onFastForward: @escaping () -> Void,
         onRewind: @escaping () -> Void,
         onDownload: @escaping () -> Void,
@@ -264,7 +266,7 @@ struct VideoController<Content: View>: View {
         onDownloadAllMedia: (() -> Void)? = nil,
         onDismiss: @escaping () -> Void
     ) {
-        _isPlaying = isPlaying
+        self.isPlaying = isPlaying
         _duration = duration
         _currentTime = currentTime
         _isSeekingProgress = isSeekingProgress
@@ -277,6 +279,7 @@ struct VideoController<Content: View>: View {
         self.downloadProgress = downloadProgress
         self.showDownloadFinishedMessage = showDownloadFinishedMessage
         self.hasDescription = hasDescription
+        self.onTogglePlayPause = onTogglePlayPause
         self.onFastForward = onFastForward
         self.onRewind = onRewind
         self.onDownload = onDownload
@@ -375,7 +378,7 @@ struct VideoController<Content: View>: View {
                 }
                 
                 Button {
-                    isPlaying.toggle()
+                    onTogglePlayPause()
                     onResetControllerTimer()
                 } label: {
                     SwiftUI.Image(systemName: isPlaying ? "pause.fill" : "play.fill")

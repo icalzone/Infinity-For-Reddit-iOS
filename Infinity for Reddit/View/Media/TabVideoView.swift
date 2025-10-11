@@ -111,7 +111,7 @@ struct TabVideoView: View {
         .onChange(of: isSelected) { _, newValue in
             videoFullScreenViewModel.setCanPlay(to: newValue)
             if newValue {
-                videoFullScreenViewModel.play()
+                videoFullScreenViewModel.play(respectUserPaused: true)
             } else {
                 videoFullScreenViewModel.pause()
             }
