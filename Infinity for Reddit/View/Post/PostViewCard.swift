@@ -160,18 +160,19 @@ struct PostViewCard: View {
             switch postViewModel.post.postType {
             case .noPreviewLink:
                 if let url = URL(string: postViewModel.post.url), let domain = url.host {
-                    Spacer()
-                        .frame(height: 10)
-                    
-                    Text(domain)
-                        .noPreviewPostTypeIndicatorBackground()
-                        .noPreviewPostTypeIndicator()
-                        .onTapGesture {
-                            navigationManager.openLink(url)
-                            Task {
-                                await postViewModel.readPost()
-                            }
+                    NoPreviewLinkView(domain: domain) {
+                        navigationManager.openLink(url)
+                        Task {
+                            await postViewModel.readPost()
                         }
+                    }
+                } else if let crosspost = postViewModel.post.crosspostParent, let url = URL(string: crosspost.url), let domain = url.host {
+                    NoPreviewLinkView(domain: domain) {
+                        navigationManager.openLink(url)
+                        Task {
+                            await postViewModel.readPost()
+                        }
+                    }
                 }
             default:
                 EmptyView()
@@ -391,5 +392,22 @@ struct PostViewCard: View {
             }
             navigationManager.path.append(AppNavigation.postDetails(postDetailsInput: .post(postViewModel.post), isFromSubredditPostListing: isSubredditPostListing))
         }
+    }
+}
+
+private struct NoPreviewLinkView: View {
+    let domain: String
+    let onTap: () -> Void
+    
+    var body: some View {
+        Spacer()
+            .frame(height: 10)
+        
+        Text(domain)
+            .noPreviewPostTypeIndicatorBackground()
+            .noPreviewPostTypeIndicator()
+            .onTapGesture {
+                onTap()
+            }
     }
 }

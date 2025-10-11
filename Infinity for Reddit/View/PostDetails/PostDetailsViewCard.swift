@@ -178,15 +178,13 @@ struct PostDetailsViewCard: View {
             switch postViewModel.post.postType {
             case .noPreviewLink:
                 if let url = URL(string: postViewModel.post.url), let domain = url.host {
-                    Spacer()
-                        .frame(height: 10)
-                    
-                    Text(domain)
-                        .noPreviewPostTypeIndicatorBackground()
-                        .noPreviewPostTypeIndicator()
-                        .onTapGesture {
-                            navigationManager.openLink(url)
-                        }
+                    NoPreviewLinkView(domain: domain) {
+                        navigationManager.openLink(url)
+                    }
+                } else if let crosspost = postViewModel.post.crosspostParent, let url = URL(string: crosspost.url), let domain = url.host {
+                    NoPreviewLinkView(domain: domain) {
+                        navigationManager.openLink(url)
+                    }
                 }
             default:
                 EmptyView()
@@ -385,5 +383,22 @@ struct PostDetailsViewCard: View {
     
     private func goToUserDetails() {
         navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
+    }
+}
+
+private struct NoPreviewLinkView: View {
+    let domain: String
+    let onTap: () -> Void
+    
+    var body: some View {
+        Spacer()
+            .frame(height: 10)
+        
+        Text(domain)
+            .noPreviewPostTypeIndicatorBackground()
+            .noPreviewPostTypeIndicator()
+            .onTapGesture {
+                onTap()
+            }
     }
 }
