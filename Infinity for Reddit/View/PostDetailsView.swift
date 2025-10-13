@@ -62,7 +62,7 @@ struct PostDetailsView: View {
                         }
                     }
                     
-                    if case .postAndCommentId = postDetailsViewModel.postDetailsInput {
+                    if case .postAndCommentId(_, let _?) = postDetailsViewModel.postDetailsInput {
                         TouchRipple(action: {
                             guard let post = postDetailsViewModel.post else { return }
                             postDetailsViewModel.postDetailsInput = .post(post)

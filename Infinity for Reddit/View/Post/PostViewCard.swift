@@ -206,7 +206,7 @@ struct PostViewCard: View {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrl: videoUrlString, inPostListing: true) {
+                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString, inPostListing: true) {
                     Task {
                         await postViewModel.readPost()
                     }
@@ -215,7 +215,7 @@ struct PostViewCard: View {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrl: videoUrlString, inPostListing: true) {
+                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString, inPostListing: true) {
                     Task {
                         await postViewModel.readPost()
                     }

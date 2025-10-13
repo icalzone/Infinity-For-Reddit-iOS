@@ -18,7 +18,7 @@ struct PostVideoView: View {
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     
     let post: Post
-    let videoUrl: String
+    let videoUrlString: String
     var inPostListing: Bool = false
     var onReadPost: (() -> Void)? = nil
     
@@ -26,9 +26,9 @@ struct PostVideoView: View {
         if VideoUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
             && ((post.over18 && autoplaySensitiveVideo) || !post.over18) {
             if let preview = post.preview, preview.images.count > 0, !(limitMediaHeight && inPostListing) {
-                InlineVideoPlayer(videoURL: URL(string: videoUrl)!, aspectRatio: preview.images[0].source.aspectRatio, muteVideo: muteAutoplayingVideo)
+                InlineVideoPlayer(videoURL: URL(string: videoUrlString)!, aspectRatio: preview.images[0].source.aspectRatio, muteVideo: muteAutoplayingVideo)
             } else {
-                InlineVideoPlayer(videoURL: URL(string: videoUrl)!, aspectRatio: nil, muteVideo: muteAutoplayingVideo)
+                InlineVideoPlayer(videoURL: URL(string: videoUrlString)!, aspectRatio: nil, muteVideo: muteAutoplayingVideo)
                     .frame(height: 200)
             }
         } else {

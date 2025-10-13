@@ -8,6 +8,8 @@ import SwiftUI
 import MarkdownUI
 
 struct SubmitTextPostView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @StateObject private var submitTextPostViewModel: SubmitTextPostViewModel
     
@@ -26,7 +28,9 @@ struct SubmitTextPostView: View {
             wrappedValue: PostSubmissionContextViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
         )
         _submitTextPostViewModel = StateObject(
-            wrappedValue: SubmitTextPostViewModel()
+            wrappedValue: SubmitTextPostViewModel(
+                submitPostRepository: SubmitPostRepository()
+            )
         )
     }
     
@@ -104,7 +108,17 @@ struct SubmitTextPostView: View {
                 }
                 
                 Button {
-                    print("Submit Text Post")
+                    guard let subreddit = postSubmissionContextViewModel.selectedSubreddit else {
+                        return
+                    }
+                    submitTextPostViewModel.submitPost(
+                        subredditName: subreddit.name,
+                        flair: postSubmissionContextViewModel.selectedFlair,
+                        isSpoiler: postSubmissionContextViewModel.isSpoiler,
+                        isSensitive: postSubmissionContextViewModel.isSensitive,
+                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification,
+                        isRichTextJSON: false
+                    )
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
@@ -112,6 +126,11 @@ struct SubmitTextPostView: View {
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitTextPostViewModel.content)
+        }
+        .onChange(of: submitTextPostViewModel.submittedPostId) { _, newValue in
+            if let id = newValue {
+                navigationManager.path.append(AppNavigation.postDetailsWithId(postId: id))
+            }
         }
     }
     

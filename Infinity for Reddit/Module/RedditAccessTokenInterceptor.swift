@@ -13,7 +13,7 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
     private let lock = NSLock()
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        guard var url = urlRequest.url else {
+        guard let url = urlRequest.url else {
             return completion(.success(urlRequest))
         }
         

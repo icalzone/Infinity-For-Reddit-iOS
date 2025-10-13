@@ -1,0 +1,79 @@
+//
+//  SubmitPostRepository.swift
+//  Infinity for Reddit
+//
+//  Created by Docile Alligator on 2025-10-13.
+//
+
+import Alamofire
+import SwiftyJSON
+
+class SubmitPostRepository: SubmitPostRepositoryProtocol {
+    enum SubmitPostRepositoryError: Error {
+        case NetworkError(String)
+        case JSONDecodingError(String)
+    }
+    
+    private let session: Session
+    
+    init() {
+        guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self, name: "plain") else {
+            fatalError("Failed to resolve plain Session in SubmitPostRepository")
+        }
+        self.session = resolvedSession
+    }
+    
+    // Returns the ID of the submitted post
+    func submitTextPost(
+        account: Account,
+        subredditName: String,
+        title: String,
+        content: String,
+        flair: Flair?,
+        isSpoiler: Bool,
+        isSensitive: Bool,
+        receivePostReplyNotifications: Bool,
+        isRichTextJSON: Bool
+    ) async throws -> String {
+        var params = [
+            "api_type": "json",
+            "sr": subredditName,
+            "title": title,
+            "kind": "self",
+            "spoiler": String(isSpoiler),
+            "nsfw": String(isSensitive),
+            "sendreplies": String(receivePostReplyNotifications)
+        ]
+        if !content.isEmpty {
+            if isRichTextJSON {
+                params["richtext_json"] = content
+            } else {
+                params["text"] = content
+            }
+        }
+        if let flair {
+            params["flair_text"] = flair.text
+            params["flair_id"] = flair.id
+        }
+        
+        let interceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
+        let data = try await self.session.request(RedditOAuthAPI.submitTextPost(params: params), interceptor: interceptor)
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw SubmitPostRepositoryError.JSONDecodingError(error.localizedDescription)
+        }
+        
+        try json.throwIfRedditError(defaultErrorMessage: "Failed to submit post.")
+        
+        let id = json["json"]["data"]["id"].stringValue
+        if id.isEmpty {
+            throw SubmitPostRepositoryError.JSONDecodingError("Failed to get the ID of the submitted post.")
+        } else {
+            return id
+        }
+    }
+}

@@ -40,25 +40,26 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
             throw SubmitCommentRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-        let errorArray = json["json"]["errors"].array
-        if let errorArray = errorArray, !errorArray.isEmpty {
-            if let lastErrorArray = errorArray.last?.array, !lastErrorArray.isEmpty {
-                let errorString: String
-                if lastErrorArray.count >= 2 {
-                    errorString = lastErrorArray[1].stringValue
-                } else {
-                    errorString = lastErrorArray[0].stringValue
-                }
-                throw(SubmitCommentRepositoryError.SendCommentError(errorString.prefix(1).uppercased() + errorString.dropFirst()))
-            } else {
-                throw(SubmitCommentRepositoryError.SendCommentError("Error submitting comment"))
-            }
-        }
+//        let errorArray = json["json"]["errors"].array
+//        if let errorArray = errorArray, !errorArray.isEmpty {
+//            if let lastErrorArray = errorArray.last?.array, !lastErrorArray.isEmpty {
+//                let errorString: String
+//                if lastErrorArray.count >= 2 {
+//                    errorString = lastErrorArray[1].stringValue
+//                } else {
+//                    errorString = lastErrorArray[0].stringValue
+//                }
+//                throw(SubmitCommentRepositoryError.SendCommentError(errorString.prefix(1).uppercased() + errorString.dropFirst()))
+//            } else {
+//                throw(SubmitCommentRepositoryError.SendCommentError("Error submitting comment"))
+//            }
+//        }
+        try json.throwIfRedditError(defaultErrorMessage: "Failed to submit comment.")
         
         let comment = try Comment(fromJson: json)
         if comment.id.isEmpty {
             // This is a work around for checking if JSON parsing failed
-            throw(SubmitCommentRepositoryError.SendCommentError("Error getting your sent comment"))
+            throw(SubmitCommentRepositoryError.SendCommentError("Failed to load your comment."))
         }
         comment.depth = depth
         return comment

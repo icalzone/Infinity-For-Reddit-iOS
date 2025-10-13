@@ -9,11 +9,19 @@ import SwiftUI
 
 struct SubscribedSubredditListingView: View {
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var accountViewModel: AccountViewModel
+    
     @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
     
+    let showCurrentAccountSubreddit: Bool
     let onSelectCustomAction: ((SubscribedSubredditData) -> Void)?
     
-    init(subscriptionListingViewModel: SubscriptionListingViewModel, onSelectCustomAction: ((SubscribedSubredditData) -> Void)? = nil) {
+    init(
+        showCurrentAccountSubreddit: Bool = false,
+        subscriptionListingViewModel: SubscriptionListingViewModel,
+        onSelectCustomAction: ((SubscribedSubredditData) -> Void)? = nil
+    ) {
+        self.showCurrentAccountSubreddit = showCurrentAccountSubreddit
         self.subscriptionListingViewModel = subscriptionListingViewModel
         self.onSelectCustomAction = onSelectCustomAction
     }
@@ -29,6 +37,18 @@ struct SubscribedSubredditListingView: View {
                 }
             } else {
                 List {
+                    if showCurrentAccountSubreddit && !accountViewModel.account.isAnonymous() {
+                        let account = accountViewModel.account
+                        SubscriptionItemView(text: account.username, iconUrl: account.profileImageUrl, action: {
+                            // This view will only appear when selecting a subreddit for post submission so we only care about onSelectCustomAction
+                            if let onSelectCustomAction = onSelectCustomAction {
+                                // We only care about the icon url subreddit name and username
+                                onSelectCustomAction(SubscribedSubredditData(name: "u_\(account.username)", iconUrl: account.profileImageUrl, username: account.username))
+                            }
+                        })
+                        .listPlainItemNoInsets()
+                    }
+                    
                     if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
                         Section(header: Text("Favorite").listSectionHeader()) {
                             ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in

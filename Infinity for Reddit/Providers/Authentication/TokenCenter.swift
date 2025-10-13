@@ -9,17 +9,18 @@ import Alamofire
 import GRDB
 
 public actor TokenCenter: TokenProvider {
-    
     public static let shared = TokenCenter()
+    
     private let dbPool: DatabasePool
     private var inFlight: [String: Task<String, Error>] = [:]
     
-    init() {
+    private init() {
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError( "Failed to resolve DatabasePool")
         }
         self.dbPool = resolvedDBPool
     }
+    
     public func currentAccessToken(for username: String) -> String? {
         let accountDao = AccountDao(dbPool: dbPool)
         return try? accountDao.getAccount(username: username)?.accessToken

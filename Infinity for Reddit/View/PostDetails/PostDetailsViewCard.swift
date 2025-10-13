@@ -204,12 +204,12 @@ struct PostDetailsViewCard: View {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrl: videoUrlString)
+                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString)
             } else if case .video(let videoUrlString, _) = postViewModel.post.postType {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrl: videoUrlString)
+                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString)
             } else if postViewModel.post.postType.isMedia {
                 Spacer()
                     .frame(height: 10)

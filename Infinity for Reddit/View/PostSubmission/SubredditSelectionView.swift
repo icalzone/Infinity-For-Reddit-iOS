@@ -19,9 +19,11 @@ struct SubredditSelectionSheet: View {
     
     @State private var showSearchSubredditsSheet: Bool = false
     
+    let showCurrentAccountSubreddit: Bool
     let onSubscribedSubredditSelected: (SubscribedSubredditData) -> Void
     
-    init(onSubscribedSubredditSelected: @escaping (SubscribedSubredditData) -> Void) {
+    init(showCurrentAccountSubreddit: Bool = false, onSubscribedSubredditSelected: @escaping (SubscribedSubredditData) -> Void) {
+        self.showCurrentAccountSubreddit = showCurrentAccountSubreddit
         _subscriptionListingViewModel = StateObject(
             wrappedValue: SubscriptionListingViewModel(
                 subscriptionListingRepository: SubscriptionListingRepository()
@@ -31,7 +33,10 @@ struct SubredditSelectionSheet: View {
     }
 
     var body: some View {
-        SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
+        SubscribedSubredditListingView(
+            showCurrentAccountSubreddit: showCurrentAccountSubreddit,
+            subscriptionListingViewModel: subscriptionListingViewModel
+        ) { subscribedSubredditData in
             onSubscribedSubredditSelected(subscribedSubredditData)
             dismiss()
         }

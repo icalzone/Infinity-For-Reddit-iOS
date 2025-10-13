@@ -8,15 +8,13 @@
 import SwiftUI
 
 struct SubscriptionItemView: View {
-    @Environment(\.dismiss) private var dismiss 
-    @EnvironmentObject private var subredditChooseViewModel: PostSubmissionContextViewModel
-    
     var text: String
     var iconUrl: String?
     var iconSize: CGFloat = 24
-    @State var isFavorite: Bool
+    @State var isFavorite: Bool = false
+    var allowToggleFavorite: Bool = true
     var action: () -> Void
-    var toggleFavorite: () -> Void
+    var toggleFavorite: (() -> Void)?
     
     var body: some View {
         TouchRipple {
@@ -44,17 +42,19 @@ struct SubscriptionItemView: View {
                     .primaryText()
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Button(action: {}) {
-                    SwiftUI.Image(systemName: isFavorite ? "heart.fill" : "heart")
-                        .foregroundColor(Color(hex: "#EE0264"))
+                if allowToggleFavorite {
+                    Button(action: {}) {
+                        SwiftUI.Image(systemName: isFavorite ? "heart.fill" : "heart")
+                            .foregroundColor(Color(hex: "#EE0264"))
+                    }
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded {
+                                isFavorite.toggle()
+                                toggleFavorite?()
+                            }
+                    )
                 }
-                .highPriorityGesture(
-                    TapGesture()
-                        .onEnded {
-                            isFavorite.toggle()
-                            toggleFavorite()
-                        }
-                )
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 16)

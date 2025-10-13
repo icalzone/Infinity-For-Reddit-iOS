@@ -37,13 +37,13 @@ struct PostSubmissionContextView: View {
             .padding(16)
             
             TouchRipple(action: {
-                postSubmissionContextViewModel.receiveReplyNotification.toggle()
+                postSubmissionContextViewModel.receivePostReplyNotification.toggle()
             }) {
                 HStack {
                     RowText("Receive post reply notifications")
                         .secondaryText()
                     
-                    Toggle(isOn: $postSubmissionContextViewModel.receiveReplyNotification) {}
+                    Toggle(isOn: $postSubmissionContextViewModel.receivePostReplyNotification) {}
                         .labelsHidden()
                         .themedToggle()
                         .excludeFromTouchRipple()

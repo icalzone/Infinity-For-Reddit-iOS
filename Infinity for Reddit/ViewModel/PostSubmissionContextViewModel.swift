@@ -27,7 +27,7 @@ class PostSubmissionContextViewModel: ObservableObject {
     @Published var selectedFlair: Flair?
     @Published var isSpoiler: Bool = false
     @Published var isSensitive: Bool = false
-    @Published var receiveReplyNotification: Bool = false
+    @Published var receivePostReplyNotification: Bool = true
     
     @Published var error: Error?
     @Published var rules: [Rule] = []
