@@ -137,10 +137,7 @@ struct SubmitTextPostView: View {
         .onChange(of: submitTextPostViewModel.submittedPostId) { _, newValue in
             if let id = newValue {
                 snackbarManager.dismiss()
-                navigationManager.path.removeLast()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                    navigationManager.path.append(AppNavigation.postDetailsWithId(postId: id))
-                }
+                navigationManager.replaceCurrentScreen(AppNavigation.postDetailsWithId(postId: id))
             }
         }
         .onReceive(submitTextPostViewModel.$error) { newValue in

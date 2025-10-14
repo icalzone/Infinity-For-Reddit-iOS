@@ -39,4 +39,11 @@ class NavigationManager: ObservableObject {
             fullScreenMediaViewModel.show(fullScreenMediaType)
         }
     }
+    
+    func replaceCurrentScreen(_ destination: any Hashable) {
+        path.removeLast()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            self.path.append(destination)
+        }
+    }
 }
