@@ -71,18 +71,23 @@ struct HomeView: View {
                     .environmentObject(tab1NavigationBarMenuManager)
                     .environmentObject(tab1SnackbarManager)
                     
-                    CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                        Group {
-                            if accountViewModel.account.isAnonymous() {
-                                AnonymousSubscriptionsView()
-                                    .setUpHomeTabViewChildNavigationBar()
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            } else {
-                                SubscriptionsView()
-                                    .setUpHomeTabViewChildNavigationBar()
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                    ZStack {
+                        CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
+                            Group {
+                                if accountViewModel.account.isAnonymous() {
+                                    AnonymousSubscriptionsView()
+                                        .setUpHomeTabViewChildNavigationBar()
+                                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                                } else {
+                                    SubscriptionsView()
+                                        .setUpHomeTabViewChildNavigationBar()
+                                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                                }
                             }
                         }
+                        
+                        Snackbar()
+                            .zIndex(1)
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {
@@ -93,10 +98,15 @@ struct HomeView: View {
                     .environmentObject(tab2SnackbarManager)
                     
                     if !accountViewModel.account.isAnonymous() {
-                        CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                            NewPostTypeChooserView()
-                                .setUpHomeTabViewChildNavigationBar()
-                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        ZStack {
+                            CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
+                                NewPostTypeChooserView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            }
+                            
+                            Snackbar()
+                                .zIndex(1)
                         }
                         .id(accountViewModel.account.username)
                         .tabItem {
@@ -107,12 +117,17 @@ struct HomeView: View {
                         .environmentObject(homeViewModel)
                         .environmentObject(tab3SnackbarManager)
                         
-                        CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                            InboxView(
-                                account: accountViewModel.account
-                            )
-                            .setUpHomeTabViewChildNavigationBar()
-                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        ZStack {
+                            CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
+                                InboxView(
+                                    account: accountViewModel.account
+                                )
+                                .setUpHomeTabViewChildNavigationBar()
+                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            }
+                            
+                            Snackbar()
+                                .zIndex(1)
                         }
                         .id(accountViewModel.account.username)
                         .tabItem {
@@ -124,10 +139,15 @@ struct HomeView: View {
                         .environmentObject(homeViewModel)
                         .environmentObject(tab4SnackbarManager)
                     } else {
-                        CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                            SearchView()
-                                .setUpHomeTabViewChildNavigationBar()
-                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        ZStack {
+                            CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
+                                SearchView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            }
+                            
+                            Snackbar()
+                                .zIndex(1)
                         }
                         .id(accountViewModel.account.username)
                         .tabItem {
@@ -138,10 +158,15 @@ struct HomeView: View {
                         .environmentObject(tab4SnackbarManager)
                     }
                     
-                    CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
-                        MoreView()
-                            .setUpHomeTabViewChildNavigationBar()
-                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                    ZStack {
+                        CustomNavigationStack(fullScreenMediaViewModel: fullScreenMediaViewModel) {
+                            MoreView()
+                                .setUpHomeTabViewChildNavigationBar()
+                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        }
+                        
+                        Snackbar()
+                            .zIndex(1)
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {

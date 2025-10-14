@@ -9,6 +9,7 @@ import MarkdownUI
 
 struct SubmitTextPostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var snackbarManager: SnackbarManager
     
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @StateObject private var submitTextPostViewModel: SubmitTextPostViewModel
@@ -108,11 +109,8 @@ struct SubmitTextPostView: View {
                 }
                 
                 Button {
-                    guard let subreddit = postSubmissionContextViewModel.selectedSubreddit else {
-                        return
-                    }
                     submitTextPostViewModel.submitPost(
-                        subredditName: subreddit.name,
+                        subreddit: postSubmissionContextViewModel.selectedSubreddit,
                         flair: postSubmissionContextViewModel.selectedFlair,
                         isSpoiler: postSubmissionContextViewModel.isSpoiler,
                         isSensitive: postSubmissionContextViewModel.isSensitive,
@@ -127,9 +125,27 @@ struct SubmitTextPostView: View {
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitTextPostViewModel.content)
         }
+        .onChange(of: submitTextPostViewModel.submitPostTask) { _, newValue in
+            if newValue != nil {
+                snackbarManager.showSnackbar(
+                    text: "Submitting. Please wait...",
+                    autoDismiss: false,
+                    canDismissByGesture: false
+                )
+            }
+        }
         .onChange(of: submitTextPostViewModel.submittedPostId) { _, newValue in
             if let id = newValue {
-                navigationManager.path.append(AppNavigation.postDetailsWithId(postId: id))
+                snackbarManager.dismiss()
+                navigationManager.path.removeLast()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                    navigationManager.path.append(AppNavigation.postDetailsWithId(postId: id))
+                }
+            }
+        }
+        .onReceive(submitTextPostViewModel.$error) { newValue in
+            if let error = newValue {
+                snackbarManager.showSnackbar(text: error.localizedDescription)
             }
         }
     }

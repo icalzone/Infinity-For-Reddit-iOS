@@ -40,30 +40,32 @@ struct Snackbar: View {
                         .fill(Color(hex: "#353E41"))
                 )
                 .padding(16)
-                .offset(x: dragOffset.width)
-                // To make the animation smoother
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            dragOffset = value.translation
-                        }
-                        .onEnded { value in
-                            if abs(value.translation.width) > dismissThreadshold {
-                                withAnimation(.snappy(duration: 0.3)) {
-                                    dragOffset = CGSize(width: value.translation.width * 3, height: 0)
-                                    isVisible = false
-                                } completion: {
-                                    snackbarManager.dismiss()
-                                    dragOffset = .zero
-                                    isVisible = true
+                .applyIf(snackbarManager.canDismissByGesture) {
+                    $0.offset(x: dragOffset.width)
+                    // To make the animation smoother
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    dragOffset = value.translation
                                 }
-                            } else {
-                                withAnimation(.spring()) {
-                                    dragOffset = .zero
+                                .onEnded { value in
+                                    if abs(value.translation.width) > dismissThreadshold {
+                                        withAnimation(.snappy(duration: 0.3)) {
+                                            dragOffset = CGSize(width: value.translation.width * 3, height: 0)
+                                            isVisible = false
+                                        } completion: {
+                                            snackbarManager.dismiss()
+                                            dragOffset = .zero
+                                            isVisible = true
+                                        }
+                                    } else {
+                                        withAnimation(.spring()) {
+                                            dragOffset = .zero
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                )
+                        )
+                }
             }
             .transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.2)))
         }

@@ -10,6 +10,7 @@ import SwiftUI
 
 class SnackbarManager: ObservableObject {
     @Published var showSnackbar: Bool = false
+    @Published var canDismissByGesture: Bool = true
     @Published var text: String = ""
     @Published var actionText: String? = nil
     @Published var action: (() -> Void)? = nil
@@ -28,10 +29,17 @@ class SnackbarManager: ObservableObject {
         }
     }
     
-    func showSnackbar(text: String, actionText: String? = nil, autoDismiss: Bool = true, action: (() -> Void)? = nil) {
+    func showSnackbar(
+        text: String,
+        actionText: String? = nil,
+        autoDismiss: Bool = true,
+        canDismissByGesture: Bool = true,
+        action: (() -> Void)? = nil
+    ) {
         snackbarTask?.cancel()
         
         self.text = text
+        self.canDismissByGesture = canDismissByGesture
         self.actionText = actionText
         self.action = action
         withAnimation {

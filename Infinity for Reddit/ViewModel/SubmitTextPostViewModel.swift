@@ -18,13 +18,27 @@ class SubmitTextPostViewModel: ObservableObject {
     
     private let submitPostRepository: SubmitPostRepositoryProtocol
     
+    enum SubmitTextPostViewModelError: LocalizedError {
+        case subredditNotSelectedError
+        case noTitleError
+        
+        var errorDescription: String? {
+            switch self {
+            case .subredditNotSelectedError:
+                return "Please select a subreddit first."
+            case .noTitleError:
+                return "Title is required."
+            }
+        }
+    }
+    
     init(submitPostRepository: SubmitPostRepositoryProtocol) {
         self.selectedAccount = AccountViewModel.shared.account
         self.submitPostRepository = submitPostRepository
     }
     
     func submitPost(
-        subredditName: String,
+        subreddit: SubscribedSubredditData?,
         flair: Flair?,
         isSpoiler: Bool,
         isSensitive: Bool,
@@ -35,13 +49,23 @@ class SubmitTextPostViewModel: ObservableObject {
             return
         }
         
+        guard let subreddit = subreddit, !subreddit.name.isEmpty else {
+            error = SubmitTextPostViewModelError.subredditNotSelectedError
+            return
+        }
+        
+        guard !title.isEmpty else {
+            error = SubmitTextPostViewModelError.noTitleError
+            return
+        }
+        
         submittedPostId = nil
         
         submitPostTask = Task {
             do {
                 submittedPostId = try await submitPostRepository.submitTextPost(
                     account: selectedAccount,
-                    subredditName: subredditName,
+                    subredditName: subreddit.name,
                     title: title, content: content,
                     flair: flair,
                     isSpoiler: isSpoiler,
