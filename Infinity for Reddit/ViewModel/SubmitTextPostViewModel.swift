@@ -18,20 +18,6 @@ class SubmitTextPostViewModel: ObservableObject {
     
     private let submitPostRepository: SubmitPostRepositoryProtocol
     
-    enum SubmitTextPostViewModelError: LocalizedError {
-        case subredditNotSelectedError
-        case noTitleError
-        
-        var errorDescription: String? {
-            switch self {
-            case .subredditNotSelectedError:
-                return "Please select a subreddit first."
-            case .noTitleError:
-                return "Title is required."
-            }
-        }
-    }
-    
     init(submitPostRepository: SubmitPostRepositoryProtocol) {
         self.selectedAccount = AccountViewModel.shared.account
         self.submitPostRepository = submitPostRepository
@@ -50,12 +36,12 @@ class SubmitTextPostViewModel: ObservableObject {
         }
         
         guard let subreddit = subreddit, !subreddit.name.isEmpty else {
-            error = SubmitTextPostViewModelError.subredditNotSelectedError
+            error = PostSubmissionError.subredditNotSelectedError
             return
         }
         
         guard !title.isEmpty else {
-            error = SubmitTextPostViewModelError.noTitleError
+            error = PostSubmissionError.noTitleError
             return
         }
         

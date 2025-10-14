@@ -10,13 +10,15 @@ import MijickCamera
 import PhotosUI
 
 struct SubmitImagePostView: View {
+    @EnvironmentObject private var snackbarManager: SnackbarManager
+    
+    @Environment(\.dismiss) var dismiss
+    
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @StateObject private var submitImagePostViewModel: SubmitImagePostViewModel
     
     @FocusState private var markdownToolbarFocusedField: MarkdownFieldType?
     @FocusState private var focusedField: FieldType?
-    
-    @Environment(\.dismiss) var dismiss
     
     @State private var contentTextViewCanFocus: Bool = true
     @State private var markdownToolbarHeight: CGFloat = 0
@@ -31,7 +33,12 @@ struct SubmitImagePostView: View {
         _postSubmissionContextViewModel = StateObject(
             wrappedValue: PostSubmissionContextViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
         )
-        _submitImagePostViewModel = StateObject(wrappedValue: SubmitImagePostViewModel())
+        _submitImagePostViewModel = StateObject(
+            wrappedValue: SubmitImagePostViewModel(
+                submitPostRepository: SubmitPostRepository(),
+                mediaUploadRepository: MediaUploadRepository()
+            )
+        )
     }
     
     var body: some View {
@@ -133,7 +140,14 @@ struct SubmitImagePostView: View {
                 }
                 
                 Button {
-                    print("Submit Image Post")
+                    submitImagePostViewModel.submitPost(
+                        subreddit: postSubmissionContextViewModel.selectedSubreddit,
+                        flair: postSubmissionContextViewModel.selectedFlair,
+                        isSpoiler: postSubmissionContextViewModel.isSpoiler,
+                        isSensitive: postSubmissionContextViewModel.isSensitive,
+                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification,
+                        isRichTextJSON: false
+                    )
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
@@ -189,6 +203,26 @@ struct SubmitImagePostView: View {
                 } else {
                     // Error handling
                 }
+            }
+        }
+        .onChange(of: submitImagePostViewModel.submitPostTask) { _, newValue in
+            if newValue != nil {
+                snackbarManager.showSnackbar(
+                    text: "Submitting. Please wait...",
+                    autoDismiss: false,
+                    canDismissByGesture: false
+                )
+            }
+        }
+        .onChange(of: submitImagePostViewModel.postSubmittedFlag) { _, newValue in
+            if newValue {
+                snackbarManager.showSnackbar(text: "Post submitted successfully. Your image is being processed.")
+                dismiss()
+            }
+        }
+        .onReceive(submitImagePostViewModel.$error) { newValue in
+            if let error = newValue {
+                snackbarManager.showSnackbar(text: error.localizedDescription)
             }
         }
     }
