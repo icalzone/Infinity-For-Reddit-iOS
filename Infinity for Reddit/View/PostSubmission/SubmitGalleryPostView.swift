@@ -21,6 +21,10 @@ struct SubmitGalleryPostView: View {
     @State private var titleSelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var bodySelectedRange: NSRange = NSRange(location: 0, length: 0)
     @State private var showMarkdownPreview: Bool = false
+    @State private var showGallerySheet: Bool = false
+    @State private var showPhotoPicker = false
+    @State private var showCamera = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
     
     init() {
         _postSubmissionContextViewModel = StateObject(
@@ -70,6 +74,29 @@ struct SubmitGalleryPostView: View {
                                 }
                             }
                             .padding(16)
+                            
+                            if let previewImage = submitGalleryPostViewModel.capturedImage {
+                                VStack(spacing: 16) {
+                                    Button(action: {
+                                        submitGalleryPostViewModel.clearCapturedImage()
+                                    }) {
+                                        Text("Select again")
+                                            .colorAccentText()
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    SwiftUI.Image(uiImage: previewImage)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .cornerRadius(8)
+                                }
+                                .padding(.horizontal, 16)
+                            } else {
+                                GallerySelectionToolbar(
+                                    onTapGallery: { showGallerySheet = true },
+                                )
+                                .frame(maxWidth: .infinity)
+                            }
                         }
                     }
                     
@@ -113,9 +140,92 @@ struct SubmitGalleryPostView: View {
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitGalleryPostViewModel.content)
         }
+        .sheet(isPresented: $showGallerySheet) {
+            GallerySelectionSheet(
+                onCameraTap: {
+                    showPhotoPicker = true
+                    showGallerySheet = false
+                },
+                onPhotoPickerTap: {
+                    showCamera = true
+                    showGallerySheet = false
+                }
+            )
+            .presentationDragIndicator(.visible)
+        }
+        .photosPicker(
+            isPresented: $showPhotoPicker,
+            selection: $selectedPhotoItem,
+            matching: .images
+        )
+        .onChange(of: selectedPhotoItem) { _, newSelectedItem in
+            Task {
+                if let selectedItem = newSelectedItem,
+                   let imageData = try? await selectedItem.loadTransferable(type: Data.self),
+                   let pickedImage = UIImage(data: imageData) {
+                    submitGalleryPostViewModel.setCapturedImage(pickedImage)
+                } else {
+                    // Error handling
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            if Utils.checkCameraAvailability() {
+                MCamera()
+                    .onImageCaptured { capturedImage, controller in
+                        submitGalleryPostViewModel.setCapturedImage(capturedImage)
+                        controller.closeMCamera()
+                    }
+                    .setCloseMCameraAction {
+                        showCamera = false
+                    }
+                    .setCameraOutputType(.photo)
+                    .setAudioAvailability(false)
+                    .setCameraScreen { cameraManager, id, closeMCameraAction in
+                        DefaultCameraScreen(
+                            cameraManager: cameraManager,
+                            namespace: id,
+                            closeMCameraAction: closeMCameraAction
+                        ).cameraOutputSwitchAllowed(false)
+                    }
+                    .startSession()
+            } else {
+                VStack {
+                    Text("Camera not available")
+                        .padding(.bottom, 60)
+                    
+                    Button("Close") {
+                        showCamera = false
+                    }
+                    .filledButton()
+                }
+            }
+        }
     }
     
     private enum FieldType: Hashable {
         case title
+    }
+}
+
+private struct GallerySelectionToolbar: View {
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
+    
+    let onTapGallery: () -> Void
+    let buttonSize: CGFloat = 24
+    
+    var body: some View {
+        HStack(spacing: 32) {
+            Button {
+                onTapGallery()
+            } label: {
+                SwiftUI.Image(systemName: "photo.fill.on.rectangle.fill")
+                    .font(.system(size: buttonSize))
+                    .foregroundColor(.white)
+                    .padding(16)
+                    .background(Circle().fill(Color(hex: customThemeViewModel.currentCustomTheme.colorAccent)))
+            }
+        }
+        .padding(16)
     }
 }
