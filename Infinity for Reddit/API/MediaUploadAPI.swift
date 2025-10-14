@@ -10,11 +10,14 @@ import Foundation
 
 enum MediaUploadAPI: URLRequestConvertible {
     case uploadMedia
+    case uploadVideo
     
     private var baseURL: String {
         switch self {
         case .uploadMedia:
             return APIUtils.API_UPLOAD_MEDIA_URI
+        case .uploadVideo:
+            return APIUtils.API_UPLOAD_VIDEO_URI
         }
     }
     
@@ -23,10 +26,7 @@ enum MediaUploadAPI: URLRequestConvertible {
     }
     
     var path: String {
-        switch self {
-        case .uploadMedia:
-            return ""
-        }
+        return ""
     }
     
     var parameters: [String: String]? {

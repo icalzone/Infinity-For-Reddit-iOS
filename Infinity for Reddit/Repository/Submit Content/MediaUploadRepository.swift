@@ -8,15 +8,26 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import UniformTypeIdentifiers
 
 class MediaUploadRepository: MediaUploadRepositoryProtocol {
     enum MediaUploadRepositoryError: LocalizedError {
-        case failedToExtractURL
+        case failedToGetImageData
+        case failedToExtractImageURL
+        case failedToExtractGIFURL
+        case failedToExtractVideoURL
         
         var errorDescription: String? {
             switch self {
-            case .failedToExtractURL:
-                return "Failed to extract URL from response"
+            case .failedToGetImageData:
+                return "Could not get image data"
+            case .failedToExtractImageURL:
+                return "Could not extract image URL from response"
+            case .failedToExtractGIFURL:
+                return "Could not extract GIF URL from response"
+            case .failedToExtractVideoURL:
+                return "Could not extract video URL from response"
+            
             }
         }
     }
@@ -32,8 +43,7 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
     
     func uploadImage(account: Account, image: UIImage) async throws -> String {
         guard let imageData = image.jpegData(compressionQuality: 1.0) else {
-            print("Failed to convert image to data")
-            return ""
+            throw MediaUploadRepositoryError.failedToGetImageData
         }
         
         let params = [
@@ -77,7 +87,7 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
             return imageUrlString
         }
         
-        throw MediaUploadRepositoryError.failedToExtractURL
+        throw MediaUploadRepositoryError.failedToExtractImageURL
     }
     
     func uploadGIF(account: Account, gifData: Data) async throws -> String {
@@ -122,7 +132,59 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
             return gifUrlString
         }
         
-        throw MediaUploadRepositoryError.failedToExtractURL
+        throw MediaUploadRepositoryError.failedToExtractGIFURL
+    }
+    
+    func uploadVideo(account: Account, videoURL: URL) async throws -> String {
+        let mimeType = getVideoMimeType(url: videoURL)
+        var params = [
+            "mimetype": mimeType
+        ]
+        let fileName: String
+        if let fileExtension = mimeType.split(separator: "/").last {
+            fileName = "post_video.\(fileExtension)"
+        } else {
+            fileName = "post_video.mp4"
+        }
+        params["filepath"] = fileName
+        
+        let interceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
+        let metadataResponseData = try await self.session.request(RedditOAuthAPI.uploadMediaMetadata(params: params), interceptor: interceptor)
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        let json = JSON(metadataResponseData)
+        if let error = json.error {
+            throw APIError.jsonDecodingError(error.localizedDescription)
+        }
+        
+        let dataDictionary = try self.getDataDictionary(from: json)
+        
+        let uploadImageResponseData = try await self.session.upload(
+            multipartFormData: { formData in
+                for (key, value) in dataDictionary {
+                    formData.append(value, withName: key)
+                }
+                
+                formData.append(
+                    videoURL,
+                    withName: "file",
+                    fileName: fileName,
+                    mimeType: mimeType
+                )
+            },
+            with: MediaUploadAPI.uploadVideo
+        )
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        if let videoUrlString = getImageURLString(uploadImageResponseData, getImageKey: false) {
+            return videoUrlString
+        }
+        
+        throw MediaUploadRepositoryError.failedToExtractVideoURL
     }
     
     private func getDataDictionary(from json: JSON) throws -> [String: Data] {
@@ -172,5 +234,12 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
         parser.parse()
         
         return delegate.result
+    }
+    
+    func getVideoMimeType(url: URL) -> String {
+        if let type = UTType(filenameExtension: url.pathExtension), let mime = type.preferredMIMEType {
+            return mime
+        }
+        return "video/mp4"
     }
 }
