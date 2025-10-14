@@ -52,7 +52,8 @@ class SubmitTextPostViewModel: ObservableObject {
                 submittedPostId = try await submitPostRepository.submitTextPost(
                     account: selectedAccount,
                     subredditName: subreddit.name,
-                    title: title, content: content,
+                    title: title,
+                    content: content,
                     flair: flair,
                     isSpoiler: isSpoiler,
                     isSensitive: isSensitive,

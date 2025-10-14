@@ -167,4 +167,56 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
         
         try json.throwIfRedditError(defaultErrorMessage: "Failed to submit post.")
     }
+    
+    // Returns the ID of the submitted post
+    func submitLinkPost(
+        account: Account,
+        subredditName: String,
+        title: String,
+        urlString: String,
+        content: String,
+        flair: Flair?,
+        isSpoiler: Bool,
+        isSensitive: Bool,
+        receivePostReplyNotifications: Bool,
+        isRichTextJSON: Bool
+    ) async throws -> String {
+        var params = [
+            "api_type": "json",
+            "sr": subredditName,
+            "title": title,
+            "kind": "link",
+            "url": urlString,
+            "spoiler": String(isSpoiler),
+            "nsfw": String(isSensitive),
+            "sendreplies": String(receivePostReplyNotifications)
+        ]
+        if !content.isEmpty {
+            params["text"] = content
+        }
+        if let flair {
+            params["flair_text"] = flair.text
+            params["flair_id"] = flair.id
+        }
+        
+        let interceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
+        let data = try await self.session.request(RedditOAuthAPI.submitTextPost(params: params), interceptor: interceptor)
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw SubmitPostRepositoryError.JSONDecodingError(error.localizedDescription)
+        }
+        
+        try json.throwIfRedditError(defaultErrorMessage: "Failed to submit post.")
+        
+        let id = json["json"]["data"]["id"].stringValue
+        if id.isEmpty {
+            throw SubmitPostRepositoryError.JSONDecodingError("Failed to get the ID of the submitted post.")
+        } else {
+            return id
+        }
+    }
 }

@@ -11,16 +11,22 @@ import Alamofire
 @MainActor
 class SubmitLinkPostViewModel: ObservableObject {
     @Published var title: String = ""
+    @Published var urlString: String = ""
     @Published var content: String = ""
     @Published var selectedAccount: Account
-    @Published var url: String = ""
+    @Published var submitPostTask: Task<Void, Error>?
+    @Published var submittedPostId: String?
+    @Published var error: Error? = nil
     
-    init() {
+    private let submitPostRepository: SubmitPostRepositoryProtocol
+    
+    init(submitPostRepository: SubmitPostRepositoryProtocol) {
         self.selectedAccount = AccountViewModel.shared.account
+        self.submitPostRepository = submitPostRepository
     }
     
     func suggestTitle() async {
-        var finalURL = url.trimmingCharacters(in: .whitespacesAndNewlines)
+        var finalURL = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
         
         if !finalURL.lowercased().hasPrefix("http://") &&
             !finalURL.lowercased().hasPrefix("https://") {
@@ -66,5 +72,57 @@ class SubmitLinkPostViewModel: ObservableObject {
                     print("Suggest title failed: \(error.localizedDescription)")
                 }
             }
+    }
+    
+    func submitPost(
+        subreddit: SubscribedSubredditData?,
+        flair: Flair?,
+        isSpoiler: Bool,
+        isSensitive: Bool,
+        receivePostReplyNotifications: Bool,
+        isRichTextJSON: Bool
+    ) {
+        guard submitPostTask == nil else {
+            return
+        }
+        
+        guard let subreddit = subreddit, !subreddit.name.isEmpty else {
+            error = PostSubmissionError.subredditNotSelectedError
+            return
+        }
+        
+        guard !title.isEmpty else {
+            error = PostSubmissionError.noTitleError
+            return
+        }
+        
+        guard !urlString.isEmpty else {
+            error = PostSubmissionError.noURLError
+            return
+        }
+        
+        submittedPostId = nil
+        
+        submitPostTask = Task {
+            do {
+                submittedPostId = try await submitPostRepository.submitLinkPost(
+                    account: selectedAccount,
+                    subredditName: subreddit.name,
+                    title: title,
+                    urlString: urlString,
+                    content: content,
+                    flair: flair,
+                    isSpoiler: isSpoiler,
+                    isSensitive: isSensitive,
+                    receivePostReplyNotifications: receivePostReplyNotifications,
+                    isRichTextJSON: isRichTextJSON
+                )
+            } catch {
+                self.error = error
+                print(error)
+            }
+            
+            self.submitPostTask = nil
+        }
     }
 }

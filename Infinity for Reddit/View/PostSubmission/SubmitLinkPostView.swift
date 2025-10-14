@@ -8,6 +8,8 @@ import SwiftUI
 import MarkdownUI
 
 struct SubmitLinkPostView: View {
+    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var snackbarManager: SnackbarManager
     @EnvironmentObject private var themeViewModel: CustomThemeViewModel
     
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
@@ -28,7 +30,7 @@ struct SubmitLinkPostView: View {
             wrappedValue: PostSubmissionContextViewModel(ruleRepository: RuleRepository(), flairRepository: FlairRepository())
         )
         _submitLinkPostViewModel = StateObject(
-            wrappedValue: SubmitLinkPostViewModel()
+            wrappedValue: SubmitLinkPostViewModel(submitPostRepository: SubmitPostRepository())
         )
     }
     
@@ -77,7 +79,7 @@ struct SubmitLinkPostView: View {
                             
                             CustomTextField(
                                 "URL",
-                                text: $submitLinkPostViewModel.url,
+                                text: $submitLinkPostViewModel.urlString,
                                 singleLine: true,
                                 keyboardType: .URL,
                                 showBorder: false,
@@ -129,7 +131,14 @@ struct SubmitLinkPostView: View {
                 }
                 
                 Button {
-                    print("Submit Link Post")
+                    submitLinkPostViewModel.submitPost(
+                        subreddit: postSubmissionContextViewModel.selectedSubreddit,
+                        flair: postSubmissionContextViewModel.selectedFlair,
+                        isSpoiler: postSubmissionContextViewModel.isSpoiler,
+                        isSensitive: postSubmissionContextViewModel.isSensitive,
+                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification,
+                        isRichTextJSON: false
+                    )
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
@@ -137,6 +146,26 @@ struct SubmitLinkPostView: View {
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitLinkPostViewModel.content)
+        }
+        .onChange(of: submitLinkPostViewModel.submitPostTask) { _, newValue in
+            if newValue != nil {
+                snackbarManager.showSnackbar(
+                    text: "Submitting. Please wait...",
+                    autoDismiss: false,
+                    canDismissByGesture: false
+                )
+            }
+        }
+        .onChange(of: submitLinkPostViewModel.submittedPostId) { _, newValue in
+            if let id = newValue {
+                snackbarManager.dismiss()
+                navigationManager.replaceCurrentScreen(AppNavigation.postDetailsWithId(postId: id))
+            }
+        }
+        .onReceive(submitLinkPostViewModel.$error) { newValue in
+            if let error = newValue {
+                snackbarManager.showSnackbar(text: error.localizedDescription)
+            }
         }
     }
     

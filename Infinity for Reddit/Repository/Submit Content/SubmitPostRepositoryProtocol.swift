@@ -47,4 +47,17 @@ protocol SubmitPostRepositoryProtocol {
         receivePostReplyNotifications: Bool,
         isRichTextJSON: Bool
     ) async throws
+    
+    func submitLinkPost(
+        account: Account,
+        subredditName: String,
+        title: String,
+        urlString: String,
+        content: String,
+        flair: Flair?,
+        isSpoiler: Bool,
+        isSensitive: Bool,
+        receivePostReplyNotifications: Bool,
+        isRichTextJSON: Bool
+    ) async throws -> String
 }

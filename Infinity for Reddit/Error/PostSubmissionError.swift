@@ -10,6 +10,7 @@ import Foundation
 enum PostSubmissionError: LocalizedError {
     case subredditNotSelectedError
     case noTitleError
+    case noURLError
     
     var errorDescription: String? {
         switch self {
@@ -17,6 +18,8 @@ enum PostSubmissionError: LocalizedError {
             return "Please select a subreddit first."
         case .noTitleError:
             return "Title is required."
+        case .noURLError:
+            return "URL is required."
         }
     }
 }
