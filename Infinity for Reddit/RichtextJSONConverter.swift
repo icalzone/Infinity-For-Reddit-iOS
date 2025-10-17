@@ -108,7 +108,7 @@ class RichTextJSONConverter {
             case .codeBlock(let fenceInfo, let content):
                 visitCodeBlock(content)
             case .htmlBlock(let content):
-                text.append(content)
+                visitHtmlBlock(content)
             case .paragraph(let inlineNodes):
                 visitParagraph(inlineNodes)
             case .heading(let level, let inlineNodes):
@@ -168,7 +168,7 @@ class RichTextJSONConverter {
         contentStack.append([])
         
         for rawListItem in rawListItems {
-            
+            visitBlockNodes(rawListItem.children)
         }
         
         var contentArray = contentStack.popLast()
@@ -184,7 +184,7 @@ class RichTextJSONConverter {
         contentStack.append([])
         
         for rawListItem in rawListItems {
-            
+            visitBlockNodes(rawListItem.children)
         }
         
         var contentArray = contentStack.popLast()
@@ -200,7 +200,7 @@ class RichTextJSONConverter {
         contentStack.append([])
         
         for rawListItem in rawListItems {
-            
+            visitBlockNodes(rawListItem.children)
         }
         
         var contentArray = contentStack.popLast()
@@ -224,6 +224,20 @@ class RichTextJSONConverter {
         
         codeBlock[CONTENT] = JSON(contentArray)
         appendToContentStackLastItem(codeBlock)
+    }
+    
+    private func visitHtmlBlock(_ content: String) {
+        var htmlBlock: JSON = JSON()
+        htmlBlock[TYPE].stringValue = Element.paragraph.rawValue
+        
+        var contentArray: [JSON] = []
+        var htmlContent: JSON = JSON()
+        htmlContent[TYPE].stringValue = Element.text.rawValue
+        htmlContent[TEXT].stringValue = content
+        contentArray.append(htmlContent)
+        
+        htmlBlock[CONTENT] = JSON(contentArray)
+        appendToContentStackLastItem(htmlBlock)
     }
     
     private func visitParagraph(_ inlineNodes: [InlineNode]) {
