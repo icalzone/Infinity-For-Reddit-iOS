@@ -77,19 +77,8 @@ struct SubmitGalleryPostView: View {
                             
                             if !submitGalleryPostViewModel.capturedImages.isEmpty {
                                 VStack(spacing: 16) {
-                                    ForEach(submitGalleryPostViewModel.capturedImages.indices, id: \.self) { index in
-                                        SwiftUI.Image(uiImage: submitGalleryPostViewModel.capturedImages[index])
-                                            .resizable()
-                                            .scaledToFit()
-                                            .cornerRadius(8)
-                                            .padding(.horizontal, 16)
-                                    }
-                                    
-                                    if submitGalleryPostViewModel.capturedImages.count < 20 {
-                                        GallerySelectionToolbar(
-                                            onTapGallery: { showGallerySheet = true }
-                                        )
-                                        .frame(maxWidth: .infinity)
+                                    GalleryGridView(images: submitGalleryPostViewModel.capturedImages){
+                                        showGallerySheet = true
                                     }
                                 }
                             } else {
@@ -230,3 +219,74 @@ private struct GallerySelectionToolbar: View {
         .padding(16)
     }
 }
+
+private struct GalleryGridView: View {
+    let images: [UIImage]
+    let onAddTap: () -> Void
+    private let columns: Int = 2
+    private let spacing: CGFloat = 10
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack (spacing: spacing) {
+                    let totalSpacing = spacing * CGFloat(columns - 1)
+                    let imageWidth = (geometry.size.width - totalSpacing - 32) / CGFloat(columns)
+                    
+                    ForEach(rows.indices, id: \.self) { rowIndex in
+                        let rowItems = rows[rowIndex]
+                        
+                        HStack(spacing: spacing) {
+                            ForEach(rowItems, id: \.self) { item in
+                                switch item {
+                                case .image(let uiImage):
+                                    SwiftUI.Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: imageWidth, height: imageWidth)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                    
+                                case .addButton:
+                                    GallerySelectionToolbar(onTapGallery: onAddTap)
+                                        .frame(width: imageWidth, height: imageWidth)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+        .frame(height: calculateContentHeight(for: images.count))
+    }
+    
+    private var rows: [[GridItemType]] {
+        // Define a unified enum type for clarity
+        let maxCount = 20
+        var items: [GridItemType] = images.map { .image($0) }
+        if images.count < maxCount {
+            items.append(.addButton)
+        }
+        
+        // Split items into rows
+        return stride(from: 0, to: items.count, by: columns).map {
+            Array(items[$0 ..< min($0 + columns, items.count)])
+        }
+    }
+    
+    private func calculateContentHeight(for count: Int) -> CGFloat {
+        let rowsCount = ceil(Double(count) / Double(columns))
+        let imageSize = UIScreen.main.bounds.width / CGFloat(columns)
+        let spacingTotal = spacing * CGFloat(rowsCount - 1)
+        return (imageSize * CGFloat(rowsCount)) + spacingTotal + 150
+    }
+    
+    private enum GridItemType: Hashable {
+        case image(UIImage)
+        case addButton
+    }
+}
+
+
