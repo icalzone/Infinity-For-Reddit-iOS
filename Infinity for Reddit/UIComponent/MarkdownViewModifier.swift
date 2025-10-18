@@ -14,7 +14,7 @@ struct MarkdownViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             //.font()
-            .markdownTheme(Theme().link {
+            .markdownTheme(.gitHub.link {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
             }.text {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.primaryTextColor))
@@ -29,7 +29,7 @@ struct PostContentMarkdownViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             //.font()
-            .markdownTheme(Theme().link {
+            .markdownTheme(.gitHub.link {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
             }.text {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.postContentColor))
@@ -44,7 +44,7 @@ struct CommentMarkdownViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             //.font()
-            .markdownTheme(Theme().link {
+            .markdownTheme(.gitHub.link {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
             }.text {
                 ForegroundColor(Color(hex: themeViewModel.currentCustomTheme.commentColor))
