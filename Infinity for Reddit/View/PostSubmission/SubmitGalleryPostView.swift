@@ -228,87 +228,55 @@ private struct GalleryGridView: View {
     let images: [UIImage]
     let onAddTap: () -> Void
     let onDeleteTap: (Int) -> Void
-    
-    private let columns: Int = 2
-    private let spacing: CGFloat = 10
+    let maxImageCount: Int = 20
     
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack (spacing: spacing) {
-                    let totalSpacing = spacing * CGFloat(columns - 1)
-                    let imageWidth = (geometry.size.width - totalSpacing - 32) / CGFloat(columns)
-                    
-                    ForEach(rows.indices, id: \.self) { rowIndex in
-                        let rowItems = rows[rowIndex]
-                        
-                        HStack(spacing: spacing) {
-                            ForEach(rowItems.indices, id: \.self) { colIndex in
-                                let item = rowItems[colIndex]
-                                let globalIndex = rowIndex * columns + colIndex
-                                
-                                switch item {
-                                case .image(let uiImage):
-                                    ZStack(alignment: .topTrailing) {
-                                        SwiftUI.Image(uiImage: uiImage)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: imageWidth, height: imageWidth)
-                                            .clipped()
-                                            .cornerRadius(8)
-                                        
-                                        Button {
-                                            onDeleteTap(globalIndex)
-                                        } label: {
-                                            SwiftUI.Image(systemName: "xmark.circle.fill")
-                                                .foregroundColor(Color(hex: customThemeViewModel.currentCustomTheme.backgroundColor))
-                                                .background(
-                                                    Circle()
-                                                        .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorPrimary))
-                                                )
-                                                .padding(6)
-                                        }
-                                    }
-                                    
-                                case .addButton:
-                                    GallerySelectionToolbar(onTapGallery: onAddTap)
-                                        .frame(width: imageWidth, height: imageWidth)
-                                }
-                            }
+        ScrollView {
+            LazyVGrid(
+                columns:[
+                    GridItem(.flexible(), spacing: 10),
+                    GridItem(.flexible(), spacing: 10)
+                ],
+                spacing: 10
+            ) {
+                ForEach(Array(images.enumerated()), id: \.offset) { index, image in
+                    ZStack(alignment: .topTrailing) {
+                        GeometryReader { geometry in
+                            SwiftUI.Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geometry.size.width, height: geometry.size.width)
+                                .clipped()
+                                .cornerRadius(8)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .aspectRatio(1, contentMode: .fit)
+                        
+                        Button {
+                            onDeleteTap(index)
+                        } label: {
+                            SwiftUI.Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(Color(hex: customThemeViewModel.currentCustomTheme.backgroundColor))
+                                .background(
+                                    Circle()
+                                        .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorPrimary))
+                                )
+                                .font(.system(size: 20))
+                                .padding(6)
+                        }
                     }
                 }
-                .padding(.horizontal, 16)
+                
+                if images.count < maxImageCount {
+                    GeometryReader { geometry in
+                        GallerySelectionToolbar(onTapGallery: onAddTap)
+                            .frame(width: geometry.size.width, height: geometry.size.width)
+                            .cornerRadius(8)
+                    }
+                    .aspectRatio(1, contentMode: .fit)
+                }
             }
+            .padding(.horizontal, 16)
         }
-        .frame(height: calculateContentHeight(for: images.count))
-    }
-    
-    private var rows: [[GridItemType]] {
-        // Define a unified enum type for clarity
-        let maxCount = 20
-        var items: [GridItemType] = images.map { .image($0) }
-        if images.count < maxCount {
-            items.append(.addButton)
-        }
-        
-        // Split items into rows
-        return stride(from: 0, to: items.count, by: columns).map {
-            Array(items[$0 ..< min($0 + columns, items.count)])
-        }
-    }
-    
-    private func calculateContentHeight(for count: Int) -> CGFloat {
-        let rowsCount = ceil(Double(count) / Double(columns))
-        let imageSize = UIScreen.main.bounds.width / CGFloat(columns)
-        let spacingTotal = spacing * CGFloat(rowsCount - 1)
-        return (imageSize * CGFloat(rowsCount)) + spacingTotal + 150
-    }
-    
-    private enum GridItemType: Hashable {
-        case image(UIImage)
-        case addButton
     }
 }
 
