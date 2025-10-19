@@ -28,6 +28,10 @@ extension View {
         self.modifier(SecondaryTextViewModifier())
     }
     
+    func buttonText() -> some View {
+        self.modifier(ButtonTextViewModifier())
+    }
+    
     func navigationBarPrimaryText() -> some View {
         self.modifier(NavigationBarPrimaryTextViewModifier())
     }

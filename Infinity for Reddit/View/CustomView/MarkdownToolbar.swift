@@ -18,6 +18,11 @@ struct MarkdownToolbar: View {
     @State private var linkText: String = ""
     @State private var linkURL: String = ""
     @State private var headerSize: Float = 1
+    
+    var enableImageUpload: Bool = false
+    var enableGifChooser: Bool = false
+    var onImageUpload: (() -> Void)? = nil
+    var onChooseGif: (() -> Void)? = nil
 
     var body: some View {
         VStack {
@@ -120,18 +125,26 @@ struct MarkdownToolbar: View {
                                 .padding(.horizontal, 16)
                         }
                         
-                        TouchRipple(backgroundShape: Circle(), action: {}) {
-                            SwiftUI.Image(systemName: "photo")
-                                .primaryIcon()
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
+                        if enableImageUpload {
+                            TouchRipple(backgroundShape: Circle(), action: {
+                                onImageUpload?()
+                            }) {
+                                SwiftUI.Image(systemName: "photo")
+                                    .primaryIcon()
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                            }
                         }
                         
-                        TouchRipple(backgroundShape: Circle(), action: {}) {
-                            SwiftUI.Image("gif")
-                                .primaryIcon()
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
+                        if enableGifChooser {
+                            TouchRipple(backgroundShape: Circle(), action: {
+                                onChooseGif?()
+                            }) {
+                                SwiftUI.Image("gif")
+                                    .primaryIcon()
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 16)
+                            }
                         }
                     }
                 }

@@ -24,4 +24,12 @@ class Utils {
         let ext = url.pathExtension
         return ext.isEmpty ? nil : ext
     }
+    
+    static func isGIF(imageData: Data) -> Bool {
+        guard imageData.count >= 4 else {
+            return false
+        }
+        let signature = String(bytes: imageData.prefix(4), encoding: .ascii)
+        return signature == "GIF8"
+    }
 }

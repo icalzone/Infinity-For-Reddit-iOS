@@ -25,5 +25,6 @@ struct FilledButtonViewModifier: ViewModifier {
             .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.buttonTextColor))
             .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimary))
             .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
     }
 }

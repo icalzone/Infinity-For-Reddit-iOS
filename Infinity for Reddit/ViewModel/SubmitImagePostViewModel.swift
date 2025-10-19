@@ -95,7 +95,7 @@ class SubmitImagePostViewModel: ObservableObject {
             do {
                 if isGIF {
                     let gifUrlString = try await mediaUploadRepository.uploadGIF(account: selectedAccount, gifData: imageData!)
-                    let posterUrlString = try await mediaUploadRepository.uploadImage(account: selectedAccount, image: image)
+                    let posterUrlString = try await mediaUploadRepository.uploadImage(account: selectedAccount, image: image, getImageId: false)
                     
                     try await submitPostRepository.submitGifPost(
                         account: selectedAccount,
@@ -111,7 +111,7 @@ class SubmitImagePostViewModel: ObservableObject {
                         isRichTextJSON: isRichTextJSON
                     )
                 } else {
-                    let imageUrlString = try await mediaUploadRepository.uploadImage(account: selectedAccount, image: image)
+                    let imageUrlString = try await mediaUploadRepository.uploadImage(account: selectedAccount, image: image, getImageId: false)
                     
                     try await submitPostRepository.submitImagePost(
                         account: selectedAccount,

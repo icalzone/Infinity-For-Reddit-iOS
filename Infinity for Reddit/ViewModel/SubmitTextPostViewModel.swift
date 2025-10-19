@@ -6,21 +6,27 @@
 
 import Foundation
 import MarkdownUI
+import SwiftyJSON
+import UIKit
+import SwiftUI
 
 @MainActor
 class SubmitTextPostViewModel: ObservableObject {
     @Published var title: String = ""  
     @Published var content: String = ""
     @Published var selectedAccount: Account
+    @Published var embeddedImages: [UploadedImage] = []
     @Published var submitPostTask: Task<Void, Error>?
     @Published var submittedPostId: String?
     @Published var error: Error? = nil
     
     private let submitPostRepository: SubmitPostRepositoryProtocol
+    private let mediaUploadRepository: MediaUploadRepositoryProtocol
     
-    init(submitPostRepository: SubmitPostRepositoryProtocol) {
+    init(submitPostRepository: SubmitPostRepositoryProtocol, mediaUploadRepository: MediaUploadRepositoryProtocol) {
         self.selectedAccount = AccountViewModel.shared.account
         self.submitPostRepository = submitPostRepository
+        self.mediaUploadRepository = mediaUploadRepository
     }
     
     func submitPost(
@@ -31,6 +37,9 @@ class SubmitTextPostViewModel: ObservableObject {
         receivePostReplyNotifications: Bool,
         isRichTextJSON: Bool
     ) {
+        let richtext = RichtextJSONConverter().constructRichtextJSON(markdownString: content)
+        print(richtext)
+        
         guard submitPostTask == nil else {
             return
         }
@@ -67,5 +76,13 @@ class SubmitTextPostViewModel: ObservableObject {
             
             self.submitPostTask = nil
         }
+    }
+    
+    func addEmbeddedImage(_ image: UIImage) {
+        let embeddedImage = UploadedImage(image: image) {
+            try await self.mediaUploadRepository.uploadImage(account: self.selectedAccount, image: image, getImageId: true)
+        }
+        embeddedImage.upload()
+        embeddedImages.append(embeddedImage)
     }
 }

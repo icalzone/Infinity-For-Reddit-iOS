@@ -14,6 +14,7 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
     enum MediaUploadRepositoryError: LocalizedError {
         case failedToGetImageData
         case failedToExtractImageURL
+        case failedToExtractImageId
         case failedToExtractGIFURL
         case failedToExtractVideoURL
         
@@ -23,6 +24,8 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
                 return "Could not get image data"
             case .failedToExtractImageURL:
                 return "Could not extract image URL from response"
+            case .failedToExtractImageId:
+                return "Could not extract image ID from response"
             case .failedToExtractGIFURL:
                 return "Could not extract GIF URL from response"
             case .failedToExtractVideoURL:
@@ -41,7 +44,8 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
         self.session = resolvedSession
     }
     
-    func uploadImage(account: Account, image: UIImage) async throws -> String {
+    // Return image URL or image ID
+    func uploadImage(account: Account, image: UIImage, getImageId: Bool) async throws -> String {
         guard let imageData = image.jpegData(compressionQuality: 1.0) else {
             throw MediaUploadRepositoryError.failedToGetImageData
         }
@@ -83,11 +87,20 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
             .serializingData(automaticallyCancelling: true)
             .value
         
-        if let imageUrlString = getImageURLString(uploadImageResponseData, getImageKey: false) {
-            return imageUrlString
+        if getImageId {
+            if let imageId = self.getImageId(metadataResponseData) {
+                print(imageId)
+                return imageId
+            }
+            
+            throw MediaUploadRepositoryError.failedToExtractImageId
+        } else {
+            if let imageUrlString = getImageURLString(uploadImageResponseData, getImageKey: false) {
+                return imageUrlString
+            }
+            
+            throw MediaUploadRepositoryError.failedToExtractImageURL
         }
-        
-        throw MediaUploadRepositoryError.failedToExtractImageURL
     }
     
     func uploadGIF(account: Account, gifData: Data) async throws -> String {
@@ -234,6 +247,10 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
         parser.parse()
         
         return delegate.result
+    }
+    
+    private func getImageId(_ responseData: Data) -> String? {
+        return JSON(responseData)["asset"]["asset_id"].string
     }
     
     func getVideoMimeType(url: URL) -> String {

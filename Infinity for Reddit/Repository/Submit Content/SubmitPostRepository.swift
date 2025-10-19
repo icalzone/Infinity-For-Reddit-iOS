@@ -47,7 +47,7 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
         ]
         if !content.isEmpty {
             if isRichTextJSON {
-                params["richtext_json"] = content
+                params["richtext_json"] = RichtextJSONConverter().constructRichtextJSON(markdownString: content)
             } else {
                 params["text"] = content
             }

@@ -29,6 +29,17 @@ struct SecondaryTextViewModifier: ViewModifier {
     }
 }
 
+struct ButtonTextViewModifier: ViewModifier {
+    @EnvironmentObject var themeViewModel: CustomThemeViewModel
+    
+    func body(content: Content) -> some View {
+        content
+            .fixedSize(horizontal: false, vertical: true)
+            //.font()
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.buttonTextColor))
+    }
+}
+
 struct NavigationBarPrimaryTextViewModifier: ViewModifier {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     

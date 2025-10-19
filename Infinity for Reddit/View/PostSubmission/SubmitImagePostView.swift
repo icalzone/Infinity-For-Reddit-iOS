@@ -200,8 +200,8 @@ struct SubmitImagePostView: View {
                 if let selectedItem = newSelectedItem,
                    let imageData = try? await selectedItem.loadTransferable(type: Data.self),
                    let image = UIImage(data: imageData) {
-                    print(isGIF(imageData: imageData))
-                    submitImagePostViewModel.setImage(image: image, imageData: imageData, isGIF: isGIF(imageData: imageData))
+                    print(Utils.isGIF(imageData: imageData))
+                    submitImagePostViewModel.setImage(image: image, imageData: imageData, isGIF: Utils.isGIF(imageData: imageData))
                 } else {
                     // Error handling
                 }
@@ -231,14 +231,6 @@ struct SubmitImagePostView: View {
     
     private enum FieldType: Hashable {
         case title
-    }
-    
-    private func isGIF(imageData: Data) -> Bool {
-        guard imageData.count >= 4 else {
-            return false
-        }
-        let signature = String(bytes: imageData.prefix(4), encoding: .ascii)
-        return signature == "GIF8"
     }
 }
 
