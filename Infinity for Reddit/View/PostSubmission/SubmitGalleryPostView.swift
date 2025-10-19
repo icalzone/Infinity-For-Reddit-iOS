@@ -77,9 +77,11 @@ struct SubmitGalleryPostView: View {
                             
                             if !submitGalleryPostViewModel.capturedImages.isEmpty {
                                 VStack(spacing: 16) {
-                                    GalleryGridView(images: submitGalleryPostViewModel.capturedImages){
-                                        showGallerySheet = true
-                                    }
+                                    GalleryGridView(
+                                        images: submitGalleryPostViewModel.capturedImages,
+                                        onAddTap: { showGallerySheet = true },
+                                        onDeleteTap: { index in submitGalleryPostViewModel.deleteCapturedImage(at: index) }
+                                    )
                                 }
                             } else {
                                 GallerySelectionToolbar{
@@ -221,8 +223,12 @@ private struct GallerySelectionToolbar: View {
 }
 
 private struct GalleryGridView: View {
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
+    
     let images: [UIImage]
     let onAddTap: () -> Void
+    let onDeleteTap: (Int) -> Void
+    
     private let columns: Int = 2
     private let spacing: CGFloat = 10
     
@@ -237,15 +243,32 @@ private struct GalleryGridView: View {
                         let rowItems = rows[rowIndex]
                         
                         HStack(spacing: spacing) {
-                            ForEach(rowItems, id: \.self) { item in
+                            ForEach(rowItems.indices, id: \.self) { colIndex in
+                                let item = rowItems[colIndex]
+                                let globalIndex = rowIndex * columns + colIndex
+                                
                                 switch item {
                                 case .image(let uiImage):
-                                    SwiftUI.Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: imageWidth, height: imageWidth)
-                                        .clipped()
-                                        .cornerRadius(8)
+                                    ZStack(alignment: .topTrailing) {
+                                        SwiftUI.Image(uiImage: uiImage)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: imageWidth, height: imageWidth)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                        
+                                        Button {
+                                            onDeleteTap(globalIndex)
+                                        } label: {
+                                            SwiftUI.Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(Color(hex: customThemeViewModel.currentCustomTheme.backgroundColor))
+                                                .background(
+                                                    Circle()
+                                                        .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorPrimary))
+                                                )
+                                                .padding(6)
+                                        }
+                                    }
                                     
                                 case .addButton:
                                     GallerySelectionToolbar(onTapGallery: onAddTap)

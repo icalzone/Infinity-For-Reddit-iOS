@@ -27,4 +27,9 @@ class SubmitGalleryPostViewModel: ObservableObject {
     func clearCapturedImages() {
         capturedImages.removeAll()
     }
+    
+    func deleteCapturedImage(at index: Int) {
+        guard index >= 0 && index < capturedImages.count else { return }
+        capturedImages.remove(at: index)
+    }
 }
