@@ -10,7 +10,6 @@ import MarkdownUI
 struct SubmitLinkPostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     @EnvironmentObject private var snackbarManager: SnackbarManager
-    @EnvironmentObject private var themeViewModel: CustomThemeViewModel
     
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @StateObject private var submitLinkPostViewModel: SubmitLinkPostViewModel
@@ -68,12 +67,10 @@ struct SubmitLinkPostView: View {
                                 Button("Suggest Title") {
                                     submitLinkPostViewModel.suggestTitle()
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimary))
-                                .controlSize(.regular)
-                                .contentShape(Rectangle())
+                                .filledButton()
                             }
-                            .padding(16)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
                             
                             CustomTextField(
                                 "URL",
@@ -86,7 +83,8 @@ struct SubmitLinkPostView: View {
                             )
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
-                            .padding(16)
+                            .padding(.horizontal, 16)
+                            .padding(.top, 16)
                             
                             ZStack(alignment: .topLeading) {
                                 MarkdownTextField(text: $submitLinkPostViewModel.content, selectedRange: $bodySelectedRange, canFocus: $contentTextViewCanFocus)
