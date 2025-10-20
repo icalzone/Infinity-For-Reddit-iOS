@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class SnackbarManager: ObservableObject {
     @Published var showSnackbar: Bool = false
     @Published var canDismissByGesture: Bool = true
@@ -52,14 +53,11 @@ class SnackbarManager: ObservableObject {
                 
                 do {
                     try Task.checkCancellation()
-                    
-                    await MainActor.run {
-                        dismiss()
-                        snackbarTask = nil
-                    }
+                    dismiss()
                 } catch {
-                    
+                    // Ignore
                 }
+                snackbarTask = nil
             }
         }
     }

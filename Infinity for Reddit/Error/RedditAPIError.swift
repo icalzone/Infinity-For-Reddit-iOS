@@ -5,6 +5,15 @@
 //  Created by Docile Alligator on 2025-10-13.
 //
 
-enum RedditAPIError: Error {
+import Foundation
+
+enum RedditAPIError: LocalizedError {
     case apiError(String)
+    
+    var errorDescription: String? {
+        switch self {
+        case .apiError(let message):
+            return message
+        }
+    }
 }
