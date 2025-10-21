@@ -85,30 +85,38 @@ struct SubmitVideoPostView: View {
                             }
                             .padding(16)
                             
-                            SelectVideoToolbar(
-                                onCameraTap: { showCamera = true },
-                                onPhotoPickerTap: { showVideoPicker = true }
-                            )
-                            .frame(maxWidth: .infinity)
-                            
-                            
-//                            if let thumbnail = submitVideoPostViewModel.thumbnail {
-//                                SwiftUI.Image(uiImage: thumbnail)
-//                                    .resizable()
-//                                    .scaledToFit()
-//                                    .frame(maxWidth: .infinity)
-//                                    .frame(height: 200)
-//                                    .padding(.horizontal, 16)
-//                                    .padding(.top, 8)
-//                            }
+                            //                            if let thumbnail = submitVideoPostViewModel.thumbnail {
+                            //                                SwiftUI.Image(uiImage: thumbnail)
+                            //                                    .resizable()
+                            //                                    .scaledToFit()
+                            //                                    .frame(maxWidth: .infinity)
+                            //                                    .frame(height: 200)
+                            //                                    .padding(.horizontal, 16)
+                            //                                    .padding(.top, 8)
+                            //                            }
                             
                             if let videoURL = submitVideoPostViewModel.videoURL {
-                                InlineVideoPlayer(videoURL: videoURL, aspectRatio: nil, muteVideo: true)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 400)
-                                    .cornerRadius(8)
-                                    .padding(.horizontal, 16)
-                                    .padding(.top, 16)
+                                VStack (spacing: 16) {
+                                    Button(action: {
+                                        submitVideoPostViewModel.clearVideo()
+                                    }) {
+                                        Text("Select again")
+                                            .colorAccentText()
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    
+                                    InlineVideoPlayer(videoURL: videoURL, aspectRatio: nil, muteVideo: true)
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 400)
+                                        .cornerRadius(8)
+                                }
+                                .padding(.horizontal, 16)
+                            } else {
+                                SelectVideoToolbar(
+                                    onCameraTap: { showCamera = true },
+                                    onPhotoPickerTap: { showVideoPicker = true }
+                                )
+                                .frame(maxWidth: .infinity)
                             }
                         }
                     }
@@ -168,21 +176,14 @@ struct SubmitVideoPostView: View {
         )
         .onChange(of: selectedVideoItem) { _, newItem in
             Task {
-                guard let newItem else {
-                    print("No video selected")
-                    return
-                }
-
-                do {
-                    print("Importing video…")
-                    if let movie = try await newItem.loadTransferable(type: Movie.self) {
-                        print("Video imported:", movie.url)
-                        submitVideoPostViewModel.setVideo(url: movie.url)
-                    } else {
-                        print("Failed to import video (Movie returned nil)")
-                    }
-                } catch {
-                    print("Error loading video:", error)
+                if let newItem,
+                   let movie = try await newItem.loadTransferable(type: Movie.self) {
+                    let fileExtension = movie.url.pathExtension.lowercased()
+                    print("Video imported:", movie.url)
+                    print("Imported video type:", fileExtension)
+                    submitVideoPostViewModel.setVideo(url: movie.url)
+                } else {
+                    // Error handling
                 }
             }
         }
