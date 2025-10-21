@@ -381,9 +381,17 @@ struct VideoController<Content: View>: View {
                     onTogglePlayPause()
                     onResetControllerTimer()
                 } label: {
-                    SwiftUI.Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: 48))
-                        .foregroundStyle(.white)
+                    ZStack {
+                        SwiftUI.Image(systemName: "pause.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.white)
+                            .opacity(isPlaying ? 1 : 0)
+                        
+                        SwiftUI.Image(systemName: "play.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(.white)
+                            .opacity(isPlaying ? 0 : 1)
+                    }
                 }
                 
                 Button {
