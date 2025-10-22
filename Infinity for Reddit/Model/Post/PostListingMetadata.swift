@@ -54,4 +54,5 @@ public enum UserWhere: String, Codable {
 enum SortEmbeddingStyle {
     case inPath
     case inQuery(key: String)
+    case none
 }

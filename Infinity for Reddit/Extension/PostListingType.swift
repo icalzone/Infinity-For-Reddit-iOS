@@ -34,8 +34,12 @@ extension PostListingType: SortTypeTimeSource {
 
 extension PostListingType {
     var sortEmbeddingStyle: SortEmbeddingStyle {
-        if case .user = self {
-            return .inQuery(key: "sort")
+        if case .user(_, let userWhere) = self {
+            if userWhere == .submitted {
+                return .inQuery(key: "sort")
+            } else {
+                return .none
+            }
         } else {
             return .inPath
         }

@@ -180,6 +180,17 @@ public class PostListingViewModel: ObservableObject {
                     queries: queries.merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
                     params: postListingMetadata.params
                 )
+            case .none:
+                var queries = ["limit": "100", "after": self.after ?? ""]
+                if postListingMetadata.postListingType.canQuerySensitiveInAPICall {
+                    queries["include_over_18"] = sensitiveContent ? "1" : "0"
+                }
+                postListing = try await postListingRepository.fetchPosts(
+                    postListingType: postListingMetadata.postListingType,
+                    pathComponents: postListingMetadata.pathComponents,
+                    queries: queries.merging(postListingMetadata.queries ?? [:], uniquingKeysWith: { _, new in new }),
+                    params: postListingMetadata.params
+                )
             }
             
             try Task.checkCancellation()

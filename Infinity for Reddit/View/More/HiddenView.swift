@@ -26,6 +26,6 @@ struct HiddenView: View {
         )
         .id(accountViewModel.account.username)
         .themedNavigationBar()
-        .addTitleToInlineNavigationBar("Hidden", 1.0)
+        .addTitleToInlineNavigationBar("Hidden")
     }
 }
