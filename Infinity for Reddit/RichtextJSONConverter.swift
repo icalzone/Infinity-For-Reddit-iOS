@@ -120,6 +120,8 @@ class RichtextJSONConverter {
                 visitLink(destination: destination, inlineNodes: inlineNodes)
             case .image(let source, let inlineNodes):
                 visitImage(imageId: source, inlineNodes: inlineNodes)
+            case .superscript(level: let level, children: let children):
+                break
             }
         }
     }
@@ -508,6 +510,8 @@ class RichtextJSONConverter {
                 node = children.first
             case .image(let source, let children):
                 node = children.first
+            case .superscript(level: let level, children: let children):
+                break
             }
         }
         
@@ -586,6 +590,8 @@ class RichtextJSONConverter {
             case .link:
                 break
             case .image:
+                break
+            case .superscript(level: let level, children: let children):
                 break
             }
         }
