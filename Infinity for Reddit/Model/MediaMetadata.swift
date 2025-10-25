@@ -34,9 +34,15 @@ class MediaMetadata : NSObject, ObservableObject, Identifiable {
     var isGif: Bool!
 
     init(fromJson json: JSON!) throws {
-        if json.isEmpty{
-            return
+        if json.isEmpty {
+            throw JSONError.invalidData
         }
+        
+        let sJson = json["s"]
+        guard !sJson.isEmpty else {
+            throw JSONError.invalidData
+        }
+        
         e = json["e"].stringValue
         id = json["id"].stringValue
         m = json["m"].stringValue
@@ -45,10 +51,7 @@ class MediaMetadata : NSObject, ObservableObject, Identifiable {
             let value = MediaMetadataPreview(fromJson: pJson)
             p.append(value)
         }
-        let sJson = json["s"]
-        guard !sJson.isEmpty else {
-            throw JSONError.invalidData
-        }
+        
         s = MediaMetadataSource(fromJson: sJson)
         status = json["status"].stringValue
         x = json["x"].intValue
