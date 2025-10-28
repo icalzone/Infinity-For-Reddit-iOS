@@ -34,8 +34,7 @@ class SubmitTextPostViewModel: ObservableObject {
         flair: Flair?,
         isSpoiler: Bool,
         isSensitive: Bool,
-        receivePostReplyNotifications: Bool,
-        isRichTextJSON: Bool
+        receivePostReplyNotifications: Bool
     ) {
         let richtext = RichtextJSONConverter().constructRichtextJSON(markdownString: content)
         print(richtext)
@@ -67,7 +66,7 @@ class SubmitTextPostViewModel: ObservableObject {
                     isSpoiler: isSpoiler,
                     isSensitive: isSensitive,
                     receivePostReplyNotifications: receivePostReplyNotifications,
-                    isRichTextJSON: isRichTextJSON
+                    isRichTextJSON: !embeddedImages.isEmpty
                 )
             } catch {
                 self.error = error

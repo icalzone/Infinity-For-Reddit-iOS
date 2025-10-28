@@ -87,7 +87,7 @@ struct SubmitPollPostView: View {
                             Divider()
                             
                             Menu {
-                                ForEach(1..<7, id: \.self) { index in
+                                ForEach(1..<8, id: \.self) { index in
                                     Button(index == 1 ? "1 day" : "\(index) days") {
                                         submitPollPostViewModel.votingDuration = index
                                     }
@@ -112,21 +112,7 @@ struct SubmitPollPostView: View {
                                     
                                     CustomTextField(
                                         placeholder,
-                                        text: Binding(
-                                            get: {
-                                                if submitPollPostViewModel.pollOptions.indices.contains(index) {
-                                                    return submitPollPostViewModel.pollOptions[index]
-                                                } else {
-                                                    return ""
-                                                }
-                                            },
-                                            set: { newValue in
-                                                while submitPollPostViewModel.pollOptions.count <= index {
-                                                    submitPollPostViewModel.pollOptions.append("")
-                                                }
-                                                submitPollPostViewModel.pollOptions[index] = newValue
-                                            }
-                                        ),
+                                        text: $submitPollPostViewModel.pollOptions[index],
                                         singleLine: true,
                                         keyboardType: .default,
                                         showBorder: false,
@@ -174,7 +160,13 @@ struct SubmitPollPostView: View {
                 }
                 
                 Button {
-                    print("Poll submission triggered.")
+                    submitPollPostViewModel.submitPost(
+                        subreddit: postSubmissionContextViewModel.selectedSubreddit,
+                        flair: postSubmissionContextViewModel.selectedFlair,
+                        isSpoiler: postSubmissionContextViewModel.isSpoiler,
+                        isSensitive: postSubmissionContextViewModel.isSensitive,
+                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification
+                    )
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")
                 }
@@ -256,21 +248,21 @@ struct SubmitPollPostView: View {
                 }
             }
         }
-//        .onChange(of: submitPollPostViewModel.submitPostTask) { _, newValue in
-//            if newValue != nil {
-//                snackbarManager.showSnackbar(
-//                    text: "Submitting. Please wait...",
-//                    autoDismiss: false,
-//                    canDismissByGesture: false
-//                )
-//            }
-//        }
-//        .onChange(of: submitPollPostViewModel.submittedPostId) { _, newValue in
-//            if let id = newValue {
-//                snackbarManager.dismiss()
-//                navigationManager.replaceCurrentScreen(AppNavigation.postDetailsWithId(postId: id))
-//            }
-//        }
+        .onChange(of: submitPollPostViewModel.submitPostTask) { _, newValue in
+            if newValue != nil {
+                snackbarManager.showSnackbar(
+                    text: "Submitting. Please wait...",
+                    autoDismiss: false,
+                    canDismissByGesture: false
+                )
+            }
+        }
+        .onChange(of: submitPollPostViewModel.submittedPostUrlString) { _, newValue in
+            if let urlString = newValue {
+                snackbarManager.dismiss()
+                navigationManager.replaceCurrentScreen(urlString)
+            }
+        }
         .onReceive(submitPollPostViewModel.$error) { newValue in
             if let error = newValue {
                 snackbarManager.showSnackbar(text: error.localizedDescription)

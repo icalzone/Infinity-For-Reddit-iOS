@@ -124,8 +124,7 @@ struct SubmitTextPostView: View {
                         flair: postSubmissionContextViewModel.selectedFlair,
                         isSpoiler: postSubmissionContextViewModel.isSpoiler,
                         isSensitive: postSubmissionContextViewModel.isSensitive,
-                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification,
-                        isRichTextJSON: !submitTextPostViewModel.embeddedImages.isEmpty
+                        receivePostReplyNotifications: postSubmissionContextViewModel.receivePostReplyNotification
                     )
                 } label: {
                     SwiftUI.Image(systemName: "paperplane.fill")

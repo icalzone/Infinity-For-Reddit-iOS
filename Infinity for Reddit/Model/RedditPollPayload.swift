@@ -84,7 +84,10 @@ struct RedditPollPayload: Codable {
     ) {
         self.subredditName = subredditName
         self.title = title
-        self.options = options
+        self.options = options.compactMap { option in
+            let trimmed = option.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
         self.duration = duration
         self.isNsfw = isNsfw
         self.isSpoiler = isSpoiler

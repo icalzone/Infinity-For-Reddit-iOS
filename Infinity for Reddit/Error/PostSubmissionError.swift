@@ -21,6 +21,7 @@ enum PostSubmissionError: LocalizedError {
     case galleryImagesNotEnoughError
     case galleryImageUploadError(Int)
     case galleryImageUploadingInProgress
+    case pollOptionsNotEnoughError
     
     var errorDescription: String? {
         switch self {
@@ -50,6 +51,8 @@ enum PostSubmissionError: LocalizedError {
             return "Image #\(index + 1) failed to upload. Please tap that image to retry."
         case .galleryImageUploadingInProgress:
             return "Images are still uploading. Please wait."
+        case .pollOptionsNotEnoughError:
+            return "The first two poll options are required."
         }
     }
 }
