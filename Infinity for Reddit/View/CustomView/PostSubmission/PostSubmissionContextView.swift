@@ -41,7 +41,7 @@ struct PostSubmissionContextView: View {
             }) {
                 HStack {
                     RowText("Receive post reply notifications")
-                        .secondaryText()
+                        .primaryText()
                     
                     Toggle(isOn: $postSubmissionContextViewModel.receivePostReplyNotification) {}
                         .labelsHidden()
