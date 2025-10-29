@@ -162,6 +162,19 @@ public class PostDetailsViewModel: ObservableObject {
             
             try Task.checkCancellation()
             
+            if shouldLoadPost {
+                if postDetails.postListing.posts.isEmpty {
+                    throw PostDetailsViewModelError.postFetchError
+                }
+                let post = postDetails.postListing.posts[0]
+                MarkdownUtils.parseRedditImagesBlock(post)
+                post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
+                
+                await MainActor.run {
+                    self.post = post
+                }
+            }
+            
             if commentFilter == nil {
                 fetchCommentFilter()
             }
@@ -171,14 +184,7 @@ public class PostDetailsViewModel: ObservableObject {
             
             try Task.checkCancellation()
             
-            try await MainActor.run {
-                if shouldLoadPost {
-                    if postDetails.postListing.posts.isEmpty {
-                        throw PostDetailsViewModelError.postFetchError
-                    }
-                    // TODO error handling here in case there is no post
-                    self.post = postDetails.postListing.posts[0]
-                }
+            await MainActor.run {
                 if isRefreshWithContinuation {
                     self.visibleComments.removeAll()
                     self.allComments.removeAll()
