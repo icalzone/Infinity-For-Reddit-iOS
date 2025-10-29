@@ -65,15 +65,7 @@ struct MoreView: View {
                     .listPlainItemNoInsets()
                 }
                 
-                SimpleTouchItemRow(text: "History", icon: "clock") {
-                    navigationManager.path.append(MoreViewNavigation.history)
-                }
-                .listPlainItemNoInsets()
-            }
-            .listPlainItem()
-            
-            if !accountViewModel.account.isAnonymous() {
-                Section(header: Text("Post").listSectionHeader()) {
+                if !accountViewModel.account.isAnonymous() {
                     SimpleTouchItemRow(text: "Upvoted", icon:"arrowshape.up") {
                         navigationManager.path.append(MoreViewNavigation.upvoted)
                     }
@@ -94,8 +86,13 @@ struct MoreView: View {
                     }
                     .listPlainItemNoInsets()
                 }
-                .listPlainItem()
+                
+                SimpleTouchItemRow(text: "History", icon: "clock") {
+                    navigationManager.path.append(MoreViewNavigation.history)
+                }
+                .listPlainItemNoInsets()
             }
+            .listPlainItem()
             
             Section(header: Text("Preferences").listSectionHeader()) {
                 SimpleTouchItemRow(text: "Settings", icon: "gearshape") {
