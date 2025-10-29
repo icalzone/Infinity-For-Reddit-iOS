@@ -97,7 +97,7 @@ class LinkHandler {
             return LinkDestination.openInBrowser(url)
         } else if segments.contains("comments"), let index = segments.lastIndex(of: "comments"), index + 1 < segments.count {
             let postId = segments[index + 1]
-            if segments.count > index + 2 {
+            if segments.count > index + 3 {
                 let commentId = segments.last!
                 return LinkDestination.navigation(AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId), isFromSubredditPostListing: false))
             } else {
