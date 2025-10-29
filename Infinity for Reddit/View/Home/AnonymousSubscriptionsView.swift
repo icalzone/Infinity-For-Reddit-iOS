@@ -61,7 +61,7 @@ struct AnonymousSubscriptionsView: View {
                 } else {
                     List {
                         if !anonymousSubscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
+                            CustomListSection("Favorite") {
                                 ForEach(anonymousSubscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
                                     SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -76,10 +76,9 @@ struct AnonymousSubscriptionsView: View {
                                     .listPlainItemNoInsets()
                                 }
                             }
-                            .listPlainItem()
                         }
                         
-                        Section(header: Text("All").listSectionHeader()) {
+                        CustomListSection("All") {
                             ForEach(anonymousSubscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -94,7 +93,6 @@ struct AnonymousSubscriptionsView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
@@ -117,7 +115,7 @@ struct AnonymousSubscriptionsView: View {
                 } else {
                     List {
                         if !anonymousSubscriptionListingViewModel.favoriteUserSubscriptions.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
+                            CustomListSection("Favorite") {
                                 ForEach(anonymousSubscriptionListingViewModel.favoriteUserSubscriptions, id: \.identityInView) { subscription in
                                     SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -132,10 +130,9 @@ struct AnonymousSubscriptionsView: View {
                                     .listPlainItemNoInsets()
                                 }
                             }
-                            .listPlainItem()
                         }
                         
-                        Section(header: Text("All").listSectionHeader()) {
+                        CustomListSection("All") {
                             ForEach(anonymousSubscriptionListingViewModel.userSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -150,7 +147,6 @@ struct AnonymousSubscriptionsView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
@@ -171,7 +167,7 @@ struct AnonymousSubscriptionsView: View {
                 } else {
                     List {
                         if !anonymousSubscriptionListingViewModel.favoriteMyCustomFeeds.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
+                            CustomListSection("Favorite") {
                                 ForEach(anonymousSubscriptionListingViewModel.favoriteMyCustomFeeds, id: \.identityInView) { customFeed in
                                     SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                         navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
@@ -182,10 +178,9 @@ struct AnonymousSubscriptionsView: View {
                                     .listPlainItemNoInsets()
                                 }
                             }
-                            .listPlainItem()
                         }
                         
-                        Section(header: Text("All").listSectionHeader()) {
+                        CustomListSection("All") {
                             ForEach(anonymousSubscriptionListingViewModel.myCustomFeeds, id: \.identityInView) { customFeed in
                                 SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                     navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
@@ -196,7 +191,6 @@ struct AnonymousSubscriptionsView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()

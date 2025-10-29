@@ -50,7 +50,7 @@ struct SubscribedSubredditListingView: View {
                     }
                     
                     if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
-                        Section(header: Text("Favorite").listSectionHeader()) {
+                        CustomListSection("Favorite") {
                             ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                     if let onSelectCustomAction = onSelectCustomAction {
@@ -67,10 +67,9 @@ struct SubscribedSubredditListingView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     
-                    Section(header: Text("All").listSectionHeader()) {
+                    CustomListSection("All") {
                         ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
                             SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                 if let onSelectCustomAction = onSelectCustomAction {
@@ -87,7 +86,6 @@ struct SubscribedSubredditListingView: View {
                             .listPlainItemNoInsets()
                         }
                     }
-                    .listPlainItem()
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 .themedList()

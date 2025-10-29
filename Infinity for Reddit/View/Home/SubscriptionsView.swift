@@ -77,7 +77,7 @@ struct SubscriptionsView: View {
                 } else {
                     List {
                         if !subscriptionListingViewModel.favoriteUserSubscriptions.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
+                            CustomListSection("Favorite") {
                                 ForEach(subscriptionListingViewModel.favoriteUserSubscriptions, id: \.identityInView) { subscription in
                                     SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -94,10 +94,9 @@ struct SubscriptionsView: View {
                                     .listPlainItemNoInsets()
                                 }
                             }
-                            .listPlainItem()
                         }
                         
-                        Section(header: Text("All").listSectionHeader()) {
+                        CustomListSection("All") {
                             ForEach(subscriptionListingViewModel.userSubscriptions, id: \.identityInView) { subscription in
                                 SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -114,7 +113,6 @@ struct SubscriptionsView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
@@ -141,7 +139,7 @@ struct SubscriptionsView: View {
                 } else {
                     List {
                         if !subscriptionListingViewModel.favoriteMyCustomFeeds.isEmpty {
-                            Section(header: Text("Favorite").listSectionHeader()) {
+                            CustomListSection("Favorite") {
                                 ForEach(subscriptionListingViewModel.favoriteMyCustomFeeds, id: \.identityInView) { customFeed in
                                     SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -158,10 +156,9 @@ struct SubscriptionsView: View {
                                     .listPlainItemNoInsets()
                                 }
                             }
-                            .listPlainItem()
                         }
                         
-                        Section(header: Text("All").listSectionHeader()) {
+                        CustomListSection("All") {
                             ForEach(subscriptionListingViewModel.myCustomFeeds, id: \.identityInView) { customFeed in
                                 SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
@@ -178,7 +175,6 @@ struct SubscriptionsView: View {
                                 .listPlainItemNoInsets()
                             }
                         }
-                        .listPlainItem()
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()

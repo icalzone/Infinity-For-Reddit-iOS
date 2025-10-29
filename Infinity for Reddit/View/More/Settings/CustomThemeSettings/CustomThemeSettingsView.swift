@@ -33,7 +33,7 @@ struct CustomThemeSettingsView: View {
             )
             .listPlainItemNoInsets()
 
-            Section(header: Text("Customization").listSectionHeader()) {
+            CustomListSection("Customization") {
                 PreferenceEntry(
                     title: "Light Theme",
                     subtitle: customThemeViewModel.currentLightCustomTheme?.name ?? "Indigo",
@@ -69,7 +69,6 @@ struct CustomThemeSettingsView: View {
                 }
                 .listPlainItemNoInsets()
             }
-            .listPlainItem()
         }
         .themedList()
         .themedNavigationBar()

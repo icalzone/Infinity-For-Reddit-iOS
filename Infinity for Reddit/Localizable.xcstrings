@@ -35,9 +35,6 @@
     "Advanced" : {
 
     },
-    "All" : {
-
-    },
     "All media downloaded" : {
 
     },
@@ -107,9 +104,6 @@
     "Comments will be filtered out if they contain the following keywords." : {
 
     },
-    "Content" : {
-
-    },
     "Content Font Family" : {
 
     },
@@ -117,9 +111,6 @@
 
     },
     "Continue Thread" : {
-
-    },
-    "Customization" : {
 
     },
     "Data Saving Mode" : {
@@ -149,9 +140,6 @@
     "Failed to load image — tap to retry." : {
 
     },
-    "Favorite" : {
-
-    },
     "Filtered out comments will be shown as the following selected option." : {
 
     },
@@ -159,9 +147,6 @@
 
     },
     "Followed" : {
-
-    },
-    "Font" : {
 
     },
     "Font Family" : {
@@ -276,9 +261,6 @@
 
     },
     "Please select a subreddit first" : {
-
-    },
-    "Post and Comment" : {
 
     },
     "Posts from the following subreddits will be filtered out." : {
@@ -2141,9 +2123,6 @@
         }
       }
     },
-    "Title" : {
-
-    },
     "Title Font Family" : {
 
     },
@@ -2166,9 +2145,6 @@
 
     },
     "Upload Image" : {
-
-    },
-    "Video Autoplay" : {
 
     },
     "Video downloaded" : {

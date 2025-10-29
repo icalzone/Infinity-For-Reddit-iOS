@@ -22,7 +22,7 @@ struct MoreView: View {
     
     var body: some View {
         List {
-            ListSection(title: "Reddit") {
+            CustomListSection("Reddit") {
                 SimpleTouchItemRow(text: "Popular", icon: "flame") {
                     navigationManager.path.append(MoreViewNavigation.popular)
                 }
@@ -56,7 +56,7 @@ struct MoreView: View {
                 .listPlainItemNoInsets()
             }
             
-            ListSection(title: "Account") {
+            CustomListSection("Account") {
                 if !accountViewModel.account.isAnonymous() {
                     SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
                         navigationManager.path.append(MoreViewNavigation.profile)
@@ -92,7 +92,7 @@ struct MoreView: View {
                 .listPlainItemNoInsets()
             }
             
-            ListSection(title: "Preferences") {
+            CustomListSection("Preferences") {
                 SimpleTouchItemRow(text: "Settings", icon: "gearshape") {
                     navigationManager.path.append(MoreViewNavigation.settings)
                 }

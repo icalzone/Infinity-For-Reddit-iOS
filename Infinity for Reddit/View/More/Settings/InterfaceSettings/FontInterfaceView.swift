@@ -19,7 +19,7 @@ struct FontInterfaceView: View {
                     Text("Font Preview").padding(.leading, 44.5)
                 }
             }
-            Section(header: Text("Font")){
+            CustomListSection("Font") {
                 Picker("Font Family", selection: $fontInterfaceViewModel.fontFamily){
                     ForEach(0..<fontInterfaceViewModel.families.count, id: \.self) { index in
                         Text(fontInterfaceViewModel.families[index]).tag(index)
@@ -34,7 +34,7 @@ struct FontInterfaceView: View {
                 }
                 .padding(.leading, 44.5)
             }
-            Section(header: Text("Title")){
+            CustomListSection("Title") {
                 Picker("Title Font Family", selection: $fontInterfaceViewModel.titleFontFamily){
                     ForEach(0..<fontInterfaceViewModel.families.count, id: \.self) { index in
                         Text(fontInterfaceViewModel.families[index]).tag(index)
@@ -50,7 +50,7 @@ struct FontInterfaceView: View {
                 .padding(.leading, 44.5)
                 
             }
-            Section(header: Text("Content")){
+            CustomListSection("Content") {
                 Picker("Content Font Family", selection: $fontInterfaceViewModel.contentFontFamily){
                     ForEach(0..<fontInterfaceViewModel.families.count, id: \.self) { index in
                         Text(fontInterfaceViewModel.families[index]).tag(index)

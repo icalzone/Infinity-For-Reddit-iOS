@@ -65,14 +65,13 @@ struct InterfaceSettingsView: View {
             }
             .listPlainItemNoInsets()
             
-            Section(header: Text("Post and Comment").listSectionHeader()) {
+            CustomListSection("Post and Comment") {
                 TogglePreference(isEnabled: $voteButtonsOnTheRight, title: "Vote Buttons on the Right")
                     .listPlainItemNoInsets()
                 
                 TogglePreference(isEnabled: $showAbsoluteNumberOfVotes, title: "Show Absolute Number of Votes")
                     .listPlainItemNoInsets()
             }
-            .listPlainItem()
         }
         .themedList()
         .themedNavigationBar()

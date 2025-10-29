@@ -55,7 +55,7 @@ struct VideoSettingsView: View {
             }
             .listPlainItemNoInsets()
             
-            Section(header: Text("Video Autoplay").listSectionHeader()) {
+            CustomListSection("Video Autoplay") {
                 BarebonePickerPreference(
                     selected: $videoAutoplay,
                     items: VideoUserDefaultsUtils.videoAutoplayOptions,
@@ -74,7 +74,6 @@ struct VideoSettingsView: View {
                 TogglePreference(isEnabled: $autoplaySensitiveVideo, title: "Autoplay Sensitive Video")
                     .listPlainItemNoInsets()
             }
-            .listPlainItem()
         }
         .themedList()
         .themedNavigationBar()

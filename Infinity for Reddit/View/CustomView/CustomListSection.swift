@@ -1,5 +1,5 @@
 //
-//  ListSection.swift
+//  CustomListSection.swift
 //  Infinity for Reddit
 //
 //  Created by Docile Alligator on 2025-10-29.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ListSection<Content: View>: View {
+struct CustomListSection<Content: View>: View {
     @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     let title: String
@@ -15,7 +15,7 @@ struct ListSection<Content: View>: View {
     var content: Content
     
     init(
-        title: String,
+        _ title: String,
         padding: CGFloat = 16,
         @ViewBuilder content: () -> Content
     ) {
