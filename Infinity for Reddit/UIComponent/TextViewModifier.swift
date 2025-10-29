@@ -153,8 +153,7 @@ struct ListSectionHeaderViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             //.font()
-            .foregroundColor(Color.red)
-            //.foregroundColor(Color(hex: themeViewModel.currentCustomTheme.secondaryTextColor))
+            .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.colorAccent))
     }
 }
 

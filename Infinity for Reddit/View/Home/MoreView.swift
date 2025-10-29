@@ -22,7 +22,7 @@ struct MoreView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Reddit").listSectionHeader()) {
+            ListSection(title: "Reddit") {
                 SimpleTouchItemRow(text: "Popular", icon: "flame") {
                     navigationManager.path.append(MoreViewNavigation.popular)
                 }
@@ -55,9 +55,8 @@ struct MoreView: View {
                 }
                 .listPlainItemNoInsets()
             }
-            .listPlainItem()
             
-            Section(header: Text("Account").listSectionHeader()) {
+            ListSection(title: "Account") {
                 if !accountViewModel.account.isAnonymous() {
                     SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
                         navigationManager.path.append(MoreViewNavigation.profile)
@@ -92,9 +91,8 @@ struct MoreView: View {
                 }
                 .listPlainItemNoInsets()
             }
-            .listPlainItem()
             
-            Section(header: Text("Preferences").listSectionHeader()) {
+            ListSection(title: "Preferences") {
                 SimpleTouchItemRow(text: "Settings", icon: "gearshape") {
                     navigationManager.path.append(MoreViewNavigation.settings)
                 }
@@ -105,7 +103,6 @@ struct MoreView: View {
                 }
                 .listPlainItemNoInsets()
             }
-            .listPlainItem()
         }
         .themedList()
         .rootViewBackground()
