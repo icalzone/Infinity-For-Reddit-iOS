@@ -23,6 +23,7 @@ struct PostListingView: View {
     @State private var showSortTypeTimeSheet: Bool = false
     @State private var upcomingSortTypeKind: SortType.Kind?
     @State private var navigationBarMenuKey: UUID?
+    @State private var showLayoutTypeSheet: Bool = false
     
     private let account: Account
     private let postListingMetadata: PostListingMetadata
@@ -50,7 +51,8 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                readPostsRepository: ReadPostsRepository()
+                readPostsRepository: ReadPostsRepository(),
+                postFeedID: postListingMetadata.getPostFeedID()
             )
         )
     }
@@ -75,7 +77,8 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                readPostsRepository: ReadPostsRepository()
+                readPostsRepository: ReadPostsRepository(),
+                postFeedID: postListingMetadata.getPostFeedID()
             )
         )
     }
@@ -172,6 +175,10 @@ struct PostListingView: View {
                 
                 NavigationBarMenuItem(title: "Sort") {
                     showSortTypeKindSheet = true
+                },
+                
+                NavigationBarMenuItem(title: "Change Post Layout") {
+                    showLayoutTypeSheet = true
                 }
             ]
             
@@ -214,6 +221,15 @@ struct PostListingView: View {
                     postListingViewModel.changeSortType(SortType(type: upcomingSortTypeKind, time: sortTypeTime))
                 }
             }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(isPresented: $showLayoutTypeSheet) {
+            LayoutTypeSheet(
+                currentLayout: postListingViewModel.layout,
+                onSelectLayout: { newLayout in
+                    postListingViewModel.changePostLayout(to: newLayout)
+                }
+            )
             .presentationDetents([.medium, .large])
         }
         .environment(\.postListingVideoManager, postListingVideoManager)

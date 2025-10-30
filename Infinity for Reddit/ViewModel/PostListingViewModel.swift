@@ -35,6 +35,7 @@ public class PostListingViewModel: ObservableObject {
     @Published var error: Error?
     @Published var sortType: SortType
     @Published var loadPostsTaskId = UUID()
+    @Published var layout: PostLayoutType
     
     var itemsWithLoadingIndicator: [PostListItem] {
         if hasMorePages {
@@ -65,12 +66,16 @@ public class PostListingViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
+    private var userSelectedLayout: PostLayoutType? = nil
+    private let postFeedID: String
+    
     // MARK: - Initializer
     init(
         postListingMetadata: PostListingMetadata,
         externalPostFilter: PostFilter?,
         postListingRepository: PostListingRepositoryProtocol,
-        readPostsRepository: ReadPostsRepositoryProtocol
+        readPostsRepository: ReadPostsRepositoryProtocol,
+        postFeedID: String
     ) {
         self.sortType = postListingMetadata.postListingType.savedSortType
         self.postListingMetadata = postListingMetadata
@@ -80,6 +85,38 @@ public class PostListingViewModel: ObservableObject {
         
         self.sensitiveContent = ContentSensitivityFilterUserDetailsUtils.sensitiveContent
         self.spoilerContent = ContentSensitivityFilterUserDetailsUtils.spoilerContent
+        
+        self.postFeedID = postFeedID 
+        
+        if let customLayout = Self.loadCustomLayout(for: postFeedID) {
+            self.layout = customLayout
+            print("Loaded custom layout \(customLayout) for feed \(postFeedID)")
+        } else {
+            self.layout = PostLayoutType(rawValue: InterfacePostUserDefaultsUtils.defaultPostLayout) ?? .card
+            print("Using default layout \(layout) for feed \(postFeedID)")
+        }
+        
+        
+        NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                
+                if !Self.hasCustomLayout(for: self.postFeedID) {
+                    let newLayout = PostLayoutType(
+                        rawValue: InterfacePostUserDefaultsUtils.defaultPostLayout
+                    ) ?? .card
+                    
+                    print("UserDefaults changed — no custom layout for \(self.postFeedID). Updating to default layout: \(newLayout)")
+                    
+                    Task { @MainActor in
+                        self.layout = newLayout
+                        print("Updated layout on main thread to \(self.layout)")
+                    }
+                } else {
+                    print("UserDefaults changed to \(PostLayoutType(rawValue: InterfacePostUserDefaultsUtils.defaultPostLayout) ?? .card) for feed \(self.postFeedID) — but custom layout exists for \(self.postFeedID), keeping \(self.layout)")
+                }
+            }
+            .store(in: &cancellables)
         
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
@@ -370,5 +407,41 @@ public class PostListingViewModel: ObservableObject {
             self.postFilter?.allowSpoiler = spoilerContent
             refreshPosts()
         }
+    }
+    
+    func changePostLayout(to newLayout: PostLayoutType) {
+        Self.saveCustomLayout(newLayout, for: postFeedID)
+        layout = newLayout
+        print("Changed layout to \(newLayout) (custom saved for \(postFeedID))")
+    }
+    
+    func resetToDefaultLayout() {
+        Self.removeCustomLayout(for: postFeedID)
+        layout = PostLayoutType(rawValue: InterfacePostUserDefaultsUtils.defaultPostLayout) ?? .card
+    }
+    
+    private static let perFeedPrefix = "post_layout_"
+    
+    private static func key(for postFeedID: String) -> String {
+        "\(perFeedPrefix)\(postFeedID.lowercased())"
+    }
+    
+    private static func loadCustomLayout(for postFeedID: String) -> PostLayoutType? {
+        if let value = UserDefaults.interfacePost.object(forKey: key(for: postFeedID)) as? Int {
+            return PostLayoutType(rawValue: value)
+        }
+        return nil
+    }
+    
+    private static func saveCustomLayout(_ layout: PostLayoutType, for postFeedID: String) {
+        UserDefaults.interfacePost.set(layout.rawValue, forKey: key(for: postFeedID))
+    }
+    
+    private static func removeCustomLayout(for postFeedID: String) {
+        UserDefaults.interfacePost.removeObject(forKey: key(for: postFeedID))
+    }
+    
+    private static func hasCustomLayout(for postFeedID: String) -> Bool {
+        UserDefaults.interfacePost.object(forKey: key(for: postFeedID)) != nil
     }
 }
