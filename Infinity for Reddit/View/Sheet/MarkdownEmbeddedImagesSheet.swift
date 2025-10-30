@@ -16,7 +16,8 @@ struct MarkdownEmbeddedImagesSheet: View {
     @State private var caption: String = ""
     @State private var selectedImage: UploadedImage?
     
-    let onAddImage: () -> Void
+    let onCaptureImage: () -> Void
+    let onSelectImage: () -> Void
     let onInsertImage: (UploadedImage, String) -> Void
     
     var body: some View {
@@ -51,16 +52,29 @@ struct MarkdownEmbeddedImagesSheet: View {
             
             Spacer()
             
-            Button {
-                onAddImage()
-            } label: {
-                Text("Upload Image")
-                    .buttonText()
-                    .frame(maxWidth: .infinity)
+            HStack(spacing: 16) {
+                Button {
+                    onCaptureImage()
+                } label: {
+                    Text("Capture")
+                        .buttonText()
+                        .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: .infinity)
+                .filledButton()
+                .excludeFromTouchRipple()
+                
+                Button {
+                    onSelectImage()
+                } label: {
+                    Text("Select an Image")
+                        .buttonText()
+                        .frame(maxWidth: .infinity)
+                }
+                .frame(maxWidth: .infinity)
+                .filledButton()
+                .excludeFromTouchRipple()
             }
-            .frame(maxWidth: .infinity)
-            .filledButton()
-            .excludeFromTouchRipple()
             .padding(.horizontal, 32)
         }
         .overlay(

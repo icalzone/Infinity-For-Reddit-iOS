@@ -56,6 +56,9 @@
     "Cancel" : {
 
     },
+    "Capture" : {
+
+    },
     "Capture an image" : {
 
     },
@@ -336,6 +339,9 @@
 
     },
     "Select an image" : {
+
+    },
+    "Select an Image" : {
 
     },
     "Select Sort Time" : {
@@ -2142,9 +2148,6 @@
 
     },
     "Unsave" : {
-
-    },
-    "Upload Image" : {
 
     },
     "Video downloaded" : {

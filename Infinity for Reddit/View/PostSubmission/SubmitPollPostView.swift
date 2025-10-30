@@ -7,6 +7,7 @@
 import SwiftUI
 import MarkdownUI
 import PhotosUI
+import MijickCamera
 
 struct SubmitPollPostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
@@ -26,6 +27,7 @@ struct SubmitPollPostView: View {
     @State private var showMarkdownPreview: Bool = false
     @State private var cursorPosition: CGPoint = .zero
     @State private var showEmbeddedImagesSheet: Bool = false
+    @State private var showCamera: Bool = false
     @State private var showPhotoPicker: Bool = false
     @State private var selectedPhotoItem: PhotosPickerItem? = nil
     
@@ -171,7 +173,10 @@ struct SubmitPollPostView: View {
             MarkdownViewerSheet(markdown: submitPollPostViewModel.content)
         }
         .sheet(isPresented: $showEmbeddedImagesSheet) {
-            MarkdownEmbeddedImagesSheet(embeddedImages: $submitPollPostViewModel.embeddedImages, onAddImage: {
+            MarkdownEmbeddedImagesSheet(embeddedImages: $submitPollPostViewModel.embeddedImages, onCaptureImage: {
+                showEmbeddedImagesSheet = false
+                showCamera = true
+            }, onSelectImage: {
                 showEmbeddedImagesSheet = false
                 showPhotoPicker = true
             }, onInsertImage: { uploadedImage, caption in
@@ -231,6 +236,39 @@ struct SubmitPollPostView: View {
             matching: .images,
             photoLibrary: .shared()
         )
+        .fullScreenCover(isPresented: $showCamera) {
+            if Utils.checkCameraAvailability() {
+                MCamera()
+                    .onImageCaptured { capturedImage, controller in
+                        submitPollPostViewModel.addEmbeddedImage(capturedImage)
+                        controller.closeMCamera()
+                        showEmbeddedImagesSheet = true
+                    }
+                    .setCloseMCameraAction {
+                        showCamera = false
+                    }
+                    .setCameraOutputType(.photo)
+                    .setAudioAvailability(false)
+                    .setCameraScreen { cameraManager, id, closeMCameraAction in
+                        DefaultCameraScreen(
+                            cameraManager: cameraManager,
+                            namespace: id,
+                            closeMCameraAction: closeMCameraAction
+                        ).cameraOutputSwitchAllowed(false)
+                    }
+                    .startSession()
+            } else {
+                VStack {
+                    Text("Camera not available")
+                        .padding(.bottom, 60)
+                    
+                    Button("Close") {
+                        showCamera = false
+                    }
+                    .filledButton()
+                }
+            }
+        }
         .onChange(of: selectedPhotoItem) { _, newSelectedItem in
             showEmbeddedImagesSheet = true
             Task {
