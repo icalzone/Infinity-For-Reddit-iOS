@@ -30,46 +30,62 @@ struct InboxConversationView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollViewReader { proxy in
-                List {
-                    let conversations = inboxConversationViewModel.conversations
-                    
-                    ForEach(Array(conversations.enumerated()), id: \.element.id) { index, inbox in
-                        // Remember the conversations is reversed.
-                        let isLastFromSender = index == 0 || conversations[index - 1].author != inbox.author
+        RootView {
+            VStack(spacing: 0) {
+                ScrollViewReader { proxy in
+                    List {
+                        let conversations = inboxConversationViewModel.conversations
                         
-                        ChatBubble(isSentMessage: inbox.author == accountViewModel.account.username, shouldShowTail: isLastFromSender) {
-                            Text(inbox.body)
+                        ForEach(Array(conversations.enumerated()), id: \.element.id) { index, inbox in
+                            // Remember the conversations is reversed.
+                            let isLastFromSender = index == 0 || conversations[index - 1].author != inbox.author
+                            
+                            ChatBubble(isSentMessage: inbox.author == accountViewModel.account.username, shouldShowTail: isLastFromSender) {
+                                Text(inbox.body)
+                            }
+                            .listPlainItemNoInsets()
+                            .rotationEffect(.degrees(180))
+                            .id(inbox.id)
                         }
-                        .listPlainItemNoInsets()
-                        .rotationEffect(.degrees(180))
-                        .id(inbox.id)
+                    }
+                    .rotationEffect(.degrees(180))
+                    .themedList()
+                    .scrollIndicators(.hidden)
+                    .onTapGesture {
+                        isInputActive = false
+                    }
+                    .onChange(of: inboxConversationViewModel.listScrollTarget) {
+                        guard let target = inboxConversationViewModel.listScrollTarget else { return }
+                        
+                        proxy.scrollTo(target, anchor: .bottom)
                     }
                 }
-                .rotationEffect(.degrees(180))
-                .themedList()
-                .scrollIndicators(.hidden)
-                .onTapGesture {
-                    isInputActive = false
-                }
-                .onChange(of: inboxConversationViewModel.listScrollTarget) {
-                    guard let target = inboxConversationViewModel.listScrollTarget else { return }
-                    
-                    proxy.scrollTo(target, anchor: .bottom)
-                }
-            }
-            
-            if inboxConversationViewModel.fullNameToReplyTo != nil {
-                // It shouldn't happen but still
-                HStack(spacing: 8) {
-                    TextField("Type a message...", text: $messageText)
-                        .focused($isInputActive)
-                        .padding(12)
-                        .background(Color.gray.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                        .submitLabel(.send)
-                        .onSubmit {
+                
+                if inboxConversationViewModel.fullNameToReplyTo != nil {
+                    // It shouldn't happen but still
+                    HStack(spacing: 8) {
+                        TextField("Type a message...", text: $messageText)
+                            .focused($isInputActive)
+                            .padding(12)
+                            .background(Color.gray.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .submitLabel(.send)
+                            .onSubmit {
+                                guard sendMessageTask == nil else {
+                                    print("A message is being sent")
+                                    return
+                                }
+                                
+                                sendMessageTask = Task {
+                                    defer {
+                                        sendMessageTask = nil
+                                    }
+                                    
+                                    await inboxConversationViewModel.sendMessage(message: messageText)
+                                }
+                            }
+
+                        Button(action: {
                             guard sendMessageTask == nil else {
                                 print("A message is being sent")
                                 return
@@ -82,31 +98,17 @@ struct InboxConversationView: View {
                                 
                                 await inboxConversationViewModel.sendMessage(message: messageText)
                             }
+                        }) {
+                            SwiftUI.Image(systemName: "paperplane.fill")
+                                .foregroundColor(messageText.isEmpty ? .gray : .blue)
+                                .padding(10)
                         }
-
-                    Button(action: {
-                        guard sendMessageTask == nil else {
-                            print("A message is being sent")
-                            return
-                        }
-                        
-                        sendMessageTask = Task {
-                            defer {
-                                sendMessageTask = nil
-                            }
-                            
-                            await inboxConversationViewModel.sendMessage(message: messageText)
-                        }
-                    }) {
-                        SwiftUI.Image(systemName: "paperplane.fill")
-                            .foregroundColor(messageText.isEmpty ? .gray : .blue)
-                            .padding(10)
+                        .disabled(messageText.isEmpty || sendMessageTask != nil)
                     }
-                    .disabled(messageText.isEmpty || sendMessageTask != nil)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                    .background(Color(UIColor.systemBackground))
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(Color(UIColor.systemBackground))
             }
         }
         .themedNavigationBar()

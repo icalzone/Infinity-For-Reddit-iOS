@@ -188,8 +188,8 @@ private enum ActiveAlert: Identifiable {
     var title: String {
         switch self {
         case .handleLink: return "Handle Link"
-        case .goToSubreddit: return "Subreddit"
-        case .goToUser: return "Username"
+        case .goToSubreddit: return "Go to Subreddit"
+        case .goToUser: return "Go to User"
         }
     }
 }

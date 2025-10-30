@@ -232,6 +232,7 @@ struct SubmitPollPostView: View {
             photoLibrary: .shared()
         )
         .onChange(of: selectedPhotoItem) { _, newSelectedItem in
+            showEmbeddedImagesSheet = true
             Task {
                 if let selectedItem = newSelectedItem,
                    let imageData = try? await selectedItem.loadTransferable(type: Data.self),
