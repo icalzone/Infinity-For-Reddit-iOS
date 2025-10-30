@@ -42,17 +42,23 @@ struct MoreView: View {
                     }
                     
                     SimpleTouchItemRow(text: "Handle Link", icon: "link") {
-                        activeAlert = .handleLink
+                        withAnimation(.linear(duration: 0.2)) {
+                            activeAlert = .handleLink
+                        }
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Go to Subreddit", icon: "bubble.left.and.text.bubble.right") {
-                        activeAlert = .goToSubreddit
+                        withAnimation(.linear(duration: 0.2)) {
+                            activeAlert = .goToSubreddit
+                        }
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Go to User", icon: "person.crop.circle") {
-                        activeAlert = .goToUser
+                        withAnimation(.linear(duration: 0.2)) {
+                            activeAlert = .goToUser
+                        }
                     }
                     .listPlainItemNoInsets()
                 }

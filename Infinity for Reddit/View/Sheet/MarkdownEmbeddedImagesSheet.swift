@@ -39,7 +39,9 @@ struct MarkdownEmbeddedImagesSheet: View {
                         UploadedImageView(uploadedImage: embeddedImage, onImageTapped: {
                             caption = ""
                             selectedImage = embeddedImage
-                            showCaptionAlert = true
+                            withAnimation(.linear(duration: 0.2)) {
+                                showCaptionAlert = true
+                            }
                         })
                     }
                 }

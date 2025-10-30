@@ -93,7 +93,9 @@ struct SubmitGalleryPostView: View {
                                             selectedImageIndex = index
                                             caption = submitGalleryPostViewModel.galleryImages[index].caption ?? ""
                                             outboundUrlString = submitGalleryPostViewModel.galleryImages[index].outboundUrlString ?? ""
-                                            showCaptionAndURLAlert = true
+                                            withAnimation(.linear(duration: 0.2)) {
+                                                showCaptionAndURLAlert = true
+                                            }
                                         },
                                         onDeleteImage: { index in
                                             submitGalleryPostViewModel.deleteCapturedImage(at: index)
