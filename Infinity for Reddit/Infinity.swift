@@ -8,6 +8,7 @@
 import SwiftUI
 import Swinject
 import GRDB
+import GiphyUISDK
 
 @main
 struct Infinity: App {
@@ -73,6 +74,9 @@ struct Infinity: App {
                             LinkHandler.shared.handle(url: externalUrl)
                         }
                     }
+                }
+                .onAppear {
+                    Giphy.configure(apiKey: APIUtils.GIPHY_GIF_API_KEY)
                 }
         }
         .onChange(of: scenePhase) { _, newPhase in

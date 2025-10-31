@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		46978AED2E863D7100EAF60F /* MijickCamera in Frameworks */ = {isa = PBXBuildFile; productRef = 46978AEC2E863D7100EAF60F /* MijickCamera */; };
+		5509013D2EB42E2400707F87 /* GiphyUISDK in Frameworks */ = {isa = PBXBuildFile; productRef = 5509013C2EB42E2400707F87 /* GiphyUISDK */; };
 		55155AE12CFD5BCF003D5F14 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 55155AE02CFD5BCF003D5F14 /* GRDB */; };
 		554918CB2E26D8ED00355B48 /* Flow in Frameworks */ = {isa = PBXBuildFile; productRef = 554918CA2E26D8ED00355B48 /* Flow */; };
 		555F0B842D07AD53003A1CA7 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 555F0B832D07AD53003A1CA7 /* SDWebImageSwiftUI */; };
@@ -74,6 +75,7 @@
 				554918CB2E26D8ED00355B48 /* Flow in Frameworks */,
 				5588B8552E0A30A1004CDAA2 /* IdentifiedCollections in Frameworks */,
 				824357B22CFCFF1A0091EFF1 /* Alamofire in Frameworks */,
+				5509013D2EB42E2400707F87 /* GiphyUISDK in Frameworks */,
 				55155AE12CFD5BCF003D5F14 /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -145,6 +147,7 @@
 				554918CA2E26D8ED00355B48 /* Flow */,
 				559389B02E459F600062724F /* Kingfisher */,
 				46978AEC2E863D7100EAF60F /* MijickCamera */,
+				5509013C2EB42E2400707F87 /* GiphyUISDK */,
 			);
 			productName = "Infinity for Reddit";
 			productReference = 559BD2332CF7D58500621685 /* Infinity for Reddit.app */;
@@ -239,6 +242,7 @@
 				554918C92E26D8ED00355B48 /* XCRemoteSwiftPackageReference "SwiftUI-Flow" */,
 				559389AF2E459F600062724F /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				46978AEB2E863D7100EAF60F /* XCRemoteSwiftPackageReference "Camera" */,
+				5509013B2EB42E2400707F87 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 559BD2342CF7D58500621685 /* Products */;
@@ -615,6 +619,14 @@
 				minimumVersion = 3.0.2;
 			};
 		};
+		5509013B2EB42E2400707F87 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Giphy/giphy-ios-sdk/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.16;
+			};
+		};
 		55155ADF2CFD5BCF003D5F14 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
@@ -694,6 +706,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 46978AEB2E863D7100EAF60F /* XCRemoteSwiftPackageReference "Camera" */;
 			productName = MijickCamera;
+		};
+		5509013C2EB42E2400707F87 /* GiphyUISDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5509013B2EB42E2400707F87 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */;
+			productName = GiphyUISDK;
 		};
 		55155AE02CFD5BCF003D5F14 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;

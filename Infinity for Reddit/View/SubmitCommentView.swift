@@ -7,6 +7,9 @@
 
 import SwiftUI
 import MarkdownUI
+import PhotosUI
+import MijickCamera
+import GiphyUISDK
 
 struct SubmitCommentView: View {
     @EnvironmentObject private var commentSubmissionShareableViewModel: CommentSubmissionShareableViewModel
@@ -22,12 +25,18 @@ struct SubmitCommentView: View {
     @FocusState private var markdownFocusedField: MarkdownFieldType?
     @State private var showMarkdownPreview = false
     @State private var cursorPosition: CGPoint = .zero
+    @State private var showEmbeddedImagesSheet: Bool = false
+    @State private var showGiphyGifSheet: Bool = false
+    @State private var showCamera: Bool = false
+    @State private var showPhotoPicker: Bool = false
+    @State private var selectedPhotoItem: PhotosPickerItem? = nil
     
     init(parent: CommentParent) {
         _submitCommentViewModel = StateObject(
             wrappedValue: SubmitCommentViewModel(
                 commentParent: parent,
-                submitCommentRepository: SubmitCommentRepository()
+                submitCommentRepository: SubmitCommentRepository(),
+                mediaUploadRepository: MediaUploadRepository()
             )
         )
     }
@@ -96,7 +105,15 @@ struct SubmitCommentView: View {
                     text: $submitCommentViewModel.text,
                     selectedRange: $selectedRange,
                     toolbarHeight: $toolbarHeight,
-                    focusedField: $markdownFocusedField
+                    focusedField: $markdownFocusedField,
+                    enableImageUpload: true,
+                    enableGifChooser: true,
+                    onImageUpload: {
+                        showEmbeddedImagesSheet = true
+                    },
+                    onChooseGif: {
+                        showGiphyGifSheet = true
+                    }
                 )
             }
             
@@ -138,6 +155,140 @@ struct SubmitCommentView: View {
         }
         .sheet(isPresented: $showMarkdownPreview) {
             MarkdownViewerSheet(markdown: submitCommentViewModel.text)
+        }
+        .sheet(isPresented: $showEmbeddedImagesSheet) {
+            MarkdownEmbeddedImagesSheet(embeddedImages: $submitCommentViewModel.embeddedImages, onCaptureImage: {
+                showEmbeddedImagesSheet = false
+                showCamera = true
+            }, onSelectImage: {
+                showEmbeddedImagesSheet = false
+                showPhotoPicker = true
+            }, onInsertImage: { uploadedImage, caption in
+                showEmbeddedImagesSheet = false
+                
+                guard let range = Range(selectedRange, in: submitCommentViewModel.text) else {
+                    return
+                }
+                
+                let beforeRange = submitCommentViewModel.text[..<range.lowerBound]
+                let afterRange = submitCommentViewModel.text[range.upperBound...]
+
+                let leftCount = min(2, beforeRange.count)
+                let leftStart = beforeRange.index(beforeRange.endIndex, offsetBy: -leftCount)
+                let leftSlice = beforeRange[leftStart..<beforeRange.endIndex]
+
+                let leftNewlines: Int
+                if leftSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
+                    leftNewlines = leftSlice.isEmpty ? 2 : leftSlice.filter { $0 == "\n" }.count
+                } else if leftSlice.hasSuffix("\n") {
+                    leftNewlines = 1
+                } else {
+                    leftNewlines = 0
+                }
+
+                let rightCount = min(2, afterRange.count)
+                let rightEnd = afterRange.index(afterRange.startIndex, offsetBy: rightCount)
+                let rightSlice = afterRange[afterRange.startIndex..<rightEnd]
+
+                let rightNewlines: Int
+                if rightSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
+                    rightNewlines = rightSlice.isEmpty ? 2 : rightSlice.filter { $0 == "\n" }.count
+                } else if rightSlice.hasPrefix("\n") {
+                    rightNewlines = 1
+                } else {
+                    rightNewlines = 0
+                }
+                
+                let imageSyntax = "\(String(repeating: "\n", count: max(0, 2 - leftNewlines)))![\(caption)](\(uploadedImage.imageId ?? ""))\(String(repeating: "\n", count: max(0, 2 - rightNewlines)))"
+                
+                let newText: String
+                if selectedRange.length > 0 {
+                    newText = submitCommentViewModel.text.replacingCharacters(in: range, with: imageSyntax)
+                    selectedRange = NSRange(location: selectedRange.location,
+                                            length: imageSyntax.count)
+                } else {
+                    newText = submitCommentViewModel.text.inserting(imageSyntax, at: selectedRange.location)
+                    selectedRange = NSRange(location: selectedRange.location + imageSyntax.count,
+                                            length: 0)
+                }
+                submitCommentViewModel.text = newText
+            })
+        }
+        .sheet(isPresented: $showGiphyGifSheet) {
+            GiphyView()
+                .onSearch { term in
+                    print("onSearch called")
+                }
+                .onCreate { term in
+                    print("onCreate called")
+                }
+                .onSelectMedia { media, contentType in
+                    print("onSelectMedia called")
+                }
+                .onDismiss {
+                    print("onDismiss called")
+                }
+                .onTapSuggestion { suggestion in
+                    print("onTapSuggestion called")
+                }
+                .onError { error in
+                    print("onError called")
+                }
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.hidden)
+                .ignoresSafeArea(edges: .bottom)
+        }
+        .photosPicker(
+            isPresented: $showPhotoPicker,
+            selection: $selectedPhotoItem,
+            matching: .images,
+            photoLibrary: .shared()
+        )
+        .fullScreenCover(isPresented: $showCamera) {
+            if Utils.checkCameraAvailability() {
+                MCamera()
+                    .onImageCaptured { capturedImage, controller in
+                        submitCommentViewModel.addEmbeddedImage(capturedImage)
+                        controller.closeMCamera()
+                        showEmbeddedImagesSheet = true
+                    }
+                    .setCloseMCameraAction {
+                        showCamera = false
+                    }
+                    .setCameraOutputType(.photo)
+                    .setAudioAvailability(false)
+                    .setCameraScreen { cameraManager, id, closeMCameraAction in
+                        DefaultCameraScreen(
+                            cameraManager: cameraManager,
+                            namespace: id,
+                            closeMCameraAction: closeMCameraAction
+                        ).cameraOutputSwitchAllowed(false)
+                    }
+                    .startSession()
+            } else {
+                VStack {
+                    Text("Camera not available")
+                        .padding(.bottom, 60)
+                    
+                    Button("Close") {
+                        showCamera = false
+                    }
+                    .filledButton()
+                }
+            }
+        }
+        .onChange(of: selectedPhotoItem) { _, newSelectedItem in
+            showEmbeddedImagesSheet = true
+            Task {
+                if let selectedItem = newSelectedItem,
+                   let imageData = try? await selectedItem.loadTransferable(type: Data.self),
+                   let image = UIImage(data: imageData) {
+                    print(Utils.isGIF(imageData: imageData))
+                    submitCommentViewModel.addEmbeddedImage(image)
+                } else {
+                    // Error handling
+                }
+            }
         }
     }
 }

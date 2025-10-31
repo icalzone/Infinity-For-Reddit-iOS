@@ -9,28 +9,33 @@ import Foundation
 import MarkdownUI
 import SwiftUI
 
+@MainActor
 class SubmitCommentViewModel: ObservableObject {
     @Published var selectedAccount: Account
     @Published var text: String = ""
+    @Published var embeddedImages: [UploadedImage] = []
     @Published var isSubmitting: Bool = false
     @Published var error: Error? = nil
     
     let commentParent: CommentParent
     
     private let submitCommentRepository: SubmitCommentRepositoryProtocol
+    private let mediaUploadRepository: MediaUploadRepositoryProtocol
     
-    init(commentParent: CommentParent, submitCommentRepository: SubmitCommentRepositoryProtocol) {
+    init(commentParent: CommentParent,
+         submitCommentRepository: SubmitCommentRepositoryProtocol,
+         mediaUploadRepository: MediaUploadRepositoryProtocol
+    ) {
         self.selectedAccount = AccountViewModel.shared.account
         self.commentParent = commentParent
         self.submitCommentRepository = submitCommentRepository
+        self.mediaUploadRepository = mediaUploadRepository
     }
     
     func submitComment() async -> Comment? {
         guard isSubmitting == false else { return nil }
         
-        await MainActor.run {
-            isSubmitting = true
-        }
+        isSubmitting = true
         
         var sentComment: Comment? = nil
         do {
@@ -41,16 +46,20 @@ class SubmitCommentViewModel: ObservableObject {
                 depth: commentParent.childCommentDepth
             )
         } catch {
-            await MainActor.run {
-                self.error = error
-            }
+            self.error = error
             print("Error submitting comment: \(error)")
         }
         
-        await MainActor.run {
-            isSubmitting = false
-        }
+        isSubmitting = false
         
         return sentComment
+    }
+    
+    func addEmbeddedImage(_ image: UIImage) {
+        let embeddedImage = UploadedImage(image: image) {
+            try await self.mediaUploadRepository.uploadImage(account: self.selectedAccount, image: image, getImageId: true)
+        }
+        embeddedImage.upload()
+        embeddedImages.append(embeddedImage)
     }
 }
