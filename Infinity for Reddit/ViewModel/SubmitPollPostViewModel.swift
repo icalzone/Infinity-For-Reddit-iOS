@@ -81,7 +81,7 @@ class SubmitPollPostViewModel: ObservableObject {
                     isSpoiler: isSpoiler,
                     isSensitive: isSensitive,
                     receivePostReplyNotifications: receivePostReplyNotifications,
-                    isRichTextJSON: !embeddedImages.isEmpty
+                    embeddedImages: embeddedImages
                 )
             } catch {
                 self.error = error

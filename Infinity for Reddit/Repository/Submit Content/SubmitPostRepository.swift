@@ -34,7 +34,7 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
         isSpoiler: Bool,
         isSensitive: Bool,
         receivePostReplyNotifications: Bool,
-        isRichTextJSON: Bool
+        embeddedImages: [UploadedImage]
     ) async throws -> String {
         var params = [
             "api_type": "json",
@@ -46,8 +46,8 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
             "sendreplies": String(receivePostReplyNotifications)
         ]
         if !content.isEmpty {
-            if isRichTextJSON {
-                params["richtext_json"] = RichtextJSONConverter().constructRichtextJSON(markdownString: content)
+            if !embeddedImages.isEmpty {
+                params["richtext_json"] = RichtextJSONConverter(embeddedImages: embeddedImages).constructRichtextJSON(markdownString: content)
             } else {
                 params["text"] = content
             }
@@ -323,7 +323,7 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
         isSpoiler: Bool,
         isSensitive: Bool,
         receivePostReplyNotifications: Bool,
-        isRichTextJSON: Bool
+        embeddedImages: [UploadedImage]
     ) async throws -> String {
         let redditPollPayload: RedditPollPayload
         if content.isEmpty {
@@ -339,7 +339,7 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
                 submitType: subredditName.hasPrefix("u_") ? "profile" : "subreddit"
             )
         } else {
-            if isRichTextJSON {
+            if !embeddedImages.isEmpty {
                 redditPollPayload = RedditPollPayload(
                     subredditName: subredditName,
                     title: title,
@@ -348,7 +348,7 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
                     isNsfw: isSensitive,
                     isSpoiler: isSpoiler,
                     flair: flair,
-                    richTextJSON: RichtextJSONConverter().constructRichtextJSON(markdownString: content),
+                    richTextJSON: RichtextJSONConverter(embeddedImages: embeddedImages).constructRichtextJSON(markdownString: content),
                     text: nil,
                     sendReplies: receivePostReplyNotifications,
                     submitType: subredditName.hasPrefix("u_") ? "profile" : "subreddit"

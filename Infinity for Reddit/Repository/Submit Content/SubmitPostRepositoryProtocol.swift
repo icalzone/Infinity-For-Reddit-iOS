@@ -18,7 +18,7 @@ protocol SubmitPostRepositoryProtocol {
         isSpoiler: Bool,
         isSensitive: Bool,
         receivePostReplyNotifications: Bool,
-        isRichTextJSON: Bool
+        embeddedImages: [UploadedImage]
     ) async throws -> String
     
     func submitImagePost(
@@ -94,6 +94,6 @@ protocol SubmitPostRepositoryProtocol {
         isSpoiler: Bool,
         isSensitive: Bool,
         receivePostReplyNotifications: Bool,
-        isRichTextJSON: Bool
+        embeddedImages: [UploadedImage]
     ) async throws -> String
 }
