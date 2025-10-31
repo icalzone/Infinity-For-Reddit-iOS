@@ -166,73 +166,26 @@ struct SubmitCommentView: View {
             }, onInsertImage: { uploadedImage, caption in
                 showEmbeddedImagesSheet = false
                 
-                guard let range = Range(selectedRange, in: submitCommentViewModel.text) else {
-                    return
-                }
-                
-                let beforeRange = submitCommentViewModel.text[..<range.lowerBound]
-                let afterRange = submitCommentViewModel.text[range.upperBound...]
-
-                let leftCount = min(2, beforeRange.count)
-                let leftStart = beforeRange.index(beforeRange.endIndex, offsetBy: -leftCount)
-                let leftSlice = beforeRange[leftStart..<beforeRange.endIndex]
-
-                let leftNewlines: Int
-                if leftSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
-                    leftNewlines = leftSlice.isEmpty ? 2 : leftSlice.filter { $0 == "\n" }.count
-                } else if leftSlice.hasSuffix("\n") {
-                    leftNewlines = 1
-                } else {
-                    leftNewlines = 0
-                }
-
-                let rightCount = min(2, afterRange.count)
-                let rightEnd = afterRange.index(afterRange.startIndex, offsetBy: rightCount)
-                let rightSlice = afterRange[afterRange.startIndex..<rightEnd]
-
-                let rightNewlines: Int
-                if rightSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
-                    rightNewlines = rightSlice.isEmpty ? 2 : rightSlice.filter { $0 == "\n" }.count
-                } else if rightSlice.hasPrefix("\n") {
-                    rightNewlines = 1
-                } else {
-                    rightNewlines = 0
-                }
-                
-                let imageSyntax = "\(String(repeating: "\n", count: max(0, 2 - leftNewlines)))![\(caption)](\(uploadedImage.imageId ?? ""))\(String(repeating: "\n", count: max(0, 2 - rightNewlines)))"
-                
-                let newText: String
-                if selectedRange.length > 0 {
-                    newText = submitCommentViewModel.text.replacingCharacters(in: range, with: imageSyntax)
-                    selectedRange = NSRange(location: selectedRange.location,
-                                            length: imageSyntax.count)
-                } else {
-                    newText = submitCommentViewModel.text.inserting(imageSyntax, at: selectedRange.location)
-                    selectedRange = NSRange(location: selectedRange.location + imageSyntax.count,
-                                            length: 0)
-                }
-                submitCommentViewModel.text = newText
+                MarkdownUtils.insertImageOrGifIntoMarkdownString(
+                    content: &submitCommentViewModel.text,
+                    selectedRange: &selectedRange,
+                    caption: caption,
+                    imageOrGifId: uploadedImage.imageId ?? ""
+                )
             })
         }
         .sheet(isPresented: $showGiphyGifSheet) {
             GiphyView()
-                .onSearch { term in
-                    print("onSearch called")
-                }
-                .onCreate { term in
-                    print("onCreate called")
-                }
                 .onSelectMedia { media, contentType in
-                    print("onSelectMedia called")
-                }
-                .onDismiss {
-                    print("onDismiss called")
-                }
-                .onTapSuggestion { suggestion in
-                    print("onTapSuggestion called")
-                }
-                .onError { error in
-                    print("onError called")
+                    showGiphyGifSheet = false
+                    submitCommentViewModel.giphyGif = media
+                    
+                    MarkdownUtils.insertImageOrGifIntoMarkdownString(
+                        content: &submitCommentViewModel.text,
+                        selectedRange: &selectedRange,
+                        caption: "gif",
+                        imageOrGifId: media.id
+                    )
                 }
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.hidden)

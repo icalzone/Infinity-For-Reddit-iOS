@@ -7,6 +7,7 @@
 
 import Alamofire
 import SwiftyJSON
+import GiphyUISDK
 
 class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
     enum SubmitCommentRepositoryError: Error {
@@ -15,7 +16,7 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
         case SendCommentError(String)
     }
     
-    func submitComment(accout: Account, content: String, parentFullname: String, depth: Int) async throws -> Comment {
+    func submitComment(accout: Account, content: String, parentFullname: String, depth: Int, embeddedImages: [UploadedImage], giphyGif: GPHMedia?) async throws -> Comment {
         guard !accout.isAnonymous() else {
             throw SubmitCommentRepositoryError.SendCommentError("Please choose an account to submit as.")
         }
@@ -25,7 +26,12 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
         }
         
         let session = SessionProvider.getAccountSpecificSession(account: accout)
-        let params = ["api_type": "json", "return_rtjson": "true", "text": content, "thing_id": parentFullname]
+        let params: [String : String]
+        if embeddedImages.isEmpty && giphyGif == nil {
+            params = ["api_type": "json", "return_rtjson": "true", "text": content, "thing_id": parentFullname]
+        } else {
+            params = ["api_type": "json", "return_rtjson": "true", "richtext_json": RichtextJSONConverter(embeddedImages: embeddedImages, giphyGif: giphyGif).constructRichtextJSON(markdownString: content), "text": "", "thing_id": parentFullname]
+        }
         print(params)
         
         try Task.checkCancellation()
@@ -40,20 +46,6 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
             throw SubmitCommentRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-//        let errorArray = json["json"]["errors"].array
-//        if let errorArray = errorArray, !errorArray.isEmpty {
-//            if let lastErrorArray = errorArray.last?.array, !lastErrorArray.isEmpty {
-//                let errorString: String
-//                if lastErrorArray.count >= 2 {
-//                    errorString = lastErrorArray[1].stringValue
-//                } else {
-//                    errorString = lastErrorArray[0].stringValue
-//                }
-//                throw(SubmitCommentRepositoryError.SendCommentError(errorString.prefix(1).uppercased() + errorString.dropFirst()))
-//            } else {
-//                throw(SubmitCommentRepositoryError.SendCommentError("Error submitting comment"))
-//            }
-//        }
         try json.throwIfRedditError(defaultErrorMessage: "Failed to submit comment.")
         
         let comment = try Comment(fromJson: json)

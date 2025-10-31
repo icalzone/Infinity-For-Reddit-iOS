@@ -154,6 +154,58 @@ class MarkdownUtils {
         print(replacingText)
         return matchRange.lowerBound.utf16Offset(in: markdownString) + replacingText.count
     }
+    
+    static func insertImageOrGifIntoMarkdownString(
+        content: inout String,
+        selectedRange: inout NSRange,
+        caption: String,
+        imageOrGifId: String
+    ) {
+        guard let range = Range(selectedRange, in: content) else {
+            return
+        }
+        
+        let beforeRange = content[..<range.lowerBound]
+        let afterRange = content[range.upperBound...]
+
+        let leftCount = min(2, beforeRange.count)
+        let leftStart = beforeRange.index(beforeRange.endIndex, offsetBy: -leftCount)
+        let leftSlice = beforeRange[leftStart..<beforeRange.endIndex]
+
+        let leftNewlines: Int
+        if leftSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
+            leftNewlines = leftSlice.isEmpty ? 2 : leftSlice.filter { $0 == "\n" }.count
+        } else if leftSlice.hasSuffix("\n") {
+            leftNewlines = 1
+        } else {
+            leftNewlines = 0
+        }
+
+        let rightCount = min(2, afterRange.count)
+        let rightEnd = afterRange.index(afterRange.startIndex, offsetBy: rightCount)
+        let rightSlice = afterRange[afterRange.startIndex..<rightEnd]
+
+        let rightNewlines: Int
+        if rightSlice.allSatisfy({ $0 == "\n" || $0.isWhitespace }) {
+            rightNewlines = rightSlice.isEmpty ? 2 : rightSlice.filter { $0 == "\n" }.count
+        } else if rightSlice.hasPrefix("\n") {
+            rightNewlines = 1
+        } else {
+            rightNewlines = 0
+        }
+        
+        let imageSyntax = "\(String(repeating: "\n", count: max(0, 2 - leftNewlines)))![\(caption)](\(imageOrGifId))\(String(repeating: "\n", count: max(0, 2 - rightNewlines)))"
+        
+        let newText: String
+        if selectedRange.length > 0 {
+            newText = content.replacingCharacters(in: range, with: imageSyntax)
+            selectedRange = NSRange(location: selectedRange.location,
+                                    length: imageSyntax.count)
+        } else {
+            newText = content.inserting(imageSyntax, at: selectedRange.location)
+            selectedRange = NSRange(location: selectedRange.location + imageSyntax.count,
+                                    length: 0)
+        }
+        content = newText
+    }
 }
-
-

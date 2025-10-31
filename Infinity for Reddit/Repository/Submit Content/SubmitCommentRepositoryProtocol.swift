@@ -5,6 +5,8 @@
 //  Created by Docile Alligator on 2025-08-21.
 //
 
+import GiphyUISDK
+
 protocol SubmitCommentRepositoryProtocol {
-    func submitComment(accout: Account, content: String,  parentFullname: String, depth: Int) async throws -> Comment
+    func submitComment(accout: Account, content: String,  parentFullname: String, depth: Int, embeddedImages: [UploadedImage], giphyGif: GPHMedia?) async throws -> Comment
 }

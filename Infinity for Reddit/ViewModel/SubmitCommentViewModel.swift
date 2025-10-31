@@ -8,12 +8,14 @@
 import Foundation
 import MarkdownUI
 import SwiftUI
+import GiphyUISDK
 
 @MainActor
 class SubmitCommentViewModel: ObservableObject {
     @Published var selectedAccount: Account
     @Published var text: String = ""
     @Published var embeddedImages: [UploadedImage] = []
+    @Published var giphyGif: GPHMedia?
     @Published var isSubmitting: Bool = false
     @Published var error: Error? = nil
     
@@ -43,7 +45,9 @@ class SubmitCommentViewModel: ObservableObject {
                 accout: selectedAccount,
                 content: text,
                 parentFullname: commentParent.parentFullname ?? "",
-                depth: commentParent.childCommentDepth
+                depth: commentParent.childCommentDepth,
+                embeddedImages: embeddedImages,
+                giphyGif: giphyGif
             )
         } catch {
             self.error = error

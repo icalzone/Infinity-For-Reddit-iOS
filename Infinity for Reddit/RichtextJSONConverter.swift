@@ -7,6 +7,7 @@
 
 import SwiftyJSON
 import MarkdownUI
+import GiphyUISDK
 
 class RichtextJSONConverter {
     private enum Format: Int {
@@ -48,15 +49,21 @@ class RichtextJSONConverter {
     private let IMAGE_ID = "id"
     private let DOCUMENT = "document"
 
+    private let embeddedImages: [UploadedImage]
+    private let giphyGif: GPHMedia?
+    
     private var text = ""
     private var formats: [[Int]] = []
     private var contentStack: [[Any]] = []
 
-    init() {
+    init(embeddedImages: [UploadedImage] = [], giphyGif: GPHMedia? = nil) {
+        self.embeddedImages = embeddedImages
+        self.giphyGif = giphyGif
         contentStack.append([])
     }
 
     func constructRichtextJSON(markdownString: String) -> String {
+        self
         let markdown = MarkdownContent(markdownString)
 
         visitBlockNodes(markdown.blocks)
@@ -561,12 +568,22 @@ class RichtextJSONConverter {
         text.removeAll()
     }
     
+    // Also works for GiphyGif
     private func visitImage(imageId: String, inlineNodes: [InlineNode]) {
-        var image: JSON = JSON()
-        image[TYPE].stringValue = Element.image.rawValue
-        image[IMAGE_ID].stringValue = imageId
-        image[CONTENT].stringValue = getImageCaption(currentCaption: "", inlineNodes: inlineNodes)
-        contentStack[0].append(image)
+        if embeddedImages.contains(where: {
+            imageId == $0.imageId
+        }) {
+            var image: JSON = JSON()
+            image[TYPE].stringValue = Element.image.rawValue
+            image[IMAGE_ID].stringValue = imageId
+            image[CONTENT].stringValue = getImageCaption(currentCaption: "", inlineNodes: inlineNodes)
+            contentStack[0].append(image)
+        } else if giphyGif?.id == imageId {
+            var gif: JSON = JSON()
+            gif[TYPE].stringValue = Element.gif.rawValue
+            gif[IMAGE_ID].stringValue = "giphy|\(imageId)|downsized"
+            contentStack[0].append(gif)
+        }
     }
     
     private func getImageCaption(currentCaption: String, inlineNodes: [InlineNode]) -> String {
