@@ -550,4 +550,16 @@ public class PostDetailsViewModel: ObservableObject {
             }
         }
     }
+    
+    func editComment(_ comment: Comment, commentToBeEdited: Comment) {
+        guard let visibleIndex = self.visibleComments.firstIndex(where: { $0.id == commentToBeEdited.id }) else { return }
+        guard let allIndex = self.allComments.firstIndex(where: { $0.id == commentToBeEdited.id }) else { return }
+        switch visibleComments[visibleIndex] {
+        case .comment:
+            visibleComments[visibleIndex] = .comment(comment)
+            allComments[allIndex] = .comment(comment)
+        default:
+            break
+        }
+    }
 }

@@ -42,6 +42,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case uploadMediaMetadata(params: [String: String])
     case submitGalleryPost(body: String)
     case submitPollPost(body: String)
+    case editPostOrComment(params: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -51,7 +52,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .getRules, .getFlairs:
             return .get
-        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost:
+        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment:
             return .post
         }
     }
@@ -124,6 +125,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/api/submit_gallery_post.json"
         case .submitPollPost:
             return "/api/submit_poll_post.json"
+        case .editPostOrComment:
+            return "/api/editusertext"
         }
     }
     
@@ -131,7 +134,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .getRules, .getFlairs, .submitGalleryPost, .submitPollPost:
             return nil
-        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params), .favoriteThing(let params), .favoriteCustomFeed(let params), .submitPost(let params), .uploadMediaMetadata(let params):
+        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params), .favoriteThing(let params), .favoriteCustomFeed(let params), .submitPost(let params), .uploadMediaMetadata(let params), .editPostOrComment(let params):
             return params
         }
     }
@@ -192,6 +195,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1", "resubmit": "true"]
         case .submitPollPost:
             return ["raw_json": "1", "resubmit": "true", "gilding_detail": "1"]
+        case .editPostOrComment:
+            return nil
         }
     }
     
@@ -201,7 +206,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return headers
         case .getInbox(_, _, let headers):
             return headers
-        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .getRules, .getFlairs, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost:
+        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .getRules, .getFlairs, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment:
             return nil
         }
     }

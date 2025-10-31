@@ -23,6 +23,7 @@ struct PostDetailsView: View {
     @State private var showSortTypeSheet: Bool = false
     @State private var navigationBarMenuKey: UUID?
     @State private var sentCommentParent: CommentParent? = nil
+    @State private var commentToBeEdited: Comment? = nil
     
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
@@ -131,7 +132,8 @@ struct PostDetailsView: View {
                                     navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
                                 },
                                 onEdit: {
-                                    
+                                    self.commentToBeEdited = comment
+                                    navigationManager.path.append(AppNavigation.editComment(commentToBeEdited: comment))
                                 },
                                 onDelete: {
                                     
@@ -212,6 +214,15 @@ struct PostDetailsView: View {
                 sentCommentParent = nil
             }
         }
+        .onChange(of: commentSubmissionShareableViewModel.editedComment) {
+            if let editedComment = commentSubmissionShareableViewModel.editedComment {
+                if let commentToBeEdited = self.commentToBeEdited {
+                    postDetailsViewModel.editComment(editedComment, commentToBeEdited: commentToBeEdited)
+                }
+                commentSubmissionShareableViewModel.editedComment = nil
+                commentToBeEdited = nil
+            }
+        }
         .task(id: postDetailsViewModel.loadPostAndCommentsTaskId) {
             await postDetailsViewModel.initialLoadPostAndComments()
         }
@@ -259,5 +270,9 @@ struct PostDetailsView: View {
             self.sentCommentParent = commentParent
             navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
         }
+    }
+    
+    private func editComment(_ comment: Comment) {
+        
     }
 }

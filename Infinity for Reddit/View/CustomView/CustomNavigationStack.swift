@@ -66,6 +66,10 @@ struct CustomNavigationStack<Content: View>: View {
                         SubmitCommentView(parent: commentParent)
                             .environmentObject(navigationManager)
                             .environmentObject(commentSubmissionShareableViewModel)
+                    case .editComment(let commentToBeEdited):
+                        EditCommentView()
+                            .environmentObject(navigationManager)
+                            .environmentObject(commentSubmissionShareableViewModel)
                     case .submitTextPost:
                         SubmitTextPostView()
                             .environmentObject(navigationManager)

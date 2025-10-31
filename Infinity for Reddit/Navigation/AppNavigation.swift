@@ -16,6 +16,7 @@ enum AppNavigation: Hashable {
     case customFeed(myCustomFeed: MyCustomFeed)
     case inboxConversation(inbox: Inbox)
     case submitComment(commentParent: CommentParent)
+    case editComment(commentToBeEdited: Comment)
     case submitTextPost
     case submitLinkPost
     case submitImagePost
