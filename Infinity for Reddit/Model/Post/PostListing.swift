@@ -240,19 +240,19 @@ public class Post : NSObject, ObservableObject, Identifiable {
             var parsedMediaMetadata = [String: MediaMetadata]()
             
             for (key, value) in mediaMetaData {
-                let media = try MediaMetadata(fromJson: value)
-                parsedMediaMetadata[key] = media
+                do {
+                    let media = try MediaMetadata(fromJson: value)
+                    parsedMediaMetadata[key] = media
+                } catch {
+                    // Ignore
+                }
             }
             mediaMetadata = parsedMediaMetadata
         }
         let galleryDataJson = json["gallery_data"]
         if !galleryDataJson.isEmpty {
             print(json["title"].stringValue)
-            do {
-                galleryData = try GalleryData(fromJson: galleryDataJson, mediaMetadataDictionary: mediaMetadata)
-            } catch {
-                // Ignore
-            }
+            galleryData = try? GalleryData(fromJson: galleryDataJson, mediaMetadataDictionary: mediaMetadata)
         }
         
         hidden = json["hidden"].boolValue
