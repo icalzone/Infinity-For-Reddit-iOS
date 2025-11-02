@@ -227,7 +227,7 @@ struct PostDetailsView: View {
         }
         .onChange(of: postEditingShareableViewModel.editedPost) { _, newValue in
             if let editedPost = newValue {
-                postDetailsViewModel.post = editedPost
+                postDetailsViewModel.editPost(editedPost)
                 postEditingShareableViewModel.editedPost = nil
             }
         }

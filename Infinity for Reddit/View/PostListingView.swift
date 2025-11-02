@@ -15,7 +15,6 @@ struct PostListingView: View {
     @Environment(\.dependencyManager) private var dependencyManager: Container
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
-    @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
     @StateObject var postListingViewModel: PostListingViewModel
     @StateObject var postListingVideoManager: PostListingVideoManager = .init()

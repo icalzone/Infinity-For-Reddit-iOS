@@ -600,4 +600,13 @@ public class PostDetailsViewModel: ObservableObject {
             }
         }
     }
+    
+    func editPost(_ newPost: Post) {
+        if let post {
+            post.selftext = newPost.selftext
+            post.selftextProcessedMarkdown = newPost.selftextProcessedMarkdown
+            post.mediaMetadata = newPost.mediaMetadata
+            post.edited = true
+        }
+    }
 }

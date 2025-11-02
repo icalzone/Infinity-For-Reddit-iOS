@@ -114,8 +114,8 @@ public class Post : NSObject, ObservableObject, Identifiable {
     
     var saved : Bool!
     var score : Int!
-    var selftext : String!
-    var selftextProcessedMarkdown : MarkdownContent?
+    @Published var selftext : String!
+    @Published var selftextProcessedMarkdown : MarkdownContent?
     var selftextHtml : String!
     var selftextTruncated: String! {
         if selftext == nil {
