@@ -80,7 +80,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var approvedBy : String!
     var archived : Bool!
     //    var associatedAward : AnyObject!
-    var author : String!
+    @Published var author : String!
     var authorFlairBackgroundColor : String!
     var authorFlairCssClass : String!
     var authorFlairRichtext : [FlairRichtext]! = [FlairRichtext]()
@@ -95,8 +95,8 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     //    var awarders : [AnyObject]!
     var bannedAtUtc : String!
     var bannedBy : String!
-    var body : String!
-    var bodyProcessedMarkdown : MarkdownContent?
+    @Published var body : String!
+    @Published var bodyProcessedMarkdown : MarkdownContent?
     var bodyHtml : String!
     var canGild : Bool!
     var canModPost : Bool!

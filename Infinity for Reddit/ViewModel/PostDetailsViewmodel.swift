@@ -562,4 +562,41 @@ public class PostDetailsViewModel: ObservableObject {
             break
         }
     }
+    
+    func deleteComment(_ comment: Comment) {
+        Task {
+            do {
+                try await postDetailsRepository.deleteComment(comment)
+                
+                await MainActor.run {
+                    guard let allIndex = self.allComments.index(id: comment.id) else {
+                        return
+                    }
+                    if comment.hasReplies {
+                        switch self.allComments[allIndex] {
+                        case .comment(let comment):
+                            comment.author = "[deleted]"
+                            comment.body = "[deleted]"
+                            comment.bodyProcessedMarkdown = MarkdownContent("[deleted]")
+                            comment.isSubmitter = false
+                            comment.distinguished = ""
+                        default:
+                            break
+                        }
+                    } else {
+                        self.allComments.remove(at: allIndex)
+                        guard let visibleIndex = self.visibleComments.index(id: comment.id) else {
+                            return
+                        }
+                        self.visibleComments.remove(at: visibleIndex)
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error
+                }
+                print(error)
+            }
+        }
+    }
 }

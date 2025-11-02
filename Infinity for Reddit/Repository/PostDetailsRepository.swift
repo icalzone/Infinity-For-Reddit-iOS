@@ -12,9 +12,21 @@ import Foundation
 import GRDB
 
 public class PostDetailsRepository: PostDetailsRepositoryProtocol {
-    enum PostDetailsRepositoryError: Error {
+    enum PostDetailsRepositoryError: LocalizedError {
         case NetworkError(String)
         case JSONDecodingError(String)
+        case commentIdNotFound
+        
+        var errorDescription: String? {
+            switch self {
+            case .NetworkError(let message):
+                return message
+            case .JSONDecodingError(let message):
+                return message
+            case .commentIdNotFound:
+                return "Comment ID not found"
+            }
+        }
     }
     
     private let session: Session
@@ -191,5 +203,19 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         await MainActor.run {
             post.subredditOrUserIconInPostDetails = UserDetailRootClass(fromJson: json).toUserData().iconUrl ?? ""
         }
+    }
+    
+    public func deleteComment(_ comment: Comment) async throws {
+        guard let name = comment.name else {
+            throw PostDetailsRepositoryError.commentIdNotFound
+        }
+        let params = ["id": name]
+        
+        try Task.checkCancellation()
+        
+        _ = try await self.session.request(RedditOAuthAPI.deletePostOrComment(params: params))
+            .validate()
+            .serializingDecodable(Empty.self, automaticallyCancelling: true)
+            .value
     }
 }

@@ -135,7 +135,7 @@ struct PostDetailsView: View {
                                     navigationManager.path.append(AppNavigation.editComment(commentToBeEdited: comment))
                                 },
                                 onDelete: {
-                                    
+                                    postDetailsViewModel.deleteComment(comment)
                                 })
                             .listPlainItemNoInsets()
                             .id(comment.id)
