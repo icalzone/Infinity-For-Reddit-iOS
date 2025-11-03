@@ -76,6 +76,14 @@ struct PostHistoryDao {
         }
     }
     
+    func deletePostHistory(username: String, postId: String, postHistoryType: PostHistoryType) async throws {
+        try await dbPool.write { db in
+            try db.execute(sql: """
+            DELETE FROM post_history WHERE username = ? AND post_id = ? AND post_history_type = ?
+            """, arguments: [username, postId, postHistoryType.rawValue])
+        }
+    }
+    
     func deleteOldestReadPosts(username: String) async throws {
         try await dbPool.write { db in
             try db.execute(sql: """

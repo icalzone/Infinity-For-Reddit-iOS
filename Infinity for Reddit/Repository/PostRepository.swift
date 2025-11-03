@@ -47,6 +47,38 @@ class PostRepository: PostRepositoryProtocol {
         }
     }
     
+    func votePostAnonymous(
+        post: Post,
+        vote: Int
+    ) async throws {
+        do {
+            if vote > 0 {
+                try await postHistoryDao.insert(
+                    postHistory: PostHistory(
+                        username: Account.ANONYMOUS_ACCOUNT.username,
+                        postId: post.id,
+                        postHistoryType: .upvoted,
+                        time: Int64(Date().timeIntervalSince1970)
+                    )
+                )
+                try await postHistoryDao.deletePostHistory(username: Account.ANONYMOUS_ACCOUNT.username, postId: post.id, postHistoryType: .downvoted)
+            } else if vote == 0 {
+                try await postHistoryDao.deletePostHistory(username: Account.ANONYMOUS_ACCOUNT.username, postId: post.id, postHistoryType: .upvoted)
+                try await postHistoryDao.deletePostHistory(username: Account.ANONYMOUS_ACCOUNT.username, postId: post.id, postHistoryType: .downvoted)
+            } else {
+                try await postHistoryDao.insert(
+                    postHistory: PostHistory(
+                        username: Account.ANONYMOUS_ACCOUNT.username,
+                        postId: post.id,
+                        postHistoryType: .downvoted,
+                        time: Int64(Date().timeIntervalSince1970)
+                    )
+                )
+                try await postHistoryDao.deletePostHistory(username: Account.ANONYMOUS_ACCOUNT.username, postId: post.id, postHistoryType: .upvoted)
+            }
+        }
+    }
+    
     func savePost(
         post: Post,
         save: Bool
