@@ -37,7 +37,7 @@ class EditCommentRepository: EditCommentRepositoryProtocol {
         self.session = resolvedSession
     }
     
-    func editComment(content: String, commentFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage], giphyGifId: String?) async throws -> EditCommentResponse? {
+    func editComment(content: String, commentFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage], giphyGifId: String?) async throws -> EditCommentResult? {
         guard !content.isEmpty else {
             throw EditCommentRepositoryError.EditCommentError("Where are your interesting thoughts?")
         }
@@ -74,24 +74,24 @@ class EditCommentRepository: EditCommentRepositoryProtocol {
             if let comment {
                 if comment.id.isEmpty {
                     // This is a work around for checking if JSON parsing failed
-                    return EditCommentResponse.content(content: content)
+                    return EditCommentResult.content(content: content)
                 }
                 comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
-                return EditCommentResponse.comment(comment: comment)
+                return EditCommentResult.comment(comment: comment)
             } else {
-                return EditCommentResponse.content(content: content)
+                return EditCommentResult.content(content: content)
             }
         } else {
             let comment = try? Comment(fromJson: json)
             if let comment {
                 if comment.id.isEmpty {
                     // This is a work around for checking if JSON parsing failed
-                    return EditCommentResponse.content(content: content)
+                    return EditCommentResult.content(content: content)
                 }
                 comment.bodyProcessedMarkdown = MarkdownContent(comment.body)
-                return EditCommentResponse.comment(comment: comment)
+                return EditCommentResult.comment(comment: comment)
             } else {
-                return EditCommentResponse.content(content: content)
+                return EditCommentResult.content(content: content)
             }
         }
     }

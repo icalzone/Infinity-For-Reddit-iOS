@@ -8,10 +8,10 @@
 import GiphyUISDK
 
 protocol EditCommentRepositoryProtocol {
-    func editComment(content: String, commentFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage], giphyGifId: String?) async throws -> EditCommentResponse?
+    func editComment(content: String, commentFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage], giphyGifId: String?) async throws -> EditCommentResult?
 }
 
-enum EditCommentResponse: Equatable {
+enum EditCommentResult: Equatable {
     case comment(comment: Comment)
     case content(content: String)
 }

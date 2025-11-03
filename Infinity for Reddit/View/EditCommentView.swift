@@ -220,9 +220,9 @@ struct EditCommentView: View {
                 )
             }
         }
-        .onChange(of: editCommentViewModel.editCommentResponse) { _, newValue in
-            if let editedCommentResponse = newValue {
-                switch editedCommentResponse {
+        .onChange(of: editCommentViewModel.editCommentResult) { _, newValue in
+            if let editCommentResult = newValue {
+                switch editCommentResult {
                 case .comment(let comment):
                     commentSubmissionShareableViewModel.editedComment = comment
                     snackbarManager.dismiss()
