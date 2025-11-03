@@ -197,9 +197,9 @@ struct EditPostView: View {
                 )
             }
         }
-        .onChange(of: editPostViewModel.editPostResponse) { _, newValue in
-            if let editPostResponse = newValue {
-                switch editPostResponse {
+        .onChange(of: editPostViewModel.editPostResult) { _, newValue in
+            if let editPostResult = newValue {
+                switch editPostResult {
                 case .post(let post):
                     postEditingShareableViewModel.editedPost = post
                     snackbarManager.dismiss()

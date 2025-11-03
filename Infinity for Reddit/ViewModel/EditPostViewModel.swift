@@ -15,7 +15,7 @@ class EditPostViewModel: ObservableObject {
     @Published var text: String = ""
     @Published var embeddedImages: [UploadedImage] = []
     @Published var editPostTask: Task<Void, Error>?
-    @Published var editPostResponse: EditPostResponse?
+    @Published var editPostResult: EditPostResult?
     @Published var error: Error? = nil
     
     let postToBeEdited: Post
@@ -54,11 +54,11 @@ class EditPostViewModel: ObservableObject {
             return
         }
         
-        editPostResponse = nil
+        editPostResult = nil
         
         editPostTask = Task {
             do {
-                editPostResponse = try await editPostRepository.editPost(
+                editPostResult = try await editPostRepository.editPost(
                     content: text,
                     postFullname: postToBeEdited.name,
                     mediaMetadataDictionary: postToBeEdited.mediaMetadata,

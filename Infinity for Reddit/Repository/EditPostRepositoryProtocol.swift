@@ -6,10 +6,10 @@
 //
 
 protocol EditPostRepositoryProtocol {
-    func editPost(content: String, postFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage]) async throws -> EditPostResponse
+    func editPost(content: String, postFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage]) async throws -> EditPostResult
 }
 
-enum EditPostResponse: Equatable {
+enum EditPostResult: Equatable {
     case post(post: Post)
     case content(content: String)
 }

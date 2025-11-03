@@ -37,7 +37,7 @@ class EditPostRepository: EditPostRepositoryProtocol {
         self.session = resolvedSession
     }
     
-    func editPost(content: String, postFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage]) async throws -> EditPostResponse {
+    func editPost(content: String, postFullname: String, mediaMetadataDictionary: [String: MediaMetadata]?, embeddedImages: [UploadedImage]) async throws -> EditPostResult {
         guard !content.isEmpty else {
             throw EditPostRepositoryError.EditPostError("Where are your interesting thoughts?")
         }
@@ -73,24 +73,24 @@ class EditPostRepository: EditPostRepositoryProtocol {
             if let post {
                 if post.id.isEmpty {
                     // This is a work around for checking if JSON parsing failed
-                    return EditPostResponse.content(content: content)
+                    return EditPostResult.content(content: content)
                 }
                 post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
-                return EditPostResponse.post(post: post)
+                return EditPostResult.post(post: post)
             } else {
-                return EditPostResponse.content(content: content)
+                return EditPostResult.content(content: content)
             }
         } else {
             let post = try? Post(fromJson: json)
             if let post {
                 if post.id.isEmpty {
                     // This is a work around for checking if JSON parsing failed
-                    return EditPostResponse.content(content: content)
+                    return EditPostResult.content(content: content)
                 }
                 post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
-                return EditPostResponse.post(post: post)
+                return EditPostResult.post(post: post)
             } else {
-                return EditPostResponse.content(content: content)
+                return EditPostResult.content(content: content)
             }
         }
     }
