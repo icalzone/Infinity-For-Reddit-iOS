@@ -49,7 +49,7 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                readPostsRepository: ReadPostsRepository(),
+                readPostsRepository: HistoryPostsRepository(),
                 postFeedID: postListingMetadata.getPostFeedID()
             )
         )
@@ -75,7 +75,7 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                readPostsRepository: ReadPostsRepository(),
+                readPostsRepository: HistoryPostsRepository(),
                 postFeedID: postListingMetadata.getPostFeedID()
             )
         )

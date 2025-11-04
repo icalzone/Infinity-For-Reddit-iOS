@@ -43,6 +43,7 @@ struct PostDetailsView: View {
                 account: account,
                 postDetailsInput: postDetailsInput,
                 postDetailsRepository: PostDetailsRepository(),
+                historyPostsRepository: HistoryPostsRepository(),
                 isContinueThread: isContinueThread
             )
         )

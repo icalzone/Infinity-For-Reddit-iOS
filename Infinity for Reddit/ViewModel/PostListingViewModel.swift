@@ -58,7 +58,7 @@ public class PostListingViewModel: ObservableObject {
     private var readPostEnabled: Bool = true
     
     private let postListingRepository: PostListingRepositoryProtocol
-    private let readPostsRepository: ReadPostsRepositoryProtocol
+    private let readPostsRepository: HistoryPostsRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -74,7 +74,7 @@ public class PostListingViewModel: ObservableObject {
         postListingMetadata: PostListingMetadata,
         externalPostFilter: PostFilter?,
         postListingRepository: PostListingRepositoryProtocol,
-        readPostsRepository: ReadPostsRepositoryProtocol,
+        readPostsRepository: HistoryPostsRepositoryProtocol,
         postFeedID: String
     ) {
         self.sortType = postListingMetadata.postListingType.savedSortType
@@ -333,9 +333,30 @@ public class PostListingViewModel: ObservableObject {
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id }
         )
+        let upvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? readPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            account: AccountViewModel.shared.account,
+            postIds: posts.map { $0.id },
+            postHistoryType: .upvoted
+        ) : Set<String>()
+        let downvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? readPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            account: AccountViewModel.shared.account,
+            postIds: posts.map { $0.id },
+            postHistoryType: .downvoted
+        ) : Set<String>()
+        let hiddenPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? readPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            account: AccountViewModel.shared.account,
+            postIds: posts.map { $0.id },
+            postHistoryType: .hidden
+        ) : Set<String>()
+        let savedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? readPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            account: AccountViewModel.shared.account,
+            postIds: posts.map { $0.id },
+            postHistoryType: .saved
+        ) : Set<String>()
+        
         return posts.filter { post in
             print(PostFilter.isPostAllowed(post: post, postFilter: postFilter))
-            return PostFilter.isPostAllowed(post: post, postFilter: postFilter)
+            return PostFilter.isPostAllowed(post: post, postFilter: postFilter) && !hiddenPostIdsAnonymous.contains(post.id)
         }.map {
             if !$0.selftext.isEmpty {
                 modifyPostBody($0)
@@ -344,6 +365,15 @@ public class PostListingViewModel: ObservableObject {
             
             if readPostIds.contains($0.id) {
                 $0.isRead = true
+            }
+            if upvotedPostIdsAnonymous.contains($0.id) {
+                $0.likes = 1
+            }
+            if downvotedPostIdsAnonymous.contains($0.id) {
+                $0.likes = -1
+            }
+            if savedPostIdsAnonymous.contains($0.id) {
+                $0.saved = true
             }
             
             return $0

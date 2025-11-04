@@ -34,7 +34,8 @@ public class PostDetailsViewModel: ObservableObject {
     //User defaults
     private var showTopLevelCommentsFirst: Bool
     
-    public let postDetailsRepository: PostDetailsRepositoryProtocol
+    private let postDetailsRepository: PostDetailsRepositoryProtocol
+    private let historyPostsRepository: HistoryPostsRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -55,11 +56,18 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     // MARK: - Initializer
-    init(account: Account, postDetailsInput: PostDetailsInput, postDetailsRepository: PostDetailsRepositoryProtocol, isContinueThread: Bool = false) {
+    init(
+        account: Account,
+        postDetailsInput: PostDetailsInput,
+        postDetailsRepository: PostDetailsRepositoryProtocol,
+        historyPostsRepository: HistoryPostsRepositoryProtocol,
+        isContinueThread: Bool = false
+    ) {
         self.account = account
         self.postDetailsInput = postDetailsInput
         self.sortTypeKind = SortTypeUserDetailsUtils.postComment
         self.postDetailsRepository = postDetailsRepository
+        self.historyPostsRepository = historyPostsRepository
         self.showTopLevelCommentsFirst = InterfaceCommentUserDefaultsUtils.showTopLevelCommentsFirst
         if isContinueThread {
             self.singleThreadContext = 0
@@ -177,8 +185,7 @@ public class PostDetailsViewModel: ObservableObject {
                     throw PostDetailsViewModelError.postFetchError
                 }
                 let post = postDetails.postListing.posts[0]
-                MarkdownUtils.parseRedditImagesBlock(post)
-                post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
+                await postProcessPost(post)
                 
                 await MainActor.run {
                     self.post = post
@@ -223,6 +230,20 @@ public class PostDetailsViewModel: ObservableObject {
             }
             print("Error fetching comments: \(error)")
         }
+    }
+    
+    private func postProcessPost(_ post: Post) async {
+        MarkdownUtils.parseRedditImagesBlock(post)
+        post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
+        
+        if historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .upvoted) {
+            post.likes = 1
+        } else if historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .downvoted) {
+            post.likes = -1
+        }
+        
+        post.hidden = historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .hidden)
+        post.saved = historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .saved)
     }
     
     public func fetchCommentsPagination() async {

@@ -99,11 +99,11 @@ struct PostHistoryDao {
         }
     }
     
-    func getReadPostsIdsByIds(ids: [String], username: String) throws -> Set<String> {
+    func getHistoryPostsIdsByIds(ids: [String], username: String, postHistoryType: PostHistoryType) throws -> Set<String> {
         try dbPool.write { db in
             let placeholders = Array(repeating: "?", count: ids.count).joined(separator: ", ")
             
-            let arguments: [DatabaseValueConvertible?] = ids + [username, PostHistoryType.readPosts.rawValue]
+            let arguments: [DatabaseValueConvertible?] = ids + [username, postHistoryType.rawValue]
             
             return try String.fetchSet(db, sql: """
                 SELECT post_id FROM post_history

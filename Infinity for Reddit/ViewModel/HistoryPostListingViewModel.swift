@@ -32,7 +32,7 @@ public class HistoryPostListingViewModel: ObservableObject {
     private var spoilerContent: Bool
     
     private let historyPostListingRepository: HistoryPostListingRepositoryProtocol
-    private let readPostsRepository: ReadPostsRepositoryProtocol
+    private let readPostsRepository: HistoryPostsRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -48,7 +48,7 @@ public class HistoryPostListingViewModel: ObservableObject {
         historyPostListingMetadata: HistoryPostListingMetadata,
         externalPostFilter: PostFilter?,
         historyPostListingRepository: HistoryPostListingRepositoryProtocol,
-        readPostsRepository: ReadPostsRepositoryProtocol,
+        readPostsRepository: HistoryPostsRepositoryProtocol,
         postFeedID: String
     ) {
         self.historyPostListingMetadata = historyPostListingMetadata

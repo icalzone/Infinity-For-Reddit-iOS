@@ -41,7 +41,7 @@ struct HistoryPostListingView: View {
                 historyPostListingMetadata: historyPostListingMetadata,
                 externalPostFilter: externalPostFilter,
                 historyPostListingRepository: HistoryPostListingRepository(),
-                readPostsRepository: ReadPostsRepository(),
+                readPostsRepository: HistoryPostsRepository(),
                 postFeedID: "read_posts"
             )
         )
