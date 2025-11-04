@@ -299,6 +299,12 @@ struct PostDetailsView: View {
                         sendComment()
                     },
                     
+                    NavigationBarMenuItem(title: postDetailsViewModel.post?.hidden ?? false ? "Unhide post" : "Hide post") {
+                        postDetailsViewModel.toggleHidePost {
+                            setUpMenu()
+                        }
+                    },
+                    
                     NavigationBarMenuItem(title: "Edit post") {
                         editPost()
                     },
@@ -323,6 +329,12 @@ struct PostDetailsView: View {
                         sendComment()
                     },
                     
+                    NavigationBarMenuItem(title: postDetailsViewModel.post?.hidden ?? false ? "Unhide post" : "Hide post") {
+                        postDetailsViewModel.toggleHidePost {
+                            setUpMenu()
+                        }
+                    },
+                    
                     NavigationBarMenuItem(title: "Delete post") {
                         withAnimation(.linear(duration: 0.2)) {
                             activeAlert = .deletePost
@@ -342,6 +354,12 @@ struct PostDetailsView: View {
                 
                 NavigationBarMenuItem(title: "Send comment") {
                     sendComment()
+                },
+                
+                NavigationBarMenuItem(title: postDetailsViewModel.post?.hidden ?? false ? "Unhide post" : "Hide post") {
+                    postDetailsViewModel.toggleHidePost {
+                        setUpMenu()
+                    }
                 }
             ]
         }

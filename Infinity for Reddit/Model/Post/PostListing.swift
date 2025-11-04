@@ -75,7 +75,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     var downs : Int!
     var edited : Bool!
     var galleryData : GalleryData?
-    var hidden : Bool!
+    @Published var hidden : Bool!
     var id : String!
     var isCrosspostable : Bool!
     var isOriginalContent : Bool!

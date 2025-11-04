@@ -16,4 +16,6 @@ public protocol PostDetailsRepositoryProtocol {
     func loadPostIcon(post: Post, isFromSubredditPostListing: Bool) async throws
     func deleteComment(_ comment: Comment) async throws
     func deletePost(_ post: Post) async throws
+    func toggleHidePost(_ post: Post) async throws
+    func toggleHidePostAnonymous(_ post: Post) async throws
 }

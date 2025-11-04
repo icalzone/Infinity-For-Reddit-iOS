@@ -644,4 +644,46 @@ public class PostDetailsViewModel: ObservableObject {
             }
         }
     }
+    
+    func toggleHidePost(onFinish: @escaping () -> Void) {
+        guard let post else {
+            self.error = PostDetailsViewModelError.postNotLoadedError
+            return
+        }
+        
+        guard !account.isAnonymous() else {
+            toggleHidePostAnonymous(post, onFinish: onFinish)
+            return
+        }
+        
+        let previousHiddenState = post.hidden ?? false
+        
+        Task {
+            do {
+                try await postDetailsRepository.toggleHidePost(post)
+                
+                await MainActor.run {
+                    self.post?.hidden = !previousHiddenState
+                    onFinish()
+                }
+            } catch {
+                await MainActor.run {
+                    self.post?.hidden = previousHiddenState
+                    self.error = error
+                    onFinish()
+                }
+                print(error)
+            }
+        }
+    }
+
+    private func toggleHidePostAnonymous(_ post: Post, onFinish: @escaping () -> Void) {
+        Task {
+            try? await postDetailsRepository.toggleHidePostAnonymous(post)
+            await MainActor.run {
+                post.hidden = !post.hidden
+                onFinish()
+            }
+        }
+    }
 }
