@@ -174,6 +174,10 @@ struct PostListingView: View {
                 
                 NavigationBarMenuItem(title: "Change Post Layout") {
                     showLayoutTypeSheet = true
+                },
+                
+                NavigationBarMenuItem(title: "Hide Read Posts") {
+                    postListingViewModel.hideReadPosts()
                 }
             ]
             

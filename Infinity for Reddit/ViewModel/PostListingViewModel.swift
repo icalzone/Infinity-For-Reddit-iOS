@@ -315,7 +315,7 @@ public class PostListingViewModel: ObservableObject {
             after = nil
             hasMorePages = true
             if refreshPostsContinuation == nil {
-                posts = []
+                posts.removeAll()
             }
             
             allPostIds = Set<String>()
@@ -471,5 +471,11 @@ public class PostListingViewModel: ObservableObject {
     
     private static func hasCustomLayout(for postFeedID: String) -> Bool {
         UserDefaults.interfacePost.object(forKey: key(for: postFeedID)) != nil
+    }
+    
+    func hideReadPosts() {
+        self.posts.removeAll {
+            $0.isRead
+        }
     }
 }
