@@ -116,10 +116,6 @@ class PostRepository: PostRepositoryProtocol {
     }
     
     func readPost(post: Post, account: Account, limitReadPosts: Bool, readPostsLimit: Int) async throws {
-        guard !account.isAnonymous() else {
-            return
-        }
-        
         if limitReadPosts {
             if try await postHistoryDao.getReadPostsCount(username: account.username) >= readPostsLimit {
                 try await postHistoryDao.deleteOldestReadPosts(username: account.username)
