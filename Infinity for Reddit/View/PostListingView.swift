@@ -178,42 +178,14 @@ struct PostListingView: View {
             await postListingViewModel.initialLoadPosts()
         }
         .onAppear {
-            if let key = navigationBarMenuKey {
-                navigationBarMenuManager.pop(key: key)
-            }
-            var options = [
-                NavigationBarMenuItem(title: "Refresh") {
-                    postListingViewModel.refreshPosts()
-                },
-                
-                NavigationBarMenuItem(title: "Sort") {
-                    showSortTypeKindSheet = true
-                },
-                
-                NavigationBarMenuItem(title: "Change Post Layout") {
-                    showLayoutTypeSheet = true
-                },
-                
-                NavigationBarMenuItem(title: "Hide Read Posts") {
-                    postListingViewModel.hideReadPosts()
-                }
-            ]
-            
-            if showFilterPostsOption {
-                options.append(NavigationBarMenuItem(title: "Filter Posts") {
-                    navigationManager.path.append(
-                        AppNavigation.filterPosts(
-                            postListingMetadata: postListingMetadata
-                        )
-                    )
-                })
-            }
-            
-            navigationBarMenuKey = navigationBarMenuManager.push(options)
+            setUpMenu()
         }
         .onDisappear {
             guard let navigationBarMenuKey else { return }
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
+        }
+        .onChange(of: lazyModeState) {
+            setUpMenu()
         }
         .sheet(isPresented: $showSortTypeKindSheet) {
             SortTypeKindSheet(
@@ -250,6 +222,49 @@ struct PostListingView: View {
             .presentationDetents([.medium, .large])
         }
         .environment(\.postListingVideoManager, postListingVideoManager)
+    }
+    
+    private func setUpMenu() {
+        if let key = navigationBarMenuKey {
+            navigationBarMenuManager.pop(key: key)
+        }
+        var options = [
+            NavigationBarMenuItem(title: "Refresh") {
+                postListingViewModel.refreshPosts()
+            },
+            
+            NavigationBarMenuItem(title: "Sort") {
+                showSortTypeKindSheet = true
+            },
+            
+            NavigationBarMenuItem(title: "Change Post Layout") {
+                showLayoutTypeSheet = true
+            },
+            
+            NavigationBarMenuItem(title: lazyModeState == .stopped ? "Start Lazy Mode" : "Stop Lazy Mode") {
+                if lazyModeState == .stopped {
+                    startLazyMode()
+                } else {
+                    stopLazyMode()
+                }
+            },
+            
+            NavigationBarMenuItem(title: "Hide Read Posts") {
+                postListingViewModel.hideReadPosts()
+            }
+        ]
+        
+        if showFilterPostsOption {
+            options.append(NavigationBarMenuItem(title: "Filter Posts") {
+                navigationManager.path.append(
+                    AppNavigation.filterPosts(
+                        postListingMetadata: postListingMetadata
+                    )
+                )
+            })
+        }
+        
+        navigationBarMenuKey = navigationBarMenuManager.push(options)
     }
     
     private func onPostTypeClicked(post: Post) {
@@ -295,6 +310,10 @@ struct PostListingView: View {
             repeat {
                 try? await Task.sleep(for: .seconds(1))
                 await MainActor.run {
+                    if Task.isCancelled {
+                        return
+                    }
+                    
                     if let scrollProxy = scrollProxy, !postListingViewModel.posts.isEmpty {
                         if let scrolledParent = postListingViewModel.lazyModeScrolledPost {
                             if let index = postListingViewModel.posts.index(id: scrolledParent.id) {
