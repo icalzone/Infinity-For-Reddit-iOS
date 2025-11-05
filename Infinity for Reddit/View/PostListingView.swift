@@ -141,6 +141,20 @@ struct PostListingView: View {
                         .onAppear {
                             scrollProxy = proxy
                         }
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    if lazyModeState == .started {
+                                        postListingViewModel.lazyModeScrolledPost = nil
+                                        pauseLazyMode()
+                                    }
+                                }
+                                .onEnded { value in
+                                    if lazyModeState == .paused {
+                                        resumeLazyMode()
+                                    }
+                                }
+                        )
                     }
                 } else {
                     ForEach(postListingViewModel.posts, id: \.id) { post in
