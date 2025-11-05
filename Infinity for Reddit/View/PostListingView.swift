@@ -144,7 +144,7 @@ struct PostListingView: View {
                             DragGesture(minimumDistance: 0)
                                 .onChanged { value in
                                     if lazyModeState == .started {
-                                        pauseLazyMode()
+                                        pauseLazyMode(resetScrolledPost: true)
                                     }
                                 }
                                 .onEnded { value in
@@ -198,7 +198,7 @@ struct PostListingView: View {
         }
         .onDisappear {
             if lazyModeState == .started {
-                pauseLazyMode()
+                pauseLazyMode(resetScrolledPost: false)
             }
             
             guard let navigationBarMenuKey else { return }
@@ -211,7 +211,7 @@ struct PostListingView: View {
                 }
             }, onAppEntersBackground: {
                 if lazyModeState == .started {
-                    pauseLazyMode()
+                    pauseLazyMode(resetScrolledPost: false)
                 }
             }
         )
@@ -410,8 +410,10 @@ struct PostListingView: View {
         lazyMode = nil
     }
     
-    private func pauseLazyMode() {
-        postListingViewModel.lazyModeScrolledPost = nil
+    private func pauseLazyMode(resetScrolledPost: Bool) {
+        if resetScrolledPost {
+            postListingViewModel.lazyModeScrolledPost = nil
+        }
         lazyModeState = .paused
         lazyMode?.cancel()
         lazyMode = nil
