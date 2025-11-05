@@ -10,6 +10,7 @@ import Combine
 import MarkdownUI
 import GRDB
 import SwiftUI
+import IdentifiedCollections
 
 enum PostListItem: Identifiable {
     var id: String {
@@ -27,7 +28,7 @@ enum PostListItem: Identifiable {
 
 public class PostListingViewModel: ObservableObject {
     // MARK: - Properties
-    @Published var posts: [Post] = []
+    @Published var posts: IdentifiedArrayOf<Post> = []
     @Published var isInitialLoad: Bool = true
     @Published var isInitialLoading: Bool = false
     @Published var isLoadingMore: Bool = false
@@ -36,6 +37,9 @@ public class PostListingViewModel: ObservableObject {
     @Published var sortType: SortType
     @Published var loadPostsTaskId = UUID()
     @Published var layout: PostLayoutType
+    
+    @Published var appearedPosts: [Post] = []
+    @Published var lazyModeScrolledPost: Post?
     
     var itemsWithLoadingIndicator: [PostListItem] {
         if hasMorePages {
@@ -263,6 +267,8 @@ public class PostListingViewModel: ObservableObject {
                 await MainActor.run {
                     if isRefreshWithContinuation {
                         self.posts.removeAll()
+                        self.appearedPosts.removeAll()
+                        self.lazyModeScrolledPost = nil
                     }
                     self.posts.append(contentsOf: realNewPosts)
                     hasMorePages = !(self.after == nil || self.after?.isEmpty == true)
@@ -316,6 +322,8 @@ public class PostListingViewModel: ObservableObject {
             hasMorePages = true
             if refreshPostsContinuation == nil {
                 posts.removeAll()
+                appearedPosts.removeAll()
+                lazyModeScrolledPost = nil
             }
             
             allPostIds = Set<String>()
@@ -475,6 +483,9 @@ public class PostListingViewModel: ObservableObject {
     
     func hideReadPosts() {
         self.posts.removeAll {
+            $0.isRead
+        }
+        self.appearedPosts.removeAll {
             $0.isRead
         }
     }

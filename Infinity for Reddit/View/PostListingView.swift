@@ -17,11 +17,14 @@ struct PostListingView: View {
     
     @StateObject var postListingViewModel: PostListingViewModel
     @StateObject var postListingVideoManager: PostListingVideoManager = .init()
+    @State private var scrollProxy: ScrollViewProxy? = nil
     @State private var showSortTypeKindSheet: Bool = false
     @State private var showSortTypeTimeSheet: Bool = false
     @State private var upcomingSortTypeKind: SortType.Kind?
     @State private var navigationBarMenuKey: UUID?
     @State private var showLayoutTypeSheet: Bool = false
+    @State var lazyMode: Task<Void, Error>?
+    @State var lazyModeState: LazyModeState = .stopped
     
     private let account: Account
     private let postListingMetadata: PostListingMetadata
@@ -94,35 +97,50 @@ struct PostListingView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 if isRootView {
-                    List {
-                        ForEach(postListingViewModel.posts, id: \.id) { post in
-                            PostViewCard(account: account, post: post, isSubredditPostListing: isSubredditPostListing, onPostTypeClicked: {
-                                onPostTypeClicked(post: post)
-                            }, onSensitiveClicked: {
-                                onSensitiveClicked(post: post)
-                            })
-                            .id(ObjectIdentifier(post))
-                            .listPlainItemNoInsets()
-                            .onAppear {
-                                if post.subredditOrUserIcon == nil {
-                                    Task {
-                                        await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
+                    ScrollViewReader { proxy in
+                        List {
+                            ForEach(postListingViewModel.posts, id: \.id) { post in
+                                PostViewCard(account: account, post: post, isSubredditPostListing: isSubredditPostListing, onPostTypeClicked: {
+                                    onPostTypeClicked(post: post)
+                                }, onSensitiveClicked: {
+                                    onSensitiveClicked(post: post)
+                                })
+                                .id(ObjectIdentifier(post))
+                                .listPlainItemNoInsets()
+                                .onAppear {
+                                    postListingViewModel.appearedPosts.removeAll {
+                                        $0.id == post.id
+                                    }
+                                    postListingViewModel.appearedPosts.append(post)
+                                    print("Fuck: \(post.title)")
+                                    if post.subredditOrUserIcon == nil {
+                                        Task {
+                                            await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
+                                        }
+                                    }
+                                }
+                                .onDisappear {
+                                    postListingViewModel.appearedPosts.removeAll {
+                                        $0.id == post.id
                                     }
                                 }
                             }
+                            if postListingViewModel.hasMorePages {
+                                ProgressIndicator()
+                                    .task {
+                                        await postListingViewModel.loadPosts()
+                                    }
+                                    .listPlainItem()
+                            }
                         }
-                        if postListingViewModel.hasMorePages {
-                            ProgressIndicator()
-                                .task {
-                                    await postListingViewModel.loadPosts()
-                                }
-                                .listPlainItem()
+                        .scrollBounceBehavior(.basedOnSize)
+                        .themedList()
+                        .refreshable {
+                            await postListingViewModel.refreshPostsWithContinuation()
                         }
-                    }
-                    .scrollBounceBehavior(.basedOnSize)
-                    .themedList()
-                    .refreshable {
-                        await postListingViewModel.refreshPostsWithContinuation()
+                        .onAppear {
+                            scrollProxy = proxy
+                        }
                     }
                 } else {
                     ForEach(postListingViewModel.posts, id: \.id) { post in
@@ -256,5 +274,107 @@ struct PostListingView: View {
                 )
             )
         }
+    }
+    
+    private func startLazyMode() {
+        guard lazyMode == nil else {
+            return
+        }
+        
+        lazyModeState = .started
+        
+        if postListingViewModel.lazyModeScrolledPost == nil {
+            if !postListingViewModel.appearedPosts.isEmpty {
+                postListingViewModel.lazyModeScrolledPost = postListingViewModel.appearedPosts[0]
+            } else if !postListingViewModel.posts.isEmpty {
+                postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[0]
+            }
+        }
+        
+        lazyMode = Task {
+            repeat {
+                try? await Task.sleep(for: .seconds(1))
+                await MainActor.run {
+                    if let scrollProxy = scrollProxy, !postListingViewModel.posts.isEmpty {
+                        if let scrolledParent = postListingViewModel.lazyModeScrolledPost {
+                            if let index = postListingViewModel.posts.index(id: scrolledParent.id) {
+                                if index < postListingViewModel.posts.count {
+                                    postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[index + 1]
+                                    withAnimation {
+                                        scrollProxy.scrollTo(ObjectIdentifier(postListingViewModel.posts[index + 1]), anchor: .top)
+                                    }
+                                }
+                            } else {
+                                postListingViewModel.lazyModeScrolledPost = nil
+                                if !postListingViewModel.appearedPosts.isEmpty {
+                                    postListingViewModel.lazyModeScrolledPost = postListingViewModel.appearedPosts[postListingViewModel.appearedPosts.count - 1]
+                                    for appearedPost in postListingViewModel.appearedPosts.reversed() {
+                                        if let index = postListingViewModel.posts.index(id: appearedPost.id) {
+                                            if index < postListingViewModel.posts.count {
+                                                postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[index + 1]
+                                                withAnimation {
+                                                    scrollProxy.scrollTo(ObjectIdentifier(postListingViewModel.posts[index + 1]), anchor: .top)
+                                                }
+                                            }
+                                            break
+                                        }
+                                    }
+                                } else if !postListingViewModel.posts.isEmpty {
+                                    postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[0]
+                                    withAnimation {
+                                        scrollProxy.scrollTo(ObjectIdentifier(postListingViewModel.posts[0]), anchor: .top)
+                                    }
+                                }
+                            }
+                        } else {
+                            if !postListingViewModel.appearedPosts.isEmpty {
+                                postListingViewModel.lazyModeScrolledPost = postListingViewModel.appearedPosts[postListingViewModel.appearedPosts.count - 1]
+                                for appearedPost in postListingViewModel.appearedPosts.reversed() {
+                                    if let index = postListingViewModel.posts.index(id: appearedPost.id) {
+                                        if index < postListingViewModel.posts.count {
+                                            postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[index + 1]
+                                            withAnimation {
+                                                scrollProxy.scrollTo(ObjectIdentifier(postListingViewModel.posts[index + 1]), anchor: .top)
+                                            }
+                                        }
+                                        break
+                                    }
+                                }
+                            } else if !postListingViewModel.posts.isEmpty {
+                                postListingViewModel.lazyModeScrolledPost = postListingViewModel.posts[0]
+                                withAnimation {
+                                    scrollProxy.scrollTo(ObjectIdentifier(postListingViewModel.posts[0]), anchor: .top)
+                                }
+                            }
+                        }
+                    }
+                }
+            } while !Task.isCancelled
+        }
+    }
+    
+    private func stopLazyMode() {
+        postListingViewModel.lazyModeScrolledPost = nil
+        lazyModeState = .stopped
+        lazyMode?.cancel()
+        lazyMode = nil
+    }
+    
+    private func pauseLazyMode() {
+        lazyModeState = .paused
+        lazyMode?.cancel()
+        lazyMode = nil
+    }
+    
+    private func resumeLazyMode() {
+        lazyMode?.cancel()
+        lazyMode = nil
+        startLazyMode()
+    }
+    
+    enum LazyModeState {
+        case stopped
+        case started
+        case paused
     }
 }
