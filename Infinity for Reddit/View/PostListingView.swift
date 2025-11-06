@@ -32,6 +32,8 @@ struct PostListingView: View {
     private let handleToolbarMenu: Bool
     private let showFilterPostsOption: Bool
     private var isRootView: Bool = true
+    private var onStartLazyMode: (() -> Void)?
+    private var onStopLazyMode: (() -> Void)?
     
     init(account: Account,
          postListingMetadata: PostListingMetadata,
@@ -63,7 +65,9 @@ struct PostListingView: View {
          externalPostFilter: PostFilter? = nil,
          isRootView: Bool,
          showFilterPostsOption: Bool = true,
-         scrollProxy: ScrollViewProxy? = nil
+         scrollProxy: ScrollViewProxy? = nil,
+         onStartLazyMode: (() -> Void)? = nil,
+         onStopLazyMode: (() -> Void)? = nil
     ) {
         self.account = account
         self.isRootView = isRootView
@@ -74,6 +78,8 @@ struct PostListingView: View {
         self.handleToolbarMenu = false
         self.showFilterPostsOption = showFilterPostsOption
         self.scrollProxy = scrollProxy
+        self.onStartLazyMode = onStartLazyMode
+        self.onStopLazyMode = onStopLazyMode
         
         _postListingViewModel = StateObject(
             wrappedValue: PostListingViewModel(
@@ -340,6 +346,8 @@ struct PostListingView: View {
             return
         }
         
+        onStartLazyMode?()
+        
         lazyModeState = .started
         
         if postListingViewModel.lazyModeScrolledPost == nil {
@@ -421,6 +429,8 @@ struct PostListingView: View {
         lazyModeState = .stopped
         lazyMode?.cancel()
         lazyMode = nil
+        
+        onStopLazyMode?()
     }
     
     private func pauseLazyMode(resetScrolledPost: Bool) {
