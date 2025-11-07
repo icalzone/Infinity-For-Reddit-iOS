@@ -31,6 +31,7 @@ struct PostListingView: View {
     private let handleToolbarMenu: Bool
     private let showFilterPostsOption: Bool
     private var isRootView: Bool = true
+    private var pauseLazyModeExternalFlag: Bool = false
     private var onStartLazyMode: (() -> Void)?
     private var onStopLazyMode: (() -> Void)?
     
@@ -62,6 +63,7 @@ struct PostListingView: View {
          isRootView: Bool,
          showFilterPostsOption: Bool = true,
          scrollProxy: ScrollViewProxy? = nil,
+         pauseLazyModeExternalFlag: Bool,
          onStartLazyMode: (() -> Void)? = nil,
          onStopLazyMode: (() -> Void)? = nil
     ) {
@@ -73,6 +75,7 @@ struct PostListingView: View {
         self.handleToolbarMenu = false
         self.showFilterPostsOption = showFilterPostsOption
         self.scrollProxy = scrollProxy
+        self.pauseLazyModeExternalFlag = pauseLazyModeExternalFlag
         self.onStartLazyMode = onStartLazyMode
         self.onStopLazyMode = onStopLazyMode
         
@@ -225,6 +228,17 @@ struct PostListingView: View {
         )
         .onChange(of: lazyModeState) {
             setUpMenu()
+        }
+        .onChange(of: pauseLazyModeExternalFlag) { _, newValue in
+            if newValue {
+                if lazyModeState == .started {
+                    pauseLazyMode(resetScrolledPost: false)
+                }
+            } else {
+                if lazyModeState == .paused {
+                    resumeLazyMode()
+                }
+            }
         }
         .sheet(isPresented: $showSortTypeKindSheet) {
             SortTypeKindSheet(

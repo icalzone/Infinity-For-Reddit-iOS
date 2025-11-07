@@ -33,7 +33,7 @@ class Utils {
         return signature == "GIF8"
     }
     
-    static func formattedCakeDay(_ epochTime: Int64?) -> String {
+    static func getFormattedCakeDay(_ epochTime: Int64?) -> String {
         guard let epochTime else {
             return "Unknown"
         }

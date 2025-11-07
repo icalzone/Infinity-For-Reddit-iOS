@@ -71,7 +71,6 @@ struct SubredditDetailsView: View {
                                 .onChange(of: currentHeaderMinY) { _, newValue in
                                     self.bannerMinY = newValue
                                     navigationBarOpacity = min(1, max(0, (-bannerMinY / bannerMaxHeight)))
-                                    print(max(0, bannerMaxHeight + currentHeaderMinY * 0.4))
                                 }
                             }
                             .frame(height: geoHeight)
@@ -145,6 +144,7 @@ struct SubredditDetailsView: View {
                             ),
                             isRootView: false,
                             scrollProxy: scrollProxy,
+                            pauseLazyModeExternalFlag: showSubredditAboutSheet,
                             onStartLazyMode: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     lazyModeStarted = true

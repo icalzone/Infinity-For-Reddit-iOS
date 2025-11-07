@@ -15,7 +15,7 @@ struct SubredditAboutSheet: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                RowText("Cakeday: \(Utils.formattedCakeDay(subredditData?.createdUTC))")
+                RowText("Cakeday: \(Utils.getFormattedCakeDay(subredditData?.createdUTC))")
                     .primaryText()
                 
                 if let description = subredditData?.description, !description.isEmpty {
