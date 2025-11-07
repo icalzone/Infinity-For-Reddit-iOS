@@ -383,10 +383,10 @@
     "Start by creating a post filter" : {
 
     },
-    "Subscribe" : {
+    "Subscribe %lld" : {
 
     },
-    "Subscribed" : {
+    "Subscribed %lld" : {
 
     },
     "Subscribers: %lld" : {

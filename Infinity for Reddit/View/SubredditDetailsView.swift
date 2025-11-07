@@ -23,6 +23,8 @@ struct SubredditDetailsView: View {
     @State private var headerItemViewHeight: CGFloat? = nil
     @State private var geoHeight: CGFloat = 150
     @State private var navigationBarOpacity: CGFloat = 0
+    @State private var navigationBarMenuKey: UUID?
+    @State private var showSubredditAboutSheet: Bool = false
     
     @StateObject var subredditDetailsViewModel : SubredditDetailsViewModel
     
@@ -92,19 +94,15 @@ struct SubredditDetailsView: View {
                                         Text("r/\(subredditDetailsViewModel.subredditData?.name ?? subredditDetailsViewModel.subredditName)")
                                             .subreddit()
                                         
-                                        Button(action: {
+                                        Button(subredditDetailsViewModel.isSubscribed ?
+                                               "Subscribed \(subredditDetailsViewModel.subredditData?.nSubscribers ?? 0)"
+                                               : "Subscribe \(subredditDetailsViewModel.subredditData?.nSubscribers ?? 0)") {
                                             subscribeTask?.cancel()
                                             subscribeTask = Task {
                                                 await subredditDetailsViewModel.toggleSubscribeSubreddit()
                                             }
-                                        }) {
-                                            Text(subredditDetailsViewModel.isSubscribed ? "Subscribed" : "Subscribe")
-                                                .padding(.horizontal, 16)
-                                                .padding(.vertical, 8)
-                                                .background(Color.blue)
-                                                .foregroundColor(.white)
-                                                .cornerRadius(20)
                                         }
+                                        .filledButton()
                                         .frame(height: headerItemViewHeight)
                                         .clipped()
                                     }
@@ -212,9 +210,21 @@ struct SubredditDetailsView: View {
         }
         .toolbarBackground(.hidden, for: .navigationBar)
         .toolbar {
-            NavigationBarMenu()
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Button(action: {
+                    showSubredditAboutSheet = true
+                }) {
+                    SwiftUI.Image(systemName: "info.circle")
+                        .navigationBarImage()
+                }
+                
+                NavigationBarMenu()
+            }
         }
         .id(accountViewModel.account.username)
+        .sheet(isPresented: $showSubredditAboutSheet) {
+            SubredditAboutSheet(subredditData: subredditDetailsViewModel.subredditData)
+        }
     }
     
     private func setHeight(_ proxy: GeometryProxy) {
