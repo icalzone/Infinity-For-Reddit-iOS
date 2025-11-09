@@ -30,8 +30,7 @@ struct PostListingScrollView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: nil,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository(),
-                postFeedID: postListingMetadata.getPostFeedID()
+                historyPostsRepository: HistoryPostsRepository()
             )
         )
     }
@@ -45,8 +44,7 @@ struct PostListingScrollView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: nil,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository(),
-                postFeedID: postListingMetadata.getPostFeedID()
+                historyPostsRepository: HistoryPostsRepository()
             )
         )
     }
@@ -61,9 +59,15 @@ struct PostListingScrollView: View {
                 if isRootView {
                     List {
                         ForEach(postListingViewModel.posts, id: \.id) { post in
-                            PostViewCard(post: post, isSubredditPostListing: false, onPostTypeClicked: {}, onSensitiveClicked: {})
-                                .id(post.id)
-                                .listPlainItemNoInsets()
+                            PostView(
+                                post: post,
+                                postLayout: postListingViewModel.postLayout,
+                                isSubredditPostListing: false,
+                                onPostTypeTap: { },
+                                onSensitiveTap: { }
+                            )
+                            .id(ObjectIdentifier(post))
+                            .listPlainItemNoInsets()
                         }
                         if postListingViewModel.hasMorePages {
                             ProgressIndicator()
@@ -77,9 +81,15 @@ struct PostListingScrollView: View {
                     .themedList()
                 } else {
                     ForEach(postListingViewModel.posts, id: \.id) { post in
-                        PostViewCard(post: post, isSubredditPostListing: false, onPostTypeClicked: {}, onSensitiveClicked: {})
-                            .id(post.id)
-                            .listPlainItemNoInsets()
+                        PostView(
+                            post: post,
+                            postLayout: postListingViewModel.postLayout,
+                            isSubredditPostListing: false,
+                            onPostTypeTap: { },
+                            onSensitiveTap: { }
+                        )
+                        .id(ObjectIdentifier(post))
+                        .listPlainItemNoInsets()
                     }
                     if postListingViewModel.hasMorePages {
                         ProgressIndicator()

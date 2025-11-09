@@ -52,8 +52,7 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository(),
-                postFeedID: postListingMetadata.getPostFeedID()
+                historyPostsRepository: HistoryPostsRepository()
             )
         )
     }
@@ -84,8 +83,7 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository(),
-                postFeedID: postListingMetadata.getPostFeedID()
+                historyPostsRepository: HistoryPostsRepository()
             )
         )
     }
@@ -106,11 +104,17 @@ struct PostListingView: View {
                     ScrollViewReader { proxy in
                         List {
                             ForEach(postListingViewModel.posts, id: \.id) { post in
-                                PostViewCard(post: post, isSubredditPostListing: isSubredditPostListing, onPostTypeClicked: {
-                                    onPostTypeClicked(post: post)
-                                }, onSensitiveClicked: {
-                                    onSensitiveClicked(post: post)
-                                })
+                                PostView(
+                                    post: post,
+                                    postLayout: postListingViewModel.postLayout,
+                                    isSubredditPostListing: isSubredditPostListing,
+                                    onPostTypeTap: {
+                                        onPostTypeClicked(post: post)
+                                    },
+                                    onSensitiveTap: {
+                                        onSensitiveClicked(post: post)
+                                    }
+                                )
                                 .id(ObjectIdentifier(post))
                                 .listPlainItemNoInsets()
                                 .onAppear {
@@ -160,11 +164,17 @@ struct PostListingView: View {
                     }
                 } else {
                     ForEach(postListingViewModel.posts, id: \.id) { post in
-                        PostViewCard(post: post, isSubredditPostListing: isSubredditPostListing, width: nil, onPostTypeClicked: {
-                            onPostTypeClicked(post: post)
-                        }, onSensitiveClicked: {
-                            onSensitiveClicked(post: post)
-                        })
+                        PostView(
+                            post: post,
+                            postLayout: postListingViewModel.postLayout,
+                            isSubredditPostListing: isSubredditPostListing,
+                            onPostTypeTap: {
+                                onPostTypeClicked(post: post)
+                            },
+                            onSensitiveTap: {
+                                onSensitiveClicked(post: post)
+                            }
+                        )
                         .id(ObjectIdentifier(post))
                         .listPlainItemNoInsets()
                         .onAppear {
@@ -266,10 +276,10 @@ struct PostListingView: View {
             .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showLayoutTypeSheet) {
-            LayoutTypeSheet(
-                currentLayout: postListingViewModel.layout,
-                onSelectLayout: { newLayout in
-                    postListingViewModel.changePostLayout(to: newLayout)
+            PostLayoutSheet(
+                currentPostLayout: postListingViewModel.postLayout,
+                onSelectPostLayout: { newLayout in
+                    postListingViewModel.changePostLayout(newLayout)
                 }
             )
             .presentationDetents([.medium, .large])

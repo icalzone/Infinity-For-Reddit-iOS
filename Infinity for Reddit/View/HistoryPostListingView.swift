@@ -58,11 +58,17 @@ struct HistoryPostListingView: View {
             } else {
                 List {
                     ForEach(historyPostListingViewModel.posts, id: \.id) { post in
-                        PostViewCard(post: post, isSubredditPostListing: false, onPostTypeClicked: {
-                            onPostTypeClicked(post: post)
-                        }, onSensitiveClicked: {
-                            onSensitiveClicked(post: post)
-                        })
+                        PostView(
+                            post: post,
+                            postLayout: historyPostListingViewModel.postLayout,
+                            isSubredditPostListing: false,
+                            onPostTypeTap: {
+                                onPostTypeClicked(post: post)
+                            },
+                            onSensitiveTap: {
+                                onSensitiveClicked(post: post)
+                            }
+                        )
                         .id(ObjectIdentifier(post))
                         .listPlainItemNoInsets()
                         .onAppear {
@@ -127,10 +133,10 @@ struct HistoryPostListingView: View {
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
         .sheet(isPresented: $showLayoutTypeSheet) {
-            LayoutTypeSheet(
-                currentLayout: historyPostListingViewModel.layout,
-                onSelectLayout: { newLayout in
-                    historyPostListingViewModel.changePostLayout(to: newLayout)
+            PostLayoutSheet(
+                currentPostLayout: historyPostListingViewModel.postLayout,
+                onSelectPostLayout: { newLayout in
+                    historyPostListingViewModel.changePostLayout(newLayout)
                 }
             )
             .presentationDetents([.medium, .large])
