@@ -40,7 +40,7 @@ struct CustomThemeSettingsView: View {
                         subtitle: customThemeViewModel.currentLightCustomTheme?.name ?? "Indigo",
                         icon: "sun.max"
                     ) {
-                        navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
+                        navigationManager.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentLightCustomTheme ?? CustomTheme.getIndigo()))
                     }
                     .listPlainItemNoInsets()
                     
@@ -49,7 +49,7 @@ struct CustomThemeSettingsView: View {
                         subtitle: customThemeViewModel.currentDarkCustomTheme?.name ?? "Indigo Dark",
                         icon: "moon"
                     ) {
-                        navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentDarkCustomTheme ?? CustomTheme.getIndigoDark()))
+                        navigationManager.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentDarkCustomTheme ?? CustomTheme.getIndigoDark()))
                     }
                     .listPlainItemNoInsets()
                     
@@ -58,7 +58,7 @@ struct CustomThemeSettingsView: View {
                         subtitle: customThemeViewModel.currentAmoledCustomTheme?.name ?? "Indigo Amoled",
                         icon: "moon"
                     ) {
-                        navigationManager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentAmoledCustomTheme ?? CustomTheme.getIndigoAmoled()))
+                        navigationManager.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customThemeViewModel.currentAmoledCustomTheme ?? CustomTheme.getIndigoAmoled()))
                     }
                     .listPlainItemNoInsets()
                     
@@ -66,7 +66,7 @@ struct CustomThemeSettingsView: View {
                         title: "Manage Themes",
                         icon: "pencil"
                     ) {
-                        navigationManager.path.append(CustomThemeSettingsViewNavigation.customThemeListing)
+                        navigationManager.append(CustomThemeSettingsViewNavigation.customThemeListing)
                     }
                     .listPlainItemNoInsets()
                 }

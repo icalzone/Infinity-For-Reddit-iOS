@@ -51,7 +51,7 @@ struct PostFilterSettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        navigationManager.path.append(SettingsViewNavigation.createOrEditPostFilter())
+                        navigationManager.append(SettingsViewNavigation.createOrEditPostFilter())
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -86,18 +86,18 @@ struct PostFilterSettingsView: View {
         .addTitleToInlineNavigationBar("Post Filter")
         .toolbar {
             Button("", systemImage: "plus") {
-                navigationManager.path.append(SettingsViewNavigation.createOrEditPostFilter())
+                navigationManager.append(SettingsViewNavigation.createOrEditPostFilter())
             }
         }
         .sheet(isPresented: $showPostFilterOptionSheet) {
             PostOrCommentFilterOptionSheet(
                 onEditSelected: {
                     if let postFilter = selectedPostFilter {
-                        navigationManager.path.append(SettingsViewNavigation.createOrEditPostFilter(postFilter: postFilter))
+                        navigationManager.append(SettingsViewNavigation.createOrEditPostFilter(postFilter: postFilter))
                     }
                 }, onApplyToSelected: {
                     if let postFilter = selectedPostFilter, let id = postFilter.id {
-                        navigationManager.path.append(SettingsViewNavigation.postFilterUsageListing(postFilterId: id))
+                        navigationManager.append(SettingsViewNavigation.postFilterUsageListing(postFilterId: id))
                     }
                 }, onDeleteSelected: {
                     if let postFilter = selectedPostFilter, let id = postFilter.id {

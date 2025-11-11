@@ -56,7 +56,7 @@ struct SubscribedSubredditListingView: View {
                                     if let onSelectCustomAction = onSelectCustomAction {
                                         onSelectCustomAction(subscription)
                                     } else {
-                                        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                        navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                     }
                                 }) {
                                     subscription.isFavorite.toggle()
@@ -75,7 +75,7 @@ struct SubscribedSubredditListingView: View {
                                 if let onSelectCustomAction = onSelectCustomAction {
                                     onSelectCustomAction(subscription)
                                 } else {
-                                    navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                    navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                 }
                             }) {
                                 subscription.isFavorite.toggle()

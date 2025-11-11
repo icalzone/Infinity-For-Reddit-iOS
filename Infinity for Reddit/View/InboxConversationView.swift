@@ -127,7 +127,7 @@ struct InboxConversationView: View {
                     guard let recepient = inboxConversationViewModel.recepient else {
                         return
                     }
-                    navigationManager.path.append(AppNavigation.userDetails(username: recepient))
+                    navigationManager.append(AppNavigation.userDetails(username: recepient))
                 }
             ])
         }

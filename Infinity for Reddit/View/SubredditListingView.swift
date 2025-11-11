@@ -72,7 +72,7 @@ struct SubredditListingView: View {
                             if let onSelect {
                                 onSelect(subreddit)
                             } else {
-                                navigationManager.path.append(
+                                navigationManager.append(
                                     AppNavigation.subredditDetails(subredditName: subreddit.displayName)
                                 )
                             }

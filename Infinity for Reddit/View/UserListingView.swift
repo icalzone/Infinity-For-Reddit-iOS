@@ -67,7 +67,7 @@ struct UserListingView: View {
                             if let onSelect {
                                 onSelect(user)
                             } else {
-                                navigationManager.path.append(AppNavigation.userDetails(username: user.name))
+                                navigationManager.append(AppNavigation.userDetails(username: user.name))
                             }
                         }
                     }

@@ -109,7 +109,7 @@ struct PostDetailsViewCard: View {
                     if !hidePostType {
                         PostTypeTag(post: postViewModel.post)
                             .onTapGesture {
-                                navigationManager.path.append(
+                                navigationManager.append(
                                     AppNavigation.filteredPosts(
                                         postListingMetadata: PostListingMetadata.getSubredditMetadadata(
                                             subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
@@ -129,7 +129,7 @@ struct PostDetailsViewCard: View {
                             .onTapGesture {
                                 var postFilter = PostFilter()
                                 postFilter.onlySensitive = true
-                                navigationManager.path.append(
+                                navigationManager.append(
                                     AppNavigation.filteredPosts(
                                         postListingMetadata: PostListingMetadata.getSubredditMetadadata(
                                             subredditName: postViewModel.post.subreddit, accountViewModel: accountViewModel
@@ -316,11 +316,11 @@ struct PostDetailsViewCard: View {
     }
     
     private func goToSubredditDetails() {
-        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: postViewModel.post.subreddit))
+        navigationManager.append(AppNavigation.subredditDetails(subredditName: postViewModel.post.subreddit))
     }
     
     private func goToUserDetails() {
-        navigationManager.path.append(AppNavigation.userDetails(username: postViewModel.post.author))
+        navigationManager.append(AppNavigation.userDetails(username: postViewModel.post.author))
     }
 }
 

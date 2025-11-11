@@ -78,7 +78,7 @@ struct AccountSheet: View {
                     if accountViewModel.account.isAnonymous() != true {
                         SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
                             dismiss()
-                            navigationManager.path.append(AppNavigation.userDetails(username: accountViewModel.account.username))
+                            navigationManager.append(AppNavigation.userDetails(username: accountViewModel.account.username))
                         }
                     }
                     
@@ -98,7 +98,7 @@ struct AccountSheet: View {
                     
                     SimpleTouchItemRow(text: "Add account", icon: "person.crop.circle.badge.plus") {
                         dismiss()
-                        navigationManager.path.append(AppNavigation.login)
+                        navigationManager.append(AppNavigation.login)
                     }
                     
                     if accountViewModel.account.isAnonymous() == false {

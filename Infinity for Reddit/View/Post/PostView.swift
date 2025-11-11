@@ -79,7 +79,7 @@ struct PostView: View {
             await postViewModel.readPost()
         }
         
-        navigationManager.path.append(
+        navigationManager.append(
             AppNavigation.postDetails(
                 postDetailsInput: .post(post),
                 isFromSubredditPostListing: isSubredditPostListing
@@ -89,24 +89,24 @@ struct PostView: View {
     
     private func onIconTap() {
         if !isSubredditPostListing {
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.subredditDetails(subredditName: post.subreddit)
             )
         } else if !post.isAuthorDeleted() {
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.userDetails(username: post.author)
             )
         }
     }
     
     private func onSubredditTap() {
-        navigationManager.path.append(
+        navigationManager.append(
             AppNavigation.subredditDetails(subredditName: post.subreddit)
         )
     }
     
     private func onUserTap() {
-        navigationManager.path.append(
+        navigationManager.append(
             AppNavigation.userDetails(username: post.author)
         )
     }

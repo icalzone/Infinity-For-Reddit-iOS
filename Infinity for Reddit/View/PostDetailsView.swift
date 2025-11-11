@@ -132,11 +132,11 @@ struct PostDetailsView: View {
                                 onReply: {
                                     let commentParent = CommentParent.comment(parentComment: comment)
                                     self.sentCommentParent = commentParent
-                                    navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
+                                    navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
                                 },
                                 onEdit: {
                                     self.commentToBeEdited = comment
-                                    navigationManager.path.append(AppNavigation.editComment(commentToBeEdited: comment))
+                                    navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
                                 },
                                 onDelete: {
                                     postDetailsViewModel.deleteComment(comment)
@@ -179,7 +179,7 @@ struct PostDetailsView: View {
                                     } else {
                                         // Continue thread
                                         if let postId = postDetailsViewModel.post?.id {
-                                            navigationManager.path.append(
+                                            navigationManager.append(
                                                 AppNavigation.postDetailsWithId(
                                                     postId: postId,
                                                     commentId: commentMore.parentFullname.substring(from: 3),
@@ -372,13 +372,13 @@ struct PostDetailsView: View {
         if let post = postDetailsViewModel.post {
             let commentParent = CommentParent.post(parentPost: post)
             self.sentCommentParent = commentParent
-            navigationManager.path.append(AppNavigation.submitComment(commentParent: commentParent))
+            navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
         }
     }
     
     private func editPost() {
         if let post = postDetailsViewModel.post {
-            navigationManager.path.append(AppNavigation.editPost(post: post))
+            navigationManager.append(AppNavigation.editPost(post: post))
         }
     }
     

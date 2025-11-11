@@ -289,7 +289,7 @@ struct PostListingView: View {
         
         if showFilterPostsOption {
             options.append(NavigationBarMenuItem(title: "Filter Posts") {
-                navigationManager.path.append(
+                navigationManager.append(
                     AppNavigation.filterPosts(
                         postListingMetadata: postListingMetadata
                     )
@@ -302,7 +302,7 @@ struct PostListingView: View {
     
     private func onPostTypeClicked(post: Post) {
         if showFilterPostsOption {
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.filteredPosts(
                     postListingMetadata: postListingMetadata,
                     postFilter: PostFilter.constructPostFilter(postType: post.postType)
@@ -315,7 +315,7 @@ struct PostListingView: View {
         if showFilterPostsOption {
             var postFilter = PostFilter()
             postFilter.onlySensitive = true
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.filteredPosts(
                     postListingMetadata: postListingMetadata,
                     postFilter: postFilter

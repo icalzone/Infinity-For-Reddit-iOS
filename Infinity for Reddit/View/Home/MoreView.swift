@@ -25,18 +25,18 @@ struct MoreView: View {
             List {
                 CustomListSection("Reddit") {
                     SimpleTouchItemRow(text: "Popular", icon: "flame") {
-                        navigationManager.path.append(MoreViewNavigation.popular)
+                        navigationManager.append(MoreViewNavigation.popular)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "All", icon: "globe") {
-                        navigationManager.path.append(MoreViewNavigation.all)
+                        navigationManager.append(MoreViewNavigation.all)
                     }
                     .listPlainItemNoInsets()
                     
                     if !accountViewModel.account.isAnonymous() {
                         SimpleTouchItemRow(text: "Search", icon: "magnifyingglass") {
-                            navigationManager.path.append(AppNavigation.search)
+                            navigationManager.append(AppNavigation.search)
                         }
                         .listPlainItemNoInsets()
                     }
@@ -66,45 +66,45 @@ struct MoreView: View {
                 CustomListSection("Account") {
                     if !accountViewModel.account.isAnonymous() {
                         SimpleTouchItemRow(text: "Profile", icon: "person.crop.circle") {
-                            navigationManager.path.append(MoreViewNavigation.profile)
+                            navigationManager.append(MoreViewNavigation.profile)
                         }
                         .listPlainItemNoInsets()
                     }
                     
                     SimpleTouchItemRow(text: "Upvoted", icon:"arrowshape.up") {
-                        navigationManager.path.append(MoreViewNavigation.upvoted)
+                        navigationManager.append(MoreViewNavigation.upvoted)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Downvoted", icon: "arrowshape.down") {
-                        navigationManager.path.append(MoreViewNavigation.downvoted)
+                        navigationManager.append(MoreViewNavigation.downvoted)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Hidden", icon: "eye.slash") {
-                        navigationManager.path.append(MoreViewNavigation.hidden)
+                        navigationManager.append(MoreViewNavigation.hidden)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Saved", icon: "bookmark.fill") {
-                        navigationManager.path.append(MoreViewNavigation.saved)
+                        navigationManager.append(MoreViewNavigation.saved)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "History", icon: "clock") {
-                        navigationManager.path.append(MoreViewNavigation.history)
+                        navigationManager.append(MoreViewNavigation.history)
                     }
                     .listPlainItemNoInsets()
                 }
                 
                 CustomListSection("Preferences") {
                     SimpleTouchItemRow(text: "Settings", icon: "gearshape") {
-                        navigationManager.path.append(MoreViewNavigation.settings)
+                        navigationManager.append(MoreViewNavigation.settings)
                     }
                     .listPlainItemNoInsets()
                     
                     SimpleTouchItemRow(text: "Test", icon: "testtube.2") {
-                        navigationManager.path.append(MoreViewNavigation.test)
+                        navigationManager.append(MoreViewNavigation.test)
                     }
                     .listPlainItemNoInsets()
                 }
@@ -158,10 +158,10 @@ struct MoreView: View {
                         navigationManager.openLink(handleLinkUrlString)
                         handleLinkUrlString = ""
                     case .goToSubreddit:
-                        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subredditName))
+                        navigationManager.append(AppNavigation.subredditDetails(subredditName: subredditName))
                         subredditName = ""
                     case .goToUser:
-                        navigationManager.path.append(AppNavigation.userDetails(username: username))
+                        navigationManager.append(AppNavigation.userDetails(username: username))
                         username = ""
                     }
                 }

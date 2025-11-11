@@ -91,7 +91,7 @@ struct InboxMessageItemView: View {
     var body: some View {
         VStack(spacing: 0) {
             TouchRipple(action: {
-                navigationManager.path.append(AppNavigation.inboxConversation(inbox: inbox))
+                navigationManager.append(AppNavigation.inboxConversation(inbox: inbox))
             }) {
                 VStack {
                     Text(account.username == inbox.author ? inbox.dest : inbox.author)

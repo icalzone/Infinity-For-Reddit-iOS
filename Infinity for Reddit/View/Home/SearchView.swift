@@ -48,7 +48,7 @@ struct SearchView: View {
                         if let onSearch = onSearchCustomAction {
                             onSearch(searchViewModel.query)
                         } else {
-                            navigationManager.path.append(
+                            navigationManager.append(
                                 AppNavigation.searchResults(
                                     query: searchViewModel.query,
                                     searchInSubredditOrUserName: searchViewModel.searchInSubredditOrUserName,
@@ -108,7 +108,7 @@ struct SearchView: View {
                             if let onSearch = onSearchCustomAction {
                                 onSearch(search.searchQuery)
                             } else {
-                                navigationManager.path.append(AppNavigation.searchResults(query: search.searchQuery, searchInSubredditOrUserName: search.searchInSubredditOrUserName, searchInMultiReddit: search.customFeedPath, searchInThingType: search.searchInThingType))
+                                navigationManager.append(AppNavigation.searchResults(query: search.searchQuery, searchInSubredditOrUserName: search.searchInSubredditOrUserName, searchInMultiReddit: search.customFeedPath, searchInThingType: search.searchInThingType))
                             }
                         }) {
                             VStack(alignment: .leading, spacing: 2) {

@@ -50,7 +50,7 @@ struct CommentFilterSettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        navigationManager.path.append(SettingsViewNavigation.createOrEditCommentFilter())
+                        navigationManager.append(SettingsViewNavigation.createOrEditCommentFilter())
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -85,18 +85,18 @@ struct CommentFilterSettingsView: View {
         .addTitleToInlineNavigationBar("Comment Filter")
         .toolbar {
             Button("", systemImage: "plus") {
-                navigationManager.path.append(SettingsViewNavigation.createOrEditCommentFilter())
+                navigationManager.append(SettingsViewNavigation.createOrEditCommentFilter())
             }
         }
         .sheet(isPresented: $showCommentFilterOptionSheet) {
             PostOrCommentFilterOptionSheet(
                 onEditSelected: {
                     if let commentFilter = selectedCommentFilter {
-                        navigationManager.path.append(SettingsViewNavigation.createOrEditCommentFilter(commentFilter: commentFilter))
+                        navigationManager.append(SettingsViewNavigation.createOrEditCommentFilter(commentFilter: commentFilter))
                     }
                 }, onApplyToSelected: {
                     if let commentFilter = selectedCommentFilter, let id = commentFilter.id {
-                        navigationManager.path.append(SettingsViewNavigation.commentFilterUsageListing(commentFilterId: id))
+                        navigationManager.append(SettingsViewNavigation.commentFilterUsageListing(commentFilterId: id))
                     }
                 }, onDeleteSelected: {
                     if let commentFilter = selectedCommentFilter, let id = commentFilter.id {

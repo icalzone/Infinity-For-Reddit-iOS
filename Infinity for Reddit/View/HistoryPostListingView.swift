@@ -118,7 +118,7 @@ struct HistoryPostListingView: View {
             
             if showFilterPostsOption {
                 options.append(NavigationBarMenuItem(title: "Filter Posts") {
-                    navigationManager.path.append(
+                    navigationManager.append(
                         AppNavigation.filterHistoryPosts(
                             historyPostListingMetadata: historyPostListingMetadata
                         )
@@ -146,7 +146,7 @@ struct HistoryPostListingView: View {
     
     private func onPostTypeClicked(post: Post) {
         if showFilterPostsOption {
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.filteredHistoryPosts(
                     historyPostListingMetadata: historyPostListingMetadata,
                     postFilter: PostFilter.constructPostFilter(postType: post.postType)
@@ -159,7 +159,7 @@ struct HistoryPostListingView: View {
         if showFilterPostsOption {
             var postFilter = PostFilter()
             postFilter.onlySensitive = true
-            navigationManager.path.append(
+            navigationManager.append(
                 AppNavigation.filteredHistoryPosts(
                     historyPostListingMetadata: historyPostListingMetadata,
                     postFilter: postFilter

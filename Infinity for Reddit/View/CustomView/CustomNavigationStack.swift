@@ -252,5 +252,13 @@ struct CustomNavigationStack<Content: View>: View {
                 .environmentObject(navigationManager)
         }
         .themedNavigationBarBackButton()
+        .onChange(of: navigationManager.path) { _, newValue in
+            let newCount = newValue.count
+            if navigationManager.viewShouldHideRootTabLabels.count > newCount {
+                navigationManager.viewShouldHideRootTabLabels = Array(navigationManager.viewShouldHideRootTabLabels.prefix(newCount))
+            }
+        }
+        .toolbar(navigationManager.rootTabLabelVisibility, for: .tabBar)
+        .animation(.easeInOut(duration: 0.2), value: navigationManager.rootTabLabelVisibility)
     }
 }

@@ -10,7 +10,7 @@ import Swinject
 import GRDB
 
 struct CustomThemeListingView: View {
-    @EnvironmentObject private var navigationmanager: NavigationManager
+    @EnvironmentObject private var navigationManager: NavigationManager
     
     @StateObject private var customThemeListingViewModel = CustomThemeListingViewModel()
     
@@ -25,7 +25,7 @@ struct CustomThemeListingView: View {
             List {
                 ForEach(customThemeListingViewModel.customThemes, id: \.self.id) { customTheme in
                     ThemeListItem(themeName: customTheme.name, primaryColor: Color(hex: customTheme.colorPrimary)) {
-                        navigationmanager.path.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customTheme))
+                        navigationManager.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customTheme))
                     }
                     .listPlainItemNoInsets()
                 }

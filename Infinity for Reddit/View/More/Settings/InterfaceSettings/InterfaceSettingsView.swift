@@ -24,7 +24,7 @@ struct InterfaceSettingsView: View {
                     title: "Font",
                     icon: "textformat.size"
                 ) {
-                    navigationManager.path.append(InterfaceSettingsViewNavigation.font)
+                    navigationManager.append(InterfaceSettingsViewNavigation.font)
                 }
                 .listPlainItemNoInsets()
                 
@@ -40,21 +40,21 @@ struct InterfaceSettingsView: View {
                     title: "Time Format",
                     icon: "clock"
                 ) {
-                    navigationManager.path.append(InterfaceSettingsViewNavigation.timeFormat)
+                    navigationManager.append(InterfaceSettingsViewNavigation.timeFormat)
                 }
                 .listPlainItemNoInsets()
                 
                 PreferenceEntry(
                     title: "Post"
                 ) {
-                    navigationManager.path.append(InterfaceSettingsViewNavigation.post)
+                    navigationManager.append(InterfaceSettingsViewNavigation.post)
                 }
                 .listPlainItemNoInsets()
                 
                 PreferenceEntry(
                     title: "Post Details"
                 ) {
-                    navigationManager.path.append(InterfaceSettingsViewNavigation.postDetails)
+                    navigationManager.append(InterfaceSettingsViewNavigation.postDetails)
                 }
                 .listPlainItemNoInsets()
                 
@@ -62,7 +62,7 @@ struct InterfaceSettingsView: View {
                     title: "Comment",
                     icon: "text.bubble"
                 ) {
-                    navigationManager.path.append(InterfaceSettingsViewNavigation.comment)
+                    navigationManager.append(InterfaceSettingsViewNavigation.comment)
                 }
                 .listPlainItemNoInsets()
                 

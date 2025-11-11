@@ -162,8 +162,19 @@ struct UserDetailsView: View {
                             .tag(1)
                         }
                         .themedTabViewGroup()
+                        .toolbar(tabBarVisibility, for: .tabBar)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                tabBarVisibility = .visible
+                            }
+                        }
+                        .onDisappear {
+                            tabBarVisibility = .hidden
+                        }
+                        .animation(.easeInOut(duration: 0.2), value: tabBarVisibility)
                     }
                     .themedTabView()
+                    .animation(.bouncy, value: navigationManager.rootTabLabelVisibility)
                 }
                 .overlay(alignment: .top) {
                     Color(hex: themeViewModel.currentCustomTheme.colorPrimary)
@@ -204,18 +215,6 @@ struct UserDetailsView: View {
                 NavigationBarMenu()
             }
         }
-        .onAppear {
-            withAnimation {
-                tabBarVisibility = .hidden
-            }
-        }
-        .onDisappear {
-            withAnimation {
-                tabBarVisibility = .visible
-            }
-        }
-        .toolbar(.hidden, for: .tabBar)
-        .animation(.bouncy, value: tabBarVisibility)
         .toolbarBackground(.hidden, for: .navigationBar)
     }
 }

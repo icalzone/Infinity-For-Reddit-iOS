@@ -81,7 +81,7 @@ struct CommentViewCard: View {
                         )
                         .frame(width: userIconSize, height: userIconSize)
                         .onTapGesture {
-                            navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
+                            navigationManager.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
                         }
                     }
                     
@@ -90,7 +90,7 @@ struct CommentViewCard: View {
                         Text(commentViewModel.comment.subredditNamePrefixed)
                             .subreddit()
                             .onTapGesture {
-                                navigationManager.path.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
+                                navigationManager.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
                             }
                     } else {
                         VStack(alignment: .leading, spacing: 0) {
@@ -100,7 +100,7 @@ struct CommentViewCard: View {
                             AuthorFlairView(flairRichtext: commentViewModel.comment.authorFlairRichtext, flairText: commentViewModel.comment.authorFlairText)
                         }
                         .onTapGesture {
-                            navigationManager.path.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
+                            navigationManager.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
                         }
                     }
                     

@@ -68,7 +68,7 @@ struct AnonymousSubscriptionsView: View {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
                                             customOnTapForSearchInThing(SearchInThing.subreddit(subscription))
                                         } else {
-                                            navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                            navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                         }
                                     }) {
                                         subscription.isFavorite.toggle()
@@ -85,7 +85,7 @@ struct AnonymousSubscriptionsView: View {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
                                         customOnTapForSearchInThing(SearchInThing.subreddit(subscription))
                                     } else {
-                                        navigationManager.path.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                        navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
                                     }
                                 }) {
                                     subscription.isFavorite.toggle()
@@ -122,7 +122,7 @@ struct AnonymousSubscriptionsView: View {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
                                             customOnTapForSearchInThing(SearchInThing.user(subscription))
                                         } else {
-                                            navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                            navigationManager.append(AppNavigation.userDetails(username: subscription.name))
                                         }
                                     }) {
                                         subscription.isFavorite.toggle()
@@ -139,7 +139,7 @@ struct AnonymousSubscriptionsView: View {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
                                         customOnTapForSearchInThing(SearchInThing.user(subscription))
                                     } else {
-                                        navigationManager.path.append(AppNavigation.userDetails(username: subscription.name))
+                                        navigationManager.append(AppNavigation.userDetails(username: subscription.name))
                                     }
                                 }) {
                                     subscription.isFavorite.toggle()
@@ -171,7 +171,7 @@ struct AnonymousSubscriptionsView: View {
                             CustomListSection("Favorite") {
                                 ForEach(anonymousSubscriptionListingViewModel.favoriteMyCustomFeeds, id: \.identityInView) { customFeed in
                                     SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
-                                        navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                        navigationManager.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                     }) {
                                         customFeed.isFavorite.toggle()
                                         anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
@@ -184,7 +184,7 @@ struct AnonymousSubscriptionsView: View {
                         CustomListSection("All") {
                             ForEach(anonymousSubscriptionListingViewModel.myCustomFeeds, id: \.identityInView) { customFeed in
                                 SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
-                                    navigationManager.path.append(AppNavigation.customFeed(myCustomFeed: customFeed))
+                                    navigationManager.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                 }) {
                                     customFeed.isFavorite.toggle()
                                     anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)

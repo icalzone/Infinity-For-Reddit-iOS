@@ -51,7 +51,7 @@ struct CommentListingView: View {
                 List {
                     ForEach(commentListingViewModel.comments, id: \.id) { comment in
                         TouchRipple(action: {
-                            navigationManager.path.append(
+                            navigationManager.append(
                                 AppNavigation.postDetailsWithId(postId: String(comment.linkId.dropFirst(3)), commentId: comment.id)
                             )
                         }) {
@@ -61,7 +61,7 @@ struct CommentListingView: View {
                                 isInPostDetails: false,
                                 onEdit: {
                                     self.commentToBeEdited = comment
-                                    navigationManager.path.append(AppNavigation.editComment(commentToBeEdited: comment))
+                                    navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
                                 },
                                 onDelete: {
                                     commentListingViewModel.deleteComment(comment)
