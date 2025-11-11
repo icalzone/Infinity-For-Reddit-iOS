@@ -15,10 +15,10 @@ struct UserDetailsView: View {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
     
     @StateObject var userDetailsViewModel : UserDetailsViewModel
+    @State private var tabBarVisibility: Visibility = .hidden
     @State private var selectedTab = 0
     @State private var isCurrentUserProfile: Bool = true
-    
-    @State private var infoVisible: Bool = true
+    @State private var isUserInfoVisible: Bool = true
     @State private var pauseLazyModeFlag: Bool = false
     
     private let userIconSize: CGFloat = 80
@@ -36,7 +36,7 @@ struct UserDetailsView: View {
         RootView {
             GeometryReader { proxy in
                 VStack(spacing: 0) {
-                    if infoVisible {
+                    if isUserInfoVisible {
                         VStack(spacing: 0) {
                             CustomWebImage(
                                 userDetailsViewModel.userData?.banner,
@@ -61,30 +61,21 @@ struct UserDetailsView: View {
                                         InitialLetterAvatarImageFallbackView(name: userDetailsViewModel.userData?.name ?? "", size: userIconSize)
                                     }
                                 )
-                                .padding(.vertical, 20)
                                 
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text("u/\(userDetailsViewModel.userData?.name ?? userDetailsViewModel.username)")
                                         .username()
-                                        .font(.title2)
-                                        .bold()
                                     
-                                    Button(action: {
+                                    Button(userDetailsViewModel.userData?.isSubscribed ?? false ? "Followed" : "Follow") {
                                         userDetailsViewModel.toggleFollowUser()
-                                    }) {
-                                        Text(userDetailsViewModel.userData?.isSubscribed ?? false ? "Followed" : "Follow")
-                                            .padding(.horizontal, 15)
-                                            .padding(.vertical, 8)
-                                            .background(Color.blue)
-                                            .foregroundColor(.white)
-                                            .cornerRadius(20)
                                     }
+                                    .filledButton()
                                 }
-                                .padding(.leading, 10)
+                                .padding(.horizontal, 16)
                                 
                                 Spacer()
                             }
-                            .padding(.horizontal, 16)
+                            .padding(16)
                             
                             HStack {
                                 Text("Karma: \(userDetailsViewModel.userData?.totalKarma ?? 0)")
@@ -110,12 +101,12 @@ struct UserDetailsView: View {
                             }
                         }
                         .transition(.move(edge: .top).combined(with: .opacity))
-                        .animation(.easeInOut, value: infoVisible)
+                        .animation(.easeInOut, value: isUserInfoVisible)
                     } else {
                         Spacer()
                             .frame(height: proxy.safeAreaInsets.top)
                             .transition(.move(edge: .bottom))
-                            .animation(.easeInOut, value: infoVisible)
+                            .animation(.easeInOut, value: isUserInfoVisible)
                     }
                     
                     TabView(selection: $selectedTab) {
@@ -131,16 +122,16 @@ struct UserDetailsView: View {
                                 isRootView: true,
                                 pauseLazyModeExternalFlag: pauseLazyModeFlag,
                                 onStartLazyMode: {
-                                    if infoVisible {
+                                    if isUserInfoVisible {
                                         withAnimation {
-                                            infoVisible = false
+                                            isUserInfoVisible = false
                                         }
                                     }
                                 },
                                 onScroll: {
-                                    if infoVisible {
+                                    if isUserInfoVisible {
                                         withAnimation {
-                                            infoVisible = false
+                                            isUserInfoVisible = false
                                         }
                                     }
                                 }
@@ -158,9 +149,9 @@ struct UserDetailsView: View {
                                     queries: nil
                                 ),
                                 onScroll: {
-                                    if infoVisible {
+                                    if isUserInfoVisible {
                                         withAnimation {
-                                            infoVisible = false
+                                            isUserInfoVisible = false
                                         }
                                     }
                                 }
@@ -177,7 +168,7 @@ struct UserDetailsView: View {
                 .overlay(alignment: .top) {
                     Color(hex: themeViewModel.currentCustomTheme.colorPrimary)
                         .frame(height: proxy.safeAreaInsets.top)
-                        .opacity(infoVisible ? 0 : 1)
+                        .opacity(isUserInfoVisible ? 0 : 1)
                         .ignoresSafeArea()
                 }
                 .edgesIgnoringSafeArea(.top)
@@ -199,12 +190,12 @@ struct UserDetailsView: View {
                         .resizable()
                         .frame(width: 16, height: 16)
                         .navigationBarPrimaryText()
-                        .rotationEffect(.degrees(infoVisible ? 180 : 0))
+                        .rotationEffect(.degrees(isUserInfoVisible ? 180 : 0))
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
                     withAnimation {
-                        infoVisible.toggle()
+                        isUserInfoVisible.toggle()
                     }
                 }
             }
@@ -213,7 +204,18 @@ struct UserDetailsView: View {
                 NavigationBarMenu()
             }
         }
+        .onAppear {
+            withAnimation {
+                tabBarVisibility = .hidden
+            }
+        }
+        .onDisappear {
+            withAnimation {
+                tabBarVisibility = .visible
+            }
+        }
         .toolbar(.hidden, for: .tabBar)
+        .animation(.bouncy, value: tabBarVisibility)
         .toolbarBackground(.hidden, for: .navigationBar)
     }
 }

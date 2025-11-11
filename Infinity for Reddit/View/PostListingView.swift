@@ -59,7 +59,7 @@ struct PostListingView: View {
     
     init(postListingMetadata: PostListingMetadata,
          externalPostFilter: PostFilter? = nil,
-         isRootView: Bool,
+         isRootView: Bool = true,
          showFilterPostsOption: Bool = true,
          scrollProxy: ScrollViewProxy? = nil,
          pauseLazyModeExternalFlag: Bool,
@@ -102,111 +102,72 @@ struct PostListingView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                if isRootView {
-                    ScrollViewReader { proxy in
-                        List {
-                            ForEach(postListingViewModel.posts, id: \.id) { post in
-                                PostView(
-                                    post: post,
-                                    postLayout: postListingViewModel.postLayout,
-                                    isSubredditPostListing: isSubredditPostListing,
-                                    onPostTypeTap: {
-                                        onPostTypeClicked(post: post)
-                                    },
-                                    onSensitiveTap: {
-                                        onSensitiveClicked(post: post)
-                                    }
-                                )
-                                .id(ObjectIdentifier(post))
-                                .listPlainItemNoInsets()
-                                .onAppear {
-                                    postListingViewModel.insertIntoAppearedPosts(post)
-                                    
-                                    if post.subredditOrUserIcon == nil {
-                                        Task {
-                                            await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
-                                        }
-                                    }
+                ScrollViewReader { proxy in
+                    List {
+                        ForEach(postListingViewModel.posts, id: \.id) { post in
+                            PostView(
+                                post: post,
+                                postLayout: postListingViewModel.postLayout,
+                                isSubredditPostListing: isSubredditPostListing,
+                                onPostTypeTap: {
+                                    onPostTypeClicked(post: post)
+                                },
+                                onSensitiveTap: {
+                                    onSensitiveClicked(post: post)
                                 }
-                                .onDisappear {
-                                    postListingViewModel.appearedPosts.removeAll {
-                                        $0.id == post.id
+                            )
+                            .id(ObjectIdentifier(post))
+                            .listPlainItemNoInsets()
+                            .onAppear {
+                                postListingViewModel.insertIntoAppearedPosts(post)
+                                
+                                if post.subredditOrUserIcon == nil {
+                                    Task {
+                                        await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
                                     }
                                 }
                             }
-                            if postListingViewModel.hasMorePages {
-                                ProgressIndicator()
-                                    .task {
-                                        await postListingViewModel.loadPosts()
-                                    }
-                                    .listPlainItem()
-                            }
-                        }
-                        .scrollBounceBehavior(.basedOnSize)
-                        .themedList()
-                        .refreshable {
-                            await postListingViewModel.refreshPostsWithContinuation()
-                        }
-                        .onAppear {
-                            scrollProxy = proxy
-                        }
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance: 0)
-                                .onChanged { value in
-                                    if lazyModeState == .started {
-                                        pauseLazyMode(resetScrolledPost: true)
-                                    }
-                                }
-                                .onEnded { value in
-                                    if lazyModeState == .paused {
-                                        resumeLazyMode()
-                                    }
-                                }
-                        )
-                        .applyIf(onScroll != nil) {
-                            $0.onScrollPhaseChange { oldPhase, newPhase, context in
-                                if newPhase == .interacting {
-                                    onScroll?()
+                            .onDisappear {
+                                postListingViewModel.appearedPosts.removeAll {
+                                    $0.id == post.id
                                 }
                             }
+                        }
+                        if postListingViewModel.hasMorePages {
+                            ProgressIndicator()
+                                .task {
+                                    await postListingViewModel.loadPosts()
+                                }
+                                .listPlainItem()
                         }
                     }
-                } else {
-                    ForEach(postListingViewModel.posts, id: \.id) { post in
-                        PostView(
-                            post: post,
-                            postLayout: postListingViewModel.postLayout,
-                            isSubredditPostListing: isSubredditPostListing,
-                            onPostTypeTap: {
-                                onPostTypeClicked(post: post)
-                            },
-                            onSensitiveTap: {
-                                onSensitiveClicked(post: post)
-                            }
-                        )
-                        .id(ObjectIdentifier(post))
-                        .listPlainItemNoInsets()
-                        .onAppear {
-                            postListingViewModel.insertIntoAppearedPosts(post)
-                            
-                            if post.subredditOrUserIcon == nil {
-                                Task {
-                                    await postListingViewModel.loadIcon(post: post, displaySubredditIcon: !isSubredditPostListing)
+                    .scrollBounceBehavior(.basedOnSize)
+                    .themedList()
+                    .refreshable {
+                        await postListingViewModel.refreshPostsWithContinuation()
+                    }
+                    .onAppear {
+                        scrollProxy = proxy
+                    }
+                    .simultaneousGesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                if lazyModeState == .started {
+                                    pauseLazyMode(resetScrolledPost: true)
                                 }
                             }
-                        }
-                        .onDisappear {
-                            postListingViewModel.appearedPosts.removeAll {
-                                $0.id == post.id
+                            .onEnded { value in
+                                if lazyModeState == .paused {
+                                    resumeLazyMode()
+                                }
+                            }
+                    )
+                    .applyIf(onScroll != nil) {
+                        $0.onScrollPhaseChange { oldPhase, newPhase, context in
+                            if newPhase == .interacting {
+                                onScroll?()
                             }
                         }
-                    }
-                    if postListingViewModel.hasMorePages {
-                        ProgressIndicator()
-                            .task {
-                                await postListingViewModel.loadPosts()
-                            }
-                            .listPlainItem()
                     }
                 }
             }
