@@ -27,13 +27,15 @@ struct InboxView: View {
                 .padding(4)
             
             TabView(selection: $selectedOption) {
-                InboxListingView(messageWhere: MessageWhere.inbox)
-                    .tag(0)
-                
-                InboxListingView(messageWhere: MessageWhere.messages)
-                    .tag(1)
+                Group {
+                    InboxListingView(messageWhere: MessageWhere.inbox)
+                        .tag(0)
+                    
+                    InboxListingView(messageWhere: MessageWhere.messages)
+                        .tag(1)
+                }
+                .toolbar(.hidden, for: .tabBar)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
             
             Spacer()
         }
