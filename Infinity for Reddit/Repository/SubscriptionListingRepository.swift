@@ -101,4 +101,30 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
         
         try myCustomFeedDao.insert(myCustomFeed: myCustomFeed)
     }
+    
+    func unsubscribeFromSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async throws {
+        let params = ["action": "unsub", "sr_name": "\(subscribedSubreddit.name)"]
+        
+        _ = try await self.session.request(RedditOAuthAPI.subsrcribeToSubreddit(params: params))
+            .validate()
+            .serializingDecodable(Empty.self)
+            .value
+        
+        try? subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: subscribedSubreddit.name, accountName: AccountViewModel.shared.account.username)
+    }
+    
+    func unfollowUser(_ subscribedUser: SubscribedUserData) async throws {
+        let params = ["action": "unsub", "sr_name": "u_\(subscribedUser.name)"]
+        
+        _ = try await self.session.request(RedditOAuthAPI.subsrcribeToSubreddit(params: params))
+            .validate()
+            .serializingDecodable(Empty.self)
+            .value
+
+        try? subscribedUserDao.deleteSubscribedUser(name: subscribedUser.name, accountName: AccountViewModel.shared.account.username)
+    }
+    
+    func deleteCustomFeed(_ customFeed: MyCustomFeed) async throws {
+        
+    }
 }

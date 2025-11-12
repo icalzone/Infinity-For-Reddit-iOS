@@ -37,23 +37,25 @@ struct SubscriptionsView: View {
                     .padding(4)
                 
                 TabView(selection: $selectedOption) {
-                    if let customOnTapForSearchInThing = customOnTapForSearchInThing {
-                        SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
-                            customOnTapForSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
-                        }
-                        .tag(0)
-                    } else {
-                        SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
+                    Group {
+                        if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                            SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
+                                customOnTapForSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
+                            }
                             .tag(0)
+                        } else {
+                            SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
+                                .tag(0)
+                        }
+                        
+                        UsersView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
+                            .tag(1)
+                        
+                        CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
+                            .tag(2)
                     }
-                    
-                    UsersView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
-                        .tag(1)
-                    
-                    CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
-                        .tag(2)
+                    .toolbar(.hidden, for: .tabBar)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
             }
         }
         .task(id: subscriptionListingViewModel.subscriptionAndCustomFeedLoadingTaskFlag) {
@@ -109,6 +111,17 @@ struct SubscriptionsView: View {
                                         }
                                     }
                                     .listPlainItemNoInsets()
+                                    .applyIf(customOnTapForSearchInThing == nil) {
+                                        $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                            Button("Unfollow") {
+                                                Task {
+                                                    try? await Task.sleep(for: .seconds(1))
+                                                    await subscriptionListingViewModel.unfollowUser(subscription)
+                                                }
+                                            }
+                                            .tint(.red)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -128,6 +141,17 @@ struct SubscriptionsView: View {
                                     }
                                 }
                                 .listPlainItemNoInsets()
+                                .applyIf(customOnTapForSearchInThing == nil) {
+                                    $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button("Unfollow") {
+                                            Task {
+                                                try? await Task.sleep(for: .seconds(1))
+                                                await subscriptionListingViewModel.unfollowUser(subscription)
+                                            }
+                                        }
+                                        .tint(.red)
+                                    }
+                                }
                             }
                         }
                     }

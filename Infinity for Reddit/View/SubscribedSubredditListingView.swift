@@ -65,6 +65,17 @@ struct SubscribedSubredditListingView: View {
                                     }
                                 }
                                 .listPlainItemNoInsets()
+                                .applyIf(onSelectCustomAction == nil) {
+                                    $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button("Unsubscribe") {
+                                            Task {
+                                                try? await Task.sleep(for: .seconds(1))
+                                                await subscriptionListingViewModel.unsubscribeFromSubreddit(subscription)
+                                            }
+                                        }
+                                        .tint(.red)
+                                    }
+                                }
                             }
                         }
                     }
@@ -84,6 +95,17 @@ struct SubscribedSubredditListingView: View {
                                 }
                             }
                             .listPlainItemNoInsets()
+                            .applyIf(onSelectCustomAction == nil) {
+                                $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button("Unsubscribe") {
+                                        Task {
+                                            try? await Task.sleep(for: .seconds(1))
+                                            await subscriptionListingViewModel.unsubscribeFromSubreddit(subscription)
+                                        }
+                                    }
+                                    .tint(.red)
+                                }
+                            }
                         }
                     }
                 }

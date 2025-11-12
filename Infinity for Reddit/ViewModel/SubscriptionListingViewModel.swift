@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import GRDB
+import IdentifiedCollections
 
 public class SubscriptionListingViewModel: ObservableObject {
     // MARK: - Properties
@@ -534,6 +535,24 @@ public class SubscriptionListingViewModel: ObservableObject {
         } catch {
             // TODO handle error
             print("Toggle favorite custom feed error: \(error)")
+            self.error = error
+        }
+    }
+    
+    func unsubscribeFromSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async {
+        do {
+            try await subscriptionListingRepository.unsubscribeFromSubreddit(subscribedSubreddit)
+        } catch {
+            print("Unsubscribe from subreddit error: \(error)")
+            self.error = error
+        }
+    }
+    
+    func unfollowUser(_ subscribedUser: SubscribedUserData) async {
+        do {
+            try await subscriptionListingRepository.unfollowUser(subscribedUser)
+        } catch {
+            print("Unfollow user error: \(error)")
             self.error = error
         }
     }

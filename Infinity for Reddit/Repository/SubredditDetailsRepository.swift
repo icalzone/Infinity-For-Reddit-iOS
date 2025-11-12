@@ -90,6 +90,7 @@ public class SubredditDetailsRepository: SubredditDetailsRepositoryProtocol {
             try? subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: subredditData.name, accountName: AccountViewModel.shared.account.username)
         } else {
             let subscribedSubredditData = SubscribedSubredditData(
+                fullName: subredditData.fullName,
                 name: subredditData.name,
                 iconUrl: subredditData.iconUrl,
                 username: AccountViewModel.shared.account.username,
