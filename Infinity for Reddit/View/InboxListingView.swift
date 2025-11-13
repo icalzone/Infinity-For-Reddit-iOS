@@ -40,7 +40,10 @@ struct InboxListingView: View {
                         if inboxListingViewModel.messageWhere == .messages {
                             InboxMessageItemView(inbox: inbox)
                         } else {
-                            InboxNotificationItemView(inbox: inbox)
+                            InboxNotificationItemView(inbox: inbox) {
+                                navigationManager.openLink(inbox.context)
+                                inboxListingViewModel.markAsRead(inbox: inbox)
+                            }
                         }
                     }
                     if inboxListingViewModel.hasMorePages {
@@ -134,19 +137,20 @@ struct InboxMessageItemView: View {
 
 struct InboxNotificationItemView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     @State var inbox: Inbox
-    private let account: Account
+    private let onTap: () -> Void
     
-    init(inbox: Inbox) {
+    init(inbox: Inbox, onTap: @escaping () -> Void) {
         self.inbox = inbox
-        self.account = AccountViewModel.shared.account
+        self.onTap = onTap
     }
     
     var body: some View {
         VStack(spacing: 0) {
             TouchRipple(action: {
-                navigationManager.openLink(inbox.context)
+                onTap()
             }) {
                 VStack(spacing: 4) {
                     HStack(alignment: .top, spacing: 8) {
@@ -178,6 +182,7 @@ struct InboxNotificationItemView: View {
                 }
                 .contentShape(Rectangle())
                 .padding(16)
+                .background(inbox.isNew ? Color(hex: customThemeViewModel.currentCustomTheme.unreadMessageBackgroundColor) : .clear)
             }
             
             Divider()

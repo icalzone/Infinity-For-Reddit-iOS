@@ -10,10 +10,21 @@ import SwiftyJSON
 import Foundation
 
 public class InboxListingRepository: InboxListingRepositoryProtocol {
-    enum InboxRepositoryError: Error {
+    enum InboxRepositoryError: LocalizedError {
         case NetworkError(String)
         case JSONDecodingError(String)
-        case AuthRequiredError(String)
+        case AuthRequiredError
+        
+        var errorDescription: String? {
+            switch self {
+            case .NetworkError(let message):
+                return message
+            case .JSONDecodingError(let message):
+                return message
+            case .AuthRequiredError:
+                return "Authentication required"
+            }
+        }
     }
     
     private let session: Session
@@ -32,22 +43,15 @@ public class InboxListingRepository: InboxListingRepositoryProtocol {
                                   queries: [String : String],
                                   interceptor: RequestInterceptor? = nil
     ) async throws -> InboxListing {
-        try Task.checkCancellation()
-        
         var path = pathComponents
         path["where"] = messageWhere.rawValue
         
-        var headers = HTTPHeaders()
-        headers.add(name: APIUtils.USER_AGENT_KEY, value: APIUtils.USER_AGENT)
-        
         if self.sessionName == "plain", interceptor == nil {
-            throw InboxRepositoryError.AuthRequiredError(
-                "Access token or interceptor is required for inbox/unread with plain session."
-            )
+            throw InboxRepositoryError.AuthRequiredError
         }
         
-        let response = try await self.session.request(
-            RedditOAuthAPI.getInbox(pathComponents: path, queries: queries, headers: headers),
+        let response = await self.session.request(
+            RedditOAuthAPI.getInbox(pathComponents: path, queries: queries),
             interceptor: interceptor
         )
         .validate()
@@ -68,5 +72,19 @@ public class InboxListingRepository: InboxListingRepositoryProtocol {
         }
         
         return try InboxListingRootClass(fromJson: json, messageWhere: messageWhere).data
+    }
+    
+    public func markAsRead(inbox: Inbox, interceptor: RequestInterceptor? = nil) async throws {
+        if self.sessionName == "plain", interceptor == nil {
+            throw InboxRepositoryError.AuthRequiredError
+        }
+        
+        await self.session.request(
+            RedditOAuthAPI.readMessage(params: ["id": inbox.name]),
+            interceptor: interceptor
+        )
+            .validate()
+            .serializingData()
+            .response
     }
 }

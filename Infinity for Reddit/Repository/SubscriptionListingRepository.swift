@@ -125,7 +125,7 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
     }
     
     func deleteCustomFeed(_ customFeed: MyCustomFeed) async throws {
-        try await self.session.request(RedditOAuthAPI.deleteCustomFeed(path: customFeed.path))
+        await self.session.request(RedditOAuthAPI.deleteCustomFeed(path: customFeed.path))
             .validate()
             .serializingData()
             .response

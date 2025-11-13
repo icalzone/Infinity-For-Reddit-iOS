@@ -9,4 +9,5 @@ import Alamofire
 
 public protocol InboxListingRepositoryProtocol {
     func fetchInboxListing(messageWhere: MessageWhere, pathComponents: [String : String], queries: [String : String], interceptor: RequestInterceptor?) async throws -> InboxListing
+    func markAsRead(inbox: Inbox, interceptor: RequestInterceptor?) async throws
 }

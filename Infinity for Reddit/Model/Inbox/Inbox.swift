@@ -8,7 +8,7 @@
 import Foundation
 import SwiftyJSON
 
-public class Inbox : NSObject {
+public class Inbox: NSObject {
     
     var kind: String!
     
@@ -25,10 +25,10 @@ public class Inbox : NSObject {
     var firstMessage : Int64!
     var firstMessageName : String!
     var id : String!
+    var isNew : Bool!
     var likes : Bool!
     var linkTitle : String!
     var name : String!
-    var newField : Bool!
     var numComments : Int!
     var parentId : String!
     var replies : InboxListingRootClass!
@@ -57,10 +57,10 @@ public class Inbox : NSObject {
         firstMessage = json["first_message"].int64Value
         firstMessageName = json["first_message_name"].stringValue
         id = json["id"].stringValue
+        isNew = json["new"].boolValue
         likes = json["likes"].boolValue
         linkTitle = json["link_title"].stringValue
         name = json["name"].stringValue
-        newField = json["new"].boolValue
         numComments = json["num_comments"].intValue
         parentId = json["parent_id"].stringValue
         let repliesJson = json["replies"]

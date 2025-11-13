@@ -29,7 +29,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case getPostAndCommentsSingleThreadById(postId: String, commentId: String, queries: [String: String])
     case searchSubreddits(queries: [String: String])
     case searchUsers(queries: [String: String])
-    case getInbox(pathComponents: [String: String], queries: [String: String], headers: HTTPHeaders?)
+    case getInbox(pathComponents: [String: String], queries: [String: String])
     case saveThing(params: [String: String])
     case unsaveThing(params: [String: String])
     case getMoreCommentsForCommentMore(params: [String: String])
@@ -48,6 +48,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
     case hidePost(params: [String: String])
     case unhidePost(params: [String: String])
     case deleteCustomFeed(path: String)
+    case readMessage(params: [String: String])
     
     private var baseURL: String {
         return "https://oauth.reddit.com"
@@ -57,7 +58,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .getRules, .getFlairs, .getInfo:
             return .get
-        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment, .deletePostOrComment, .hidePost, .unhidePost:
+        case .vote, .subsrcribeToSubreddit, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment, .deletePostOrComment, .hidePost, .unhidePost, .readMessage:
             return .post
         case .deleteCustomFeed:
             return .delete
@@ -106,7 +107,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/subreddits/search.json"
         case .searchUsers:
             return "/search.json"
-        case .getInbox(let pathComponents, _, _):
+        case .getInbox(let pathComponents, _):
             return "/message/\(pathComponents["where"] ?? MessageWhere.inbox.rawValue).json"
         case .saveThing:
             return "/api/save"
@@ -144,6 +145,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return "/api/unhide"
         case .deleteCustomFeed:
             return "/api/multi/multipath"
+        case .readMessage:
+            return "/api/read_message"
         }
     }
     
@@ -151,7 +154,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo, .getFrontPagePosts, .getUserData, .getSubredditData, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .getRules, .getFlairs, .submitGalleryPost, .submitPollPost, .getInfo, .deleteCustomFeed:
             return nil
-        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params), .favoriteThing(let params), .favoriteCustomFeed(let params), .submitPost(let params), .uploadMediaMetadata(let params), .editPostOrComment(let params), .deletePostOrComment(let params), .hidePost(let params), .unhidePost(let params):
+        case .vote(let params), .subsrcribeToSubreddit(let params), .saveThing(let params), .unsaveThing(let params), .getMoreCommentsForCommentMore(let params), .sendCommentOrReplyToMessage(let params), .favoriteThing(let params), .favoriteCustomFeed(let params), .submitPost(let params), .uploadMediaMetadata(let params), .editPostOrComment(let params), .deletePostOrComment(let params), .hidePost(let params), .unhidePost(let params), .readMessage(let params):
             return params
         }
     }
@@ -194,7 +197,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .searchUsers(let queries):
             return ["raw_json": "1", "type": "user"].merging(queries, uniquingKeysWith: { _, new in new })
-        case .getInbox(_, let queries, _):
+        case .getInbox(_, let queries):
             return ["raw_json": "1", "limit": "100"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getMoreCommentsForCommentMore:
             return ["raw_json": "1", "api_type": "json"]
@@ -224,6 +227,8 @@ enum RedditOAuthAPI: URLRequestConvertible {
             return nil
         case .deleteCustomFeed(let path):
             return ["multipath": path]
+        case .readMessage:
+            return nil
         }
     }
     
@@ -231,9 +236,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         switch self {
         case .getMyInfo(let headers):
             return headers
-        case .getInbox(_, _, let headers):
-            return headers
-        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .getRules, .getFlairs, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment, .deletePostOrComment, .getInfo, .hidePost, .unhidePost, .deleteCustomFeed:
+        case .getFrontPagePosts, .getUserData, .getSubredditData, .vote, .getSubredditPosts, .getUserPosts, .getSearchPosts, .getSearchPostsInSpecificThing, .getCustomFeedPosts, .getSubredditConcatPosts, .getSubscribedThings, .getMyCustomFeeds, .getUserComments, .getUserSavedComments, .subsrcribeToSubreddit, .getPostAndCommentsById, .getPostAndCommentsSingleThreadById, .searchSubreddits, .searchUsers, .getInbox, .saveThing, .unsaveThing, .getMoreCommentsForCommentMore, .sendCommentOrReplyToMessage, .favoriteThing, .favoriteCustomFeed, .getRules, .getFlairs, .submitPost, .uploadMediaMetadata, .submitGalleryPost, .submitPollPost, .editPostOrComment, .deletePostOrComment, .getInfo, .hidePost, .unhidePost, .deleteCustomFeed, .readMessage:
             return nil
         }
     }
