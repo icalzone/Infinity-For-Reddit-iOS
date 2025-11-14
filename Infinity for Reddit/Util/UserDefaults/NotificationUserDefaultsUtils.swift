@@ -15,7 +15,7 @@ class NotificationUserDefaultsUtils {
     
     static let notificationIntervalKey = "notification_interval"
     static var notificationInterval: Int {
-        return UserDefaults.video.integer(forKey: notificationIntervalKey)
+        return max(15, UserDefaults.notification.integer(forKey: notificationIntervalKey, 60))
     }
     static let notificationIntervalOptions: [Int] = [15, 30, 60, 120, 180, 240, 360, 720, 1440]
     static let notificationIntervalOptionsText: [String] = ["15 mins", "30 mins", "1 hr", "2 hrs", "3 hrs", "4 hrs", "6 hrs", "12 hrs", "24 hrs"]

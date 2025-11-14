@@ -18,14 +18,7 @@ class HomeViewModel: ObservableObject {
         let viewMessage: Bool
     }
     
-    private let userDefaults: UserDefaults
-    
     init() {
-        guard let resolvedUserDefaults = DependencyManager.shared.container.resolve(UserDefaults.self) else {
-            fatalError("Failed to resolve UserDefaults")
-        }
-        self.userDefaults = resolvedUserDefaults
-        
         NotificationCenter.default.addObserver(
             forName: .notificationIntervalChanged,
             object: nil,
@@ -39,22 +32,14 @@ class HomeViewModel: ObservableObject {
     
     func refreshInboxMessages() async {
         print("Foreground Refresh: Pull & notify via unified pipeline.")
-        let newMessagesAvailable = await BackgroundTasksManager.shared.refreshAndNotifyAllAccounts()
-        if hasNewMessages != newMessagesAvailable { hasNewMessages = newMessagesAvailable}
-        print(newMessagesAvailable ? "Foreground Refresh: New message found! UI will be updated."
-              : "Foreground Refresh: No new message.")
-    }
-    
-    func markInboxAsRead() {
-        print("User viewed inbox, clearing badge and advancing last seen.")
-        hasNewMessages = false
+        let newMessagesAvailable = await PullNotificationBackgroundTaskManager.shared.pullNotificationsForAllAccounts()
     }
     
     func startAutoRefresh() {
         stopAutoRefresh()
         
-        let refreshInterval = userDefaults.double(forKey: NotificationUserDefaultsUtils.notificationIntervalKey, 60)
-        refreshTimer = Timer.publish(every: refreshInterval * 60, on: .main, in: .common)
+        let refreshInterval = NotificationUserDefaultsUtils.notificationInterval
+        refreshTimer = Timer.publish(every: TimeInterval(refreshInterval * 60), on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 guard let self else { return }

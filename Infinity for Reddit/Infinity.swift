@@ -43,7 +43,7 @@ struct Infinity: App {
         }
         
         NotificationDelegate.shared.configure()
-        BackgroundTasksManager.shared.registerBackgroundTask()
+        PullNotificationBackgroundTaskManager.shared.registerAndScheduleBackgroundTask()
     }
 
     var body: some Scene {
@@ -81,7 +81,7 @@ struct Infinity: App {
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background, NotificationUserDefaultsUtils.enableNotification  {
-                BackgroundTasksManager.shared.scheduleAppRefresh()
+                PullNotificationBackgroundTaskManager.shared.scheduleBackgroundTask()
             }
         }
     }

@@ -13,13 +13,13 @@ public class Inbox: NSObject {
     var kind: String!
     
     var associatedAwardingId : String!
-    var author : String!
+    var author : String
     var authorFullname : String!
-    var body : String!
+    var body : String
     var bodyHtml : String!
     var context : String!
     var created : Int64!
-    var createdUtc : Int64!
+    var createdUtc : Int64
     var dest : String!
     var distinguished : String!
     var firstMessage : Int64!
@@ -38,6 +38,29 @@ public class Inbox: NSObject {
     var subredditNamePrefixed : String!
     var type : String!
     var wasComment : Bool!
+    
+    enum InboxKind: String {
+        case comment, account, link, message, subreddit, award, unknown
+    }
+    
+    var inboxKind: InboxKind {
+        switch kind {
+        case "t1":
+            return .comment
+        case "t2":
+            return .account
+        case "t3":
+            return .link
+        case "t4":
+            return .message
+        case "t5":
+            return .subreddit
+        case "t6":
+            return .award
+        default:
+            return .unknown
+        }
+    }
 
     init(fromJson json: JSON!, kind: String!, messageWhere: MessageWhere?) throws {
         if json.isEmpty {
@@ -77,20 +100,5 @@ public class Inbox: NSObject {
         subredditNamePrefixed = json["subreddit_name_prefixed"].stringValue
         type = json["type"].stringValue
         wasComment = json["was_comment"].boolValue
-    }
-}
-
-extension Inbox {
-    enum MessageKind: String {
-        case t1, t2, t3, t4, t5, t6, unknown
-    }
-    
-    var messageKind: MessageKind {
-        MessageKind(rawValue: (kind ?? "").lowercased()) ?? .unknown
-    }
-    
-    var createdDate: Date? {
-        guard let timestamp = createdUtc, timestamp > 0 else { return nil }
-        return Date(timeIntervalSince1970: TimeInterval(timestamp))
     }
 }

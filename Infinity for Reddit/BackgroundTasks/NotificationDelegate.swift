@@ -21,14 +21,14 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     }
     
     @discardableResult
-    func postInboxNotification(
-        stableId: String,
+    func postNotification(
+        notificationId: String,
         threadId: String,
         title: String,
         subtitle: String,
         body: String,
         userInfo: [String: Any]
-    ) async throws -> String {
+    ) async throws {
         let content = UNMutableNotificationContent()
         content.title = title
         content.subtitle = subtitle
@@ -36,16 +36,10 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         content.sound = .default
         content.threadIdentifier = threadId
         content.userInfo = userInfo
-        
-        let req = UNNotificationRequest(identifier: stableId, content: content, trigger: nil)
-        try await UNUserNotificationCenter.current().add(req)
-        return stableId
-    }
-    
-    func replaceDelivered(id: String, with content: UNMutableNotificationContent) async throws {
-        let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.removeDeliveredNotifications(withIdentifiers: [id])
-        try await notificationCenter.add(UNNotificationRequest(identifier: id, content: content, trigger: nil))
+
+        try await UNUserNotificationCenter.current().add(
+            UNNotificationRequest(identifier: notificationId, content: content, trigger: nil)
+        )
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter,
@@ -59,23 +53,23 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completion: @escaping () -> Void) {
         guard response.actionIdentifier == UNNotificationDefaultActionIdentifier else {
-            completion(); return
+            completion()
+            return
         }
         
         let userInfo = response.notification.request.content.userInfo
         
         guard let accountName = userInfo["accountName"] as? String,
-              let kindRaw = userInfo["kind"] as? String else {
+              let inboxKind = userInfo["kind"] as? Inbox.InboxKind else {
             completion()
             return
         }
         
-        let messageKind = MsgKind.parse(kindRaw)
         let fullname = userInfo["messageFullname"] as? String
         
         var deepLinkUrl: URL?
         
-        switch messageKind {
+        switch inboxKind {
         case .comment, .link:
             if let context = userInfo["context"] as? String,
                let externalUrl = URL(string: context) {
@@ -86,13 +80,14 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
                 )
             }
             
-        case .message, .account, .subreddit, .other:
-            let viewMessage = (messageKind == .message)
+        case .message, .account, .subreddit, .unknown:
             deepLinkUrl = AppDeepLink.toInbox(
                 account: accountName,
-                viewMessage: viewMessage,
+                viewMessage: (inboxKind == .message),
                 fullname: fullname
             )
+        case .award:
+            break
         }
         
         if let url = deepLinkUrl {
@@ -102,20 +97,5 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         }
         
         completion()
-    }
-}
-
-private enum MsgKind {
-    case comment, link, message, account, subreddit, other
-    
-    static func parse(_ raw: String) -> MsgKind {
-        switch raw.lowercased() {
-        case "t1": return .comment
-        case "t3": return .link
-        case "t4": return .message
-        case "t2": return .account
-        case "t5": return .subreddit
-        default:   return .other        
-        }
     }
 }

@@ -65,13 +65,5 @@ struct DependencyManager {
             operationQueue.maxConcurrentOperationCount = 4
             return operationQueue
         }.inObjectScope(.container) // Singleton
-        
-        c.register(UserDefaults.self) { _ in
-            UserDefaults.standard
-        }.inObjectScope(.container) // Singleton
-        
-        c.register(UserDefaults.self, name: "PostDetails") { _ in
-            return UserDefaults(suiteName: "com.docilealligator.infinityforReddit.PostDetails")!
-        }.inObjectScope(.container) // Singleton
     }
 }

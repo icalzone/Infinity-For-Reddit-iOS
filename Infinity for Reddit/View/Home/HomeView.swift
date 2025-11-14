@@ -133,7 +133,6 @@ struct HomeView: View {
                             Label("Inbox", systemImage: "envelope")
                         }
                         .tag(Tab.inbox)
-                        .badge(homeViewModel.hasNewMessages ? "!" : nil)
                         .environmentObject(tab4NavigationBarMenuManager)
                         .environmentObject(homeViewModel)
                         .environmentObject(tab4SnackbarManager)
@@ -243,15 +242,13 @@ struct HomeView: View {
             }
         }
         .environmentObject(NamespaceManager(animation))
-        .onChange(of: scenePhase) { _, newPhase in
+        .appForegroundBackgroundListener(onAppEntersForeground: {
             if NotificationUserDefaultsUtils.enableNotification {
-                if newPhase == .active {
-                    homeViewModel.startAutoRefresh()
-                } else {
-                    homeViewModel.stopAutoRefresh()
-                }
+                homeViewModel.startAutoRefresh()
             }
-        }
+        }, onAppEntersBackground: {
+            homeViewModel.stopAutoRefresh()
+        })
         .onReceive(NotificationCenter.default.publisher(for: .inboxDeepLink)) { note in
             let accountName = (note.userInfo?["accountName"] as? String) ?? ""
             let viewMessage = (note.userInfo?["viewMessage"] as? Bool) ?? false
