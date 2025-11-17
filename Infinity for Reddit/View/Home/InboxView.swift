@@ -17,6 +17,7 @@ struct InboxView: View {
     @StateObject private var inboxViewModel: InboxViewModel
     @State private var selectedOption = 0
     @State private var navigationBarMenuKey: UUID?
+    @State private var hasReadAllMessages: Bool = false
     
     private let account: Account
     
@@ -32,10 +33,10 @@ struct InboxView: View {
             
             TabView(selection: $selectedOption) {
                 Group {
-                    InboxListingView(messageWhere: MessageWhere.inbox)
+                    InboxListingView(messageWhere: MessageWhere.inbox, hasReadAllMessages: $hasReadAllMessages)
                         .tag(0)
                     
-                    InboxListingView(messageWhere: MessageWhere.messages)
+                    InboxListingView(messageWhere: MessageWhere.messages, hasReadAllMessages: $hasReadAllMessages)
                         .tag(1)
                 }
                 .toolbar(.hidden, for: .tabBar)
@@ -52,7 +53,13 @@ struct InboxView: View {
             }
             navigationBarMenuKey = navigationBarMenuManager.push([
                 NavigationBarMenuItem(title: "Read All Messages") {
-                    inboxViewModel.readAllMessages()
+                    Task {
+                        await inboxViewModel.readAllMessages()
+                        await MainActor.run {
+                            homeViewModel.inboxCount = 0
+                            hasReadAllMessages = true
+                        }
+                    }
                 }
             ])
         }

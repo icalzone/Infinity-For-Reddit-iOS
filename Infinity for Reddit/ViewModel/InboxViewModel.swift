@@ -14,9 +14,7 @@ class InboxViewModel: ObservableObject {
         self.inboxRepository = inboxRepository
     }
     
-    func readAllMessages() {
-        Task {
-            await inboxRepository.readAllMessages()
-        }
+    func readAllMessages() async {
+        await inboxRepository.readAllMessages()
     }
 }
