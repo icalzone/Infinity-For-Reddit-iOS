@@ -127,7 +127,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
         return selftext
     }
     var sendReplies : Bool!
-    var spoiler : Bool!
+    @Published var spoiler : Bool!
     var stickied : Bool!
     var subreddit : String!
     var subredditId : String!

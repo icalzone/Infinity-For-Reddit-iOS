@@ -41,6 +41,7 @@ public class PostDetailsViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     private var toggleSensitiveTask: Task<Void, Never>?
+    private var toggleSpoilerTask: Task<Void, Never>?
     
     enum PostDetailsViewModelError: LocalizedError {
         case postFetchError
@@ -710,7 +711,7 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     @MainActor
-    func toggleSensitive() {
+    func toggleSensitive(onFinish: @escaping () -> Void) {
         guard let post else {
             self.error = PostDetailsViewModelError.postNotLoadedError
             return
@@ -725,13 +726,53 @@ public class PostDetailsViewModel: ObservableObject {
         toggleSensitiveTask = Task {
             do {
                 try await postDetailsRepository.toggleSensitive(post)
-                self.post?.over18.toggle()
+                do {
+                    try Task.checkCancellation()
+                    self.post?.over18.toggle()
+                    
+                    onFinish()
+                } catch {
+                    // Ignore
+                }
             } catch {
                 self.error = error
                 print(error)
             }
             
             toggleSensitiveTask = nil
+        }
+    }
+    
+    @MainActor
+    func toggleSpoiler(onFinish: @escaping () -> Void) {
+        guard let post else {
+            self.error = PostDetailsViewModelError.postNotLoadedError
+            return
+        }
+        
+        guard !account.isAnonymous() else {
+            return
+        }
+        
+        
+        toggleSpoilerTask?.cancel()
+        toggleSpoilerTask = Task {
+            do {
+                try await postDetailsRepository.toggleSpoiler(post)
+                do {
+                    try Task.checkCancellation()
+                    self.post?.spoiler.toggle()
+                    
+                    onFinish()
+                } catch {
+                    // Ignore
+                }
+            } catch {
+                self.error = error
+                print(error)
+            }
+            
+            toggleSpoilerTask = nil
         }
     }
 }

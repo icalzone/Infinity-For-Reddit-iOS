@@ -282,4 +282,18 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
             .serializingData(automaticallyCancelling: true)
             .response
     }
+    
+    public func toggleSpoiler(_ post: Post) async throws {
+        guard let name = post.name else {
+            throw PostDetailsRepositoryError.postIdNotFound
+        }
+        let params = ["id": name]
+        
+        try Task.checkCancellation()
+        
+        _ = await self.session.request(post.spoiler ? RedditOAuthAPI.unmarkSpoiler(params: params) : RedditOAuthAPI.markSpoiler(params: params))
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .response
+    }
 }

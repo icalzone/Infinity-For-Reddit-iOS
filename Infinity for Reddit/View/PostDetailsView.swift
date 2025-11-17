@@ -316,11 +316,15 @@ struct PostDetailsView: View {
                     },
                     
                     NavigationBarMenuItem(title: postDetailsViewModel.post?.over18 ?? false ? "Unmark Sensitive" : "Mark Sensitive") {
-                        postDetailsViewModel.toggleSensitive()
+                        postDetailsViewModel.toggleSensitive {
+                            setUpMenu()
+                        }
                     },
                     
                     NavigationBarMenuItem(title: postDetailsViewModel.post?.spoiler ?? false ? "Unmark Spoiler" : "Mark Spoiler") {
-                        
+                        postDetailsViewModel.toggleSpoiler {
+                            setUpMenu()
+                        }
                     },
                     
                     NavigationBarMenuItem(title: "Edit Flair") {
@@ -351,6 +355,22 @@ struct PostDetailsView: View {
                         withAnimation(.linear(duration: 0.2)) {
                             activeAlert = .deletePost
                         }
+                    },
+                    
+                    NavigationBarMenuItem(title: postDetailsViewModel.post?.over18 ?? false ? "Unmark Sensitive" : "Mark Sensitive") {
+                        postDetailsViewModel.toggleSensitive {
+                            setUpMenu()
+                        }
+                    },
+                    
+                    NavigationBarMenuItem(title: postDetailsViewModel.post?.spoiler ?? false ? "Unmark Spoiler" : "Mark Spoiler") {
+                        postDetailsViewModel.toggleSpoiler {
+                            setUpMenu()
+                        }
+                    },
+                    
+                    NavigationBarMenuItem(title: "Edit Flair") {
+                        
                     }
                 ]
             }

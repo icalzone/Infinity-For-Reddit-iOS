@@ -19,4 +19,5 @@ public protocol PostDetailsRepositoryProtocol {
     func toggleHidePost(_ post: Post) async throws
     func toggleHidePostAnonymous(_ post: Post) async throws
     func toggleSensitive(_ post: Post) async throws
+    func toggleSpoiler(_ post: Post) async throws
 }
