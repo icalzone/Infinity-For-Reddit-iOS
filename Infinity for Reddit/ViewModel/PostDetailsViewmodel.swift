@@ -25,6 +25,7 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var loadPostAndCommentsTaskId = UUID()
     @Published var postDetailsInput: PostDetailsInput
     @Published var singleThreadContext: Int = 8
+    @Published var flairs: [Flair]?
     private let account: Account
     private var commentMore: CommentMore?
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
@@ -36,12 +37,14 @@ public class PostDetailsViewModel: ObservableObject {
     
     private let postDetailsRepository: PostDetailsRepositoryProtocol
     private let historyPostsRepository: HistoryPostsRepositoryProtocol
+    private let flairRepository: FlairRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
     private var cancellables = Set<AnyCancellable>()
     private var toggleSensitiveTask: Task<Void, Never>?
     private var toggleSpoilerTask: Task<Void, Never>?
+    private var selectFlairTask: Task<Void, Never>?
     
     enum PostDetailsViewModelError: LocalizedError {
         case postFetchError
@@ -63,6 +66,7 @@ public class PostDetailsViewModel: ObservableObject {
         postDetailsInput: PostDetailsInput,
         postDetailsRepository: PostDetailsRepositoryProtocol,
         historyPostsRepository: HistoryPostsRepositoryProtocol,
+        flairRepository: FlairRepositoryProtocol,
         isContinueThread: Bool = false
     ) {
         self.account = account
@@ -70,6 +74,7 @@ public class PostDetailsViewModel: ObservableObject {
         self.sortTypeKind = SortTypeUserDetailsUtils.postComment
         self.postDetailsRepository = postDetailsRepository
         self.historyPostsRepository = historyPostsRepository
+        self.flairRepository = flairRepository
         self.showTopLevelCommentsFirst = InterfaceCommentUserDefaultsUtils.showTopLevelCommentsFirst
         if isContinueThread {
             self.singleThreadContext = 0
@@ -231,6 +236,34 @@ public class PostDetailsViewModel: ObservableObject {
                 self.isLoadingMore = false
             }
             print("Error fetching comments: \(error)")
+        }
+    }
+    
+    private func fetchPost() async throws {
+        let postDetails: PostDetailsRootClass
+        switch postDetailsInput {
+        case .post(let post):
+            postDetails = try await postDetailsRepository.fetchComments(
+                postId: post.id,
+                queries: ["sort": sortTypeKind.rawValue]
+            )
+        case .postAndCommentId(let postId, _):
+            postDetails = try await postDetailsRepository.fetchComments(
+                postId: postId,
+                queries: ["sort": sortTypeKind.rawValue]
+            )
+        }
+        
+        try Task.checkCancellation()
+        
+        if postDetails.postListing.posts.isEmpty {
+            throw PostDetailsViewModelError.postFetchError
+        }
+        let post = postDetails.postListing.posts[0]
+        await postProcessPost(post)
+        
+        await MainActor.run {
+            self.post = post
         }
     }
     
@@ -721,7 +754,6 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        
         toggleSensitiveTask?.cancel()
         toggleSensitiveTask = Task {
             do {
@@ -754,7 +786,6 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        
         toggleSpoilerTask?.cancel()
         toggleSpoilerTask = Task {
             do {
@@ -773,6 +804,61 @@ public class PostDetailsViewModel: ObservableObject {
             }
             
             toggleSpoilerTask = nil
+        }
+    }
+    
+    @MainActor
+    func fetchFlairs(forceFetch: Bool = false) {
+        guard flairs == nil else {
+            return
+        }
+        
+        guard let post else {
+            self.error = PostDetailsViewModelError.postNotLoadedError
+            return
+        }
+        
+        guard !account.isAnonymous() else {
+            return
+        }
+        
+        Task {
+            do {
+                self.flairs = try await flairRepository.fetchFlairs(subreddit: post.subreddit)
+            } catch {
+                self.error = error
+            }
+        }
+    }
+
+    func selectFlair(_ flair: Flair) {
+        guard let post else {
+            self.error = PostDetailsViewModelError.postNotLoadedError
+            return
+        }
+        
+        guard !account.isAnonymous() else {
+            return
+        }
+        
+        selectFlairTask?.cancel()
+        selectFlairTask = Task {
+            do {
+                try await postDetailsRepository.selectFlair(post: post, flair: flair)
+                do {
+                    try Task.checkCancellation()
+                    try await fetchPost()
+                } catch {
+                    // Ignore
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error
+                }
+                print(error)
+            }
+            
+            selectFlairTask = nil
         }
     }
 }

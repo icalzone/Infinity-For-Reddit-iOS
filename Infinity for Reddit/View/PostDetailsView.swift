@@ -21,6 +21,7 @@ struct PostDetailsView: View {
     @StateObject var postDetailsViewModel: PostDetailsViewModel
     
     @State private var showSortTypeSheet: Bool = false
+    @State private var showSelectFlairSheet: Bool = false
     @State private var navigationBarMenuKey: UUID?
     @State private var sentCommentParent: CommentParent? = nil
     @State private var commentToBeEdited: Comment? = nil
@@ -44,6 +45,7 @@ struct PostDetailsView: View {
                 postDetailsInput: postDetailsInput,
                 postDetailsRepository: PostDetailsRepository(),
                 historyPostsRepository: HistoryPostsRepository(),
+                flairRepository: FlairRepository(),
                 isContinueThread: isContinueThread
             )
         )
@@ -256,6 +258,11 @@ struct PostDetailsView: View {
                 postDetailsViewModel.changeSortTypeKind(sortTypeKind: sortTypeKind)
             }
         }
+        .wrapContentSheet(isPresented: $showSelectFlairSheet) {
+            SelectPostFlairSheet(flairs: postDetailsViewModel.flairs) { flair in
+                postDetailsViewModel.selectFlair(flair)
+            }
+        }
         .overlay(
             CustomAlert(title: activeAlert?.title ?? "",
                         confirmButtonText: activeAlert?.confirmButtonText ?? "",
@@ -328,7 +335,8 @@ struct PostDetailsView: View {
                     },
                     
                     NavigationBarMenuItem(title: "Edit Flair") {
-                        
+                        postDetailsViewModel.fetchFlairs()
+                        showSelectFlairSheet = true
                     }
                 ]
             } else {
@@ -370,7 +378,8 @@ struct PostDetailsView: View {
                     },
                     
                     NavigationBarMenuItem(title: "Edit Flair") {
-                        
+                        postDetailsViewModel.fetchFlairs()
+                        showSelectFlairSheet = true
                     }
                 ]
             }

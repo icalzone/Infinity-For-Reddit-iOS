@@ -296,4 +296,18 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
             .serializingData(automaticallyCancelling: true)
             .response
     }
+    
+    public func selectFlair(post: Post, flair: Flair) async throws {
+        guard let name = post.name else {
+            throw PostDetailsRepositoryError.postIdNotFound
+        }
+        let params = ["api_type": "json", "flair_template_id": flair.id, "link": name, "text": flair.text]
+        
+        try Task.checkCancellation()
+        
+        _ = await self.session.request(RedditOAuthAPI.selectFlair(subredditName: post.subreddit, params: params))
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .response
+    }
 }

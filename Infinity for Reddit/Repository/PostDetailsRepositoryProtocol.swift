@@ -20,4 +20,5 @@ public protocol PostDetailsRepositoryProtocol {
     func toggleHidePostAnonymous(_ post: Post) async throws
     func toggleSensitive(_ post: Post) async throws
     func toggleSpoiler(_ post: Post) async throws
+    func selectFlair(post: Post, flair: Flair) async throws
 }
