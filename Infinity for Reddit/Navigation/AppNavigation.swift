@@ -28,4 +28,5 @@ enum AppNavigation: Hashable {
     case filteredPosts(postListingMetadata: PostListingMetadata, postFilter: PostFilter)
     case filteredHistoryPosts(historyPostListingMetadata: HistoryPostListingMetadata, postFilter: PostFilter)
     case editPost(post: Post)
+    case crosspost(postToBeCrossposted: Post)
 }

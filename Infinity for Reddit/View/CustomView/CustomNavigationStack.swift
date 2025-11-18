@@ -127,6 +127,9 @@ struct CustomNavigationStack<Content: View>: View {
                         EditPostView(postToBeEdited: post)
                             .environmentObject(navigationManager)
                             .environmentObject(postEditingShareableViewModel)
+                    case .crosspost(let postToBeCrossposted):
+                        CrosspostView(postToBeCrossposted: postToBeCrossposted)
+                            .environmentObject(navigationManager)
                     }
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in

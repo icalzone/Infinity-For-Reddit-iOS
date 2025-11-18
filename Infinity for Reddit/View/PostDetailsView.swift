@@ -337,6 +337,13 @@ struct PostDetailsView: View {
                     NavigationBarMenuItem(title: "Edit Flair") {
                         postDetailsViewModel.fetchFlairs()
                         showSelectFlairSheet = true
+                    },
+                    
+                    NavigationBarMenuItem(title: "Crosspost") {
+                        guard let post = postDetailsViewModel.post else {
+                            return
+                        }
+                        navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: post))
                     }
                 ]
             } else {
@@ -380,6 +387,13 @@ struct PostDetailsView: View {
                     NavigationBarMenuItem(title: "Edit Flair") {
                         postDetailsViewModel.fetchFlairs()
                         showSelectFlairSheet = true
+                    },
+                    
+                    NavigationBarMenuItem(title: "Crosspost") {
+                        guard let post = postDetailsViewModel.post else {
+                            return
+                        }
+                        navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: post))
                     }
                 ]
             }
@@ -401,6 +415,13 @@ struct PostDetailsView: View {
                     postDetailsViewModel.toggleHidePost {
                         setUpMenu()
                     }
+                },
+                
+                NavigationBarMenuItem(title: "Crosspost") {
+                    guard let post = postDetailsViewModel.post else {
+                        return
+                    }
+                    navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: post))
                 }
             ]
         }
