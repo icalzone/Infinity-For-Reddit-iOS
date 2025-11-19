@@ -65,7 +65,11 @@ class InboxConversationViewModel: ObservableObject {
             let newInbox = try await inboxConversationRepository.sendMessage(message: message, fullNameToReplyTo: fullNameToReplyTo)
             
             await MainActor.run {
-                inbox.replies?.data.inboxes = (inbox.replies?.data?.inboxes ?? []) + [newInbox]
+                if inbox.replies == nil {
+                    inbox.replies = InboxListingRootClass(inbox: newInbox)
+                } else {
+                    inbox.replies?.data.inboxes = (inbox.replies?.data?.inboxes ?? []) + [newInbox]
+                }
                 listScrollTarget = newInbox.id
             }
         } catch {

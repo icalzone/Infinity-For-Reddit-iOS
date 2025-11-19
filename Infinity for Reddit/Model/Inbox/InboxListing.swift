@@ -24,6 +24,12 @@ class InboxListingRootClass: NSObject {
         }
         kind = json["kind"].stringValue
     }
+    
+    init(inbox: Inbox) {
+        // I know it looks ugly
+        kind = "t4"
+        data = InboxListing(inbox: inbox)
+    }
 }
 
 public class InboxListing : NSObject {
@@ -52,5 +58,12 @@ public class InboxListing : NSObject {
         after = json["after"].stringValue
         before = json["before"].stringValue
         dist = json["dist"].intValue
+    }
+    
+    init(inbox: Inbox) {
+        inboxes = [inbox]
+        after = ""
+        before = ""
+        dist = 0
     }
 }
