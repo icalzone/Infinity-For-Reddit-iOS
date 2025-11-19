@@ -54,7 +54,7 @@ struct PostFilterSettingsView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if postFilterViewModel.postToBeAdded == nil {
+                        if postFilterViewModel.postToBeAdded == nil && postFilterViewModel.subredditToBeAdded == nil && postFilterViewModel.userToBeAdded == nil {
                             navigationManager.append(SettingsViewNavigation.createOrEditPostFilter())
                         } else {
                             showSelectFieldToAddToPostFitlerSheet = true
@@ -93,7 +93,7 @@ struct PostFilterSettingsView: View {
         .addTitleToInlineNavigationBar("Post Filter")
         .toolbar {
             Button("", systemImage: "plus") {
-                if postFilterViewModel.postToBeAdded == nil {
+                if postFilterViewModel.postToBeAdded == nil && postFilterViewModel.subredditToBeAdded == nil && postFilterViewModel.userToBeAdded == nil {
                     navigationManager.append(SettingsViewNavigation.createOrEditPostFilter())
                 } else {
                     showSelectFieldToAddToPostFitlerSheet = true
@@ -104,7 +104,7 @@ struct PostFilterSettingsView: View {
             PostOrCommentFilterOptionSheet(
                 onEditSelected: {
                     if let postFilter = selectedPostFilter {
-                        if postFilterViewModel.postToBeAdded == nil {
+                        if postFilterViewModel.postToBeAdded == nil && postFilterViewModel.subredditToBeAdded == nil && postFilterViewModel.userToBeAdded == nil {
                             navigationManager.append(SettingsViewNavigation.createOrEditPostFilter(postFilter: postFilter))
                         } else {
                             showSelectFieldToAddToPostFitlerSheet = true

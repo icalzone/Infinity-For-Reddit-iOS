@@ -38,6 +38,8 @@ struct CustomizePostFilterView: View {
             wrappedValue: CustomizePostFilterViewModel(
                 postFilter: postFilter,
                 postToBeAdded: postToBeAdded,
+                subredditToBeAdded: subredditToBeAdded,
+                userToBeAdded: userToBeAdded,
                 selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter,
                 customizePostFilterRepository: CustomizePostFilterRepository()
             )

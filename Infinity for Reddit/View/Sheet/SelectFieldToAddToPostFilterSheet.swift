@@ -26,7 +26,7 @@ struct SelectFieldToAddToPostFilterSheet: View {
                     .fontWeight(.bold)
                     .padding(16)
                 
-                ForEach(fields != nil && fields!.isEmpty ? fields! : SelectedFieldToAddToPostFilter.allCases, id: \.self) { field in
+                ForEach(fields != nil && !fields!.isEmpty ? fields! : SelectedFieldToAddToPostFilter.allCases, id: \.self) { field in
                     TouchRipple {
                         Button(action: {
                             if selections.contains(field) {

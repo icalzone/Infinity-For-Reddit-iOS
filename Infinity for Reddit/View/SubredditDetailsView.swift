@@ -14,12 +14,12 @@ struct SubredditDetailsView: View {
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
     @EnvironmentObject private var navigationManager: NavigationManager
     
+    @StateObject var subredditDetailsViewModel : SubredditDetailsViewModel
+    
     @State private var navigationBarMenuKey: UUID?
     @State private var showSubredditAboutSheet: Bool = false
     @State private var isSubredditInfoVisible: Bool = true
     @State private var showUserFlairSheet: Bool = false
-    
-    @StateObject var subredditDetailsViewModel : SubredditDetailsViewModel
     
     private let subredditIconSize: CGFloat = 80
     private let bannerMaxHeight: CGFloat = 150
@@ -177,6 +177,10 @@ struct SubredditDetailsView: View {
                 NavigationBarMenuItem(title: "Select User Flair") {
                     subredditDetailsViewModel.fetchUserFlairs()
                     showUserFlairSheet = true
+                },
+                
+                NavigationBarMenuItem(title: "Add to Post Filter") {
+                    navigationManager.append(SettingsViewNavigation.postFilter(subredditToBeAdded: subredditDetailsViewModel.subredditData?.name ?? subredditDetailsViewModel.subredditName))
                 }
             ])
         }

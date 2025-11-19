@@ -146,10 +146,10 @@ public class CustomizePostFilterViewModel: ObservableObject {
                 for selectedFieldToAddToPostFilter in selectedFieldsToAddToPostFilter {
                     switch selectedFieldToAddToPostFilter {
                     case .excludeUser:
-                        if !excludeSubreddits.isEmpty {
-                            excludeSubreddits += ","
+                        if !excludeUsers.isEmpty {
+                            excludeUsers += ","
                         }
-                        excludeSubreddits += userToBeAdded
+                        excludeUsers += userToBeAdded
                     case .containUser:
                         break
                     default:
