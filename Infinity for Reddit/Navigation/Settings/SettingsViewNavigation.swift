@@ -16,8 +16,8 @@ enum SettingsViewNavigation: Hashable {
     case proxy
     case postHistory
     case contentSensitivityFilter
-    case postFilter(postToBeAdded: Post? = nil)
-    case createOrEditPostFilter(postFilter: PostFilter? = nil, postToBeAdded: Post? = nil, selectedFieldsToAddToPostFilter: [SelectedFieldToAddToPostFilter]? = nil)
+    case postFilter(postToBeAdded: Post? = nil, subredditToBeAdded: String? = nil, userToBeAdded: String? = nil)
+    case createOrEditPostFilter(postFilter: PostFilter? = nil, postToBeAdded: Post? = nil, subredditToBeAdded: String? = nil, userToBeAdded: String? = nil, selectedFieldsToAddToPostFilter: [SelectedFieldToAddToPostFilter]? = nil)
     case postFilterUsageListing(postFilterId: Int)
     case commentFilter
     case createOrEditCommentFilter(commentFilter: CommentFilter? = nil)

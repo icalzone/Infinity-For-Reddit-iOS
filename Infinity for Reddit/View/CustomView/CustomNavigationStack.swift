@@ -194,11 +194,11 @@ struct CustomNavigationStack<Content: View>: View {
                     case .contentSensitivityFilter:
                         ContentSensitivityFilterSettingsView()
                             .environmentObject(navigationManager)
-                    case .postFilter(let postToBeAdded):
-                        PostFilterSettingsView(postToBeAdded: postToBeAdded)
+                    case .postFilter(let postToBeAdded, let subredditToBeAdded, let userToBeAdded):
+                        PostFilterSettingsView(postToBeAdded: postToBeAdded, subredditToBeAdded: subredditToBeAdded, userToBeAdded: userToBeAdded)
                             .environmentObject(navigationManager)
-                    case .createOrEditPostFilter(let postFilter, let postToBeAdded, let selectedFieldsToAddToPostFilter):
-                        CustomizePostFilterView(postFilter, postToBeAdded: postToBeAdded, selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter)
+                    case .createOrEditPostFilter(let postFilter, let postToBeAdded, let subredditToBeAdded, let userToBeAdded, let selectedFieldsToAddToPostFilter):
+                        CustomizePostFilterView(postFilter, postToBeAdded: postToBeAdded, subredditToBeAdded: subredditToBeAdded, userToBeAdded: userToBeAdded, selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter)
                             .environmentObject(navigationManager)
                     case .postFilterUsageListing(let postFilterId):
                         PostFilterUsageListingView(postFilterId: postFilterId)

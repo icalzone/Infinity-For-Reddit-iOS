@@ -20,10 +20,12 @@ struct PostFilterSettingsView: View {
     @State private var showPostFilterOptionSheet: Bool = false
     @State private var showSelectFieldToAddToPostFitlerSheet: Bool = false
     
-    init(postToBeAdded: Post?) {
+    init(postToBeAdded: Post?, subredditToBeAdded: String?, userToBeAdded: String?) {
         _postFilterViewModel = StateObject(
             wrappedValue: PostFilterViewModel(
                 postToBeAdded: postToBeAdded,
+                subredditToBeAdded: subredditToBeAdded,
+                userToBeAdded: userToBeAdded,
                 postFilterRepository: PostFilterRepository()
             )
         )
@@ -121,10 +123,26 @@ struct PostFilterSettingsView: View {
         }
         .wrapContentSheet(isPresented: $showSelectFieldToAddToPostFitlerSheet) {
             if let postToBeAdded = postFilterViewModel.postToBeAdded {
-                SelectFieldToAddToPostFilterSheet(post: postToBeAdded) { selectedFieldsToAddToPostFilter in
+                SelectFieldToAddToPostFilterSheet { selectedFieldsToAddToPostFilter in
                     navigationManager.append(
                         SettingsViewNavigation.createOrEditPostFilter(
                             postFilter: selectedPostFilter, postToBeAdded: postToBeAdded, selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter
+                        )
+                    )
+                }
+            } else if let subredditToBeAdded = postFilterViewModel.subredditToBeAdded {
+                SelectFieldToAddToPostFilterSheet(fields: [SelectedFieldToAddToPostFilter.excludeSubreddit, SelectedFieldToAddToPostFilter.containSubreddit]) { selectedFieldsToAddToPostFilter in
+                    navigationManager.append(
+                        SettingsViewNavigation.createOrEditPostFilter(
+                            postFilter: selectedPostFilter, subredditToBeAdded: subredditToBeAdded, selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter
+                        )
+                    )
+                }
+            } else if let userToBeAdded = postFilterViewModel.userToBeAdded {
+                SelectFieldToAddToPostFilterSheet(fields: [SelectedFieldToAddToPostFilter.excludeUser, SelectedFieldToAddToPostFilter.containUser]) { selectedFieldsToAddToPostFilter in
+                    navigationManager.append(
+                        SettingsViewNavigation.createOrEditPostFilter(
+                            postFilter: selectedPostFilter, userToBeAdded: userToBeAdded, selectedFieldsToAddToPostFilter: selectedFieldsToAddToPostFilter
                         )
                     )
                 }

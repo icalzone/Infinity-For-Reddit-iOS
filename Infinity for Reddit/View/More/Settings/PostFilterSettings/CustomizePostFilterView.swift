@@ -31,7 +31,7 @@ struct CustomizePostFilterView: View {
         )
     }
     
-    init(_ postFilter: PostFilter?, postToBeAdded: Post?, selectedFieldsToAddToPostFilter: [SelectedFieldToAddToPostFilter]?) {
+    init(_ postFilter: PostFilter?, postToBeAdded: Post?, subredditToBeAdded: String?, userToBeAdded: String?, selectedFieldsToAddToPostFilter: [SelectedFieldToAddToPostFilter]?) {
         self.showInSheet = false
         self.onApplyPostFilter = nil
         _customizePostFilterViewModel = StateObject(

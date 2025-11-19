@@ -41,6 +41,8 @@ public class CustomizePostFilterViewModel: ObservableObject {
     
     init(postFilter: PostFilter?,
          postToBeAdded: Post? = nil,
+         subredditToBeAdded: String? = nil,
+         userToBeAdded: String? = nil,
          selectedFieldsToAddToPostFilter: [SelectedFieldToAddToPostFilter]? = nil,
          customizePostFilterRepository: CustomizePostFilterRepositoryProtocol
     ) {
@@ -82,46 +84,76 @@ public class CustomizePostFilterViewModel: ObservableObject {
             maxCommentsString = String(postFilter.maxComments)
         }
         
-        if let postToBeAdded, let selectedFieldsToAddToPostFilter {
-            for selectedFieldToAddToPostFilter in selectedFieldsToAddToPostFilter {
-                switch selectedFieldToAddToPostFilter {
-                case .excludeSubreddit:
-                    if !excludeSubreddits.isEmpty {
-                        excludeSubreddits += ","
-                    }
-                    excludeSubreddits += postToBeAdded.subreddit
-                case .containSubreddit:
-                    break
-                case .excludeUser:
-                    if !excludeUsers.isEmpty {
-                        excludeUsers += ","
-                    }
-                    excludeUsers += postToBeAdded.author
-                case .containUser:
-                    break
-                case .excludeFlair:
-                    if !excludeFlairs.isEmpty {
-                        excludeFlairs += ","
-                    }
-                    excludeFlairs += postToBeAdded.linkFlairText
-                case .containFlair:
-                    if !containFlairs.isEmpty {
-                        containFlairs += ","
-                    }
-                    containFlairs += postToBeAdded.linkFlairText
-                case .excludeDomain:
-                    if let url = URL(string: postToBeAdded.url ?? ""), let domain = url.host {
-                        if !excludeDomains.isEmpty {
-                            excludeDomains += ","
+        if let selectedFieldsToAddToPostFilter, !selectedFieldsToAddToPostFilter.isEmpty {
+            if let postToBeAdded {
+                for selectedFieldToAddToPostFilter in selectedFieldsToAddToPostFilter {
+                    switch selectedFieldToAddToPostFilter {
+                    case .excludeSubreddit:
+                        if !excludeSubreddits.isEmpty {
+                            excludeSubreddits += ","
                         }
-                        excludeDomains += domain
-                    }
-                case .containDomain:
-                    if let url = URL(string: postToBeAdded.url ?? ""), let domain = url.host {
-                        if !containDomains.isEmpty {
-                            containDomains += ","
+                        excludeSubreddits += postToBeAdded.subreddit
+                    case .containSubreddit:
+                        break
+                    case .excludeUser:
+                        if !excludeUsers.isEmpty {
+                            excludeUsers += ","
                         }
-                        containDomains += domain
+                        excludeUsers += postToBeAdded.author
+                    case .containUser:
+                        break
+                    case .excludeFlair:
+                        if !excludeFlairs.isEmpty {
+                            excludeFlairs += ","
+                        }
+                        excludeFlairs += postToBeAdded.linkFlairText
+                    case .containFlair:
+                        if !containFlairs.isEmpty {
+                            containFlairs += ","
+                        }
+                        containFlairs += postToBeAdded.linkFlairText
+                    case .excludeDomain:
+                        if let url = URL(string: postToBeAdded.url ?? ""), let domain = url.host {
+                            if !excludeDomains.isEmpty {
+                                excludeDomains += ","
+                            }
+                            excludeDomains += domain
+                        }
+                    case .containDomain:
+                        if let url = URL(string: postToBeAdded.url ?? ""), let domain = url.host {
+                            if !containDomains.isEmpty {
+                                containDomains += ","
+                            }
+                            containDomains += domain
+                        }
+                    }
+                }
+            } else if let subredditToBeAdded {
+                for selectedFieldToAddToPostFilter in selectedFieldsToAddToPostFilter {
+                    switch selectedFieldToAddToPostFilter {
+                    case .excludeSubreddit:
+                        if !excludeSubreddits.isEmpty {
+                            excludeSubreddits += ","
+                        }
+                        excludeSubreddits += subredditToBeAdded
+                    case .containSubreddit:
+                        break
+                    default:
+                        break
+                    }
+                }
+            } else if let userToBeAdded {
+                for selectedFieldToAddToPostFilter in selectedFieldsToAddToPostFilter {
+                    switch selectedFieldToAddToPostFilter {
+                    case .excludeUser:
+                        if !excludeSubreddits.isEmpty {
+                            excludeSubreddits += ","
+                        }
+                        excludeSubreddits += userToBeAdded
+                    case .containUser:
+                        break
+                    default:
+                        break
                     }
                 }
             }
