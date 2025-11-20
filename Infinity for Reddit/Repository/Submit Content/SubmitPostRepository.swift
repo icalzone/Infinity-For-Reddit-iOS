@@ -373,6 +373,8 @@ class SubmitPostRepository: SubmitPostRepositoryProtocol {
         let payloadJSON = try JSONEncoder().encode(redditPollPayload)
         let payloadString = String(data: payloadJSON, encoding: .utf8)!
         
+        print(payloadString)
+        
         let interceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
         let data = try await self.session.request(RedditOAuthAPI.submitPollPost(body: payloadString), interceptor: interceptor)
             .validate()

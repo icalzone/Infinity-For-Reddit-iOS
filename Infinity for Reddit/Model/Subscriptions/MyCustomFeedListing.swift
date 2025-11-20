@@ -81,6 +81,24 @@ class CustomFeed : NSObject {
         }
         visibility = json["visibility"].stringValue
     }
+    
+    func toMyCustomFeed() -> MyCustomFeed {
+        return MyCustomFeed(
+            path: path,
+            displayName: displayName,
+            name: name,
+            description: descriptionMd,
+            copiedFrom: copiedFrom,
+            iconUrl: iconUrl,
+            visibility: visibility,
+            owner: owner,
+            nSubscribers: numSubscribers,
+            createdUTC: createdUtc,
+            over18: over18,
+            isSubscriber: isSubscriber,
+            isFavorite: isFavorited
+        )
+    }
 }
 
 class SubredditInCustomFeed : NSObject {

@@ -8,12 +8,14 @@
 import Foundation
 import IdentifiedCollections
 
+@MainActor
 class CreateCustomFeedViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var description: String = ""
+    @Published var isPrivate: Bool = true
     @Published var subredditsAndUsersInCustomFeed: IdentifiedArrayOf<SubredditAndUserInCustomFeed> = []
     @Published var createCustomFeedTask: Task<Void, Never>?
-    @Published var customFeedCreatedFlag: Bool = false
+    @Published var createdMyCustomFeed: MyCustomFeed?
     @Published var error: Error? = nil
     
     private let createCustomFeedRepository: CreateCustomFeedRepositoryProtocol
@@ -32,5 +34,36 @@ class CreateCustomFeedViewModel: ObservableObject {
     
     func removeSubredditAndUserInCustomFeed(_ value: SubredditAndUserInCustomFeed) {
         subredditsAndUsersInCustomFeed.remove(value)
+    }
+    
+    func createCustomFeed() {
+        guard createCustomFeedTask == nil else {
+            return
+        }
+        
+        createCustomFeedTask = Task {
+            do {
+                let createdCustomFeed = try await createCustomFeedRepository.createCustomFeed(
+                    name: name,
+                    description: description,
+                    isPrivate: isPrivate,
+                    subredditsAndUsersInCustomFeed: subredditsAndUsersInCustomFeed
+                ).toMyCustomFeed()
+                
+                self.createdMyCustomFeed = createdCustomFeed
+                
+                do {
+                    try await createCustomFeedRepository.saveMyCustomFeed(createdCustomFeed)
+                } catch {
+                    // Ignore
+                    print(error)
+                }
+            } catch {
+                self.error = error
+                print(error)
+            }
+            
+            createCustomFeedTask = nil
+        }
     }
 }

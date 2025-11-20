@@ -31,9 +31,9 @@ enum SubredditAndUserInCustomFeed: Identifiable {
         case .subreddit(let subredditData):
             return subredditData.name
         case .subscribedUser(let subscribedUserData):
-            return subscribedUserData.name
+            return "u_\(subscribedUserData.name)"
         case .user(let userData):
-            return userData.name
+            return "u_\(userData.name)"
         }
     }
     

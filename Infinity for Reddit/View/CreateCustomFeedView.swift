@@ -51,6 +51,21 @@ struct CreateCustomFeedView: View {
                         .contentShape(Rectangle())
                         .padding(16)
                         
+                        TouchRipple(action: {
+                            createCustomFeedViewModel.isPrivate.toggle()
+                        }) {
+                            HStack {
+                                RowText("Private Custom Feed")
+                                    .primaryText()
+                                
+                                Toggle(isOn: $createCustomFeedViewModel.isPrivate) {}
+                                    .labelsHidden()
+                                    .themedToggle()
+                                    .excludeFromTouchRipple()
+                            }
+                            .padding(16)
+                        }
+                        
                         Divider()
                         
                         ForEach(createCustomFeedViewModel.subredditsAndUsersInCustomFeed, id: \.id) { item in
@@ -87,7 +102,7 @@ struct CreateCustomFeedView: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: {
-                    
+                    createCustomFeedViewModel.createCustomFeed()
                 }) {
                     SwiftUI.Image(systemName: "checkmark.circle")
                         .navigationBarImage()
@@ -99,15 +114,16 @@ struct CreateCustomFeedView: View {
         .onChange(of: createCustomFeedViewModel.createCustomFeedTask) { _, newValue in
             if newValue != nil {
                 snackbarManager.showSnackbar(
-                    text: "Sending. Please wait...",
+                    text: "Creating. Please wait...",
                     autoDismiss: false,
                     canDismissByGesture: false
                 )
             }
         }
-        .onChange(of: createCustomFeedViewModel.customFeedCreatedFlag) { _, newValue in
-            if newValue {
-                
+        .onChange(of: createCustomFeedViewModel.createdMyCustomFeed) { _, newValue in
+            if let newValue {
+                snackbarManager.dismiss()
+                navigationManager.replaceCurrentScreen(AppNavigation.customFeed(myCustomFeed: newValue))
             }
         }
         .onReceive(createCustomFeedViewModel.$error) { newValue in
