@@ -107,7 +107,7 @@ struct CreateCustomFeedView: View {
             }
         }
         .sheet(isPresented: $showSubredditAndUserMultiSelectionSheet) {
-            SubredditAndUserMultiSelectionSheet(subscriptionSelectionMode: .subredditAndUserInCustomFeed(onSelectMultipleSubscriptions: { _ in
+            SubredditAndUserMultiSelectionSheet(subscriptionSelectionMode: .subredditAndUserInCustomFeed(onSelectMultipleSubscriptions: { subredditsAndUsersInCustomFeed in
                 
             }))
         }

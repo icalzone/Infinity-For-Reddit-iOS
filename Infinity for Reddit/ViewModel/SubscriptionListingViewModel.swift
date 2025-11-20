@@ -580,4 +580,17 @@ public class SubscriptionListingViewModel: ObservableObject {
             }
         }
     }
+    
+    func getSelectedSubredditsAndUsersInCustomFeed() -> [SubredditAndUserInCustomFeed] {
+        var result: [SubredditAndUserInCustomFeed] = []
+        
+        for subscribedSubredditData in selectedSubscribedSubreddits {
+            result.append(.subscribedSubreddit(subscribedSubredditData))
+        }
+        for subscribedUserData in selectedSubscribedUsers {
+            result.append(.subscribedUser(subscribedUserData))
+        }
+        
+        return result
+    }
 }

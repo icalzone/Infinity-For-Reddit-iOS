@@ -11,6 +11,8 @@ import GRDB
 import Alamofire
 
 struct SubscriptionsView: View {
+    @Environment(\.dismiss) private var dismiss
+    
     @EnvironmentObject private var accountViewModel: AccountViewModel
     @EnvironmentObject private var navigationBarMenuManager: NavigationBarMenuManager
     @EnvironmentObject private var navigationManager: NavigationManager
@@ -85,9 +87,10 @@ struct SubscriptionsView: View {
                     .toolbar(.hidden, for: .tabBar)
                 }
                 
-                if case .subredditAndUserInCustomFeed = subscriptionSelectionMode {
+                if case .subredditAndUserInCustomFeed(let onSelectMultipleSubscriptions) = subscriptionSelectionMode {
                     Button {
-                        
+                        onSelectMultipleSubscriptions(subscriptionListingViewModel.getSelectedSubredditsAndUsersInCustomFeed())
+                        dismiss()
                     } label: {
                         HStack {
                             Text("Done")
