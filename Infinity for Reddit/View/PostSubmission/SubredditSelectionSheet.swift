@@ -1,4 +1,3 @@
-
 //
 // SubredditSelectionSheet.swift
 // Infinity for Reddit

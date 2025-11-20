@@ -19,16 +19,16 @@ struct SubscriptionsView: View {
 
     @State private var selectedOption = 0
     @State private var navigationBarMenuKey: UUID?
+
+    private let subscriptionSelectionMode: SubscriptionSelectionMode
     
-    private let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
-    
-    init(customOnTapForSearchInThing: ((SearchInThing) -> Void)? = nil) {
+    init(subscriptionSelectionMode: SubscriptionSelectionMode = .noSelection) {
+        self.subscriptionSelectionMode = subscriptionSelectionMode
         _subscriptionListingViewModel = StateObject(
             wrappedValue: SubscriptionListingViewModel(
                 subscriptionListingRepository: SubscriptionListingRepository()
             )
         )
-        self.customOnTapForSearchInThing = customOnTapForSearchInThing
     }
 
     var body: some View {
@@ -39,21 +39,33 @@ struct SubscriptionsView: View {
                 
                 TabView(selection: $selectedOption) {
                     Group {
-                        if let customOnTapForSearchInThing = customOnTapForSearchInThing {
+                        switch subscriptionSelectionMode {
+                        case .noSelection:
+                            SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
+                                .tag(0)
+                            
+                            SubscribedUserListingView(subscriptionListingViewModel: subscriptionListingViewModel, onSelectCustomAction: nil)
+                                .tag(1)
+                            
+                            CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: nil)
+                                .tag(2)
+                        case .searchInThing(let onSelectSearchInThing):
                             SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
-                                customOnTapForSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
+                                onSelectSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
                             }
                             .tag(0)
-                        } else {
+                            
+                            SubscribedUserListingView(subscriptionListingViewModel: subscriptionListingViewModel, onSelectCustomAction: { subscribedUserData in
+                                onSelectSearchInThing(SearchInThing.user(subscribedUserData))
+                            })
+                            .tag(1)
+                            
+                            CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: onSelectSearchInThing)
+                                .tag(2)
+                        case .subredditAndUserInCustomFeed(let onSelectMultipleSubscriptions):
                             SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .tag(0)
                         }
-                        
-                        UsersView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
-                            .tag(1)
-                        
-                        CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: customOnTapForSearchInThing)
-                            .tag(2)
                     }
                     .toolbar(.hidden, for: .tabBar)
                 }
@@ -78,96 +90,10 @@ struct SubscriptionsView: View {
             ])
         }
         .onDisappear {
-            guard let navigationBarMenuKey else { return }
-            navigationBarMenuManager.pop(key: navigationBarMenuKey)
-        }
-    }
-
-    struct UsersView: View {
-        @EnvironmentObject var navigationManager: NavigationManager
-        @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
-        
-        let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
-        
-        var body: some View {
-            Group {
-                if subscriptionListingViewModel.userSubscriptions.isEmpty {
-                    if subscriptionListingViewModel.isLoadingSubscriptions {
-                        ProgressIndicator()
-                    } else {
-                        Text("No subscribed users")
-                            .primaryText()
-                    }
-                } else {
-                    List {
-                        if !subscriptionListingViewModel.favoriteUserSubscriptions.isEmpty {
-                            CustomListSection("Favorite") {
-                                ForEach(subscriptionListingViewModel.favoriteUserSubscriptions, id: \.identityInView) { subscription in
-                                    SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                        if let customOnTapForSearchInThing = customOnTapForSearchInThing {
-                                            customOnTapForSearchInThing(SearchInThing.user(subscription))
-                                        } else {
-                                            navigationManager.append(AppNavigation.userDetails(username: subscription.name))
-                                        }
-                                    }) {
-                                        subscription.isFavorite.toggle()
-                                        Task {
-                                            await subscriptionListingViewModel.toggleFavoriteUser(subscription)
-                                        }
-                                    }
-                                    .listPlainItemNoInsets()
-                                    .applyIf(customOnTapForSearchInThing == nil) {
-                                        $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                            Button(role: .destructive) {
-                                                Task {
-                                                    await subscriptionListingViewModel.unfollowUser(subscription)
-                                                }
-                                            } label: {
-                                                Text("Unfollow")
-                                                    .foregroundStyle(.white)
-                                            }
-                                            .tint(.red)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        CustomListSection("All") {
-                            ForEach(subscriptionListingViewModel.userSubscriptions, id: \.identityInView) { subscription in
-                                SubscriptionItemView(text: subscription.name, iconUrl: subscription.iconUrl, isFavorite: subscription.isFavorite, action: {
-                                    if let customOnTapForSearchInThing = customOnTapForSearchInThing {
-                                        customOnTapForSearchInThing(SearchInThing.user(subscription))
-                                    } else {
-                                        navigationManager.append(AppNavigation.userDetails(username: subscription.name))
-                                    }
-                                }) {
-                                    subscription.isFavorite.toggle()
-                                    Task {
-                                        await subscriptionListingViewModel.toggleFavoriteUser(subscription)
-                                    }
-                                }
-                                .listPlainItemNoInsets()
-                                .applyIf(customOnTapForSearchInThing == nil) {
-                                    $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                        Button(role: .destructive) {
-                                            Task {
-                                                await subscriptionListingViewModel.unfollowUser(subscription)
-                                            }
-                                        } label: {
-                                            Text("Unfollow")
-                                                .foregroundStyle(.white)
-                                        }
-                                        .tint(.red)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .scrollBounceBehavior(.basedOnSize)
-                    .themedList()
-                }
+            guard let navigationBarMenuKey else {
+                return
             }
+            navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
     }
 

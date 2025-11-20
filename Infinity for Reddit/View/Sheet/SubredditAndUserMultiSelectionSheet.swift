@@ -1,13 +1,13 @@
 //
-//  SelectSearchInThingSheet.swift
+//  SubredditAndUserMultiSelectionSheet.swift
 //  Infinity for Reddit
 //
-//  Created by Docile Alligator on 2025-09-20.
+//  Created by Docile Alligator on 2025-11-19.
 //
 
 import SwiftUI
 
-struct SelectSearchInThingSheet: View {
+struct SubredditAndUserMultiSelectionSheet: View {
     @EnvironmentObject private var accountViewModel: AccountViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
     @Environment(\.dismiss) private var dismiss
@@ -24,9 +24,8 @@ struct SelectSearchInThingSheet: View {
                     dismiss()
                 }
             } else {
-                SubscriptionsView(subscriptionSelectionMode: .searchInThing(onSelectSearchInThing: { searchInThing in
-                    onSelectThing(searchInThing)
-                    dismiss()
+                SubscriptionsView(subscriptionSelectionMode: .subredditAndUserInCustomFeed(onSelectMultipleSubscriptions: { subredditAndUsersInCustomFeed in
+                    
                 }))
             }
         }
