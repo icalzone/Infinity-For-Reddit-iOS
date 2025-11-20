@@ -20,6 +20,9 @@ public class SubscriptionListingViewModel: ObservableObject {
     @Published var myCustomFeeds: [MyCustomFeed] = []
     @Published var favoriteMyCustomFeeds: [MyCustomFeed] = []
     
+    @Published var selectedSubscribedSubreddits: IdentifiedArrayOf<SubscribedSubredditData> = []
+    @Published var selectedSubscribedUsers: IdentifiedArrayOf<SubscribedUserData> = []
+    
     @Published var subscriptionAndCustomFeedLoadingTaskFlag: Bool = false
     @Published var isLoadingSubscriptions: Bool = false
     @Published var isLoadingMyCustomFeeds: Bool = false

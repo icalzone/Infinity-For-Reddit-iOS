@@ -37,8 +37,16 @@ struct SubscribedSubredditListingMultiSelectionView: View {
                     if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
                         CustomListSection("Favorite") {
                             ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
-                                SubscriptionItemMultiSelectionView(text: subscription.name, iconUrl: subscription.iconUrl, isSelected: true) {
-                                    
+                                SubscriptionItemMultiSelectionView(
+                                    text: subscription.name,
+                                    iconUrl: subscription.iconUrl,
+                                    isSelected: subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil
+                                ) {
+                                    if subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil {
+                                        subscriptionListingViewModel.selectedSubscribedSubreddits.remove(subscription)
+                                    } else {
+                                        subscriptionListingViewModel.selectedSubscribedSubreddits.append(subscription)
+                                    }
                                 }
                                 .listPlainItemNoInsets()
                             }
@@ -47,11 +55,15 @@ struct SubscribedSubredditListingMultiSelectionView: View {
                     
                     CustomListSection("All") {
                         ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
-                            SubscriptionItemMultiSelectionView(text: subscription.name, iconUrl: subscription.iconUrl, isSelected: true) {
-                                if let onSelectCustomAction = onSelectCustomAction {
-                                    onSelectCustomAction(subscription)
+                            SubscriptionItemMultiSelectionView(
+                                text: subscription.name,
+                                iconUrl: subscription.iconUrl,
+                                isSelected: subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil
+                            ) {
+                                if subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil {
+                                    subscriptionListingViewModel.selectedSubscribedSubreddits.remove(subscription)
                                 } else {
-                                    navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                    subscriptionListingViewModel.selectedSubscribedSubreddits.append(subscription)
                                 }
                             }
                             .listPlainItemNoInsets()
