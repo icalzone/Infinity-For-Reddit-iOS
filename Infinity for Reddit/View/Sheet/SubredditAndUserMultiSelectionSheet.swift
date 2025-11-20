@@ -14,19 +14,16 @@ struct SubredditAndUserMultiSelectionSheet: View {
     
     @State private var showSearchSubredditsAndUsersView: Bool = false
     
-    let onSelectThing: (SearchInThing) -> Void
+    var subscriptionSelectionMode: SubscriptionSelectionMode
     
     var body: some View {
         ZStack {
             if accountViewModel.account.isAnonymous() {
                 AnonymousSubscriptionsView() { searchInThing in
-                    onSelectThing(searchInThing)
                     dismiss()
                 }
             } else {
-                SubscriptionsView(subscriptionSelectionMode: .subredditAndUserInCustomFeed(onSelectMultipleSubscriptions: { subredditAndUsersInCustomFeed in
-                    
-                }))
+                SubscriptionsView(subscriptionSelectionMode: subscriptionSelectionMode)
             }
         }
         .themedNavigationBar()
@@ -52,7 +49,6 @@ struct SubredditAndUserMultiSelectionSheet: View {
         .sheet(isPresented: $showSearchSubredditsAndUsersView) {
             NavigationStack {
                 SearchSubredditsAndUsersSheet { searchInThing in
-                    onSelectThing(searchInThing)
                     dismiss()
                 }
             }

@@ -1,0 +1,79 @@
+//
+//  SubscribedSubredditListingMultiSelectionView.swift
+//  Infinity for Reddit
+//
+//  Created by Docile Alligator on 2025-11-19.
+//
+
+import SwiftUI
+
+struct SubscribedSubredditListingMultiSelectionView: View {
+    @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var accountViewModel: AccountViewModel
+    
+    @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
+
+    let onSelectCustomAction: ((SubscribedSubredditData) -> Void)?
+    
+    init(
+        subscriptionListingViewModel: SubscriptionListingViewModel,
+        onSelectCustomAction: ((SubscribedSubredditData) -> Void)? = nil
+    ) {
+        self.subscriptionListingViewModel = subscriptionListingViewModel
+        self.onSelectCustomAction = onSelectCustomAction
+    }
+    
+    var body: some View {
+        Group {
+            if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
+                if subscriptionListingViewModel.isLoadingSubscriptions {
+                    ProgressIndicator()
+                } else {
+                    Text("No subscribed subreddits")
+                        .primaryText()
+                }
+            } else {
+                List {
+                    if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
+                        CustomListSection("Favorite") {
+                            ForEach(subscriptionListingViewModel.favoriteSubredditSubscriptions, id: \.identityInView) { subscription in
+                                SubscriptionItemMultiSelectionView(text: subscription.name, iconUrl: subscription.iconUrl, isSelected: true) {
+                                    
+                                }
+                                .listPlainItemNoInsets()
+                            }
+                        }
+                    }
+                    
+                    CustomListSection("All") {
+                        ForEach(subscriptionListingViewModel.subredditSubscriptions, id: \.identityInView) { subscription in
+                            SubscriptionItemMultiSelectionView(text: subscription.name, iconUrl: subscription.iconUrl, isSelected: true) {
+                                if let onSelectCustomAction = onSelectCustomAction {
+                                    onSelectCustomAction(subscription)
+                                } else {
+                                    navigationManager.append(AppNavigation.subredditDetails(subredditName: subscription.name))
+                                }
+                            }
+                            .listPlainItemNoInsets()
+                            .applyIf(onSelectCustomAction == nil) {
+                                $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await subscriptionListingViewModel.unsubscribeFromSubreddit(subscription)
+                                        }
+                                    } label: {
+                                        Text("Unsubscribe")
+                                            .foregroundStyle(.white)
+                                    }
+                                    .tint(.red)
+                                }
+                            }
+                        }
+                    }
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .themedList()
+            }
+        }
+    }
+}
