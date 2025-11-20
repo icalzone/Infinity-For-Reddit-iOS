@@ -34,8 +34,20 @@ struct SubscriptionsView: View {
     var body: some View {
         RootView {
             VStack(spacing: 0) {
-                SegmentedPicker(selectedValue: $selectedOption, values: ["Subreddits", "Users", "Custom Feed"])
+                switch subscriptionSelectionMode {
+                case .subredditAndUserInCustomFeed:
+                    SegmentedPicker(
+                        selectedValue: $selectedOption,
+                        values: ["Subreddits", "Users"]
+                    )
                     .padding(4)
+                default:
+                    SegmentedPicker(
+                        selectedValue: $selectedOption,
+                        values: ["Subreddits", "Users", "Custom Feed"]
+                    )
+                    .padding(4)
+                }
                 
                 TabView(selection: $selectedOption) {
                     Group {
@@ -62,12 +74,28 @@ struct SubscriptionsView: View {
                             
                             CustomFeedView(subscriptionListingViewModel: subscriptionListingViewModel, customOnTapForSearchInThing: onSelectSearchInThing)
                                 .tag(2)
-                        case .subredditAndUserInCustomFeed(let onSelectMultipleSubscriptions):
+                        case .subredditAndUserInCustomFeed:
                             SubscribedSubredditListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .tag(0)
+                            
+                            SubscribedUserListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
+                                .tag(1)
                         }
                     }
                     .toolbar(.hidden, for: .tabBar)
+                }
+                
+                if case .subredditAndUserInCustomFeed = subscriptionSelectionMode {
+                    Button {
+                        
+                    } label: {
+                        HStack {
+                            Text("Done")
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(16)
+                    .filledButton()
                 }
             }
         }

@@ -18,6 +18,7 @@ struct CreateCustomFeedView: View {
     
     @State private var descriptionCanFocus: Bool = true
     @State private var descriptionSelectedRange: NSRange = NSRange(location: 0, length: 0)
+    @State private var showSubredditAndUserMultiSelectionSheet: Bool = false
     
     init() {
         _createCustomFeedViewModel = StateObject(wrappedValue: CreateCustomFeedViewModel(createCustomFeedRepository: CreateCustomFeedRepository()))
@@ -53,6 +54,17 @@ struct CreateCustomFeedView: View {
                         Divider()
                     }
                 }
+                
+                Button {
+                    showSubredditAndUserMultiSelectionSheet = true
+                } label: {
+                    HStack {
+                        Text("Select Subreddit(s) and User(s)")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(16)
+                .filledButton()
                 
                 KeyboardToolbar {
                     descriptionCanFocus = false
@@ -93,6 +105,11 @@ struct CreateCustomFeedView: View {
             if let error = newValue {
                 snackbarManager.showSnackbar(text: error.localizedDescription)
             }
+        }
+        .sheet(isPresented: $showSubredditAndUserMultiSelectionSheet) {
+            SubredditAndUserMultiSelectionSheet(subscriptionSelectionMode: .subredditAndUserInCustomFeed(onSelectMultipleSubscriptions: { _ in
+                
+            }))
         }
     }
     

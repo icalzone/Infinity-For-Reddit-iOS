@@ -1,5 +1,5 @@
 //
-//  SubscribedUserMultiSelectionView.swift
+//  SubscribedUserListingMultiSelectionView.swift
 //  Infinity for Reddit
 //
 //  Created by Docile Alligator on 2025-11-19.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SubscribedUserMultiSelectionView: View {
+struct SubscribedUserListingMultiSelectionView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     
     @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
