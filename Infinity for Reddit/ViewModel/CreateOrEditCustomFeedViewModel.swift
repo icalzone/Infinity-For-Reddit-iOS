@@ -19,7 +19,7 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
     @Published var error: Error? = nil
     
     @Published var myCustomFeedToEdit: MyCustomFeed?
-    @Published var hasLoadedMyCustomFeedToEdit: Bool = false
+    @Published var myCustomFeedToEditLoadState: LoadState = .idle
     
     private let createCustomFeedRepository: CreateOrEditCustomFeedRepositoryProtocol
     
@@ -76,5 +76,17 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
             
             createCustomFeedTask = nil
         }
+    }
+    
+    func fetchCustomFeedDetailsToEdit() async {
+        guard let myCustomFeedToEdit = myCustomFeedToEdit else {
+            return
+        }
+        
+        guard myCustomFeedToEditLoadState.canLoad else {
+            return
+        }
+
+        myCustomFeedToEditLoadState = .loading
     }
 }

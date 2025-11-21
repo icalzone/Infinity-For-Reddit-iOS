@@ -31,11 +31,27 @@ struct CreateOrEditCustomFeedView: View {
     
     var body: some View {
         RootView {
-            if createOrEditCustomFeedViewModel.myCustomFeedToEdit != nil && !createOrEditCustomFeedViewModel.hasLoadedMyCustomFeedToEdit {
-                ZStack {
-                    ProgressIndicator()
+            if createOrEditCustomFeedViewModel.myCustomFeedToEdit != nil && !createOrEditCustomFeedViewModel.myCustomFeedToEditLoadState.isLoaded {
+                switch createOrEditCustomFeedViewModel.myCustomFeedToEditLoadState {
+                case .idle:
+                    Color.clear
+                case .loading:
+                    ZStack {
+                        ProgressIndicator()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                case .loaded:
+                    // Well it shouldn't reach here
+                    EmptyView()
+                case .failed(let error):
+                    ZStack {
+                        Text("Failed to load custom feed. Tap to try again.")
+                    }
+                    .onTapGesture {
+                        createOrEditCustomFeedViewModel.myCustomFeedToEditLoadState = .idle
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack(spacing: 0) {
                     ScrollView {
@@ -123,6 +139,11 @@ struct CreateOrEditCustomFeedView: View {
                 }
                 
                 NavigationBarMenu()
+            }
+        }
+        .applyIf(createOrEditCustomFeedViewModel.myCustomFeedToEdit != nil) {
+            $0.task {
+                await createOrEditCustomFeedViewModel.fetchCustomFeedDetailsToEdit()
             }
         }
         .onChange(of: createOrEditCustomFeedViewModel.createCustomFeedTask) { _, newValue in
