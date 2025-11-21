@@ -42,6 +42,19 @@ struct AnonymousSubscribedUserListingView: View {
                                     anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
                                 }
                                 .listPlainItemNoInsets()
+                                .applyIf(onSelectCustomAction == nil) {
+                                    $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await anonymousSubscriptionListingViewModel.unfollowUser(subscription)
+                                            }
+                                        } label: {
+                                            Text("Unfollow")
+                                                .foregroundStyle(.white)
+                                        }
+                                        .tint(.red)
+                                    }
+                                }
                             }
                         }
                     }
@@ -59,6 +72,19 @@ struct AnonymousSubscribedUserListingView: View {
                                 anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
                             }
                             .listPlainItemNoInsets()
+                            .applyIf(onSelectCustomAction == nil) {
+                                $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await anonymousSubscriptionListingViewModel.unfollowUser(subscription)
+                                        }
+                                    } label: {
+                                        Text("Unfollow")
+                                            .foregroundStyle(.white)
+                                    }
+                                    .tint(.red)
+                                }
+                            }
                         }
                     }
                 }

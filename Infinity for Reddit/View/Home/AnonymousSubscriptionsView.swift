@@ -138,6 +138,17 @@ struct AnonymousSubscriptionsView: View {
                                         anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                     }
                                     .listPlainItemNoInsets()
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await anonymousSubscriptionListingViewModel.deleteCustomFeed(customFeed)
+                                            }
+                                        } label: {
+                                            Text("Delete")
+                                                .foregroundStyle(.white)
+                                        }
+                                        .tint(.red)
+                                    }
                                 }
                             }
                         }
@@ -151,6 +162,17 @@ struct AnonymousSubscriptionsView: View {
                                     anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                 }
                                 .listPlainItemNoInsets()
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await anonymousSubscriptionListingViewModel.deleteCustomFeed(customFeed)
+                                        }
+                                    } label: {
+                                        Text("Delete")
+                                            .foregroundStyle(.white)
+                                    }
+                                    .tint(.red)
+                                }
                             }
                         }
                     }
