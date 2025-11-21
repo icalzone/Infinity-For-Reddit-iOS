@@ -34,16 +34,16 @@ struct AnonymousSubscriptionsView: View {
         RootView {
             VStack(spacing: 0) {
                 switch anonymousSubscriptionListingViewModel.subscriptionSelectionMode {
-                case .subredditAndUserMultiSelection:
+                case .noSelection:
                     SegmentedPicker(
                         selectedValue: $selectedOption,
-                        values: ["Subreddits", "Users"]
+                        values: ["Subreddits", "Users", "Custom Feed"]
                     )
                     .padding(4)
                 default:
                     SegmentedPicker(
                         selectedValue: $selectedOption,
-                        values: ["Subreddits", "Users", "Custom Feed"]
+                        values: ["Subreddits", "Users"]
                     )
                     .padding(4)
                 }
@@ -70,9 +70,6 @@ struct AnonymousSubscriptionsView: View {
                                 onSelectThing(Thing.subscribedUser(subscribedUserData))
                             }
                             .tag(1)
-                            
-                            AnonymousCustomFeedView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel)
-                                .tag(2)
                         case .subredditAndUserMultiSelection:
                             AnonymousSubscribedSubredditListingMultiSelectionView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel)
                                 .tag(0)
