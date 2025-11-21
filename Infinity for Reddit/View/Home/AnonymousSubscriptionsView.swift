@@ -62,12 +62,12 @@ struct AnonymousSubscriptionsView: View {
                                 .tag(2)
                         case .searchInThing(let onSelectSearchInThing):
                             AnonymousSubscribedSubredditListingView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel) { subscribedSubredditData in
-                                onSelectSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
+                                onSelectSearchInThing(Thing.subscribedSubreddit(subscribedSubredditData))
                             }
                             .tag(0)
                             
                             AnonymousSubscribedUserListingView(anonymousSubscriptionListingViewModel: anonymousSubscriptionListingViewModel) { subscribedUserData in
-                                onSelectSearchInThing(SearchInThing.user(subscribedUserData))
+                                onSelectSearchInThing(Thing.subscribedUser(subscribedUserData))
                             }
                             .tag(1)
                             

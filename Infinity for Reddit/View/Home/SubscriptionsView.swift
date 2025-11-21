@@ -63,12 +63,12 @@ struct SubscriptionsView: View {
                                 .tag(2)
                         case .searchInThing(let onSelectSearchInThing):
                             SubscribedSubredditListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedSubredditData in
-                                onSelectSearchInThing(SearchInThing.subreddit(subscribedSubredditData))
+                                onSelectSearchInThing(Thing.subscribedSubreddit(subscribedSubredditData))
                             }
                             .tag(0)
                             
                             SubscribedUserListingView(subscriptionListingViewModel: subscriptionListingViewModel) { subscribedUserData in
-                                onSelectSearchInThing(SearchInThing.user(subscribedUserData))
+                                onSelectSearchInThing(Thing.subscribedUser(subscribedUserData))
                             }
                             .tag(1)
                             
@@ -130,7 +130,7 @@ struct SubscriptionsView: View {
         @EnvironmentObject var navigationManager: NavigationManager
         @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
         
-        let customOnTapForSearchInThing: ((SearchInThing) -> Void)?
+        let customOnTapForSearchInThing: ((Thing) -> Void)?
         
         var body: some View {
             Group {
@@ -148,7 +148,7 @@ struct SubscriptionsView: View {
                                 ForEach(subscriptionListingViewModel.favoriteMyCustomFeeds, id: \.identityInView) { customFeed in
                                     SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                         if let customOnTapForSearchInThing = customOnTapForSearchInThing {
-                                            customOnTapForSearchInThing(SearchInThing.customFeed(customFeed))
+                                            customOnTapForSearchInThing(Thing.myCustomFeed(customFeed))
                                         } else {
                                             navigationManager.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                         }
@@ -180,7 +180,7 @@ struct SubscriptionsView: View {
                             ForEach(subscriptionListingViewModel.myCustomFeeds, id: \.identityInView) { customFeed in
                                 SubscriptionItemView(text: customFeed.displayName, iconUrl: customFeed.iconUrl, isFavorite: customFeed.isFavorite, action: {
                                     if let customOnTapForSearchInThing = customOnTapForSearchInThing {
-                                        customOnTapForSearchInThing(SearchInThing.customFeed(customFeed))
+                                        customOnTapForSearchInThing(Thing.myCustomFeed(customFeed))
                                     } else {
                                         navigationManager.append(AppNavigation.customFeed(myCustomFeed: customFeed))
                                     }

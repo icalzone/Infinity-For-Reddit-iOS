@@ -9,6 +9,6 @@ import IdentifiedCollections
 
 enum SubscriptionSelectionMode {
     case noSelection
-    case searchInThing(onSelectSearchInThing: (SearchInThing) -> Void)
-    case subredditAndUserInCustomFeed(selectedSubredditsAndUsersInCustomFeed: IdentifiedArrayOf<SubredditAndUserInCustomFeed>, onSelectMultipleSubscriptions: ([SubredditAndUserInCustomFeed]) -> Void)
+    case searchInThing(onSelectSearchInThing: (Thing) -> Void)
+    case subredditAndUserInCustomFeed(selectedSubredditsAndUsersInCustomFeed: IdentifiedArrayOf<Thing>, onSelectMultipleSubscriptions: ([Thing]) -> Void)
 }

@@ -39,7 +39,7 @@ class CreateCustomFeedRepository: CreateCustomFeedRepositoryProtocol {
         self.anonymousCustomFeedSubredditDao = AnonymousCustomFeedSubredditDao(dbPool: resolvedDBPool)
     }
     
-    func createCustomFeed(name: String, description: String, isPrivate: Bool, subredditsAndUsersInCustomFeed: IdentifiedArrayOf<SubredditAndUserInCustomFeed>) async throws -> MyCustomFeed {
+    func createCustomFeed(name: String, description: String, isPrivate: Bool, subredditsAndUsersInCustomFeed: IdentifiedArrayOf<Thing>) async throws -> MyCustomFeed {
         guard !AccountViewModel.shared.account.isAnonymous() else {
             return try await createCustomFeedAnonymous(name: name, description: description, subredditsAndUsersInCustomFeed: subredditsAndUsersInCustomFeed)
         }
@@ -95,7 +95,7 @@ class CreateCustomFeedRepository: CreateCustomFeedRepositoryProtocol {
         }
     }
     
-    func createCustomFeedAnonymous(name: String, description: String, subredditsAndUsersInCustomFeed: IdentifiedArrayOf<SubredditAndUserInCustomFeed>) async throws -> MyCustomFeed {
+    func createCustomFeedAnonymous(name: String, description: String, subredditsAndUsersInCustomFeed: IdentifiedArrayOf<Thing>) async throws -> MyCustomFeed {
         let myCustomFeed = MyCustomFeed(
             path: "/user/-/m/\(name)",
             displayName: name,

@@ -14,7 +14,7 @@ struct SearchSubredditsAndUsersSheet: View {
     
     @State private var queryItem: Item?
     
-    let onThingSelected: (SearchInThing) -> Void
+    let onThingSelected: (Thing) -> Void
     
     var body: some View {
         SearchView { query in
@@ -24,8 +24,8 @@ struct SearchSubredditsAndUsersSheet: View {
         .addTitleToInlineNavigationBar("Search Subreddits and Users")
         .sheet(item: $queryItem) { queryItem in
             NavigationStack {
-                SubredditAndUserSearchResultSheet(query: queryItem.query) { searchInThing in
-                    onThingSelected(searchInThing)
+                SubredditAndUserSearchResultSheet(query: queryItem.query) { thing in
+                    onThingSelected(thing)
                     dismiss()
                 }
             }

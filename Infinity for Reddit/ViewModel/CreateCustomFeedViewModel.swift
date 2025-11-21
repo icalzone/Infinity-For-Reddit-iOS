@@ -13,7 +13,7 @@ class CreateCustomFeedViewModel: ObservableObject {
     @Published var name: String = ""
     @Published var description: String = ""
     @Published var isPrivate: Bool = true
-    @Published var subredditsAndUsersInCustomFeed: IdentifiedArrayOf<SubredditAndUserInCustomFeed> = []
+    @Published var subredditsAndUsersInCustomFeed: IdentifiedArrayOf<Thing> = []
     @Published var createCustomFeedTask: Task<Void, Never>?
     @Published var createdMyCustomFeed: MyCustomFeed?
     @Published var error: Error? = nil
@@ -35,7 +35,7 @@ class CreateCustomFeedViewModel: ObservableObject {
         self.createCustomFeedRepository = createCustomFeedRepository
     }
     
-    func addSubredditsAndUsersInCustomFeed(_ newValues: [SubredditAndUserInCustomFeed]) {
+    func addSubredditsAndUsersInCustomFeed(_ newValues: [Thing]) {
         for newValue in newValues {
             if subredditsAndUsersInCustomFeed.index(id: newValue.id) == nil {
                 subredditsAndUsersInCustomFeed.append(newValue)
@@ -43,7 +43,7 @@ class CreateCustomFeedViewModel: ObservableObject {
         }
     }
     
-    func removeSubredditAndUserInCustomFeed(_ value: SubredditAndUserInCustomFeed) {
+    func removeSubredditAndUserInCustomFeed(_ value: Thing) {
         subredditsAndUsersInCustomFeed.remove(value)
     }
     

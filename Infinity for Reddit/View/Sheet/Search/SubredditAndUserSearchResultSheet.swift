@@ -15,7 +15,7 @@ struct SubredditAndUserSearchResultSheet: View {
     @State private var selectedOption = 0
     
     let query: String
-    let onSearchInThingSelected: (SearchInThing) -> Void
+    let onSearchInThingSelected: (Thing) -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -24,13 +24,13 @@ struct SubredditAndUserSearchResultSheet: View {
             
             TabView(selection: $selectedOption) {
                 SubredditListingView(account: accountViewModel.account, query: query) { subreddit in
-                    onSearchInThingSelected(SearchInThing.subreddit(SubscribedSubredditData.fromSubreddit(subreddit, username: accountViewModel.account.username)))
+                    onSearchInThingSelected(Thing.subscribedSubreddit(SubscribedSubredditData.fromSubreddit(subreddit, username: accountViewModel.account.username)))
                     dismiss()
                 }
                 .tag(0)
                 
                 UserListingView(account: accountViewModel.account, query: query) { user in
-                    onSearchInThingSelected(SearchInThing.user(SubscribedUserData.fromUser(user, username: accountViewModel.account.username)))
+                    onSearchInThingSelected(Thing.subscribedUser(SubscribedUserData.fromUser(user, username: accountViewModel.account.username)))
                     dismiss()
                 }
                 .tag(1)

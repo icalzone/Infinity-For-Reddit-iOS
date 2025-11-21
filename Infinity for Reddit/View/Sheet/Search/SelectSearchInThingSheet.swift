@@ -14,18 +14,18 @@ struct SelectSearchInThingSheet: View {
     
     @State private var showSearchSubredditsAndUsersView: Bool = false
     
-    let onSelectThing: (SearchInThing) -> Void
+    let onSelectThing: (Thing) -> Void
     
     var body: some View {
         ZStack {
             if accountViewModel.account.isAnonymous() {
-                AnonymousSubscriptionsView(subscriptionSelectionMode: .searchInThing(onSelectSearchInThing: { searchInThing in
-                    onSelectThing(searchInThing)
+                AnonymousSubscriptionsView(subscriptionSelectionMode: .searchInThing(onSelectSearchInThing: { thing in
+                    onSelectThing(thing)
                     dismiss()
                 }))
             } else {
-                SubscriptionsView(subscriptionSelectionMode: .searchInThing(onSelectSearchInThing: { searchInThing in
-                    onSelectThing(searchInThing)
+                SubscriptionsView(subscriptionSelectionMode: .searchInThing(onSelectSearchInThing: { thing in
+                    onSelectThing(thing)
                     dismiss()
                 }))
             }
@@ -52,8 +52,8 @@ struct SelectSearchInThingSheet: View {
         }
         .sheet(isPresented: $showSearchSubredditsAndUsersView) {
             NavigationStack {
-                SearchSubredditsAndUsersSheet { searchInThing in
-                    onSelectThing(searchInThing)
+                SearchSubredditsAndUsersSheet { thing in
+                    onSelectThing(thing)
                     dismiss()
                 }
             }

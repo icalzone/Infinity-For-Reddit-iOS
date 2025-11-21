@@ -64,6 +64,8 @@ public class SubscriptionListingViewModel: ObservableObject {
                     selectedSubscribedUsers.append(subscribedUserData)
                 case .user(_):
                     break
+                case .myCustomFeed(_):
+                    break
                 }
             }
             
@@ -592,8 +594,8 @@ public class SubscriptionListingViewModel: ObservableObject {
         }
     }
     
-    func getSelectedSubredditsAndUsersInCustomFeed() -> [SubredditAndUserInCustomFeed] {
-        var result: [SubredditAndUserInCustomFeed] = []
+    func getSelectedSubredditsAndUsersInCustomFeed() -> [Thing] {
+        var result: [Thing] = []
         
         for subscribedSubredditData in selectedSubscribedSubreddits {
             result.append(.subscribedSubreddit(subscribedSubredditData))
