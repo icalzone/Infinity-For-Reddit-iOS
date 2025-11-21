@@ -42,10 +42,11 @@ struct CreateOrEditCustomFeedView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 case .loaded:
                     // Well it shouldn't reach here
-                    EmptyView()
+                    Color.clear
                 case .failed(let error):
                     ZStack {
-                        Text("Failed to load custom feed. Tap to try again.")
+                        Text("Failed to load custom feed. Tap to try again. Error: \(error.localizedDescription)")
+                            .primaryText()
                     }
                     .onTapGesture {
                         createOrEditCustomFeedViewModel.myCustomFeedToEditLoadState = .idle

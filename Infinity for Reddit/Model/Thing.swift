@@ -8,6 +8,7 @@
 enum Thing: Identifiable {
     case subscribedSubreddit(SubscribedSubredditData)
     case subreddit(SubredditData)
+    case subredditName(String)
     case subscribedUser(SubscribedUserData)
     case user(UserData)
     case myCustomFeed(MyCustomFeed)
@@ -18,6 +19,8 @@ enum Thing: Identifiable {
             return subscribedSubredditData.name
         case .subreddit(let subredditData):
             return subredditData.name
+        case .subredditName(let name):
+            return name
         case .subscribedUser(let subscribedUserData):
             return subscribedUserData.name
         case .user(let userData):
@@ -33,6 +36,8 @@ enum Thing: Identifiable {
             return subscribedSubredditData.name
         case .subreddit(let subredditData):
             return subredditData.name
+        case .subredditName(let name):
+            return name
         case .subscribedUser(let subscribedUserData):
             return "u_\(subscribedUserData.name)"
         case .user(let userData):
@@ -48,6 +53,8 @@ enum Thing: Identifiable {
             return subscribedSubredditData.iconUrl
         case .subreddit(let subredditData):
             return subredditData.iconUrl
+        case .subredditName:
+            return nil
         case .subscribedUser(let subscribedUserData):
             return subscribedUserData.iconUrl
         case .user(let userData):
@@ -63,6 +70,8 @@ enum Thing: Identifiable {
             return "r/\(subscribedSubredditData.name)"
         case .subreddit(let subredditData):
             return "r/\(subredditData.name)"
+        case .subredditName(let name):
+            return "r/\(name)"
         case .subscribedUser(let subscribedUserData):
             return "u/\(subscribedUserData.name)"
         case .user(let userData):
@@ -78,6 +87,8 @@ enum Thing: Identifiable {
             return subscribedSubredditData.name
         case .subreddit(let subredditData):
             return subredditData.name
+        case .subredditName(let name):
+            return name
         case .subscribedUser(let subscribedUserData):
             return subscribedUserData.name
         case .user(let userData):
@@ -101,6 +112,8 @@ enum Thing: Identifiable {
         case .subscribedSubreddit:
             return SearchInThingType.subreddit
         case .subreddit:
+            return SearchInThingType.subreddit
+        case .subredditName:
             return SearchInThingType.subreddit
         case .subscribedUser:
             return SearchInThingType.user

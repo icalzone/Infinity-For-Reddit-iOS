@@ -163,4 +163,22 @@ class CreateOrEditCustomFeedRepository: CreateOrEditCustomFeedRepositoryProtocol
             reason = json["reason"].stringValue
         }
     }
+    
+    func fetchCustomFeedDetails(path: String) async throws -> CustomFeed {
+        let queries = ["multipath": path]
+        
+        try Task.checkCancellation()
+        
+        let data = try await self.session.request(RedditOAuthAPI.getCustomFeedInfo(queries: queries))
+            .validate()
+            .serializingData()
+            .value
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw APIError.jsonDecodingError(error.localizedDescription)
+        }
+        
+        return try CustomFeed(fromJson: json["data"])
+    }
 }

@@ -88,5 +88,20 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
         }
 
         myCustomFeedToEditLoadState = .loading
+        
+        do {
+            let customFeed = try await createCustomFeedRepository.fetchCustomFeedDetails(path: myCustomFeedToEdit.path)
+            
+            name = customFeed.name
+            description = customFeed.descriptionMd
+            isPrivate = customFeed.visibility == "private"
+            for thingInCustomFeed in customFeed.subredditsInCustomFeed {
+                subredditsAndUsersInCustomFeed.append(.subredditName(thingInCustomFeed.name))
+            }
+            
+            myCustomFeedToEditLoadState = .loaded
+        } catch {
+            myCustomFeedToEditLoadState = .failed(error)
+        }
     }
 }

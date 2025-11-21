@@ -61,6 +61,8 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                     selectedSubscribedSubreddits.append(subscribedSubredditData)
                 case .subreddit(_):
                     break
+                case .subredditName:
+                    break
                 case .subscribedUser(let subscribedUserData):
                     selectedSubscribedUsers.append(subscribedUserData)
                 case .user(_):
