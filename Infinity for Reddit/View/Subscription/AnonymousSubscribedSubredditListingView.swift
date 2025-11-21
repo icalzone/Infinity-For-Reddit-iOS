@@ -42,6 +42,19 @@ struct AnonymousSubscribedSubredditListingView: View {
                                     anonymousSubscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
                                 }
                                 .listPlainItemNoInsets()
+                                .applyIf(onSelectCustomAction == nil) {
+                                    $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await anonymousSubscriptionListingViewModel.unsubscribeFromSubreddit(subscription)
+                                            }
+                                        } label: {
+                                            Text("Unsubscribe")
+                                                .foregroundStyle(.white)
+                                        }
+                                        .tint(.red)
+                                    }
+                                }
                             }
                         }
                     }
@@ -59,6 +72,19 @@ struct AnonymousSubscribedSubredditListingView: View {
                                 anonymousSubscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
                             }
                             .listPlainItemNoInsets()
+                            .applyIf(onSelectCustomAction == nil) {
+                                $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await anonymousSubscriptionListingViewModel.unsubscribeFromSubreddit(subscription)
+                                        }
+                                    } label: {
+                                        Text("Unsubscribe")
+                                            .foregroundStyle(.white)
+                                    }
+                                    .tint(.red)
+                                }
+                            }
                         }
                     }
                 }

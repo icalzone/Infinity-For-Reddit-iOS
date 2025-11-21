@@ -22,6 +22,8 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
     @Published var selectedSubscribedSubreddits: IdentifiedArrayOf<SubscribedSubredditData> = []
     @Published var selectedSubscribedUsers: IdentifiedArrayOf<SubscribedUserData> = []
     
+    @Published var error: Error?
+    
     let subscriptionSelectionMode: SubscriptionSelectionMode
     private let anonymousSubscriptionListingRepository: AnonymousSubscriptionListingRepositoryProtocol
     
@@ -234,6 +236,39 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
     func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) {
         if !anonymousSubscriptionListingRepository.toggleFavoriteCustomFeed(myCustomFeed) {
             // TODO handle error
+        }
+    }
+    
+    func unsubscribeFromSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async {
+        do {
+            try await anonymousSubscriptionListingRepository.unsubscribeFromSubreddit(subscribedSubreddit)
+        } catch {
+            print("Unsubscribe from subreddit error: \(error)")
+            await MainActor.run {
+                self.error = error
+            }
+        }
+    }
+    
+    func unfollowUser(_ subscribedUser: SubscribedUserData) async {
+        do {
+            try await anonymousSubscriptionListingRepository.unfollowUser(subscribedUser)
+        } catch {
+            print("Unfollow user error: \(error)")
+            await MainActor.run {
+                self.error = error
+            }
+        }
+    }
+    
+    func deleteCustomFeed(_ myCustomFeed: MyCustomFeed) async {
+        do {
+            try await anonymousSubscriptionListingRepository.deleteCustomFeed(myCustomFeed)
+        } catch {
+            print("Delete custom feed error: \(error)")
+            await MainActor.run {
+                self.error = error
+            }
         }
     }
     
