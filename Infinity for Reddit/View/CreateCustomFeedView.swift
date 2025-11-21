@@ -51,19 +51,21 @@ struct CreateCustomFeedView: View {
                         .contentShape(Rectangle())
                         .padding(16)
                         
-                        TouchRipple(action: {
-                            createCustomFeedViewModel.isPrivate.toggle()
-                        }) {
-                            HStack {
-                                RowText("Private Custom Feed")
-                                    .primaryText()
-                                
-                                Toggle(isOn: $createCustomFeedViewModel.isPrivate) {}
-                                    .labelsHidden()
-                                    .themedToggle()
-                                    .excludeFromTouchRipple()
+                        if !accountViewModel.account.isAnonymous() {
+                            TouchRipple(action: {
+                                createCustomFeedViewModel.isPrivate.toggle()
+                            }) {
+                                HStack {
+                                    RowText("Private Custom Feed")
+                                        .primaryText()
+                                    
+                                    Toggle(isOn: $createCustomFeedViewModel.isPrivate) {}
+                                        .labelsHidden()
+                                        .themedToggle()
+                                        .excludeFromTouchRipple()
+                                }
+                                .padding(16)
                             }
-                            .padding(16)
                         }
                         
                         Divider()
