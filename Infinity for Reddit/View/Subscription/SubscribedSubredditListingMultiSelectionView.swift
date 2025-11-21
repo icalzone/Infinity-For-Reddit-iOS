@@ -29,10 +29,12 @@ struct SubscribedSubredditListingMultiSelectionView: View {
                                 SubscriptionItemMultiSelectionView(
                                     text: subscription.name,
                                     iconUrl: subscription.iconUrl,
-                                    isSelected: subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil
+                                    isSelected: isSubredditSelected(subscription)
                                 ) {
                                     if subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil {
                                         subscriptionListingViewModel.selectedSubscribedSubreddits.remove(subscription)
+                                    } else if subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: subscription.name) != nil {
+                                        subscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: subscription.name)
                                     } else {
                                         subscriptionListingViewModel.selectedSubscribedSubreddits.append(subscription)
                                     }
@@ -47,10 +49,12 @@ struct SubscribedSubredditListingMultiSelectionView: View {
                             SubscriptionItemMultiSelectionView(
                                 text: subscription.name,
                                 iconUrl: subscription.iconUrl,
-                                isSelected: subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil
+                                isSelected: isSubredditSelected(subscription)
                             ) {
                                 if subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscription.id) != nil {
                                     subscriptionListingViewModel.selectedSubscribedSubreddits.remove(subscription)
+                                } else if subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: subscription.name) != nil {
+                                    subscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: subscription.name)
                                 } else {
                                     subscriptionListingViewModel.selectedSubscribedSubreddits.append(subscription)
                                 }
@@ -63,5 +67,10 @@ struct SubscribedSubredditListingMultiSelectionView: View {
                 .themedList()
             }
         }
+    }
+    
+    func isSubredditSelected(_ subscribedSubreddit: SubscribedSubredditData) -> Bool {
+        return subscriptionListingViewModel.selectedSubscribedSubreddits.index(id: subscribedSubreddit.id) != nil
+        || subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: subscribedSubreddit.name) != nil
     }
 }

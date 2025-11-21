@@ -101,8 +101,12 @@ class CustomFeed : NSObject {
     }
 }
 
-class SubredditInCustomFeed : NSObject {
+class SubredditInCustomFeed : NSObject, Identifiable {
     var name : String!
+    
+    var id: String {
+        name
+    }
 
     init(fromJson json: JSON!) throws {
         if json.isEmpty {

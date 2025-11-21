@@ -29,10 +29,12 @@ struct SubscribedUserListingMultiSelectionView: View {
                                 SubscriptionItemMultiSelectionView(
                                     text: subscription.name,
                                     iconUrl: subscription.iconUrl,
-                                    isSelected: subscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil
+                                    isSelected: isUserSelected(subscription)
                                 ) {
                                     if subscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil {
                                         subscriptionListingViewModel.selectedSubscribedUsers.remove(subscription)
+                                    } else if subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscription.name)") != nil {
+                                        subscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: "u_\(subscription.name)")
                                     } else {
                                         subscriptionListingViewModel.selectedSubscribedUsers.append(subscription)
                                     }
@@ -47,10 +49,12 @@ struct SubscribedUserListingMultiSelectionView: View {
                             SubscriptionItemMultiSelectionView(
                                 text: subscription.name,
                                 iconUrl: subscription.iconUrl,
-                                isSelected: subscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil
+                                isSelected: isUserSelected(subscription)
                             ) {
                                 if subscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil {
                                     subscriptionListingViewModel.selectedSubscribedUsers.remove(subscription)
+                                } else if subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscription.name)") != nil {
+                                    subscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: "u_\(subscription.name)")
                                 } else {
                                     subscriptionListingViewModel.selectedSubscribedUsers.append(subscription)
                                 }
@@ -63,5 +67,10 @@ struct SubscribedUserListingMultiSelectionView: View {
                 .themedList()
             }
         }
+    }
+    
+    func isUserSelected(_ subscribedUser: SubscribedUserData) -> Bool {
+        return subscriptionListingViewModel.selectedSubscribedUsers.index(id: subscribedUser.id) != nil
+        || subscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscribedUser.name)") != nil
     }
 }

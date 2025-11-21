@@ -96,7 +96,7 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
             description = customFeed.descriptionMd
             isPrivate = customFeed.visibility == "private"
             for thingInCustomFeed in customFeed.subredditsInCustomFeed {
-                subredditsAndUsersInCustomFeed.append(.subredditName(thingInCustomFeed.name))
+                subredditsAndUsersInCustomFeed.append(.subredditInCustomFeed(thingInCustomFeed))
             }
             
             myCustomFeedToEditLoadState = .loaded

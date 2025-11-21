@@ -129,7 +129,7 @@ struct CreateOrEditCustomFeedView: View {
         }
         .id(accountViewModel.account.username)
         .themedNavigationBar()
-        .addTitleToInlineNavigationBar("Create Custom Feed")
+        .addTitleToInlineNavigationBar("\(createOrEditCustomFeedViewModel.myCustomFeedToEdit != nil ? "Edit" : "Create") Custom Feed")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button(action: {

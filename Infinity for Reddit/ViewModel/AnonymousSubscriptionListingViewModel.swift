@@ -20,6 +20,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
     @Published var favoriteMyCustomFeeds: [MyCustomFeed] = []
     
     @Published var selectedSubscribedSubreddits: IdentifiedArrayOf<SubscribedSubredditData> = []
+    @Published var selectedSubredditsInCustomFeed: IdentifiedArrayOf<SubredditInCustomFeed> = []
     @Published var selectedSubscribedUsers: IdentifiedArrayOf<SubscribedUserData> = []
     
     @Published var error: Error?
@@ -53,6 +54,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         switch subscriptionSelectionMode {
         case .subredditAndUserMultiSelection(let selectedSubredditsAndUsers, _):
             var selectedSubscribedSubreddits = IdentifiedArrayOf<SubscribedSubredditData>()
+            var selectedSubredditsInCustomFeed = IdentifiedArrayOf<SubredditInCustomFeed>()
             var selectedSubscribedUsers = IdentifiedArrayOf<SubscribedUserData>()
             
             for item in selectedSubredditsAndUsers {
@@ -61,8 +63,8 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                     selectedSubscribedSubreddits.append(subscribedSubredditData)
                 case .subreddit(_):
                     break
-                case .subredditName:
-                    break
+                case .subredditInCustomFeed(let subredditInCustomFeed):
+                    selectedSubredditsInCustomFeed.append(subredditInCustomFeed)
                 case .subscribedUser(let subscribedUserData):
                     selectedSubscribedUsers.append(subscribedUserData)
                 case .user(_):
@@ -73,6 +75,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
             }
             
             self.selectedSubscribedSubreddits = selectedSubscribedSubreddits
+            self.selectedSubredditsInCustomFeed = selectedSubredditsInCustomFeed
             self.selectedSubscribedUsers = selectedSubscribedUsers
         default:
             break
