@@ -29,6 +29,8 @@ struct AnonymousSubscribedUserListingMultiSelectionView: View {
                                 ) {
                                     if anonymousSubscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil {
                                         anonymousSubscriptionListingViewModel.selectedSubscribedUsers.remove(subscription)
+                                    } else if anonymousSubscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscription.name)") != nil {
+                                        anonymousSubscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: "u_\(subscription.name)")
                                     } else {
                                         anonymousSubscriptionListingViewModel.selectedSubscribedUsers.append(subscription)
                                     }
@@ -43,10 +45,12 @@ struct AnonymousSubscribedUserListingMultiSelectionView: View {
                             SubscriptionItemMultiSelectionView(
                                 text: subscription.name,
                                 iconUrl: subscription.iconUrl,
-                                isSelected: anonymousSubscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil
+                                isSelected: isUserSelected(subscription)
                             ) {
                                 if anonymousSubscriptionListingViewModel.selectedSubscribedUsers.index(id: subscription.id) != nil {
                                     anonymousSubscriptionListingViewModel.selectedSubscribedUsers.remove(subscription)
+                                } else if anonymousSubscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscription.name)") != nil {
+                                    anonymousSubscriptionListingViewModel.selectedSubredditsInCustomFeed.remove(id: "u_\(subscription.name)")
                                 } else {
                                     anonymousSubscriptionListingViewModel.selectedSubscribedUsers.append(subscription)
                                 }
@@ -59,5 +63,10 @@ struct AnonymousSubscribedUserListingMultiSelectionView: View {
                 .themedList()
             }
         }
+    }
+    
+    func isUserSelected(_ subscribedUser: SubscribedUserData) -> Bool {
+        return anonymousSubscriptionListingViewModel.selectedSubscribedUsers.index(id: subscribedUser.id) != nil
+        || anonymousSubscriptionListingViewModel.selectedSubredditsInCustomFeed.index(id: "u_\(subscribedUser.name)") != nil
     }
 }
