@@ -12,6 +12,7 @@ struct UserListingView: View {
     
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     @ObservedObject private var userListingViewModel: UserListingViewModel
     @State private var showSortTypeKindSheet: Bool = false
@@ -55,12 +56,14 @@ struct UserListingView: View {
                             Spacer()
                             
                             if userListingViewModel.thingSelectionMode.isMultiSelection {
-                                SwiftUI.Image(systemName: userListingViewModel.selectedUsers.index(id: user.id) != nil ? "checkmark.square" : "square")
+                                SwiftUI.Image(systemName: isSelected(user) ? "checkmark.square" : "square")
                                     .primaryIcon()
                             }
                         }
+                        .listPlainItemNoInsets()
+                        .padding(16)
+                        .background(isSelected(user) ? Color(hex: customThemeViewModel.currentCustomTheme.filledCardViewBackgroundColor) : Color.clear)
                         .contentShape(Rectangle())
-                        .listPlainItem()
                         .onTapGesture {
                             switch userListingViewModel.thingSelectionMode {
                             case .noSelection:
@@ -118,5 +121,9 @@ struct UserListingView: View {
                 userListingViewModel.changeSortTypeKind(sortTypeKind)
             }
         }
+    }
+    
+    func isSelected(_ user: User) -> Bool {
+        return userListingViewModel.selectedUsers.index(id: user.id) != nil
     }
 }

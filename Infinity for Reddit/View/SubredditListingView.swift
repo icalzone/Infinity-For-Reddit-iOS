@@ -12,6 +12,7 @@ struct SubredditListingView: View {
     
     @EnvironmentObject var navigationManager: NavigationManager
     @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     @ObservedObject var subredditListingViewModel: SubredditListingViewModel
     @State private var showSortTypeKindSheet: Bool = false
@@ -61,12 +62,14 @@ struct SubredditListingView: View {
                             Spacer()
                             
                             if subredditListingViewModel.thingSelectionMode.isMultiSelection {
-                                SwiftUI.Image(systemName: subredditListingViewModel.selectedSubreddits.index(id: subreddit.id) != nil ? "checkmark.square" : "square")
+                                SwiftUI.Image(systemName: isSelected(subreddit) ? "checkmark.square" : "square")
                                     .primaryIcon()
                             }
                         }
+                        .listPlainItemNoInsets()
+                        .padding(16)
+                        .background(isSelected(subreddit) ? Color(hex: customThemeViewModel.currentCustomTheme.filledCardViewBackgroundColor) : Color.clear)
                         .contentShape(Rectangle())
-                        .listPlainItem()
                         .onTapGesture {
                             switch subredditListingViewModel.thingSelectionMode {
                             case .noSelection:
@@ -76,7 +79,7 @@ struct SubredditListingView: View {
                             case .thingSelection(let onSelectThing):
                                 onSelectThing(.subreddit(subreddit.toSubredditData()))
                                 dismiss()
-                            case .subredditAndUserMultiSelection(let selectedSubredditsAndUsers, let onConfirmSelection):
+                            case .subredditAndUserMultiSelection:
                                 subredditListingViewModel.toggleSelection(subreddit: subreddit)
                             }
                         }
@@ -125,5 +128,9 @@ struct SubredditListingView: View {
                 subredditListingViewModel.changeSortTypeKind(sortTypeKind)
             }
         }
+    }
+    
+    func isSelected(_ subreddit: Subreddit) -> Bool {
+        return subredditListingViewModel.selectedSubreddits.index(id: subreddit.id) != nil
     }
 }

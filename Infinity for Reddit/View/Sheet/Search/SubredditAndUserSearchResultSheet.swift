@@ -18,24 +18,22 @@ struct SubredditAndUserSearchResultSheet: View {
     @State private var selectedOption = 0
     
     let query: String
+    let thingSelectionMode: ThingSelectionMode
     
-    init(query: String, onSearchInThingSelected: @escaping (Thing) -> Void) {
+    init(query: String, thingSelectionMode: ThingSelectionMode) {
         self.query = query
+        self.thingSelectionMode = thingSelectionMode
         _subredditListingViewModel = StateObject(
             wrappedValue: SubredditListingViewModel(
                 query: query,
-                thingSelectionMode: .thingSelection(onSelectThing: { thing in
-                    onSearchInThingSelected(thing)
-                }),
+                thingSelectionMode: thingSelectionMode,
                 subredditListingRepository: SubredditListingRepository()
             )
         )
         _userListingViewModel = StateObject(
             wrappedValue: UserListingViewModel(
                 query: query,
-                thingSelectionMode: .thingSelection(onSelectThing: { thing in
-                    onSearchInThingSelected(thing)
-                }),
+                thingSelectionMode: thingSelectionMode,
                 userListingRepository: UserListingRepository()
             )
         )
@@ -54,6 +52,28 @@ struct SubredditAndUserSearchResultSheet: View {
                     .tag(1)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            
+            if case .subredditAndUserMultiSelection(_, let onSelectMultipleSubscriptions) = thingSelectionMode {
+                Button {
+                    var selectedThings: [Thing] = []
+                    for subreddit in subredditListingViewModel.selectedSubreddits {
+                        selectedThings.append(.subreddit(subreddit.toSubredditData()))
+                    }
+                    for user in userListingViewModel.selectedUsers {
+                        selectedThings.append(.user(user.toUserData()))
+                    }
+                    
+                    onSelectMultipleSubscriptions(selectedThings)
+                    dismiss()
+                } label: {
+                    HStack {
+                        Text("Done")
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(16)
+                .filledButton()
+            }
         }
         .id(accountViewModel.account.username)
         .themedNavigationBar()

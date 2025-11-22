@@ -47,8 +47,7 @@ struct SubscriptionItemMultiSelectionView: View {
                     .primaryIcon()
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 16)
+            .padding(16)
             .background(isSelected ? Color(hex: customThemeViewModel.currentCustomTheme.filledCardViewBackgroundColor) : Color.clear)
             .contentShape(Rectangle())
             .onTapGesture {

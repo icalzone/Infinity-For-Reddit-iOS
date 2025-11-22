@@ -52,10 +52,10 @@ struct SelectSearchInThingSheet: View {
         }
         .sheet(isPresented: $showSearchSubredditsAndUsersView) {
             NavigationStack {
-                SearchSubredditsAndUsersSheet { thing in
+                SearchSubredditsAndUsersSheet(thingSelectionMode: .thingSelection(onSelectThing: { thing in
                     onSelectThing(thing)
                     dismiss()
-                }
+                }))
             }
         }
     }

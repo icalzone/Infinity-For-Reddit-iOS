@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import IdentifiedCollections
 
 struct SubredditAndUserMultiSelectionSheet: View {
     @EnvironmentObject private var accountViewModel: AccountViewModel
@@ -46,9 +47,7 @@ struct SubredditAndUserMultiSelectionSheet: View {
         }
         .sheet(isPresented: $showSearchSubredditsAndUsersView) {
             NavigationStack {
-                SearchSubredditsAndUsersSheet { thing in
-                    
-                }
+                SearchSubredditsAndUsersSheet(thingSelectionMode: subscriptionSelectionMode)
             }
         }
     }
