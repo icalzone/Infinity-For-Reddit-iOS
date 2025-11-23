@@ -32,4 +32,5 @@ enum AppNavigation: Hashable {
     case sendChatMessage(recipient: String? = nil)
     case createCustomFeed
     case editCustomFeed(customFeedToEdit: CustomFeedWrapper)
+    case copyCustomFeed(path: String)
 }

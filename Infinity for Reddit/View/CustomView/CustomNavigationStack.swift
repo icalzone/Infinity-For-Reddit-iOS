@@ -139,6 +139,9 @@ struct CustomNavigationStack<Content: View>: View {
                     case .editCustomFeed(let customFeedToEdit):
                         CreateOrEditCustomFeedView(customFeedToEdit: customFeedToEdit)
                             .environmentObject(navigationManager)
+                    case .copyCustomFeed(let path):
+                        CopyCustomFeedView(path: path)
+                            .environmentObject(navigationManager)
                     }
                 }
                 .navigationDestination(for: MoreViewNavigation.self) { destination in

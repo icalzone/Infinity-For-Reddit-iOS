@@ -66,10 +66,17 @@ struct CustomFeedDetailsView: View {
         if let key = navigationBarMenuKey {
             navigationBarMenuManager.pop(key: key)
         }
-        navigationBarMenuKey = navigationBarMenuManager.push([
-            NavigationBarMenuItem(title: "Edit Custom Feed") {
+        var navigationBarMenuItems: [NavigationBarMenuItem] = []
+        switch customFeedDetailsViewModel.customFeed {
+        case .myCustomFeed:
+            navigationBarMenuItems.append(NavigationBarMenuItem(title: "Edit Custom Feed") {
                 navigationManager.append(AppNavigation.editCustomFeed(customFeedToEdit: customFeedDetailsViewModel.customFeed))
-            }
-        ])
+            })
+        case .path(let path):
+            navigationBarMenuItems.append(NavigationBarMenuItem(title: "Copy Custom Feed") {
+                navigationManager.append(AppNavigation.copyCustomFeed(path: path))
+            })
+        }
+        navigationBarMenuKey = navigationBarMenuManager.push(navigationBarMenuItems)
     }
 }

@@ -32,10 +32,10 @@ class CreateOrEditCustomFeedRepository: CreateOrEditCustomFeedRepositoryProtocol
     
     public init() {
         guard let resolvedSession = DependencyManager.shared.container.resolve(Session.self) else {
-            fatalError("Failed to resolve Session in SendChatMessageRepository")
+            fatalError("Failed to resolve Session in CreateOrEditCustomFeedRepository")
         }
         guard let resolvedDBPool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
-            fatalError( "Failed to resolve DatabasePool")
+            fatalError( "Failed to resolve DatabasePool in CreateOrEditCustomFeedRepository")
         }
         self.session = resolvedSession
         self.myCustomFeedDao = MyCustomFeedDao(dbPool: resolvedDBPool)
