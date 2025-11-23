@@ -63,8 +63,8 @@ struct CustomNavigationStack<Content: View>: View {
                             searchResultTab: searchResultTab
                         )
                         .environmentObject(navigationManager)
-                    case .customFeed(let myCustomFeed):
-                        CustomFeedDetailsView(myCustomFeed: myCustomFeed)
+                    case .customFeed(let customFeed):
+                        CustomFeedDetailsView(customFeed: customFeed)
                             .environmentObject(navigationManager)
                     case .inboxConversation(let inbox):
                         InboxConversationView(inbox: inbox)
@@ -136,8 +136,8 @@ struct CustomNavigationStack<Content: View>: View {
                     case .createCustomFeed:
                         CreateOrEditCustomFeedView()
                             .environmentObject(navigationManager)
-                    case .editCustomFeed(let myCustomFeed):
-                        CreateOrEditCustomFeedView(myCustomFeedToEdit: myCustomFeed)
+                    case .editCustomFeed(let customFeedToEdit):
+                        CreateOrEditCustomFeedView(customFeedToEdit: customFeedToEdit)
                             .environmentObject(navigationManager)
                     }
                 }
