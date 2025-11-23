@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PostPreviewView: View {
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
+    @EnvironmentObject private var networkManager: NetworkManager
     
     let post: Post
     var inPostListing: Bool = false
@@ -18,6 +19,7 @@ struct PostPreviewView: View {
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
+    @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
     
     var body: some View {
         if let url = resolvedPreviewImageURL {
@@ -113,7 +115,9 @@ struct PostPreviewView: View {
     }
     
     private var resolvedPreviewImageURL: String? {
-        if isInCompactLayout {
+        let isDataSavingModeActive = Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected)
+
+        if isInCompactLayout || isDataSavingModeActive {
             if let url = post.preview?.images.first?.resolutions.first?.url {
                 return url
             } else if let url = post.preview?.images.first?.source.url {

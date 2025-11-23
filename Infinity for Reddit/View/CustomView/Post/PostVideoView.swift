@@ -9,13 +9,14 @@ import SwiftUI
 
 struct PostVideoView: View {
     @EnvironmentObject private var networkManager: NetworkManager
-    
+
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
     @AppStorage(VideoUserDefaultsUtils.videoAutoplayKey, store: .video) private var videoAutoplay: Int = 0
     @AppStorage(VideoUserDefaultsUtils.autoplaySensitiveVideoKey, store: .video) private var autoplaySensitiveVideo: Bool = true
     @AppStorage(VideoUserDefaultsUtils.muteAutoplayingVideoKey, store: .video) private var muteAutoplayingVideo: Bool = true
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
+    @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
     
     @State private var canPlay: Bool = false
     
@@ -25,8 +26,10 @@ struct PostVideoView: View {
     var onReadPost: (() -> Void)? = nil
     
     var body: some View {
+        let isDataSavingModeActive = Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected)
         Group {
-            if VideoUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
+            if !isDataSavingModeActive,
+            VideoUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
                 && ((post.over18 && autoplaySensitiveVideo) || !post.over18) {
                 if let preview = post.preview, preview.images.count > 0, !(limitMediaHeight && inPostListing) {
                     InlineVideoPlayer(videoURL: URL(string: videoUrlString)!, aspectRatio: preview.images[0].source.aspectRatio, muteVideo: muteAutoplayingVideo, canPlay: canPlay)
@@ -35,10 +38,14 @@ struct PostVideoView: View {
                         .frame(height: 200)
                 }
             } else {
-                if let preview = post.preview, preview.images.count > 0, let url = post.preview.images[0].source.url {
+                if let preview = post.preview, preview.images.count > 0 {
+                    let previewUrl = isDataSavingModeActive ?
+                        (preview.images[0].resolutions.first?.url ?? preview.images[0].source.url) :
+                        preview.images[0].source.url
+
                     ZStack(alignment: .topLeading) {
                         CustomWebImage(
-                            url,
+                            previewUrl,
                             height: limitMediaHeight && inPostListing ? 200 : nil,
                             aspectRatio: limitMediaHeight && inPostListing ? nil : preview.images[0].source.aspectRatio,
                             centerCrop: true,

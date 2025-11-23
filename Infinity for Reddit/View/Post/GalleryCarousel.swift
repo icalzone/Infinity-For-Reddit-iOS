@@ -10,11 +10,13 @@ import SwiftUI
 struct GalleryCarousel: View {
     @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     @EnvironmentObject private var namespaceManager: NamespaceManager
-    
+    @EnvironmentObject private var networkManager: NetworkManager
+
     @StateObject private var galleryScrollState = GalleryScrollState(scrollId: 0)
     
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
+    @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
     
     let post: Post
     let items: [GalleryItem]
@@ -30,8 +32,10 @@ struct GalleryCarousel: View {
         ZStack(alignment: .topLeading) {
             TabView(selection: $galleryScrollState.scrollId) {
                 ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                    let imageUrl = resolveImageUrl(for: item, isDataSavingModeActive: Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected))
+
                     CustomWebImage(
-                        item.urlString,
+                        imageUrl,
                         handleImageTapGesture: false,
                         centerCrop: true,
                         blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages),
@@ -61,5 +65,15 @@ struct GalleryCarousel: View {
                 .cornerRadius(8)
                 .padding(12)
         }
+    }
+
+    private func resolveImageUrl(for item: GalleryItem, isDataSavingModeActive: Bool) -> String {
+        guard isDataSavingModeActive,
+              let mediaMetadata = post.mediaMetadata?[item.mediaId],
+              !mediaMetadata.p.isEmpty,
+              let previewUrl = mediaMetadata.p.first?.u else {
+            return item.urlString
+        }
+        return previewUrl
     }
 }
