@@ -12,6 +12,8 @@ class ReportViewModel: ObservableObject {
     @Published var rules: [Rule] = []
     @Published var ruleLoadState: LoadState = .idle
     @Published var selectedReportReason: ReportReason?
+    @Published var reportTask: Task<Void, Never>?
+    @Published var reportSubmitted: Bool = false
     @Published var error: Error?
     
     let siteReasons: [String] = [
@@ -52,6 +54,31 @@ class ReportViewModel: ObservableObject {
             rules = []
             self.error = error
             ruleLoadState = .failed(error)
+        }
+    }
+    
+    func report() {
+        guard reportTask == nil else {
+            return
+        }
+        
+        guard let selectedReportReason else {
+            return
+        }
+        
+        reportTask = Task {
+            do {
+                try Task.checkCancellation()
+                
+                try await reportRepository.report(subredditName: subredditName, thingFullname: thingFullname, reportReason: selectedReportReason)
+                
+                reportSubmitted = true
+            } catch {
+                self.error = error
+                print(error)
+            }
+            
+            reportTask = nil
         }
     }
     

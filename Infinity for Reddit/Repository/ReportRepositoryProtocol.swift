@@ -6,5 +6,5 @@
 //
 
 protocol ReportRepositoryProtocol {
-    
+    func report(subredditName: String, thingFullname: String, reportReason: ReportReason) async throws
 }

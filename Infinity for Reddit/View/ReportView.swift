@@ -9,6 +9,10 @@ import SwiftUI
 import MarkdownUI
 
 struct ReportView: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    @EnvironmentObject private var snackbarManager: SnackbarManager
+    
     @StateObject var reportViewModel: ReportViewModel
     
     init(subredditName: String, thingFullname: String) {
@@ -42,8 +46,40 @@ struct ReportView: View {
         }
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Report")
+        .toolbar {
+            ToolbarItemGroup(placement: .navigationBarTrailing) {
+                if reportViewModel.selectedReportReason != nil {
+                    Button(action: {
+                        reportViewModel.report()
+                    }) {
+                        SwiftUI.Image(systemName: "checkmark.circle")
+                            .navigationBarImage()
+                    }
+                }
+            }
+        }
         .task {
             await reportViewModel.fetchRules()
+        }
+        .onChange(of: reportViewModel.reportTask) { _, newValue in
+            if newValue != nil {
+                snackbarManager.showSnackbar(
+                    text: "Reporting. Please wait...",
+                    autoDismiss: false,
+                    canDismissByGesture: false
+                )
+            }
+        }
+        .onChange(of: reportViewModel.reportSubmitted) { _, newValue in
+            if newValue {
+                snackbarManager.showSnackbar(text: "Reported")
+                dismiss()
+            }
+        }
+        .onReceive(reportViewModel.$error) { newValue in
+            if let error = newValue {
+                snackbarManager.showSnackbar(text: error.localizedDescription)
+            }
         }
     }
     

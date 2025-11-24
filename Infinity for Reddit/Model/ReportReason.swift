@@ -10,7 +10,29 @@ enum ReportReason {
     case ruleReason(shortName: String)
     case otherReason
     
-    var value: String {
+    var type: String {
+        switch self {
+        case .siteReason:
+            return "site_reason"
+        case .ruleReason:
+            return "rule_reason"
+        case .otherReason:
+            return "other_reason"
+        }
+    }
+    
+    var reason: String {
+        switch self {
+        case .siteReason(let reason):
+            return reason
+        case .ruleReason(let shortName):
+            return shortName
+        case .otherReason:
+            return ""
+        }
+    }
+    
+    var reasonValue: String {
         switch self {
         case .siteReason:
             return "site_reason_selected"
