@@ -28,6 +28,7 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var singleThreadContext: Int = 8
     @Published var flairs: [Flair]?
     @Published var searchQuery: String = ""
+    @Published var searchedComment: CommentItem?
     private let account: Account
     private var commentMore: CommentMore?
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
@@ -921,6 +922,86 @@ public class PostDetailsViewModel: ObservableObject {
                 for i in (0..<firstIndex).reversed() {
                     if visibleComments[i].depth == 0 && visibleComments[i].isComment {
                         return visibleComments[i]
+                    }
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func getNextSearchedComment() -> CommentItem? {
+        if let searchedComment {
+            if let visibleIndex = visibleComments.index(id: searchedComment.id) {
+                for i in visibleIndex + 1..<visibleComments.count {
+                    if visibleComments[i].containsSearchQuery(searchQuery) {
+                        self.searchedComment = visibleComments[i]
+                        return visibleComments[i]
+                    }
+                }
+            }
+        } else {
+            if appearedComments.isEmpty {
+                for visibleComment in visibleComments {
+                    if visibleComment.containsSearchQuery(searchQuery) {
+                        self.searchedComment = visibleComment
+                        return visibleComment
+                    }
+                }
+            } else {
+                for i in appearedComments.indices.reversed() {
+                    if appearedComments[i].containsSearchQuery(searchQuery) {
+                        self.searchedComment = appearedComments[i]
+                        return appearedComments[i]
+                    }
+                }
+                
+                if let lastIndex = visibleComments.index(id: appearedComments[appearedComments.count - 1].id) {
+                    for i in lastIndex..<visibleComments.count {
+                        if visibleComments[i].containsSearchQuery(searchQuery) {
+                            self.searchedComment = visibleComments[i]
+                            return visibleComments[i]
+                        }
+                    }
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func getPreviousSearchedComment() -> CommentItem? {
+        if let searchedComment {
+            if let visibleIndex = visibleComments.index(id: searchedComment.id) {
+                for i in visibleIndex + 1..<visibleComments.count {
+                    if visibleComments[i].containsSearchQuery(searchQuery) {
+                        self.searchedComment = visibleComments[i]
+                        return visibleComments[i]
+                    }
+                }
+            }
+        } else {
+            if appearedComments.isEmpty {
+                for visibleComment in visibleComments {
+                    if visibleComment.containsSearchQuery(searchQuery) {
+                        self.searchedComment = visibleComment
+                        return visibleComment
+                    }
+                }
+            } else {
+                for i in appearedComments.indices.reversed() {
+                    if appearedComments[i].containsSearchQuery(searchQuery) {
+                        self.searchedComment = appearedComments[i]
+                        return appearedComments[i]
+                    }
+                }
+                
+                if let lastIndex = visibleComments.index(id: appearedComments[appearedComments.count - 1].id) {
+                    for i in lastIndex..<visibleComments.count {
+                        if visibleComments[i].containsSearchQuery(searchQuery) {
+                            self.searchedComment = visibleComments[i]
+                            return visibleComments[i]
+                        }
                     }
                 }
             }

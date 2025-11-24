@@ -120,7 +120,7 @@ struct PostDetailsView: View {
                                 if case let .comment(comment) = commentItem {
                                     CommentViewCard(
                                         account: account, comment: comment, isInPostDetails: true,
-                                        highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id,
+                                        highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id || postDetailsViewModel.searchedComment?.id == comment.id,
                                         onToggleExpand: {
                                             if fullyCollapseComment {
                                                 if comment.isCollasped {
@@ -258,6 +258,11 @@ struct PostDetailsView: View {
                             fieldType: .search,
                             focusedField: $focusedField
                         )
+                        .onSubmit {
+                            if let listProxy, let commentItem = postDetailsViewModel.getNextSearchedComment() {
+                                scrollToComment(listProxy: listProxy, commentItem: commentItem)
+                            }
+                        }
                         
                         SwiftUI.Image(systemName: "chevron.up")
                             .resizable()
@@ -278,7 +283,9 @@ struct PostDetailsView: View {
                             .fabIcon()
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                
+                                if let listProxy, let commentItem = postDetailsViewModel.getNextSearchedComment() {
+                                    scrollToComment(listProxy: listProxy, commentItem: commentItem)
+                                }
                             }
                         
                         SwiftUI.Image(systemName: "xmark")
@@ -291,6 +298,8 @@ struct PostDetailsView: View {
                             .onTapGesture {
                                 withAnimation {
                                     showSearchBar = false
+                                    postDetailsViewModel.searchedComment == nil
+                                    postDetailsViewModel.searchQuery = ""
                                 }
                             }
                     }
@@ -317,14 +326,7 @@ struct PostDetailsView: View {
                             .onTapGesture {
                                 if let listProxy {
                                     if let commentItem = postDetailsViewModel.getPreviousParentComment() {
-                                        switch commentItem {
-                                        case .comment(let comment):
-                                            withAnimation {
-                                                listProxy.scrollTo(ObjectIdentifier(comment), anchor: .top)
-                                            }
-                                        case .more:
-                                            break
-                                        }
+                                        scrollToComment(listProxy: listProxy, commentItem: commentItem)
                                     }
                                 }
                             }
@@ -358,14 +360,7 @@ struct PostDetailsView: View {
                             .onTapGesture {
                                 if let listProxy {
                                     if let commentItem = postDetailsViewModel.getNextParentComment() {
-                                        switch commentItem {
-                                        case .comment(let comment):
-                                            withAnimation {
-                                                listProxy.scrollTo(ObjectIdentifier(comment), anchor: .top)
-                                            }
-                                        case .more:
-                                            break
-                                        }
+                                        scrollToComment(listProxy: listProxy, commentItem: commentItem)
                                     }
                                 }
                             }
@@ -625,6 +620,18 @@ struct PostDetailsView: View {
     private func editPost() {
         if let post = postDetailsViewModel.post {
             navigationManager.append(AppNavigation.editPost(post: post))
+        }
+    }
+    
+    // Don't scroll to CommentMore
+    private func scrollToComment(listProxy: ScrollViewProxy, commentItem: CommentItem) {
+        switch commentItem {
+        case .comment(let comment):
+            withAnimation {
+                listProxy.scrollTo(ObjectIdentifier(comment), anchor: .top)
+            }
+        case .more:
+            break
         }
     }
     

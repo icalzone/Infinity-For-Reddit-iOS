@@ -358,6 +358,15 @@ enum CommentItem: Identifiable {
         }
     }
     
+    func containsSearchQuery(_ query: String) -> Bool {
+        switch self {
+        case .comment(let comment):
+            return comment.body.range(of: query, options: .caseInsensitive) != nil
+        case .more:
+            return false
+        }
+    }
+    
     case comment(Comment)
     case more(CommentMore)
 }
