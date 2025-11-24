@@ -349,6 +349,15 @@ enum CommentItem: Identifiable {
         }
     }
     
+    var isComment: Bool {
+        switch self {
+        case .comment:
+            return true
+        case .more:
+            return false
+        }
+    }
+    
     case comment(Comment)
     case more(CommentMore)
 }

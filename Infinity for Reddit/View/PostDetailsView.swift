@@ -27,6 +27,7 @@ struct PostDetailsView: View {
     @State private var commentToBeEdited: Comment? = nil
     @State private var activeAlert: ActiveAlert? = nil
     @State private var showActionBar: Bool = true
+    @State private var proxy: ScrollViewProxy?
     
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
@@ -55,68 +56,104 @@ struct PostDetailsView: View {
     var body: some View {
         RootView {
             ZStack(alignment: .bottom) {
-                List {
-                    if let post = postDetailsViewModel.post {
-                        PostDetailsViewCard(account: account, post: post, isFromSubredditPostListing: isFromSubredditPostListing) {
-                            sendComment()
-                        }
-                        .listPlainItemNoInsets()
-                        .id(ObjectIdentifier(post))
-                        .onAppear {
-                            if post.subredditOrUserIconInPostDetails == nil {
-                                Task {
-                                    await postDetailsViewModel.loadIcon(isFromSubredditPostListing: isFromSubredditPostListing)
+                ScrollViewReader { proxy in
+                    List {
+                        if let post = postDetailsViewModel.post {
+                            PostDetailsViewCard(account: account, post: post, isFromSubredditPostListing: isFromSubredditPostListing) {
+                                sendComment()
+                            }
+                            .listPlainItemNoInsets()
+                            .id(ObjectIdentifier(post))
+                            .onAppear {
+                                if post.subredditOrUserIconInPostDetails == nil {
+                                    Task {
+                                        await postDetailsViewModel.loadIcon(isFromSubredditPostListing: isFromSubredditPostListing)
+                                    }
                                 }
+                            }
+                            
+                            if case .postAndCommentId(_, let commentId) = postDetailsViewModel.postDetailsInput, commentId != nil {
+                                TouchRipple(action: {
+                                    guard let post = postDetailsViewModel.post else { return }
+                                    postDetailsViewModel.postDetailsInput = .post(post)
+                                    postDetailsViewModel.refreshPostAndComments()
+                                }) {
+                                    Text("Click here to browse all comments")
+                                        .frame(maxWidth: .infinity)
+                                        .contentShape(Rectangle())
+                                        .padding(16)
+                                        .colorAccentText()
+                                }
+                                .listPlainItemNoInsets()
                             }
                         }
                         
-                        if case .postAndCommentId(_, let commentId) = postDetailsViewModel.postDetailsInput, commentId != nil {
-                            TouchRipple(action: {
-                                guard let post = postDetailsViewModel.post else { return }
-                                postDetailsViewModel.postDetailsInput = .post(post)
-                                postDetailsViewModel.refreshPostAndComments()
-                            }) {
-                                Text("Click here to browse all comments")
+                        if postDetailsViewModel.visibleComments.isEmpty {
+                            if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
+                                ProgressIndicator()
                                     .frame(maxWidth: .infinity)
+                                    .listPlainItem()
+                            } else {
+                                ZStack {
+                                    VStack(spacing: 8) {
+                                        SwiftUI.Image(systemName: "plus.circle")
+                                            .primaryIcon()
+                                        
+                                        Text("No comments yet. Be the first to share your thoughts!")
+                                            .primaryText()
+                                            .multilineTextAlignment(.center)
+                                    }
                                     .contentShape(Rectangle())
-                                    .padding(16)
-                                    .colorAccentText()
-                            }
-                            .listPlainItemNoInsets()
-                        }
-                    }
-                    
-                    if postDetailsViewModel.visibleComments.isEmpty {
-                        if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
-                            ProgressIndicator()
+                                    .onTapGesture {
+                                        sendComment()
+                                    }
+                                }
                                 .frame(maxWidth: .infinity)
-                                .listPlainItem()
-                        } else {
-                            ZStack {
-                                VStack(spacing: 8) {
-                                    SwiftUI.Image(systemName: "plus.circle")
-                                        .primaryIcon()
-                                    
-                                    Text("No comments yet. Be the first to share your thoughts!")
-                                        .primaryText()
-                                        .multilineTextAlignment(.center)
-                                }
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    sendComment()
-                                }
+                                .padding(16)
+                                .listPlainItemNoInsets()
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding(16)
-                            .listPlainItemNoInsets()
-                        }
-                    } else {
-                        ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
-                            if case let .comment(comment) = commentItem {
-                                CommentViewCard(
-                                    account: account, comment: comment, isInPostDetails: true,
-                                    highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id,
-                                    onToggleExpand: {
+                        } else {
+                            ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
+                                if case let .comment(comment) = commentItem {
+                                    CommentViewCard(
+                                        account: account, comment: comment, isInPostDetails: true,
+                                        highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id,
+                                        onToggleExpand: {
+                                            if fullyCollapseComment {
+                                                if comment.isCollasped {
+                                                    postDetailsViewModel.expandComments(comment: comment)
+                                                } else {
+                                                    postDetailsViewModel.collapseComments(comment: comment)
+                                                }
+                                            } else {
+                                                withAnimation {
+                                                    if comment.isCollasped {
+                                                        postDetailsViewModel.expandComments(comment: comment)
+                                                    } else {
+                                                        postDetailsViewModel.collapseComments(comment: comment)
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        onReply: {
+                                            let commentParent = CommentParent.comment(parentComment: comment)
+                                            self.sentCommentParent = commentParent
+                                            navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
+                                        },
+                                        onEdit: {
+                                            self.commentToBeEdited = comment
+                                            navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
+                                        },
+                                        onDelete: {
+                                            postDetailsViewModel.deleteComment(comment)
+                                        },
+                                        onAddToCommentFilter: {
+                                            navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
+                                        }
+                                    )
+                                    .listPlainItemNoInsets()
+                                    .id(ObjectIdentifier(comment))
+                                    .onLongPressGesture {
                                         if fullyCollapseComment {
                                             if comment.isCollasped {
                                                 postDetailsViewModel.expandComments(comment: comment)
@@ -132,106 +169,75 @@ struct PostDetailsView: View {
                                                 }
                                             }
                                         }
-                                    },
-                                    onReply: {
-                                        let commentParent = CommentParent.comment(parentComment: comment)
-                                        self.sentCommentParent = commentParent
-                                        navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
-                                    },
-                                    onEdit: {
-                                        self.commentToBeEdited = comment
-                                        navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
-                                    },
-                                    onDelete: {
-                                        postDetailsViewModel.deleteComment(comment)
-                                    },
-                                    onAddToCommentFilter: {
-                                        navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
                                     }
-                                )
-                                .listPlainItemNoInsets()
-                                .id(ObjectIdentifier(comment))
-                                .onLongPressGesture {
-                                    if fullyCollapseComment {
-                                        if comment.isCollasped {
-                                            postDetailsViewModel.expandComments(comment: comment)
-                                        } else {
-                                            postDetailsViewModel.collapseComments(comment: comment)
+                                    .transition(.slide)
+                                    .onAppear {
+                                        postDetailsViewModel.insertIntoAppearedComments(commentItem)
+                                        
+                                        if showAuthorAvatar {
+                                            postDetailsViewModel.loadIcon(comment: comment)
                                         }
-                                    } else {
-                                        withAnimation {
-                                            if comment.isCollasped {
-                                                postDetailsViewModel.expandComments(comment: comment)
+                                    }
+                                    .onDisappear {
+                                        postDetailsViewModel.appearedComments.removeAll {
+                                            $0.id == commentItem.id
+                                        }
+                                    }
+                                } else if case let .more(commentMore) = commentItem {
+                                    CommentMoreViewCard(commentMore: commentMore)
+                                        .listPlainItemNoInsets()
+                                        .id(commentMore.id)
+                                        .onTapGesture {
+                                            if commentMore.children.count > 0 {
+                                                Task {
+                                                    await postDetailsViewModel.fetchMoreCommentsInCommentMore(commentMore: commentMore)
+                                                }
                                             } else {
-                                                postDetailsViewModel.collapseComments(comment: comment)
-                                            }
-                                        }
-                                    }
-                                }
-                                .transition(.slide)
-                                .onAppear {
-                                    postDetailsViewModel.insertIntoAppearedComments(commentItem)
-                                    
-                                    if showAuthorAvatar {
-                                        postDetailsViewModel.loadIcon(comment: comment)
-                                    }
-                                }
-                                .onDisappear {
-                                    postDetailsViewModel.appearedComments.removeAll {
-                                        $0.id == commentItem.id
-                                    }
-                                }
-                            } else if case let .more(commentMore) = commentItem {
-                                CommentMoreViewCard(commentMore: commentMore)
-                                    .listPlainItemNoInsets()
-                                    .id(commentMore.id)
-                                    .onTapGesture {
-                                        if commentMore.children.count > 0 {
-                                            Task {
-                                                await postDetailsViewModel.fetchMoreCommentsInCommentMore(commentMore: commentMore)
-                                            }
-                                        } else {
-                                            // Continue thread
-                                            if let postId = postDetailsViewModel.post?.id {
-                                                navigationManager.append(
-                                                    AppNavigation.postDetailsWithId(
-                                                        postId: postId,
-                                                        commentId: commentMore.parentFullname.substring(from: 3),
-                                                        isContinueThread: true
+                                                // Continue thread
+                                                if let postId = postDetailsViewModel.post?.id {
+                                                    navigationManager.append(
+                                                        AppNavigation.postDetailsWithId(
+                                                            postId: postId,
+                                                            commentId: commentMore.parentFullname.substring(from: 3),
+                                                            isContinueThread: true
+                                                        )
                                                     )
-                                                )
+                                                }
                                             }
                                         }
+                                }
+                            }
+                            if postDetailsViewModel.hasMoreComments {
+                                Text("Loading more comments")
+                                    .primaryText()
+                                    .task {
+                                        await postDetailsViewModel.fetchCommentsPagination()
                                     }
+                                    .listPlainItem()
                             }
                         }
-                        if postDetailsViewModel.hasMoreComments {
-                            Text("Loading more comments")
-                                .primaryText()
-                                .task {
-                                    await postDetailsViewModel.fetchCommentsPagination()
-                                }
-                                .listPlainItem()
-                        }
                     }
-                }
-                .themedList()
-                .scrollBounceBehavior(.basedOnSize)
-                .refreshable {
-                    await postDetailsViewModel.refreshPostAndCommentsWithContinuation()
-                }
-                .onScrollPhaseChange { _, phase in
-                    switch phase {
-                    case .idle:
-                        withAnimation {
-                            showActionBar = true
+                    .themedList()
+                    .scrollBounceBehavior(.basedOnSize)
+                    .onAppear {
+                        self.proxy = proxy
+                    }
+                    .refreshable {
+                        await postDetailsViewModel.refreshPostAndCommentsWithContinuation()
+                    }
+                    .onScrollPhaseChange { _, phase in
+                        switch phase {
+                        case .idle:
+                            withAnimation {
+                                showActionBar = true
+                            }
+                        case .interacting:
+                            withAnimation {
+                                showActionBar = false
+                            }
+                        default:
+                            break
                         }
-                    case .interacting:
-                        withAnimation {
-                            showActionBar = false
-                        }
-                    default:
-                        break
                     }
                 }
                 
@@ -259,7 +265,18 @@ struct PostDetailsView: View {
                             .fabIcon()
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                
+                                if let proxy {
+                                    if let commentItem = postDetailsViewModel.getNextParentComment() {
+                                        switch commentItem {
+                                        case .comment(let comment):
+                                            withAnimation {
+                                                proxy.scrollTo(ObjectIdentifier(comment), anchor: .top)
+                                            }
+                                        case .more(let commentMore):
+                                            break
+                                        }
+                                    }
+                                }
                             }
                     }
                     .background(
