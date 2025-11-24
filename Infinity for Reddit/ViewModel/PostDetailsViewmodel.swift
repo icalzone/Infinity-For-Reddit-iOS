@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import MarkdownUI
 import IdentifiedCollections
+import SwiftUI
 
 public class PostDetailsViewModel: ObservableObject {
     // MARK: - Properties
@@ -935,33 +936,33 @@ public class PostDetailsViewModel: ObservableObject {
             if let visibleIndex = visibleComments.index(id: searchedComment.id) {
                 for i in visibleIndex + 1..<visibleComments.count {
                     if visibleComments[i].containsSearchQuery(searchQuery) {
-                        self.searchedComment = visibleComments[i]
+                        setSearchedComment(visibleComments[i])
                         return visibleComments[i]
                     }
                 }
             }
+        }
+        
+        if appearedComments.isEmpty {
+            for visibleComment in visibleComments {
+                if visibleComment.containsSearchQuery(searchQuery) {
+                    setSearchedComment(visibleComment)
+                    return visibleComment
+                }
+            }
         } else {
-            if appearedComments.isEmpty {
-                for visibleComment in visibleComments {
-                    if visibleComment.containsSearchQuery(searchQuery) {
-                        self.searchedComment = visibleComment
-                        return visibleComment
-                    }
+            for i in appearedComments.indices.reversed() {
+                if appearedComments[i].containsSearchQuery(searchQuery) {
+                    setSearchedComment(appearedComments[i])
+                    return appearedComments[i]
                 }
-            } else {
-                for i in appearedComments.indices.reversed() {
-                    if appearedComments[i].containsSearchQuery(searchQuery) {
-                        self.searchedComment = appearedComments[i]
-                        return appearedComments[i]
-                    }
-                }
-                
-                if let lastIndex = visibleComments.index(id: appearedComments[appearedComments.count - 1].id) {
-                    for i in lastIndex..<visibleComments.count {
-                        if visibleComments[i].containsSearchQuery(searchQuery) {
-                            self.searchedComment = visibleComments[i]
-                            return visibleComments[i]
-                        }
+            }
+            
+            if let lastIndex = visibleComments.index(id: appearedComments[appearedComments.count - 1].id) {
+                for i in lastIndex..<visibleComments.count {
+                    if visibleComments[i].containsSearchQuery(searchQuery) {
+                        setSearchedComment(visibleComments[i])
+                        return visibleComments[i]
                     }
                 }
             }
@@ -973,40 +974,30 @@ public class PostDetailsViewModel: ObservableObject {
     func getPreviousSearchedComment() -> CommentItem? {
         if let searchedComment {
             if let visibleIndex = visibleComments.index(id: searchedComment.id) {
-                for i in visibleIndex + 1..<visibleComments.count {
+                for i in (0..<visibleIndex).reversed() {
                     if visibleComments[i].containsSearchQuery(searchQuery) {
-                        self.searchedComment = visibleComments[i]
+                        setSearchedComment(visibleComments[i])
                         return visibleComments[i]
-                    }
-                }
-            }
-        } else {
-            if appearedComments.isEmpty {
-                for visibleComment in visibleComments {
-                    if visibleComment.containsSearchQuery(searchQuery) {
-                        self.searchedComment = visibleComment
-                        return visibleComment
-                    }
-                }
-            } else {
-                for i in appearedComments.indices.reversed() {
-                    if appearedComments[i].containsSearchQuery(searchQuery) {
-                        self.searchedComment = appearedComments[i]
-                        return appearedComments[i]
-                    }
-                }
-                
-                if let lastIndex = visibleComments.index(id: appearedComments[appearedComments.count - 1].id) {
-                    for i in lastIndex..<visibleComments.count {
-                        if visibleComments[i].containsSearchQuery(searchQuery) {
-                            self.searchedComment = visibleComments[i]
-                            return visibleComments[i]
-                        }
                     }
                 }
             }
         }
         
+        if !appearedComments.isEmpty, let firstIndex = visibleComments.index(id: appearedComments[0].id) {
+            for i in (0..<firstIndex).reversed() {
+                if visibleComments[i].containsSearchQuery(searchQuery) {
+                    setSearchedComment(visibleComments[i])
+                    return visibleComments[i]
+                }
+            }
+        }
+        
         return nil
+    }
+    
+    private func setSearchedComment(_ comment: CommentItem) {
+        withAnimation {
+            searchedComment = comment
+        }
     }
 }

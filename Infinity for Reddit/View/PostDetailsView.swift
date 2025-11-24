@@ -272,7 +272,9 @@ struct PostDetailsView: View {
                             .fabIcon()
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                
+                                if let listProxy, let commentItem = postDetailsViewModel.getPreviousSearchedComment() {
+                                    scrollToComment(listProxy: listProxy, commentItem: commentItem)
+                                }
                             }
                         
                         SwiftUI.Image(systemName: "chevron.down")
@@ -298,7 +300,7 @@ struct PostDetailsView: View {
                             .onTapGesture {
                                 withAnimation {
                                     showSearchBar = false
-                                    postDetailsViewModel.searchedComment == nil
+                                    postDetailsViewModel.searchedComment = nil
                                     postDetailsViewModel.searchQuery = ""
                                 }
                             }
