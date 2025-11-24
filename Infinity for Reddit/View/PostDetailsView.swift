@@ -170,8 +170,15 @@ struct PostDetailsView: View {
                                 }
                                 .transition(.slide)
                                 .onAppear {
+                                    postDetailsViewModel.insertIntoAppearedComments(commentItem)
+                                    
                                     if showAuthorAvatar {
                                         postDetailsViewModel.loadIcon(comment: comment)
+                                    }
+                                }
+                                .onDisappear {
+                                    postDetailsViewModel.appearedComments.removeAll {
+                                        $0.id == commentItem.id
                                     }
                                 }
                             } else if case let .more(commentMore) = commentItem {

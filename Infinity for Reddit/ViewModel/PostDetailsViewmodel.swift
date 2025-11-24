@@ -15,6 +15,7 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var post: Post?
     @Published var visibleComments: IdentifiedArrayOf<CommentItem> = []
     var allComments: IdentifiedArrayOf<CommentItem> = []
+    @Published var appearedComments: [CommentItem] = []
     @Published var isSingleThread: Bool =  false
     @Published var isInitialLoad: Bool = true
     @Published var isInitialLoading: Bool = false
@@ -859,6 +860,33 @@ public class PostDetailsViewModel: ObservableObject {
             }
             
             selectFlairTask = nil
+        }
+    }
+    
+    func insertIntoAppearedComments(_ commentItem: CommentItem) {
+        self.appearedComments.removeAll {
+            $0.id == commentItem.id
+        }
+        
+        guard !self.appearedComments.isEmpty else {
+            appearedComments.append(commentItem)
+            return
+        }
+        
+        if let index = self.allComments.index(id: commentItem.id) {
+            var inserted: Bool = false
+            for (i, comment) in self.appearedComments.enumerated() {
+                if let appearedCommentIndex = self.allComments.index(id: comment.id), index < appearedCommentIndex {
+                    self.appearedComments.insert(commentItem, at: i)
+                    inserted = true
+                    break
+                }
+            }
+            if !inserted {
+                self.appearedComments.append(commentItem)
+            }
+        } else {
+            appearedComments.append(commentItem)
         }
     }
 }
