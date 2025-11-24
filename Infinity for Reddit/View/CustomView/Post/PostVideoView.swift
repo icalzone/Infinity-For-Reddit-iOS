@@ -17,7 +17,9 @@ struct PostVideoView: View {
     @AppStorage(VideoUserDefaultsUtils.muteAutoplayingVideoKey, store: .video) private var muteAutoplayingVideo: Bool = true
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
-    
+    @AppStorage(DataSavingModeUserDefaultsUtils.disableImagePreviewKey, store: .dataSavingMode) private var disableImagePreview: Bool = false
+    @AppStorage(DataSavingModeUserDefaultsUtils.onlyDisablePreviewInVideoAndGIFKey, store: .dataSavingMode) private var onlyDisablePreviewInVideoAndGIF: Bool = false
+
     @State private var canPlay: Bool = false
     
     let post: Post
@@ -27,6 +29,8 @@ struct PostVideoView: View {
     
     var body: some View {
         let isDataSavingModeActive = Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected)
+        let shouldHideVideoPreview = isDataSavingModeActive && (disableImagePreview || onlyDisablePreviewInVideoAndGIF)
+
         Group {
             if !isDataSavingModeActive,
             VideoUserDefaultsUtils.canAutoplayVideo(videoAutoplay: videoAutoplay, isWifiConnected: networkManager.isWifiConnected)
@@ -38,7 +42,7 @@ struct PostVideoView: View {
                         .frame(height: 200)
                 }
             } else {
-                if let preview = post.preview, preview.images.count > 0 {
+                if !shouldHideVideoPreview, let preview = post.preview, preview.images.count > 0 {
                     let previewUrl = isDataSavingModeActive ?
                         (preview.images[0].resolutions.first?.url ?? preview.images[0].source.url) :
                         preview.images[0].source.url
@@ -61,7 +65,7 @@ struct PostVideoView: View {
                                     }
                             )
                         }
-                        
+
                         SwiftUI.Image(systemName: "play.circle")
                             .resizable()
                             .mediaIndicator()

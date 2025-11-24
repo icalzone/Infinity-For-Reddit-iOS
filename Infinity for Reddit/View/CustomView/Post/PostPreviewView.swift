@@ -20,6 +20,8 @@ struct PostPreviewView: View {
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
+    @AppStorage(DataSavingModeUserDefaultsUtils.disableImagePreviewKey, store: .dataSavingMode) private var disableImagePreview: Bool = false
+    @AppStorage(DataSavingModeUserDefaultsUtils.onlyDisablePreviewInVideoAndGIFKey, store: .dataSavingMode) private var onlyDisablePreviewInVideoAndGIF: Bool = false
     
     var body: some View {
         if let url = resolvedPreviewImageURL {
@@ -116,6 +118,20 @@ struct PostPreviewView: View {
     
     private var resolvedPreviewImageURL: String? {
         let isDataSavingModeActive = Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected)
+
+        if isDataSavingModeActive {
+            let isVideoOrGif: Bool
+            switch post.postType {
+            case .redditVideo, .video, .imgurVideo, .redgifs, .streamable, .gif:
+                isVideoOrGif = true
+            default:
+                isVideoOrGif = false
+            }
+            
+            if disableImagePreview || (onlyDisablePreviewInVideoAndGIF && isVideoOrGif) {
+                return nil
+            }
+        }
 
         if isInCompactLayout || isDataSavingModeActive {
             if let url = post.preview?.images.first?.resolutions.first?.url {

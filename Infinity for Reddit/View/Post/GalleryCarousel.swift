@@ -17,7 +17,8 @@ struct GalleryCarousel: View {
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSensitiveImagesKey, store: .contentSensitivityFilter) private var blurSensitiveImages: Bool = false
     @AppStorage(ContentSensitivityFilterUserDetailsUtils.blurSpoilerImagesKey, store: .contentSensitivityFilter) private var blurSpoilerImages: Bool = false
     @AppStorage(DataSavingModeUserDefaultsUtils.dataSavingModeKey, store: .dataSavingMode) private var dataSavingMode: Int = 0
-    
+    @AppStorage(DataSavingModeUserDefaultsUtils.disableImagePreviewKey, store: .dataSavingMode) private var disableImagePreview: Bool = false
+
     let post: Post
     let items: [GalleryItem]
     let onImageTap: (() -> Void)?
@@ -29,41 +30,54 @@ struct GalleryCarousel: View {
     }
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            TabView(selection: $galleryScrollState.scrollId) {
-                ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                    let imageUrl = resolveImageUrl(for: item, isDataSavingModeActive: Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected))
+        let isDataSavingModeActive = Utils.isDataSavingModeActive(dataSavingMode: dataSavingMode, isWifiConnected: networkManager.isWifiConnected)
+        let shouldHideGalleryPreview = isDataSavingModeActive && disableImagePreview
 
-                    CustomWebImage(
-                        imageUrl,
-                        handleImageTapGesture: false,
-                        centerCrop: true,
-                        blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages),
-                        customOnTapGesture: {
-                            withAnimation {
-                                fullScreenMediaViewModel.show(
-                                    .gallery(
-                                        currentUrlString: item.urlString,
-                                        post: post,
-                                        items: items,
-                                        galleryScrollState: galleryScrollState
-                                    )
-                                )
-                            }
-                            onImageTap?()
-                        }
-                    )
-                    .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
-                    .tag(index)
-                }
+        if shouldHideGalleryPreview {
+            ZStack(alignment: .center) {
+                SwiftUI.Image(systemName: "square.stack")
+                    .noPreviewPostTypeIndicator()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            Text("\(galleryScrollState.scrollId + 1)/\(items.count)")
-                .padding(4)
-                .galleryIndexIndicator()
-                .cornerRadius(8)
-                .padding(12)
+            .noPreviewPostTypeIndicatorBackground()
+            .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
+            .mediaTapGesture(post: post, aspectRatio: nil, matchedGeometryEffectId: nil)
+        } else {
+            ZStack(alignment: .topLeading) {
+                TabView(selection: $galleryScrollState.scrollId) {
+                    ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                        let imageUrl = resolveImageUrl(for: item, isDataSavingModeActive: isDataSavingModeActive)
+
+                        CustomWebImage(
+                            imageUrl,
+                            handleImageTapGesture: false,
+                            centerCrop: true,
+                            blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages),
+                            customOnTapGesture: {
+                                withAnimation {
+                                    fullScreenMediaViewModel.show(
+                                        .gallery(
+                                            currentUrlString: item.urlString,
+                                            post: post,
+                                            items: items,
+                                            galleryScrollState: galleryScrollState
+                                        )
+                                    )
+                                }
+                                onImageTap?()
+                            }
+                        )
+                        .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
+                        .tag(index)
+                    }
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+
+                Text("\(galleryScrollState.scrollId + 1)/\(items.count)")
+                    .padding(4)
+                    .galleryIndexIndicator()
+                    .cornerRadius(8)
+                    .padding(12)
+            }
         }
     }
 
