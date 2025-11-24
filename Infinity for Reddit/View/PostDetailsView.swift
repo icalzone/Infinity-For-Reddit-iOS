@@ -24,6 +24,7 @@ struct PostDetailsView: View {
     
     @State private var showSortTypeSheet: Bool = false
     @State private var showSelectFlairSheet: Bool = false
+    @State private var showPostModerationSheet: Bool = false
     @State private var navigationBarMenuKey: UUID?
     @State private var sentCommentParent: CommentParent? = nil
     @State private var commentToBeEdited: Comment? = nil
@@ -434,6 +435,34 @@ struct PostDetailsView: View {
                 postDetailsViewModel.selectFlair(flair)
             }
         }
+        .wrapContentSheet(isPresented: $showPostModerationSheet) {
+            PostModerationSheet(
+                onApprove: {
+                    
+                },
+                onRemove: {
+                    
+                },
+                onToggleSpam: {
+                    
+                },
+                onToggleStickyPost: {
+                    
+                },
+                onLock: {
+                    
+                },
+                onToggleSensitive: {
+                    
+                },
+                onToggleSpoiler: {
+                    
+                },
+                onToggleDistinguishAsModerator: {
+                    
+                }
+            )
+        }
         .overlay(
             CustomAlert(title: activeAlert?.title ?? "",
                         confirmButtonText: activeAlert?.confirmButtonText ?? "",
@@ -583,6 +612,18 @@ struct PostDetailsView: View {
                         return
                     }
                     navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: post))
+                }
+            )
+        }
+        
+        if postDetailsViewModel.post?.canModPost ?? false {
+            menuItems.append(
+                NavigationBarMenuItem(title: "Moderation") {
+                    guard let post = postDetailsViewModel.post else {
+                        return
+                    }
+                    
+                    showPostModerationSheet = true
                 }
             )
         }

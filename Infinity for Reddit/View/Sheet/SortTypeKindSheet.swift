@@ -18,6 +18,7 @@ struct SortTypeKindSheet: View {
         ScrollView {
             VStack(spacing: 0) {
                 Text("Select Sort Type")
+                    .primaryText()
                 
                 Spacer()
                     .frame(height: 16)
@@ -27,7 +28,6 @@ struct SortTypeKindSheet: View {
                         onSelectSortTypeKind(sortType)
                         dismiss()
                     }
-                    .listPlainItemNoInsets()
                 }
             }
             .padding(.top, 24)
