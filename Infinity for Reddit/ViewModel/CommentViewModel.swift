@@ -10,7 +10,7 @@ import Alamofire
 import Combine
 
 @MainActor
-public class CommentViewModel: ObservableObject {
+class CommentViewModel: ObservableObject {
     let account: Account
     @Published var comment: Comment
     @Published var error: Error?
@@ -18,11 +18,13 @@ public class CommentViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     let commentRepository: CommentRepositoryProtocol
+    let thingModerationRepository: ThingModerationRepositoryProtocol
     
-    public init(account: Account, comment: Comment, commentRepository: CommentRepositoryProtocol) {
+    init(account: Account, comment: Comment, commentRepository: CommentRepositoryProtocol, thingModerationRepository: ThingModerationRepositoryProtocol) {
         self.account = account
         self.comment = comment
         self.commentRepository = commentRepository
+        self.thingModerationRepository = thingModerationRepository
         comment.objectWillChange
             .sink { [weak self] _ in
                 self?.objectWillChange.send()

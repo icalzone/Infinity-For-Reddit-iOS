@@ -1,5 +1,5 @@
 //
-//  PostModerationRepository.swift
+//  ThingModerationRepository.swift
 //  Infinity for Reddit
 //
 //  Created by Docile Alligator on 2025-11-24.
@@ -7,7 +7,7 @@
 
 import Alamofire
 
-class PostModerationRepository: PostModerationRepositoryProtocol {
+class ThingModerationRepository: ThingModerationRepositoryProtocol {
     private let session: Session
     
     init() {
@@ -17,16 +17,16 @@ class PostModerationRepository: PostModerationRepositoryProtocol {
         self.session = resolvedSession
     }
     
-    func approvePost(post: Post) async throws {
-        let params = ["id": post.name]
+    func approveThing(thingFullname: String) async throws {
+        let params = ["id": thingFullname]
         _ = try await self.session.request(RedditOAuthAPI.approveThing(params: params))
             .validate()
             .serializingData()
             .value
     }
     
-    func removePost(post: Post, isSpam: Bool) async throws {
-        let params = ["id": post.name, "spam": isSpam ? "true" : "false"]
+    func removeThing(thingFullname: String, isSpam: Bool) async throws {
+        let params = ["id": thingFullname, "spam": isSpam ? "true" : "false"]
         _ = try await self.session.request(RedditOAuthAPI.removeThing(params: params))
             .validate()
             .serializingData()
@@ -41,9 +41,9 @@ class PostModerationRepository: PostModerationRepositoryProtocol {
             .value
     }
     
-    func toggleLock(post: Post) async throws {
-        let params = ["id": post.name]
-        _ = try await self.session.request(post.locked ? RedditOAuthAPI.unlockThing(params: params) : RedditOAuthAPI.lockThing(params: params))
+    func toggleLock(thingFullname: String, lock: Bool) async throws {
+        let params = ["id": thingFullname]
+        _ = try await self.session.request(lock ? RedditOAuthAPI.lockThing(params: params) : RedditOAuthAPI.unlockThing(params: params))
             .validate()
             .serializingData()
             .value

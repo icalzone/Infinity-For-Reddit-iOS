@@ -25,6 +25,7 @@ struct CommentListingView: View {
     @State private var commentToBeEdited: Comment? = nil
     
     private let commentListingMetadata: CommentListingMetadata
+    private let thingModerationRepository: ThingModerationRepositoryProtocol = ThingModerationRepository()
     private let onScroll: (() -> Void)?
     
     init(commentListingMetadata: CommentListingMetadata, onScroll: (() -> Void)? = nil) {
@@ -58,6 +59,7 @@ struct CommentListingView: View {
                                 account: accountViewModel.account,
                                 comment: comment,
                                 isInPostDetails: false,
+                                thingModerationRepository: thingModerationRepository,
                                 onEdit: {
                                     self.commentToBeEdited = comment
                                     navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
@@ -67,6 +69,9 @@ struct CommentListingView: View {
                                 },
                                 onAddToCommentFilter: {
                                     navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
+                                },
+                                onModerate: {
+                                    
                                 }
                             )
                         }

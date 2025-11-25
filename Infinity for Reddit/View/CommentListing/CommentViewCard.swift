@@ -42,17 +42,20 @@ struct CommentViewCard: View {
     let onEdit: () -> Void
     let onDelete: () -> Void
     let onAddToCommentFilter: () -> Void
+    let onModerate: () -> Void
     
     init(
         account: Account,
         comment: Comment,
         isInPostDetails: Bool,
         highlightComment: Bool = false,
+        thingModerationRepository: ThingModerationRepositoryProtocol,
         onToggleExpand: (() -> Void)? = nil,
         onReply: (() -> Void)? = nil,
         onEdit: @escaping () -> Void,
         onDelete: @escaping () -> Void,
-        onAddToCommentFilter: @escaping () -> Void
+        onAddToCommentFilter: @escaping () -> Void,
+        onModerate: @escaping () -> Void
     ) {
         self.isInPostDetails = isInPostDetails
         self.highlightComment = highlightComment
@@ -61,8 +64,9 @@ struct CommentViewCard: View {
         self.onEdit = onEdit
         self.onDelete = onDelete
         self.onAddToCommentFilter = onAddToCommentFilter
+        self.onModerate = onModerate
         self.isToolbarHidden = isInPostDetails ? UserDefaults.interfaceComment.bool(forKey: InterfaceCommentUserDefaultsUtils.hideToolbarKey) : false
-        _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment, commentRepository: CommentRepository()))
+        _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment, commentRepository: CommentRepository(), thingModerationRepository: ThingModerationRepository()))
     }
     
     var body: some View {
@@ -207,6 +211,12 @@ struct CommentViewCard: View {
                                             navigationManager.append(AppNavigation.report(subredditName: commentViewModel.comment.subreddit, thingFullname: commentViewModel.comment.name))
                                         }
                                     }
+                                    
+                                    if commentViewModel.comment.canModComment {
+                                        Button("Moderate") {
+                                            onModerate()
+                                        }
+                                    }
                                 } label: {
                                     SwiftUI.Image(systemName: "ellipsis.circle")
                                         .commentIconTemplateRendering()
@@ -300,6 +310,12 @@ struct CommentViewCard: View {
                                             navigationManager.openLink("https://www.reddit.com/report")
                                         } else {
                                             navigationManager.append(AppNavigation.report(subredditName: commentViewModel.comment.subreddit, thingFullname: commentViewModel.comment.name))
+                                        }
+                                    }
+                                    
+                                    if commentViewModel.comment.canModComment {
+                                        Button("Moderate") {
+                                            onModerate()
                                         }
                                     }
                                 } label: {

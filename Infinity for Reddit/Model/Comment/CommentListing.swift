@@ -74,8 +74,9 @@ public class CommentListing : NSObject, Validatable {
 
 public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     //    var allAwardings : [AnyObject]!
-    var approvedAtUtc : String!
-    var approvedBy : String!
+    @Published var approved: Bool!
+    @Published var approvedAtUtc : Int64!
+    @Published var approvedBy : String!
     var archived : Bool!
     //    var associatedAward : AnyObject!
     @Published var author : String!
@@ -97,7 +98,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     @Published var bodyProcessedMarkdown : MarkdownContent?
     var bodyHtml : String!
     var canGild : Bool!
-    var canModPost : Bool!
+    var canModComment : Bool!
     var collapsed : Bool!
     var collapsedBecauseCrowdControl : String!
     var collapsedReason : String!
@@ -119,7 +120,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var linkPermalink : String!
     var linkTitle : String!
     var linkUrl : String!
-    var locked : Bool!
+    @Published var locked : Bool!
     var modNote : String!
     var modReasonBy : String!
     var modReasonTitle : String!
@@ -133,6 +134,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var parentId : String!
     var permalink : String!
     var quarantine : Bool!
+    @Published var removed: Bool!
     var removalReason : String!
     var replies : CommentListing?
     var reportReasons : String!
@@ -140,6 +142,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
     var score : Int!
     var scoreHidden : Bool!
     var sendReplies : Bool!
+    @Published var spam: Bool!
     var stickied : Bool!
     var subreddit : String!
     var subredditId : String!
@@ -162,9 +165,6 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         return replies?.comments.count ?? -1 > 0 || commentMore != nil
     }
     
-    /**
-     * Instantiate the instance using the passed json values to set the properties values
-     */
     init(fromJson json: JSON!) throws {
         try Self.validate(json: json)
         
@@ -173,7 +173,8 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
             return
         }
         
-        approvedAtUtc = json["approved_at_utc"].stringValue
+        approved = json["approved"].boolValue
+        approvedAtUtc = json["approved_at_utc"].int64Value
         approvedBy = json["approved_by"].stringValue
         archived = json["archived"].boolValue
         author = json["author"].stringValue
@@ -201,7 +202,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         body = json["body"].stringValue
         bodyHtml = json["body_html"].stringValue
         canGild = json["can_gild"].boolValue
-        canModPost = json["can_mod_post"].boolValue
+        canModComment = json["can_mod_post"].boolValue
         collapsed = json["collapsed"].boolValue
         collapsedBecauseCrowdControl = json["collapsed_because_crowd_control"].stringValue
         collapsedReason = json["collapsed_reason"].stringValue
@@ -259,6 +260,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         permalink = json["permalink"].stringValue
         quarantine = json["quarantine"].boolValue
         removalReason = json["removal_reason"].stringValue
+        removed = json["removed"].boolValue
         replies = try? CommentListing(fromJson: json["replies"]["data"])
         reportReasons = json["report_reasons"].stringValue
         saved = json["saved"].boolValue
@@ -267,6 +269,7 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
         self.score = score
         scoreHidden = json["score_hidden"].boolValue
         sendReplies = json["send_replies"].boolValue
+        spam = json["spam"].boolValue
         stickied = json["stickied"].boolValue
         subreddit = json["subreddit"].stringValue
         subredditId = json["subreddit_id"].stringValue

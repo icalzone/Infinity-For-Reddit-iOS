@@ -42,7 +42,7 @@ public class PostDetailsViewModel: ObservableObject {
     private let postDetailsRepository: PostDetailsRepositoryProtocol
     private let historyPostsRepository: HistoryPostsRepositoryProtocol
     private let flairRepository: FlairRepositoryProtocol
-    private let postModerationRepository: PostModerationRepositoryProtocol
+    private let postModerationRepository: ThingModerationRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -72,7 +72,7 @@ public class PostDetailsViewModel: ObservableObject {
         postDetailsRepository: PostDetailsRepositoryProtocol,
         historyPostsRepository: HistoryPostsRepositoryProtocol,
         flairRepository: FlairRepositoryProtocol,
-        postModerationRepository: PostModerationRepositoryProtocol,
+        postModerationRepository: ThingModerationRepositoryProtocol,
         isContinueThread: Bool = false
     ) {
         self.account = account
@@ -1012,7 +1012,7 @@ public class PostDetailsViewModel: ObservableObject {
         
         Task {
             do {
-                try await postModerationRepository.approvePost(post: post)
+                try await postModerationRepository.approveThing(thingFullname: post.name)
                 
                 self.post?.approved = true
                 self.post?.approvedBy = account.username
@@ -1036,7 +1036,7 @@ public class PostDetailsViewModel: ObservableObject {
         
         Task {
             do {
-                try await postModerationRepository.removePost(post: post, isSpam: isSpam)
+                try await postModerationRepository.removeThing(thingFullname: post.name, isSpam: isSpam)
                 
                 self.post?.approved = false
                 self.post?.approvedBy = ""
@@ -1078,7 +1078,7 @@ public class PostDetailsViewModel: ObservableObject {
         
         Task {
             do {
-                try await postModerationRepository.toggleLock(post: post)
+                try await postModerationRepository.toggleLock(thingFullname: post.name, lock: !post.locked)
                 
                 self.post?.locked = !(self.post?.locked ?? false)
             } catch {

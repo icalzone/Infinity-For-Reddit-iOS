@@ -25,6 +25,7 @@ struct PostDetailsView: View {
     @State private var showSortTypeSheet: Bool = false
     @State private var showSelectFlairSheet: Bool = false
     @State private var showPostModerationSheet: Bool = false
+    @State private var showCommentModerationSheet: Bool = false
     @State private var navigationBarMenuKey: UUID?
     @State private var sentCommentParent: CommentParent? = nil
     @State private var commentToBeEdited: Comment? = nil
@@ -32,6 +33,7 @@ struct PostDetailsView: View {
     @State private var showActionBar: Bool = true
     @State private var showSearchBar: Bool = false
     @State private var listProxy: ScrollViewProxy?
+    @State private var commentToBeModerated: Comment?
     
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
@@ -40,10 +42,13 @@ struct PostDetailsView: View {
     
     private let account: Account
     private let isFromSubredditPostListing: Bool
+    private let thingModerationRepository: ThingModerationRepositoryProtocol
     
     init(account: Account, postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false) {
         self.account = account
         self.isFromSubredditPostListing = isFromSubredditPostListing
+        let thingModerationRepository = ThingModerationRepository()
+        self.thingModerationRepository = thingModerationRepository
         
         _postDetailsViewModel = StateObject(
             wrappedValue: PostDetailsViewModel(
@@ -52,7 +57,7 @@ struct PostDetailsView: View {
                 postDetailsRepository: PostDetailsRepository(),
                 historyPostsRepository: HistoryPostsRepository(),
                 flairRepository: FlairRepository(),
-                postModerationRepository: PostModerationRepository(),
+                postModerationRepository: thingModerationRepository,
                 isContinueThread: isContinueThread
             )
         )
@@ -121,8 +126,11 @@ struct PostDetailsView: View {
                             ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
                                 if case let .comment(comment) = commentItem {
                                     CommentViewCard(
-                                        account: account, comment: comment, isInPostDetails: true,
+                                        account: account,
+                                        comment: comment,
+                                        isInPostDetails: true,
                                         highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id || postDetailsViewModel.searchedComment?.id == comment.id,
+                                        thingModerationRepository: thingModerationRepository,
                                         onToggleExpand: {
                                             if fullyCollapseComment {
                                                 if comment.isCollasped {
@@ -154,6 +162,10 @@ struct PostDetailsView: View {
                                         },
                                         onAddToCommentFilter: {
                                             navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
+                                        },
+                                        onModerate: {
+                                            commentToBeModerated = comment
+                                            showCommentModerationSheet = true
                                         }
                                     )
                                     .listPlainItemNoInsets()
@@ -467,6 +479,27 @@ struct PostDetailsView: View {
                     },
                     onToggleDistinguishAsModerator: {
                         postDetailsViewModel.toggleDistinguishAsMod()
+                    }
+                )
+            } else {
+                EmptyView()
+            }
+        }
+        .wrapContentSheet(isPresented: $showCommentModerationSheet) {
+            if let commentToBeModerated {
+                CommentModerationSheet(
+                    comment: commentToBeModerated,
+                    onApprove: {
+                        
+                    },
+                    onRemove: {
+                        
+                    },
+                    onMarkAsSpam: {
+                        
+                    },
+                    onToggleLock: {
+                        
                     }
                 )
             } else {
