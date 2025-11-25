@@ -54,7 +54,7 @@ class PostViewModel: ObservableObject {
             return
         }
         
-        guard let _ = account.accessToken, let _ = post.name else { return }
+        guard let _ = account.accessToken else { return }
         
         let previousVote = post.likes
         
@@ -104,7 +104,7 @@ class PostViewModel: ObservableObject {
             return
         }
         
-        guard let _ = account.accessToken, let _ = post.name else { return }
+        guard let _ = account.accessToken else { return }
         
         let previousSaved = post.saved
         

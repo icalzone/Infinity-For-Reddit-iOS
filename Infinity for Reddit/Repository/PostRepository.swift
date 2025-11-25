@@ -36,7 +36,7 @@ class PostRepository: PostRepositoryProtocol {
         point: String
     ) async throws {
         do {
-            let params = ["dir": point, "id": post.name!, "rank": "10"]
+            let params = ["dir": point, "id": post.name, "rank": "10"]
             
             try Task.checkCancellation()
             
@@ -84,7 +84,7 @@ class PostRepository: PostRepositoryProtocol {
         save: Bool
     ) async throws {
         do {
-            let params = ["id": post.name!]
+            let params = ["id": post.name]
             
             try Task.checkCancellation()
             

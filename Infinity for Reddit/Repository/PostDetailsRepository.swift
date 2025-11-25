@@ -225,10 +225,10 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
     }
     
     public func deletePost(_ post: Post) async throws {
-        guard let name = post.name else {
+        guard !post.name.isEmpty else {
             throw PostDetailsRepositoryError.postIdNotFound
         }
-        let params = ["id": name]
+        let params = ["id": post.name]
         
         try Task.checkCancellation()
         
@@ -239,10 +239,10 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
     }
     
     public func toggleHidePost(_ post: Post) async throws {
-        guard let name = post.name else {
+        guard !post.name.isEmpty else {
             throw PostDetailsRepositoryError.postIdNotFound
         }
-        let params = ["id": name]
+        let params = ["id": post.name]
         
         try Task.checkCancellation()
         
@@ -270,10 +270,10 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
     }
     
     public func toggleSensitive(_ post: Post) async throws {
-        guard let name = post.name else {
+        guard !post.name.isEmpty else {
             throw PostDetailsRepositoryError.postIdNotFound
         }
-        let params = ["id": name]
+        let params = ["id": post.name]
         
         try Task.checkCancellation()
         
@@ -284,10 +284,10 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
     }
     
     public func toggleSpoiler(_ post: Post) async throws {
-        guard let name = post.name else {
+        guard !post.name.isEmpty else {
             throw PostDetailsRepositoryError.postIdNotFound
         }
-        let params = ["id": name]
+        let params = ["id": post.name]
         
         try Task.checkCancellation()
         
@@ -298,10 +298,10 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
     }
     
     public func selectFlair(post: Post, flair: Flair) async throws {
-        guard let name = post.name else {
+        guard !post.name.isEmpty else {
             throw PostDetailsRepositoryError.postIdNotFound
         }
-        let params = ["api_type": "json", "flair_template_id": flair.id, "link": name, "text": flair.text]
+        let params = ["api_type": "json", "flair_template_id": flair.id, "link": post.name, "text": flair.text]
         
         try Task.checkCancellation()
         

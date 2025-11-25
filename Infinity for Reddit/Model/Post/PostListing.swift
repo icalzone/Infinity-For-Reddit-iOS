@@ -96,7 +96,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     var modReasonTitle : String!
     
     var modReports : [[Any]]! = [[Any]]()
-    var name : String!
+    var name : String
     var numComments : Int!
     var numCrossposts : Int!
     var numReports : Int!
@@ -163,6 +163,10 @@ public class Post : NSObject, ObservableObject, Identifiable {
         default:
             return !selftext.isEmpty
         }
+    }
+    
+    var isModerator: Bool {
+        return distinguished == "moderator"
     }
     
     enum PostType: Equatable {
