@@ -70,6 +70,9 @@ struct HistoryPostListingView: View {
                             },
                             onLongPressPost: {
                                 
+                            },
+                            onShare: {
+                                
                             }
                         )
                         .id(ObjectIdentifier(post))

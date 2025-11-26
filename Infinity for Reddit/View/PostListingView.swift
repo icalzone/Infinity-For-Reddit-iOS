@@ -127,6 +127,10 @@ struct PostListingView: View {
                                 onLongPressPost: {
                                     postForPostOptionsSheet = post
                                     showPostOptionsSheet = true
+                                },
+                                onShare: {
+                                    postForPostOptionsSheet = post
+                                    showPostShareSheet = true
                                 }
                             )
                             .id(ObjectIdentifier(post))

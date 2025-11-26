@@ -18,6 +18,7 @@ struct PostView: View {
     let onPostTypeTap: () -> Void
     let onSensitiveTap: () -> Void
     let onLongPressPost: () -> Void
+    let onShare: () -> Void
 
     init(
         post: Post,
@@ -25,7 +26,8 @@ struct PostView: View {
         isSubredditPostListing: Bool,
         onPostTypeTap: @escaping () -> Void,
         onSensitiveTap: @escaping () -> Void,
-        onLongPressPost: @escaping () -> Void
+        onLongPressPost: @escaping () -> Void,
+        onShare: @escaping () -> Void
     ) {
         self.post = post
         self.postLayout = postLayout
@@ -33,6 +35,7 @@ struct PostView: View {
         self.onPostTypeTap = onPostTypeTap
         self.onSensitiveTap = onSensitiveTap
         self.onLongPressPost = onLongPressPost
+        self.onShare = onShare
         _postViewModel = StateObject(
             wrappedValue: PostViewModel(
                 account: AccountViewModel.shared.account,
@@ -58,7 +61,8 @@ struct PostView: View {
                     onSave: savePost,
                     onPostTypeClicked: onPostTypeTap,
                     onSensitiveClicked: onSensitiveTap,
-                    onOpenLink: openLink
+                    onOpenLink: openLink,
+                    onShare: onShare
                 )
             case .compact:
                 PostViewCompact(
@@ -73,7 +77,8 @@ struct PostView: View {
                     onSave: savePost,
                     onPostTypeClicked: onPostTypeTap,
                     onSensitiveClicked: onSensitiveTap,
-                    onOpenLink: openLink
+                    onOpenLink: openLink,
+                    onShare: onShare
                 )
             }
         }

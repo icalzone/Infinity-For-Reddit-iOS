@@ -67,7 +67,8 @@ struct PostListingScrollView: View {
                                 isSubredditPostListing: false,
                                 onPostTypeTap: { },
                                 onSensitiveTap: { },
-                                onLongPressPost: { }
+                                onLongPressPost: { },
+                                onShare: { }
                             )
                             .id(ObjectIdentifier(post))
                             .listPlainItemNoInsets()
@@ -90,7 +91,8 @@ struct PostListingScrollView: View {
                             isSubredditPostListing: false,
                             onPostTypeTap: { },
                             onSensitiveTap: { },
-                            onLongPressPost: { }
+                            onLongPressPost: { },
+                            onShare: { }
                         )
                         .id(ObjectIdentifier(post))
                         .listPlainItemNoInsets()
