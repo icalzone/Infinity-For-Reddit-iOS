@@ -14,4 +14,6 @@ public protocol PostListingRepositoryProtocol {
     func getAnonymousCustomThemeSubredditsConcatenated(myCustomFeed: MyCustomFeed) -> String
     func getPostFilter(postListingType: PostListingType, externalPostFilter: PostFilter?) -> PostFilter
     func loadIcon(post: Post, displaySubredditIcon: Bool) async throws
+    func toggleHidePost(_ post: Post) async throws
+    func toggleHidePostAnonymous(_ post: Post) async throws
 }

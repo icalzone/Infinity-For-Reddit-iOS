@@ -23,6 +23,7 @@ struct PostListingView: View {
     @State private var navigationBarMenuKey: UUID?
     @State private var showLayoutTypeSheet: Bool = false
     @State private var showPostOptionsSheet: Bool = false
+    @State private var showPostModerationSheet: Bool = false
     @State private var postForPostOptionsSheet: Post?
     @State var lazyMode: Task<Void, Error>?
     @State var lazyModeState: LazyModeState = .stopped
@@ -56,7 +57,8 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository()
+                historyPostsRepository: HistoryPostsRepository(),
+                thingModerationRepository: ThingModerationRepository()
             )
         )
     }
@@ -89,7 +91,8 @@ struct PostListingView: View {
                 postListingMetadata: postListingMetadata,
                 externalPostFilter: externalPostFilter,
                 postListingRepository: PostListingRepository(),
-                historyPostsRepository: HistoryPostsRepository()
+                historyPostsRepository: HistoryPostsRepository(),
+                thingModerationRepository: ThingModerationRepository()
             )
         )
     }
@@ -264,16 +267,16 @@ struct PostListingView: View {
                 PostOptionsSheet(
                     post: postForPostOptionsSheet,
                     onComment: {
-                        
+                        navigationManager.append(AppNavigation.submitComment(commentParent: .post(parentPost: postForPostOptionsSheet)))
                     },
                     onAddToPostFilter: {
-                        
+                        navigationManager.append(SettingsViewNavigation.postFilter(postToBeAdded: postForPostOptionsSheet))
                     },
                     onToggleHidePost: {
-                        
+                        postListingViewModel.toggleHidePost(postForPostOptionsSheet)
                     },
                     onCrosspost: {
-                        
+                        navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: postForPostOptionsSheet))
                     },
                     onDownloadMedia: {
                         
@@ -282,12 +285,51 @@ struct PostListingView: View {
                         
                     },
                     onReport: {
-                        
+                        if AccountViewModel.shared.account.isAnonymous() {
+                            navigationManager.openLink("https://www.reddit.com/report")
+                        } else {
+                            navigationManager.append(AppNavigation.report(subredditName: postForPostOptionsSheet.subreddit, thingFullname: postForPostOptionsSheet.name))
+                        }
                     },
                     onModeration: {
-                        
+                        showPostModerationSheet = true
                     }
                 )
+            } else {
+                EmptyView()
+            }
+        }
+        .wrapContentSheet(isPresented: $showPostModerationSheet) {
+            if let postForPostOptionsSheet {
+                PostModerationSheet(
+                    post: postForPostOptionsSheet,
+                    onApprove: {
+                        postListingViewModel.approvePost(postForPostOptionsSheet)
+                    },
+                    onRemove: {
+                        postListingViewModel.removePost(postForPostOptionsSheet, isSpam: false)
+                    },
+                    onMarkAsSpam: {
+                        postListingViewModel.removePost(postForPostOptionsSheet, isSpam: true)
+                    },
+                    onToggleStickyPost: {
+                        postListingViewModel.toggleSticky(postForPostOptionsSheet)
+                    },
+                    onToggleLock: {
+                        postListingViewModel.toggleLockPost(postForPostOptionsSheet)
+                    },
+                    onToggleSensitive: {
+                        postListingViewModel.toggleSensitive(postForPostOptionsSheet)
+                    },
+                    onToggleSpoiler: {
+                        postListingViewModel.toggleSpoiler(postForPostOptionsSheet)
+                    },
+                    onToggleDistinguishAsModerator: {
+                        postListingViewModel.toggleDistinguishAsMod(postForPostOptionsSheet)
+                    }
+                )
+            } else {
+                EmptyView()
             }
         }
         .environment(\.postListingVideoManager, postListingVideoManager)

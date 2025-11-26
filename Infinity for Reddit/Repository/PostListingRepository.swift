@@ -31,6 +31,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
     private let postFilterDao: PostFilterDao
     private let subscribedSubredditDao: SubscribedSubredditDao
     private let anonymousCustomFeedSubredditDao: AnonymousCustomFeedSubredditDao
+    private let postHistoryDao: PostHistoryDao
     private var subredditOrUserIcons: [String: String] = [:]
     
     public init() {
@@ -45,6 +46,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         self.postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
         self.subscribedSubredditDao = SubscribedSubredditDao(dbPool: resolvedDBPool)
         self.anonymousCustomFeedSubredditDao = AnonymousCustomFeedSubredditDao(dbPool: resolvedDBPool)
+        self.postHistoryDao = PostHistoryDao(dbPool: resolvedDBPool)
     }
     
     public func fetchPosts(
@@ -240,6 +242,34 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         try await MainActor.run {
             post.subredditOrUserIcon = try UserDetailRootClass(fromJson: json).toUserData().iconUrl ?? ""
             subredditOrUserIcons[post.author] = post.subredditOrUserIcon
+        }
+    }
+    
+    public func toggleHidePost(_ post: Post) async throws {
+        let params = ["id": post.name]
+        
+        try Task.checkCancellation()
+        
+        _ = try await self.session.request(post.hidden ? RedditOAuthAPI.unhidePost(params: params) : RedditOAuthAPI.hidePost(params: params))
+            .validate()
+            .serializingDecodable(Empty.self, automaticallyCancelling: true)
+            .value
+    }
+    
+    public func toggleHidePostAnonymous(_ post: Post) async throws {
+        do {
+            if !post.hidden {
+                try await postHistoryDao.insert(
+                    postHistory: PostHistory(
+                        username: Account.ANONYMOUS_ACCOUNT.username,
+                        postId: post.id,
+                        postHistoryType: .hidden,
+                        time: Int64(Date().timeIntervalSince1970)
+                    )
+                )
+            } else {
+                try await postHistoryDao.deletePostHistory(username: Account.ANONYMOUS_ACCOUNT.username, postId: post.id, postHistoryType: .hidden)
+            }
         }
     }
 }

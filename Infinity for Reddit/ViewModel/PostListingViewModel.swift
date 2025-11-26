@@ -63,6 +63,7 @@ public class PostListingViewModel: ObservableObject {
     
     private let postListingRepository: PostListingRepositoryProtocol
     private let historyPostsRepository: HistoryPostsRepositoryProtocol
+    private let thingModerationRepository: ThingModerationRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -75,13 +76,15 @@ public class PostListingViewModel: ObservableObject {
         postListingMetadata: PostListingMetadata,
         externalPostFilter: PostFilter?,
         postListingRepository: PostListingRepositoryProtocol,
-        historyPostsRepository: HistoryPostsRepositoryProtocol
+        historyPostsRepository: HistoryPostsRepositoryProtocol,
+        thingModerationRepository: ThingModerationRepositoryProtocol
     ) {
         self.sortType = postListingMetadata.postListingType.savedSortType
         self.postListingMetadata = postListingMetadata
         self.externalPostFilter = externalPostFilter
         self.postListingRepository = postListingRepository
         self.historyPostsRepository = historyPostsRepository
+        self.thingModerationRepository = thingModerationRepository
         
         self.sensitiveContent = ContentSensitivityFilterUserDetailsUtils.sensitiveContent
         self.spoilerContent = ContentSensitivityFilterUserDetailsUtils.spoilerContent
@@ -501,6 +504,144 @@ public class PostListingViewModel: ObservableObject {
             }
         } else {
             appearedPosts.append(post)
+        }
+    }
+    
+    @MainActor
+    func toggleHidePost(_ post: Post) {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
+            toggleHidePostAnonymous(post)
+            return
+        }
+        
+        let previousHiddenState = post.hidden ?? false
+        
+        Task {
+            do {
+                try await postListingRepository.toggleHidePost(post)
+                
+                post.hidden = !previousHiddenState
+            } catch {
+                post.hidden = previousHiddenState
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    private func toggleHidePostAnonymous(_ post: Post) {
+        Task {
+            try? await postListingRepository.toggleHidePostAnonymous(post)
+            post.hidden.toggle()
+        }
+    }
+    
+    @MainActor
+    func approvePost(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.approveThing(thingFullname: post.name)
+                
+                post.approved = true
+                post.approvedBy = AccountViewModel.shared.account.username
+                post.approvedAtUtc = Utils.getCurrentTimeEpoch()
+                post.removed = false
+                post.removedBy = ""
+                post.removedByCategory = ""
+                post.spam = false
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func removePost(_ post: Post, isSpam: Bool) {
+        Task {
+            do {
+                try await thingModerationRepository.removeThing(thingFullname: post.name, isSpam: isSpam)
+                
+                post.approved = false
+                post.approvedBy = ""
+                post.approvedAtUtc = 0
+                post.removed = true
+                post.removedBy = AccountViewModel.shared.account.username
+                post.removedByCategory = "moderator"
+                post.spam = isSpam
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func toggleSticky(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.toggleSticky(post: post)
+                
+                post.stickied.toggle()
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func toggleLockPost(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.toggleLock(thingFullname: post.name, lock: !post.locked)
+                
+                post.locked.toggle()
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func toggleSensitive(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.toggleSensitive(post: post)
+                post.over18.toggle()
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func toggleSpoiler(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.toggleSpoiler(post: post)
+                post.spoiler.toggle()
+            } catch {
+                self.error = error
+                print(error)
+            }
+        }
+    }
+    
+    @MainActor
+    func toggleDistinguishAsMod(_ post: Post) {
+        Task {
+            do {
+                try await thingModerationRepository.toggleDistinguishAsMod(post: post)
+                
+                post.distinguished = post.distinguished == "moderator" ? "" : "moderator"
+            } catch {
+                self.error = error
+                print(error)
+            }
         }
     }
 }

@@ -87,7 +87,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     var linkFlairRichtext : [FlairRichtext]! = [FlairRichtext]()
     var linkFlairText : String!
     var linkFlairType : String!
-    var locked : Bool!
+    @Published var locked : Bool
     var media : PostMedia!
     var mediaMetadata: [String: MediaMetadata]?
     var mediaOnly : Bool!
@@ -130,8 +130,8 @@ public class Post : NSObject, ObservableObject, Identifiable {
     }
     var sendReplies : Bool!
     @Published var spam: Bool
-    @Published var spoiler : Bool!
-    var stickied : Bool!
+    @Published var spoiler : Bool
+    @Published var stickied : Bool
     var subreddit : String!
     var subredditId : String!
     var subredditNamePrefixed : String!
