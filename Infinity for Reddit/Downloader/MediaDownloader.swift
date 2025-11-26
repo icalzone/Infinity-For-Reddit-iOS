@@ -49,10 +49,8 @@ class MediaDownloader {
         )
         
         switch downloadMediaType {
-        case .image:
-            try saveImageToPhotosLibrary(downloadedFileURL)
-        case .gif:
-            try await saveGifToPhotosLibrary(downloadedFileURL)
+        case .image, .gif:
+            try await saveImageOrGifToPhotosLibrary(downloadedFileURL)
         case .redditVideo:
             //Impossible to reach here
             break
@@ -78,7 +76,7 @@ class MediaDownloader {
         }
         
         let destination: DownloadRequest.Destination = { _, _ in
-            let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+            let fileURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(fileName)
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
         
@@ -130,10 +128,10 @@ class MediaDownloader {
                 let exportedMuxedVideoURL = try await muxVideoAndAudio(downloadedVideoURL: videoTrackDownloadedFileURL, downloadedAudioURL: audioTrackDownloadedFileURL, fileName: fileName)
                 try await saveVideoToPhotosLibrary(exportedMuxedVideoURL)
             } catch {
-                try await saveVideoToPhotosLibrary(videoTrackDownloadedFileURL)
+                try await saveRedditVideoWithOnlyVideoTrackToPhotosLibrary(videoTrackDownloadedFileURL, fileName: fileName)
             }
         } else {
-            try await saveVideoToPhotosLibrary(videoTrackDownloadedFileURL)
+            try await saveRedditVideoWithOnlyVideoTrackToPhotosLibrary(videoTrackDownloadedFileURL, fileName: fileName)
         }
     }
     
@@ -180,7 +178,7 @@ class MediaDownloader {
             throw MediaDownloaderError.cannotGetVideoExportSession
         }
         
-        let exportedURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        let exportedURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0].appendingPathComponent(fileName)
         if FileManager.default.fileExists(atPath: exportedURL.path) {
             try FileManager.default.removeItem(at: exportedURL)
         }
@@ -196,15 +194,16 @@ class MediaDownloader {
         }
     }
     
-    private func saveImageToPhotosLibrary(_ downloadedFileURL: URL) throws {
-        let data = try Data(contentsOf: downloadedFileURL)
-        guard let image = UIImage(data: data) else {
-            throw MediaDownloaderError.decodeImageError
+    private func saveRedditVideoWithOnlyVideoTrackToPhotosLibrary(_ videoTrackDownloadedFileURL: URL, fileName: String) async throws {
+        let newFileNamePath = videoTrackDownloadedFileURL.deletingLastPathComponent().appendingPathComponent(fileName)
+        if FileManager.default.fileExists(atPath: newFileNamePath.path()) {
+            try FileManager.default.removeItem(at: newFileNamePath)
         }
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        try FileManager.default.moveItem(at: videoTrackDownloadedFileURL, to: newFileNamePath)
+        try await saveVideoToPhotosLibrary(newFileNamePath)
     }
     
-    private func saveGifToPhotosLibrary(_ downloadedFileURL: URL) async throws {
+    private func saveImageOrGifToPhotosLibrary(_ downloadedFileURL: URL) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: downloadedFileURL)
