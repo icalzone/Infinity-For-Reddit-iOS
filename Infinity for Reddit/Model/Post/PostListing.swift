@@ -102,7 +102,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     var numCrossposts : Int!
     var numReports : Int!
     @Published var over18 : Bool!
-    var permalink : String!
+    var permalink : String
     var pinned : Bool!
     var preview : Preview!
     var pwls : Int!
@@ -170,6 +170,10 @@ public class Post : NSObject, ObservableObject, Identifiable {
     
     var isModerator: Bool {
         return distinguished == "moderator"
+    }
+    
+    var postUrlString: String {
+        return "https://reddit.com\(permalink)"
     }
     
     enum PostType: Equatable {

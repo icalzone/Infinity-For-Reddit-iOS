@@ -13,7 +13,6 @@ struct PostOptionsSheet: View {
     let post: Post
     
     var onComment: () -> Void
-    var onShare: () -> Void
     var onAddToPostFilter: () -> Void
     var onToggleHidePost: () -> Void
     var onCrosspost: () -> Void
@@ -25,46 +24,63 @@ struct PostOptionsSheet: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Comment") {
+                IconTextButton(startIconUrl: "text.bubble", text: "Comment") {
                     onComment()
                     dismiss()
                 }
                 
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Share") {
-                    onShare()
-                    dismiss()
+                ShareLink(item: post.postUrlString) {
+                    HStack(spacing: 0) {
+                        SwiftUI.Image(systemName: "square.and.arrow.up")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 24, height: 24)
+                            .primaryIcon()
+                        
+                        Spacer()
+                            .frame(width: 32)
+                        
+                        Text("Share")
+                            .primaryText()
+                        
+                        Spacer()
+                    }
+                    .contentShape(Rectangle())
+                    .padding(16)
                 }
+                .buttonStyle(.borderless)
+                .contentShape(Rectangle())
                 
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Add to Post Filter") {
+                IconTextButton(startIconUrl: "line.3.horizontal.decrease.circle", text: "Add to Post Filter") {
                     onAddToPostFilter()
                     dismiss()
                 }
 
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: post.hidden ? "Unhide" : "Hide") {
+                IconTextButton(startIconUrl: post.hidden ? "eye" :"eye.slash", text: post.hidden ? "Unhide" : "Hide") {
                     onToggleHidePost()
                     dismiss()
                 }
                 
                 if post.isCrosspostable {
-                    IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Crosspost") {
+                    IconTextButton(startIconUrl: "arrow.2.squarepath", text: "Crosspost") {
                         onCrosspost()
                         dismiss()
                     }
                 }
                 
                 if let downloadText = post.postType.downloadText {
-                    IconTextButton(startIconUrl: "checkmark.shield.fill", text: downloadText) {
+                    IconTextButton(startIconUrl: "square.and.arrow.down", text: downloadText) {
                         onDownloadMedia()
                         dismiss()
                     }
                 }
                 
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Download All Gallery Media") {
+                IconTextButton(startIconUrl: "square.and.arrow.down.on.square", text: "Download All Gallery Media") {
                     onDownloadAllGalleryMedia()
                     dismiss()
                 }
                 
-                IconTextButton(startIconUrl: "checkmark.shield.fill", text: "Report") {
+                IconTextButton(startIconUrl: "flag", text: "Report") {
                     onReport()
                     dismiss()
                 }
@@ -76,6 +92,7 @@ struct PostOptionsSheet: View {
                     }
                 }
             }
+            .padding(.top, 24)
         }
     }
 }

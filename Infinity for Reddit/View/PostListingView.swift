@@ -22,6 +22,8 @@ struct PostListingView: View {
     @State private var upcomingSortTypeKind: SortType.Kind?
     @State private var navigationBarMenuKey: UUID?
     @State private var showLayoutTypeSheet: Bool = false
+    @State private var showPostOptionsSheet: Bool = false
+    @State private var postForPostOptionsSheet: Post?
     @State var lazyMode: Task<Void, Error>?
     @State var lazyModeState: LazyModeState = .stopped
     
@@ -118,7 +120,8 @@ struct PostListingView: View {
                                     onSensitiveClicked(post: post)
                                 },
                                 onLongPressPost: {
-                                    
+                                    postForPostOptionsSheet = post
+                                    showPostOptionsSheet = true
                                 }
                             )
                             .id(ObjectIdentifier(post))
@@ -255,6 +258,37 @@ struct PostListingView: View {
                     postListingViewModel.changePostLayout(newLayout)
                 }
             )
+        }
+        .wrapContentSheet(isPresented: $showPostOptionsSheet) {
+            if let postForPostOptionsSheet {
+                PostOptionsSheet(
+                    post: postForPostOptionsSheet,
+                    onComment: {
+                        
+                    },
+                    onAddToPostFilter: {
+                        
+                    },
+                    onToggleHidePost: {
+                        
+                    },
+                    onCrosspost: {
+                        
+                    },
+                    onDownloadMedia: {
+                        
+                    },
+                    onDownloadAllGalleryMedia: {
+                        
+                    },
+                    onReport: {
+                        
+                    },
+                    onModeration: {
+                        
+                    }
+                )
+            }
         }
         .environment(\.postListingVideoManager, postListingVideoManager)
     }
