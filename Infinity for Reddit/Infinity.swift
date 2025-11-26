@@ -46,6 +46,8 @@ struct Infinity: App {
         PullNotificationBackgroundTaskManager.shared.registerAndScheduleBackgroundTask()
 
         FontUtils.registerCustomFonts()
+
+        VideoProxyManager.shared.start()
     }
 
     var body: some Scene {

@@ -26,7 +26,7 @@ struct ProxySettingsView: View {
                     TogglePreference(
                         isEnabled: $enableProxy,
                         title: "Proxy Enabled",
-                        subtitle: "Restart the app to see the changes"
+                        subtitle: "Changes apply immediately"
                     )
                     .transition(.opacity)
                     
@@ -102,6 +102,18 @@ struct ProxySettingsView: View {
                 }
             }
         )
+        .onChange(of: enableProxy, initial: false) { _, _ in
+            VideoProxyManager.shared.reloadConfiguration()
+        }
+        .onChange(of: proxyType, initial: false) { _, _ in
+            VideoProxyManager.shared.reloadConfiguration()
+        }
+        .onChange(of: proxyHostname, initial: false) { _, _ in
+            VideoProxyManager.shared.reloadConfiguration()
+        }
+        .onChange(of: proxyPort, initial: false) { _, _ in
+            VideoProxyManager.shared.reloadConfiguration()
+        }
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Proxy")
     }

@@ -19,7 +19,7 @@ struct InlineVideoPlayer: View {
     
     init(videoURL: URL, aspectRatio: CGSize?, muteVideo: Bool = false, canPlay: Bool = true) {
         self.videoURL = videoURL
-        self.player = AVPlayer(url: videoURL)
+        self.player = AVPlayer(url: VideoProxyManager.shared.proxyURL(videoURL))
         self.aspectRatio = aspectRatio
         self.muteVideo = muteVideo
         self.canPlay = canPlay
