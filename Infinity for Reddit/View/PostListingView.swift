@@ -116,6 +116,9 @@ struct PostListingView: View {
                                 },
                                 onSensitiveTap: {
                                     onSensitiveClicked(post: post)
+                                },
+                                onLongPressPost: {
+                                    
                                 }
                             )
                             .id(ObjectIdentifier(post))

@@ -17,19 +17,22 @@ struct PostView: View {
     let isSubredditPostListing: Bool
     let onPostTypeTap: () -> Void
     let onSensitiveTap: () -> Void
+    let onLongPressPost: () -> Void
 
     init(
         post: Post,
         postLayout: PostLayout,
         isSubredditPostListing: Bool,
         onPostTypeTap: @escaping () -> Void,
-        onSensitiveTap: @escaping () -> Void
+        onSensitiveTap: @escaping () -> Void,
+        onLongPressPost: @escaping () -> Void
     ) {
         self.post = post
         self.postLayout = postLayout
         self.isSubredditPostListing = isSubredditPostListing
         self.onPostTypeTap = onPostTypeTap
         self.onSensitiveTap = onSensitiveTap
+        self.onLongPressPost = onLongPressPost
         _postViewModel = StateObject(
             wrappedValue: PostViewModel(
                 account: AccountViewModel.shared.account,
@@ -40,37 +43,42 @@ struct PostView: View {
     }
 
     var body: some View {
-        switch postLayout {
-        case .card:
-            PostViewCard(
-                postViewModel: postViewModel,
-                isSubredditPostListing: isSubredditPostListing,
-                onPostTap: onPostTap,
-                onIconTap: onIconTap,
-                onSubredditTap: onSubredditTap,
-                onUserTap: onUserTap,
-                onVote: vote,
-                onCommentsTap: onCommentsTap,
-                onSave: savePost,
-                onPostTypeClicked: onPostTypeTap,
-                onSensitiveClicked: onSensitiveTap,
-                onOpenLink: openLink
-            )
-        case .compact:
-            PostViewCompact(
-                postViewModel: postViewModel,
-                isSubredditPostListing: isSubredditPostListing,
-                onPostTap: onPostTap,
-                onIconTap: onIconTap,
-                onSubredditTap: onSubredditTap,
-                onUserTap: onUserTap,
-                onVote: vote,
-                onCommentsTap: onCommentsTap,
-                onSave: savePost,
-                onPostTypeClicked: onPostTypeTap,
-                onSensitiveClicked: onSensitiveTap,
-                onOpenLink: openLink
-            )
+        Group {
+            switch postLayout {
+            case .card:
+                PostViewCard(
+                    postViewModel: postViewModel,
+                    isSubredditPostListing: isSubredditPostListing,
+                    onPostTap: onPostTap,
+                    onIconTap: onIconTap,
+                    onSubredditTap: onSubredditTap,
+                    onUserTap: onUserTap,
+                    onVote: vote,
+                    onCommentsTap: onCommentsTap,
+                    onSave: savePost,
+                    onPostTypeClicked: onPostTypeTap,
+                    onSensitiveClicked: onSensitiveTap,
+                    onOpenLink: openLink
+                )
+            case .compact:
+                PostViewCompact(
+                    postViewModel: postViewModel,
+                    isSubredditPostListing: isSubredditPostListing,
+                    onPostTap: onPostTap,
+                    onIconTap: onIconTap,
+                    onSubredditTap: onSubredditTap,
+                    onUserTap: onUserTap,
+                    onVote: vote,
+                    onCommentsTap: onCommentsTap,
+                    onSave: savePost,
+                    onPostTypeClicked: onPostTypeTap,
+                    onSensitiveClicked: onSensitiveTap,
+                    onOpenLink: openLink
+                )
+            }
+        }
+        .onLongPressGesture {
+            onLongPressPost()
         }
     }
     
