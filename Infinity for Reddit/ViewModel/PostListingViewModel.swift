@@ -648,7 +648,7 @@ public class PostListingViewModel: ObservableObject {
         }
     }
     
-    private func downloadMedia(_ post: Post) {
+    func downloadMedia(_ post: Post) {
         guard let downloadMediaType = post.getDownloadMediaType() else {
             return
         }
@@ -670,7 +670,11 @@ public class PostListingViewModel: ObservableObject {
         }
     }
     
-    func downloadAllGalleryMedia(items: [GalleryItem], post: Post?) {
+    func downloadAllGalleryMedia(post: Post) {
+        guard let items = post.galleryData?.items else {
+            return
+        }
+        
         Task {
             await withTaskGroup(of: Void.self) { group in
                 for item in items {

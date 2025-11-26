@@ -75,9 +75,11 @@ struct PostOptionsSheet: View {
                     }
                 }
                 
-                IconTextButton(startIconUrl: "square.and.arrow.down.on.square", text: "Download All Gallery Media") {
-                    onDownloadAllGalleryMedia()
-                    dismiss()
+                if post.postType == .gallery {
+                    IconTextButton(startIconUrl: "square.and.arrow.down.on.square", text: "Download All Gallery Media") {
+                        onDownloadAllGalleryMedia()
+                        dismiss()
+                    }
                 }
                 
                 IconTextButton(startIconUrl: "flag", text: "Report") {

@@ -11,8 +11,9 @@ import GRDB
 import Alamofire
 
 struct PostListingView: View {
-    @EnvironmentObject var navigationManager: NavigationManager
-    @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var snackbarManager: SnackbarManager
     
     @StateObject var postListingViewModel: PostListingViewModel
     @StateObject var postListingVideoManager: PostListingVideoManager = .init()
@@ -231,6 +232,12 @@ struct PostListingView: View {
                 }
             }
         }
+        .onChange(of: postListingViewModel.showMediaDownloadFinishedMessageTrigger) {
+            snackbarManager.showSnackbar(.info("Download complete."))
+        }
+        .onChange(of: postListingViewModel.showAllGalleryMediaDownloadFinishedMessageTrigger) {
+            snackbarManager.showSnackbar(.info("Gallery download complete."))
+        }
         .wrapContentSheet(isPresented: $showSortTypeKindSheet) {
             SortTypeKindSheet(
                 sortTypeKindSource: postListingMetadata.postListingType,
@@ -279,10 +286,10 @@ struct PostListingView: View {
                         navigationManager.append(AppNavigation.crosspost(postToBeCrossposted: postForPostOptionsSheet))
                     },
                     onDownloadMedia: {
-                        
+                        postListingViewModel.downloadMedia(postForPostOptionsSheet)
                     },
                     onDownloadAllGalleryMedia: {
-                        
+                        postListingViewModel.downloadAllGalleryMedia(post: postForPostOptionsSheet)
                     },
                     onReport: {
                         if AccountViewModel.shared.account.isAnonymous() {
