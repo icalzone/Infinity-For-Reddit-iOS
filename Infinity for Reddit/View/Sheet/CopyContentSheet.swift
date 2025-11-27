@@ -34,10 +34,6 @@ struct CopyContentSheet: View {
                """ + content
     }
     
-    init(content: String) {
-        self.content = content
-    }
-    
     var body: some View {
         HTMLStringView(
             content: html,

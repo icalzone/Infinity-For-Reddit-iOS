@@ -8,6 +8,7 @@
 import Foundation
 
 struct TextToBeSelectedAndCopiedItem: Identifiable {
-    var content: String
+    var title: String?
+    var content: String = ""
     var id = UUID()
 }

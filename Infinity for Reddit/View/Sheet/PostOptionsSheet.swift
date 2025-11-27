@@ -14,6 +14,7 @@ struct PostOptionsSheet: View {
     
     var onComment: () -> Void
     var onShare: () -> Void
+    var onCopy: () -> Void
     var onAddToPostFilter: () -> Void
     var onToggleHidePost: () -> Void
     var onCrosspost: () -> Void
@@ -32,6 +33,11 @@ struct PostOptionsSheet: View {
                 
                 IconTextButton(startIconUrl: "square.and.arrow.up", text: "Share") {
                     onShare()
+                    dismiss()
+                }
+                
+                IconTextButton(startIconUrl: "square.and.arrow.up", text: "Copy") {
+                    onCopy()
                     dismiss()
                 }
                 

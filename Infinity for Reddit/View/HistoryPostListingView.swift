@@ -23,6 +23,12 @@ struct HistoryPostListingView: View {
     @State private var showPostOptionsSheet: Bool = false
     @State private var showPostShareSheet: Bool = false
     @State private var showPostModerationSheet: Bool = false
+    @State private var showCopyContentOptionsSheet: Bool = false
+    @State private var showCopyContentSheet: Bool = false
+    @State private var titleToBeCopied: String?
+    @State private var markdownToBeCopied: String = ""
+    @State private var plainTextToBeCopied: String = ""
+    @State private var textToBeSelectedAndCopiedItem: TextToBeSelectedAndCopiedItem?
     @State private var postForPostOptionsSheet: Post?
     @State var lazyMode: Task<Void, Error>?
     @State var lazyModeState: LazyModeState = .stopped
@@ -191,6 +197,12 @@ struct HistoryPostListingView: View {
                     onShare: {
                         showPostShareSheet = true
                     },
+                    onCopy: {
+                        titleToBeCopied = postForPostOptionsSheet.title
+                        markdownToBeCopied = postForPostOptionsSheet.selftext
+                        plainTextToBeCopied = postForPostOptionsSheet.selftextHtml
+                        showCopyContentOptionsSheet = true
+                    },
                     onAddToPostFilter: {
                         navigationManager.append(SettingsViewNavigation.postFilter(postToBeAdded: postForPostOptionsSheet))
                     },
@@ -260,6 +272,30 @@ struct HistoryPostListingView: View {
             } else {
                 EmptyView()
             }
+        }
+        .wrapContentSheet(isPresented: $showCopyContentOptionsSheet) {
+            CopyContentOptionsSheet(
+                title: titleToBeCopied,
+                markdown: markdownToBeCopied,
+                plainText: plainTextToBeCopied,
+                onCopyTitle: {
+                    textToBeSelectedAndCopiedItem = TextToBeSelectedAndCopiedItem(title: titleToBeCopied)
+                    showCopyContentSheet = true
+                },
+                onCopyMarkdown: {
+                    textToBeSelectedAndCopiedItem = TextToBeSelectedAndCopiedItem(content: markdownToBeCopied)
+                    showCopyContentSheet = true
+                },
+                onCopyPlainText: {
+                    textToBeSelectedAndCopiedItem = TextToBeSelectedAndCopiedItem(content: plainTextToBeCopied)
+                    showCopyContentSheet = true
+                }
+            )
+        }
+        .sheet(item: $textToBeSelectedAndCopiedItem) { item in
+            CopyContentSheet(
+                content: item.title ?? item.content
+            )
         }
         .environment(\.postListingVideoManager, postListingVideoManager)
     }

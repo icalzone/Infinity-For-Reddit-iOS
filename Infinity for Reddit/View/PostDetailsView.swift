@@ -31,6 +31,7 @@ struct PostDetailsView: View {
     @State private var showPostShareSheet: Bool = false
     @State private var showCopyContentOptionsSheet: Bool = false
     @State private var showCopyContentSheet: Bool = false
+    @State private var titleToBeCopied: String?
     @State private var markdownToBeCopied: String = ""
     @State private var plainTextToBeCopied: String = ""
     @State private var textToBeSelectedAndCopiedItem: TextToBeSelectedAndCopiedItem?
@@ -88,6 +89,7 @@ struct PostDetailsView: View {
                                     showPostOptionsSheet = true
                                 },
                                 onLongPressOnContent: {
+                                    titleToBeCopied = post.title
                                     markdownToBeCopied = post.selftext
                                     plainTextToBeCopied = post.selftextHtml
                                     showCopyContentOptionsSheet = true
@@ -189,6 +191,7 @@ struct PostDetailsView: View {
                                             showCommentModerationSheet = true
                                         },
                                         onCopy: {
+                                            titleToBeCopied = nil
                                             markdownToBeCopied = comment.body
                                             plainTextToBeCopied = comment.bodyHtml
                                             showCopyContentOptionsSheet = true
@@ -490,6 +493,12 @@ struct PostDetailsView: View {
                     onShare: {
                         showPostShareSheet = true
                     },
+                    onCopy: {
+                        titleToBeCopied = post.title
+                        markdownToBeCopied = post.selftext
+                        plainTextToBeCopied = post.selftextHtml
+                        showCopyContentOptionsSheet = true
+                    },
                     onAddToPostFilter: {
                         navigationManager.append(SettingsViewNavigation.postFilter(postToBeAdded: post))
                     },
@@ -589,8 +598,13 @@ struct PostDetailsView: View {
         }
         .wrapContentSheet(isPresented: $showCopyContentOptionsSheet) {
             CopyContentOptionsSheet(
+                title: titleToBeCopied,
                 markdown: markdownToBeCopied,
                 plainText: plainTextToBeCopied,
+                onCopyTitle: {
+                    textToBeSelectedAndCopiedItem = TextToBeSelectedAndCopiedItem(title: titleToBeCopied)
+                    showCopyContentSheet = true
+                },
                 onCopyMarkdown: {
                     textToBeSelectedAndCopiedItem = TextToBeSelectedAndCopiedItem(content: markdownToBeCopied)
                     showCopyContentSheet = true
@@ -602,7 +616,9 @@ struct PostDetailsView: View {
             )
         }
         .sheet(item: $textToBeSelectedAndCopiedItem) { item in
-            CopyContentSheet(content: item.content)
+            CopyContentSheet(
+                content: item.title ?? item.content
+            )
         }
         .overlay(
             CustomAlert(
