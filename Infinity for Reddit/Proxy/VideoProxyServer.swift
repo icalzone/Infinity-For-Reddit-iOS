@@ -8,6 +8,7 @@
 import Combine
 import Foundation
 import GCDWebServer
+import ObjectiveC.runtime
 
 enum VideoProxyFormat: String, CaseIterable {
     case m3u8
@@ -46,15 +47,51 @@ final class VideoProxyServer {
                 print("VideoProxy: Server already running")
                 return
             }
-            self.webServer.start(withPort: self.port, bonjourName: nil)
-            print("VideoProxy: Server started on port \(self.port)")
+            if self.startWebServerWithHighPriority() {
+                print("VideoProxy: Server started on port \(self.port)")
+            } else {
+                self.webServer.start(withPort: self.port, bonjourName: nil)
+                print("VideoProxy: Server started on port \(self.port)")
+            }
         }
 
         if Thread.isMainThread {
             startWork()
         } else {
-            DispatchQueue.main.sync(execute: startWork)
+            let semaphore = DispatchSemaphore(value: 0)
+            DispatchQueue.main.async {
+                startWork()
+                semaphore.signal()
+            }
+            semaphore.wait()
         }
+    }
+
+    // Raise GCDWebServerOption_DispatchQueuePriority to avoid stop() waiting on lower-QoS listeners.
+    private func startWebServerWithHighPriority() -> Bool {
+        let selector = NSSelectorFromString("startWithOptions:error:")
+        guard webServer.responds(to: selector),
+              let method = class_getInstanceMethod(GCDWebServer.self, selector) else {
+            return false
+        }
+
+        typealias StartIMP = @convention(c) (AnyObject, Selector, NSDictionary, UnsafeMutablePointer<NSError?>?) -> Bool
+        let imp = method_getImplementation(method)
+        let function = unsafeBitCast(imp, to: StartIMP.self)
+
+        let dispatchPriorityHigh = 2  // mirrors DispatchQueue.GlobalQueuePriority.high
+        let options: NSDictionary = [
+            GCDWebServerOption_Port: NSNumber(value: Int(port)),
+            GCDWebServerOption_BindToLocalhost: true,
+            GCDWebServerOption_DispatchQueuePriority: NSNumber(value: dispatchPriorityHigh)
+        ]
+
+        var error: NSError?
+        let success = function(webServer, selector, options, &error)
+        if !success, let error {
+            print("VideoProxy: Failed to start server with options \(error)")
+        }
+        return success
     }
 
     func stop() {
@@ -70,9 +107,9 @@ final class VideoProxyServer {
         }
 
         if Thread.isMainThread {
-            stopWork()
+            DispatchQueue.global(qos: .default).async(execute: stopWork)
         } else {
-            DispatchQueue.main.sync(execute: stopWork)
+            stopWork()
         }
     }
 
