@@ -1,5 +1,5 @@
 //
-//  VideoProxyManager.swift
+//  ProxyManager.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2025-11-25.
@@ -8,12 +8,12 @@
 import Foundation
 import GCDWebServer
 
-final class VideoProxyManager {
-    static let shared = VideoProxyManager()
+final class ProxyManager {
+    static let shared = ProxyManager()
 
-    private let controlQueue = DispatchQueue(label: "com.infinity.VideoProxyManager.control", qos: .default)
+    private let controlQueue = DispatchQueue(label: "com.infinity.ProxyManager.control", qos: .default)
     private var configuration: ProxyConfiguration?
-    private var proxyServer: VideoProxyServer?
+    private var proxyServer: ProxyServer?
 
     private static let ensureGCDWebServerInitialized: Void = {
         let initialize = {
@@ -28,14 +28,14 @@ final class VideoProxyManager {
     }()
 
     private init() {
-        _ = VideoProxyManager.ensureGCDWebServerInitialized
+        _ = ProxyManager.ensureGCDWebServerInitialized
         controlQueue.sync {
             if let configuration = ProxyConfiguration() {
                 self.configuration = configuration
                 configureProxyServer(with: configuration)
             } else {
                 self.configuration = nil
-                print("VideoProxy: Proxy disabled or misconfigured")
+                print("Proxy: Proxy disabled or misconfigured")
             }
         }
     }
@@ -46,7 +46,7 @@ final class VideoProxyManager {
         sessionConfiguration.timeoutIntervalForRequest = ProxyUtils.timeoutRequest
         sessionConfiguration.timeoutIntervalForResource = ProxyUtils.timeoutResource
 
-        print("VideoProxy: URLSession configured with proxy: \(configuration.host):\(configuration.port) (\(configuration.type.rawValueString))")
+        print("Proxy: URLSession configured with proxy: \(configuration.host):\(configuration.port) (\(configuration.type.rawValueString))")
 
         let delegateQueue = OperationQueue()
         delegateQueue.qualityOfService = .userInteractive
@@ -54,8 +54,8 @@ final class VideoProxyManager {
         let session = URLSession(configuration: sessionConfiguration,
                                  delegate: nil,
                                  delegateQueue: delegateQueue)
-        let service = URLSessionVideoProxyService(session: session)
-        proxyServer = VideoProxyServer(service: service)
+        let service = URLSessionProxyService(session: session)
+        proxyServer = ProxyServer(service: service)
     }
 
     private func startLocked() {
@@ -83,16 +83,23 @@ final class VideoProxyManager {
 
     func proxyURL(_ url: URL) -> URL {
         return controlQueue.sync {
-            guard configuration != nil,
+            guard configuration != nil else { return url }
+
+            let ext = url.pathExtension.lowercased()
+            guard ProxyResourceFormat(rawValue: ext) != nil,
                   let proxied = proxyServer?.reverseProxyURL(from: url) else {
+                #if DEBUG
+                print("ProxyManager bypassing proxy for extension:", ext.isEmpty ? "<none>" : ext, url.absoluteString)
+                #endif
                 return url
             }
 
-            print("VideoProxy: Proxied URL:\n   Original: \(url.absoluteString)\n   Proxied:  \(proxied.absoluteString)")
+            print("Proxy: Proxied URL:\n   Original: \(url.absoluteString)\n   Proxied:  \(proxied.absoluteString)")
 
             return proxied
         }
     }
+
 
     func reloadConfiguration() {
         controlQueue.async { [weak self] in
@@ -105,7 +112,7 @@ final class VideoProxyManager {
 
             guard let newConfiguration = ProxyConfiguration() else {
                 self.configuration = nil
-                print("VideoProxy: Proxy disabled or misconfigured")
+                print("Proxy: Proxy disabled or misconfigured")
                 return
             }
 
@@ -114,6 +121,7 @@ final class VideoProxyManager {
             self.startLocked()
         }
     }
+
 }
 
 private struct ProxyConfiguration {

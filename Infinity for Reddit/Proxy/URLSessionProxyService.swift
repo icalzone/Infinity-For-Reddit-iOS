@@ -1,5 +1,5 @@
 //
-//  URLSessionVideoProxyService.swift
+//  URLSessionProxyService.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2025-11-25.
@@ -8,26 +8,26 @@
 import Combine
 import Foundation
 
-struct VideoProxyResponseItem {
+struct ProxyResponseItem {
     let data: Data
     let mimeType: String?
     let statusCode: Int
     let headers: [String: String]
 }
 
-final class URLSessionVideoProxyService: VideoProxyService {
+final class URLSessionProxyService: ProxyService {
     private let session: URLSession
 
     init(session: URLSession) {
         self.session = session
     }
 
-    func dataTaskPublisher(_ request: URLRequest) -> AnyPublisher<VideoProxyResponseItem, Error> {
+    func dataTaskPublisher(_ request: URLRequest) -> AnyPublisher<ProxyResponseItem, Error> {
         guard let url = request.url else {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
 
-        print("VideoProxy: Fetching via URLSession:", url.absoluteString)
+        print("Proxy: Fetching via URLSession:", url.absoluteString)
 
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
@@ -43,9 +43,9 @@ final class URLSessionVideoProxyService: VideoProxyService {
                     }
                 }
 
-                print("VideoProxy: Received response: \(httpResponse.statusCode) - \(data.count) bytes")
+                print("Proxy: Received response: \(httpResponse.statusCode) - \(data.count) bytes")
 
-                return VideoProxyResponseItem(
+                return ProxyResponseItem(
                     data: data,
                     mimeType: httpResponse.mimeType,
                     statusCode: httpResponse.statusCode,

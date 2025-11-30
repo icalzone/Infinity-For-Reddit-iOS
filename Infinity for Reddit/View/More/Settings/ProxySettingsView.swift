@@ -102,16 +102,16 @@ struct ProxySettingsView: View {
             }
         )
         .onChange(of: enableProxy, initial: false) { _, _ in
-            VideoProxyManager.shared.reloadConfiguration()
+            ProxyManager.shared.reloadConfiguration()
         }
         .onChange(of: proxyType, initial: false) { _, _ in
-            VideoProxyManager.shared.reloadConfiguration()
+            ProxyManager.shared.reloadConfiguration()
         }
         .onChange(of: proxyHostname, initial: false) { _, _ in
-            VideoProxyManager.shared.reloadConfiguration()
+            ProxyManager.shared.reloadConfiguration()
         }
         .onChange(of: proxyPort, initial: false) { _, _ in
-            VideoProxyManager.shared.reloadConfiguration()
+            ProxyManager.shared.reloadConfiguration()
         }
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Proxy")

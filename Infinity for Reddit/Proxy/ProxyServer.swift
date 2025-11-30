@@ -1,5 +1,5 @@
 //
-//  VideoProxyServer.swift
+//  ProxyServer.swift
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2025-11-25.
@@ -10,7 +10,7 @@ import Foundation
 import GCDWebServer
 import ObjectiveC.runtime
 
-enum VideoProxyFormat: String, CaseIterable {
+enum ProxyResourceFormat: String, CaseIterable {
     case m3u8
     case ts
     case mp4
@@ -18,17 +18,22 @@ enum VideoProxyFormat: String, CaseIterable {
     case m4a
     case m4v
     case mpd
+    case jpg
+    case jpeg
+    case png
+    case gif
+    case webp
 }
 
-final class VideoProxyServer {
-    private let service: VideoProxyService
+final class ProxyServer {
+    private let service: ProxyService
     private let webServer: GCDWebServer
     private let originURLKey = ProxyUtils.serverOriginURLKey
     private let port: UInt = ProxyUtils.serverDefaultPort
     private var cancellables = Set<AnyCancellable>()
     private let workerQueue = DispatchQueue(label: ProxyUtils.serverWorkerQueueLabel, qos: .userInteractive)
 
-    init(service: VideoProxyService) {
+    init(service: ProxyService) {
         self.service = service
         self.webServer = GCDWebServer()
         addRequestHandler()
@@ -44,14 +49,14 @@ final class VideoProxyServer {
                 return
             }
             guard !self.webServer.isRunning else {
-                print("VideoProxy: Server already running")
+                print("Proxy: Server already running")
                 return
             }
             if self.startWebServerWithHighPriority() {
-                print("VideoProxy: Server started on port \(self.port)")
+                print("Proxy: Server started on port \(self.port)")
             } else {
                 self.webServer.start(withPort: self.port, bonjourName: nil)
-                print("VideoProxy: Server started on port \(self.port)")
+                print("Proxy: Server started on port \(self.port)")
             }
         }
 
@@ -89,7 +94,7 @@ final class VideoProxyServer {
         var error: NSError?
         let success = function(webServer, selector, options, &error)
         if !success, let error {
-            print("VideoProxy: Failed to start server with options \(error)")
+            print("Proxy: Failed to start server with options \(error)")
         }
         return success
     }
@@ -103,7 +108,7 @@ final class VideoProxyServer {
                 return
             }
             self.webServer.stop()
-            print("VideoProxy: Server stopped")
+            print("Proxy: Server stopped")
         }
 
         if Thread.isMainThread {
@@ -124,7 +129,7 @@ final class VideoProxyServer {
             return nil
         }
 
-        guard VideoProxyFormat(rawValue: url.pathExtension) != nil else {
+        guard ProxyResourceFormat(rawValue: url.pathExtension.lowercased()) != nil else {
             return nil
         }
 
@@ -164,7 +169,7 @@ final class VideoProxyServer {
                 let originRequest = self.originURLRequest(originURL, originalRequest: request)
                 let publisher: AnyPublisher<GCDWebServerResponse, Never>
 
-                if originURL.pathExtension == VideoProxyFormat.m3u8.rawValue {
+                if originURL.pathExtension.lowercased() == ProxyResourceFormat.m3u8.rawValue {
                     publisher = self.playlistResponse(originRequest, originURL: originURL)
                 } else {
                     publisher = self.mediaResponse(originRequest)
@@ -211,7 +216,7 @@ final class VideoProxyServer {
             .eraseToAnyPublisher()
     }
 
-    private func applyMetadata(from item: VideoProxyResponseItem, to response: GCDWebServerResponse, skipContentLength: Bool = false) {
+    private func applyMetadata(from item: ProxyResponseItem, to response: GCDWebServerResponse, skipContentLength: Bool = false) {
         response.statusCode = item.statusCode
         item.headers.forEach { key, value in
             if skipContentLength && key.caseInsensitiveCompare("Content-Length") == .orderedSame {
@@ -227,7 +232,7 @@ final class VideoProxyServer {
         }
     }
 
-    private func reverseProxyPlaylist(with item: VideoProxyResponseItem, originURL: URL) throws -> Data {
+    private func reverseProxyPlaylist(with item: ProxyResponseItem, originURL: URL) throws -> Data {
         guard let original = String(data: item.data, encoding: .utf8) else {
             throw URLError(.cannotDecodeRawData)
         }
@@ -321,7 +326,7 @@ final class VideoProxyServer {
     }
 
     private func logIncomingRequest(_ request: GCDWebServerRequest) {
-        print("VideoProxy AVPlayer requested: \(request.method) \(request.path)")
+        print("Proxy requested: \(request.method) \(request.path)")
 
         let headers = request.headers
         if !headers.isEmpty {
@@ -330,6 +335,6 @@ final class VideoProxyServer {
     }
 
     private func logOutgoingResponse(_ response: GCDWebServerResponse) {
-        print("VideoProxy Responding with status: \(response.statusCode)")
+        print("Proxy responding with status: \(response.statusCode)")
     }
 }
