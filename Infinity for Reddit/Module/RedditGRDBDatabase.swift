@@ -263,11 +263,11 @@ struct RedditGRDBDatabase {
                 t.column("username", .text).notNull()
                     .references(Account.databaseTableName, column: "username", onDelete: .cascade)
                 t.column("path", .text).notNull()
-                    .references(MyCustomFeed.databaseTableName, column: "path", onDelete: .cascade)
                 t.column("subreddit_name", .text).notNull()
                 t.column("icon_url_string", .text).notNull()
 
                 t.primaryKey(["username", "path", "subreddit_name", "icon_url_string"], onConflict: .replace)
+                t.foreignKey(["path", "username"], references: MyCustomFeed.databaseTableName, columns: ["path", "username"], onDelete: .cascade, onUpdate: .cascade)
             }
         }
     }
