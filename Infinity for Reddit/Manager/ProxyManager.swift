@@ -11,7 +11,7 @@ import GCDWebServer
 final class ProxyManager {
     static let shared = ProxyManager()
 
-    private let controlQueue = DispatchQueue(label: "com.infinity.ProxyManager.control", qos: .default)
+    private let controlQueue = DispatchQueue(label: "com.docilealligator.infinityforreddit.proxymanager.control", qos: .default)
     private var configuration: ProxyConfiguration?
     private var proxyServer: ProxyServer?
 
@@ -41,12 +41,24 @@ final class ProxyManager {
     }
 
     private func configureProxyServer(with configuration: ProxyConfiguration) {
+        if configuration.type == .direct {
+            print("Proxy: Direct proxy selected, requests will bypass the proxy server")
+            return
+        }
+
+        guard let proxyDictionary = configuration.connectionProxyDictionary,
+              let host = configuration.host,
+              let port = configuration.port else {
+            print("Proxy: Proxy enabled but missing host/port configuration")
+            return
+        }
+
         let sessionConfiguration = URLSessionConfiguration.default
-        sessionConfiguration.connectionProxyDictionary = configuration.connectionProxyDictionary
+        sessionConfiguration.connectionProxyDictionary = proxyDictionary
         sessionConfiguration.timeoutIntervalForRequest = ProxyUtils.timeoutRequest
         sessionConfiguration.timeoutIntervalForResource = ProxyUtils.timeoutResource
 
-        print("Proxy: URLSession configured with proxy: \(configuration.host):\(configuration.port) (\(configuration.type.description))")
+        print("Proxy: URLSession configured with proxy: \(host):\(port) (\(configuration.type.description))")
 
         let delegateQueue = OperationQueue()
         delegateQueue.qualityOfService = .userInteractive
@@ -59,7 +71,7 @@ final class ProxyManager {
     }
 
     private func startLocked() {
-        guard configuration != nil else {
+        guard let configuration, configuration.type != .direct else {
             return
         }
         proxyServer?.start()
@@ -83,7 +95,8 @@ final class ProxyManager {
 
     func proxyURL(_ url: URL) -> URL {
         return controlQueue.sync {
-            guard configuration != nil else { return url }
+            guard let configuration,
+                  configuration.type != .direct else { return url }
 
             let ext = url.pathExtension.lowercased()
             guard ProxyResourceFormat(rawValue: ext) != nil,

@@ -11,22 +11,35 @@ struct ProxyConfiguration {
     enum ProxyType: Int {
         case http = 0
         case socks = 1
+        case direct = 2
         
         var description: String {
             switch self {
             case .http: return "HTTP"
             case .socks: return "SOCKS"
+            case .direct: return "Direct"
             }
         }
     }
     
-    let host: String
-    let port: Int
+    let host: String?
+    let port: Int?
     let type: ProxyType
     
     init?() {
         guard ProxyUserDefaultsUtils.enableProxy else {
             return nil
+        }
+        
+        guard let proxyType = ProxyType(rawValue: ProxyUserDefaultsUtils.proxyType) else {
+            return nil
+        }
+        self.type = proxyType
+        
+        if proxyType == .direct {
+            self.host = nil
+            self.port = nil
+            return
         }
         
         let rawHost = ProxyUserDefaultsUtils.proxyHostname.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -39,16 +52,15 @@ struct ProxyConfiguration {
             return nil
         }
         
-        guard let proxyType = ProxyType(rawValue: ProxyUserDefaultsUtils.proxyType) else {
+        self.host = rawHost
+        self.port = port
+    }
+    
+    var connectionProxyDictionary: [AnyHashable: Any]? {
+        guard let host, let port else {
             return nil
         }
         
-        self.host = rawHost
-        self.port = port
-        self.type = proxyType
-    }
-    
-    var connectionProxyDictionary: [AnyHashable: Any] {
         switch type {
         case .http:
             return [
@@ -65,6 +77,8 @@ struct ProxyConfiguration {
                 "SOCKSProxy": host,
                 "SOCKSPort": port
             ]
+        case .direct:
+            return nil
         }
     }
 }

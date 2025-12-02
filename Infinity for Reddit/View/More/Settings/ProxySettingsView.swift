@@ -25,7 +25,8 @@ struct ProxySettingsView: View {
                 VStack(spacing: 0) {
                     TogglePreference(
                         isEnabled: $enableProxy,
-                        title: "Proxy Enabled"
+                        title: "Proxy Enabled",
+                        subtitle: "Restart the app to see the changes"
                     )
                     .transition(.opacity)
                     

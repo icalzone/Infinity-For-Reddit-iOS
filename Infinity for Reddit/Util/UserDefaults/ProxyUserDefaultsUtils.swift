@@ -17,8 +17,8 @@ class ProxyUserDefaultsUtils {
     static var proxyType : Int {
         return UserDefaults.proxy.integer(forKey: proxyTypeKey)
     }
-    static let proxyTypes: [Int] = [0, 1]
-    static let proxyTypesText: [String] = ["HTTP", "SOCKS"]
+    static let proxyTypes: [Int] = [0, 1, 2]
+    static let proxyTypesText: [String] = ["HTTP", "SOCKS", "Direct"]
     
     static let proxyHostnameKey = "proxy_hostname"
     static var proxyHostname : String {
