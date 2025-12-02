@@ -10,9 +10,9 @@ import Alamofire
 
 public protocol PostListingRepositoryProtocol {
     func fetchPosts(postListingType: PostListingType, pathComponents: [String: String]?, queries: [String: String]?, params: [String: String]?) async throws -> PostListing
-    func getAnonymousSubscriptionsConcatenated() -> String
-    func getAnonymousCustomThemeSubredditsConcatenated(myCustomFeed: MyCustomFeed) -> String
-    func getPostFilter(postListingType: PostListingType, externalPostFilter: PostFilter?) -> PostFilter
+    func getAnonymousSubscriptionsConcatenated() async -> String
+    func getAnonymousCustomThemeSubredditsConcatenated(myCustomFeed: MyCustomFeed) async -> String
+    func getPostFilter(postListingType: PostListingType, externalPostFilter: PostFilter?) async -> PostFilter
     func loadIcon(post: Post, displaySubredditIcon: Bool) async throws
     func toggleHidePost(_ post: Post) async throws
     func toggleHidePostAnonymous(_ post: Post) async throws

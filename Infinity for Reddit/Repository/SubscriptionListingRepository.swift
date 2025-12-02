@@ -77,7 +77,7 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
             .serializingDecodable(Empty.self, automaticallyCancelling: true)
             .value
         
-        try subscribedSubredditDao.insert(subscribedSubredditData: subscribedSubreddit)
+        try await subscribedSubredditDao.insert(subscribedSubredditData: subscribedSubreddit)
     }
     
     func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) async throws {
@@ -88,7 +88,7 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
             .serializingDecodable(Empty.self, automaticallyCancelling: true)
             .value
         
-        try subscribedUserDao.insert(subscribedUserData: subscribedUser)
+        try await subscribedUserDao.insert(subscribedUserData: subscribedUser)
     }
     
     func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) async throws {
@@ -99,7 +99,7 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
             .serializingDecodable(Empty.self, automaticallyCancelling: true)
             .value
         
-        try myCustomFeedDao.insert(myCustomFeed: myCustomFeed)
+        try await myCustomFeedDao.insert(myCustomFeed: myCustomFeed)
     }
     
     func unsubscribeFromSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async throws {
@@ -110,7 +110,7 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
             .serializingDecodable(Empty.self)
             .value
         
-        try? subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: subscribedSubreddit.name, accountName: AccountViewModel.shared.account.username)
+        try? await subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: subscribedSubreddit.name, accountName: AccountViewModel.shared.account.username)
     }
     
     func unfollowUser(_ subscribedUser: SubscribedUserData) async throws {
@@ -121,15 +121,15 @@ class SubscriptionListingRepository: SubscriptionListingRepositoryProtocol {
             .serializingDecodable(Empty.self)
             .value
 
-        try? subscribedUserDao.deleteSubscribedUser(name: subscribedUser.name, accountName: AccountViewModel.shared.account.username)
+        try? await subscribedUserDao.deleteSubscribedUser(name: subscribedUser.name, accountName: AccountViewModel.shared.account.username)
     }
     
     func deleteCustomFeed(_ customFeed: MyCustomFeed) async throws {
-        await self.session.request(RedditOAuthAPI.deleteCustomFeed(path: customFeed.path))
+        _ = await self.session.request(RedditOAuthAPI.deleteCustomFeed(path: customFeed.path))
             .validate()
             .serializingData()
             .response
 
-        try? myCustomFeedDao.deleteMyCustomFeed(path: customFeed.path, username: AccountViewModel.shared.account.username)
+        try? await myCustomFeedDao.deleteMyCustomFeed(path: customFeed.path, username: AccountViewModel.shared.account.username)
     }
 }

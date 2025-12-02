@@ -211,7 +211,7 @@ public class PostDetailsViewModel: ObservableObject {
             }
             
             if commentFilter == nil {
-                fetchCommentFilter()
+                await fetchCommentFilter()
             }
             
             let processedComments = postProcessComments(postDetails.comments)
@@ -282,14 +282,14 @@ public class PostDetailsViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(post)
         post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
         
-        if historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .upvoted) {
+        if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .upvoted) {
             post.likes = 1
-        } else if historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .downvoted) {
+        } else if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .downvoted) {
             post.likes = -1
         }
         
-        post.hidden = historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .hidden)
-        post.saved = historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .saved)
+        post.hidden = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .hidden)
+        post.saved = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .saved)
     }
     
     public func fetchCommentsPagination() async {
@@ -317,7 +317,7 @@ public class PostDetailsViewModel: ObservableObject {
             try Task.checkCancellation()
             
             if commentFilter == nil {
-                fetchCommentFilter()
+                await fetchCommentFilter()
             }
             
             let processedComments = postProcessComments(moreChildren.commentItems)
@@ -544,8 +544,8 @@ public class PostDetailsViewModel: ObservableObject {
         comment.hasExpandedBefore = true
     }
     
-    func fetchCommentFilter() {
-        self.commentFilter = postDetailsRepository.fetchCommentFilter(usageType: .subreddit, nameOfUsage: post?.subreddit ?? "")
+    func fetchCommentFilter() async {
+        self.commentFilter = await postDetailsRepository.fetchCommentFilter(usageType: .subreddit, nameOfUsage: post?.subreddit ?? "")
     }
     
     public func loadIcon(comment: Comment) {

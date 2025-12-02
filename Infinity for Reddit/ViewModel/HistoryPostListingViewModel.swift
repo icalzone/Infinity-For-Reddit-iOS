@@ -145,10 +145,10 @@ public class HistoryPostListingViewModel: ObservableObject {
                 try Task.checkCancellation()
                 
                 if postFilter == nil {
-                    fetchPostFilter()
+                    await fetchPostFilter()
                 }
                 
-                let processedPosts = self.postProcessPosts(postListing.posts)
+                let processedPosts = await self.postProcessPosts(postListing.posts)
                 
                 try Task.checkCancellation()
                 
@@ -215,23 +215,23 @@ public class HistoryPostListingViewModel: ObservableObject {
         refreshPostsContinuation = nil
     }
     
-    func postProcessPosts(_ posts: [Post]) -> [Post] {
-        let upvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+    func postProcessPosts(_ posts: [Post]) async -> [Post] {
+        let upvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .upvoted
         ) : Set<String>()
-        let downvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+        let downvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .downvoted
         ) : Set<String>()
-        let hiddenPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+        let hiddenPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .hidden
         ) : Set<String>()
-        let savedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+        let savedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .saved
@@ -262,8 +262,8 @@ public class HistoryPostListingViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(post)
     }
     
-    func fetchPostFilter() {
-        self.postFilter = historyPostListingRepository.getPostFilter(
+    func fetchPostFilter() async {
+        self.postFilter = await historyPostListingRepository.getPostFilter(
             historyPostListingType: historyPostListingMetadata.historyPostListingType,
             externalPostFilter: externalPostFilter
         )

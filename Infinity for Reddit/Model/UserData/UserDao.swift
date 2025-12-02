@@ -15,14 +15,14 @@ struct UserDao {
         self.dbPool = dbPool
     }
     
-    func insert(userData: UserData) throws {
-        try dbPool.write { db in
+    func insert(userData: UserData) async throws {
+        try await dbPool.write { db in
             try userData.insert(db, onConflict: .replace)
         }
     }
     
-    func deleteAllUsers() throws {
-        try dbPool.write { db in
+    func deleteAllUsers() async throws {
+        try await dbPool.write { db in
             try db.execute(sql: "DELETE FROM users")
         }
     }
@@ -41,8 +41,8 @@ struct UserDao {
         .eraseToAnyPublisher()
     }
     
-    func getUserData(username: String) throws -> UserData? {
-        try dbPool.read { db in
+    func getUserData(username: String) async throws -> UserData? {
+        try await dbPool.read { db in
             try UserData.fetchOne(db, sql: """
                 SELECT *
                 FROM users

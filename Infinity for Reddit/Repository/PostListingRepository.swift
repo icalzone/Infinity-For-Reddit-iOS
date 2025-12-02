@@ -111,9 +111,9 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         return try PostListingRootClass(fromJson: json).data
     }
     
-    public func getAnonymousSubscriptionsConcatenated() -> String {
+    public func getAnonymousSubscriptionsConcatenated() async -> String {
         do {
-            let subscribedSubreddits = try subscribedSubredditDao.getAllSubscribedSubredditsList(accountName: Account.ANONYMOUS_ACCOUNT.username)
+            let subscribedSubreddits = try await subscribedSubredditDao.getAllSubscribedSubredditsList(accountName: Account.ANONYMOUS_ACCOUNT.username)
             return subscribedSubreddits.map {
                 $0.name
             }.joined(separator: "+")
@@ -122,9 +122,9 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         }
     }
     
-    public func getAnonymousCustomThemeSubredditsConcatenated(myCustomFeed: MyCustomFeed) -> String {
+    public func getAnonymousCustomThemeSubredditsConcatenated(myCustomFeed: MyCustomFeed) async -> String {
         do {
-            let subscribedSubreddits = try anonymousCustomFeedSubredditDao.getAllAnonymousMultiRedditSubreddits(path: myCustomFeed.path)
+            let subscribedSubreddits = try await anonymousCustomFeedSubredditDao.getAllAnonymousMultiRedditSubreddits(path: myCustomFeed.path)
             return subscribedSubreddits.map {
                 $0.subredditName
             }.joined(separator: "+")
@@ -133,9 +133,9 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         }
     }
     
-    public func getPostFilter(postListingType: PostListingType, externalPostFilter: PostFilter?) -> PostFilter {
+    public func getPostFilter(postListingType: PostListingType, externalPostFilter: PostFilter?) async -> PostFilter {
         do {
-            var postFilters = try postFilterDao.getValidPostFilters(usage: postListingType.postFilterUsageType.rawValue, nameOfUsage: postListingType.postFilterNameOfUsage)
+            var postFilters = try await postFilterDao.getValidPostFilters(usage: postListingType.postFilterUsageType.rawValue, nameOfUsage: postListingType.postFilterNameOfUsage)
             if let externalPostFilter = externalPostFilter {
                 postFilters.append(externalPostFilter)
             }
@@ -188,7 +188,7 @@ public class PostListingRepository: PostListingRepositoryProtocol {
         guard post.subredditOrUserIcon == nil else { return }
         
         do {
-            let subredditData = try subredditDao.getSubredditDataByName(subredditName: post.subreddit)
+            let subredditData = try await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
             if let subredditData {
                 await MainActor.run {
                     post.subredditOrUserIcon = subredditData.iconUrl ?? ""

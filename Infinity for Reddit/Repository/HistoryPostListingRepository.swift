@@ -52,7 +52,7 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
     ) async throws -> HistoryPostListingResult {
         let apiRequest: URLRequestConvertible
         let beforeResult: Int64
-        let postHistory = try postHistoryDao.getAllHistoryPosts(username: username, before: before, postHistoryType: historyPostListingType.postHistoryTypeForDB)
+        let postHistory = try await postHistoryDao.getAllHistoryPosts(username: username, before: before, postHistoryType: historyPostListingType.postHistoryTypeForDB)
         let postFullnames = postHistory.map {
             "t3_\($0.postId)"
         }.joined(separator: ",")
@@ -76,9 +76,9 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         return HistoryPostListingResult(postListing: try PostListingRootClass(fromJson: json).data, before: beforeResult)
     }
     
-    public func getPostFilter(historyPostListingType: HistoryPostListingType, externalPostFilter: PostFilter?) -> PostFilter {
+    public func getPostFilter(historyPostListingType: HistoryPostListingType, externalPostFilter: PostFilter?) async -> PostFilter {
         do {
-            var postFilters = try postFilterDao.getValidPostFilters(
+            var postFilters = try await postFilterDao.getValidPostFilters(
                 usage: PostFilterUsage.UsageType.history.rawValue,
                 nameOfUsage: historyPostListingType.postFilterNameOfUsage
             )
@@ -122,7 +122,7 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         guard post.subredditOrUserIcon == nil else { return }
         
         do {
-            let subredditData = try subredditDao.getSubredditDataByName(subredditName: post.subreddit)
+            let subredditData = try await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
             if let subredditData {
                 await MainActor.run {
                     post.subredditOrUserIcon = subredditData.iconUrl ?? ""
