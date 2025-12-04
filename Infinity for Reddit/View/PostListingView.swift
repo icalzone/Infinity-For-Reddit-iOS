@@ -114,13 +114,15 @@ struct PostListingView: View {
                     if postListingViewModel.isInitialLoading {
                         ProgressIndicator()
                     } else if postListingViewModel.isInitialLoad, let error = postListingViewModel.error {
-                        Text("Unable to load posts. Error: \(error.localizedDescription)")
+                        Text("Unable to load posts. Tap to retry. Error: \(error.localizedDescription)")
                             .primaryText()
                             .padding(16)
+                            .onTapGesture {
+                                postListingViewModel.refreshPosts()
+                            }
                     } else {
                         Text("No posts")
                             .primaryText()
-                            .padding(16)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

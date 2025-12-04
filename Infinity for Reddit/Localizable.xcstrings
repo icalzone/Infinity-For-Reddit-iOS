@@ -2136,10 +2136,19 @@
     "Unable to load comments. Error: %@" : {
 
     },
+    "Unable to load inbox. Tap to retry. Error: %@" : {
+
+    },
     "Unable to load post and comments. Tap to retry. Error: %@" : {
 
     },
-    "Unable to load posts. Error: %@" : {
+    "Unable to load posts. Tap to retry. Error: %@" : {
+
+    },
+    "Unable to load subreddits. Tap to retry. Error: %@" : {
+
+    },
+    "Unable to load users. Tap to retry. Error: %@" : {
 
     },
     "Unfollow" : {

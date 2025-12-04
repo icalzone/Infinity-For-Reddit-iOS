@@ -124,6 +124,7 @@ struct SubscriptionsView: View {
             }
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
+        .showErrorUsingSnackbar(subscriptionListingViewModel.$error)
     }
 
     struct CustomFeedView: View {

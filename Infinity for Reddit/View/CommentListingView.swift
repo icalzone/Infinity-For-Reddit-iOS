@@ -50,16 +50,22 @@ struct CommentListingView: View {
     var body: some View {
         RootView {
             if commentListingViewModel.comments.isEmpty {
-                if commentListingViewModel.isInitialLoading {
-                    ProgressIndicator()
-                } else if commentListingViewModel.isInitialLoad, let error = commentListingViewModel.error {
-                    Text("Unable to load comments. Error: \(error.localizedDescription)")
-                        .primaryText()
-                        .padding(16)
-                } else {
-                    Text("No comments")
-                        .primaryText()
+                ZStack {
+                    if commentListingViewModel.isInitialLoading {
+                        ProgressIndicator()
+                    } else if commentListingViewModel.isInitialLoad, let error = commentListingViewModel.error {
+                        Text("Unable to load comments. Tap to retry. Error: \(error.localizedDescription)")
+                            .primaryText()
+                            .padding(16)
+                            .onTapGesture {
+                                commentListingViewModel.refreshComments()
+                            }
+                    } else {
+                        Text("No comments")
+                            .primaryText()
+                    }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
                     ForEach(commentListingViewModel.comments, id: \.id) { comment in

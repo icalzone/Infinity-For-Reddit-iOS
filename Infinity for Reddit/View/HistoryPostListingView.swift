@@ -64,10 +64,18 @@ struct HistoryPostListingView: View {
         RootView {
             if historyPostListingViewModel.posts.isEmpty {
                 ZStack {
-                    if historyPostListingViewModel.isInitialLoading || historyPostListingViewModel.isInitialLoad {
+                    if historyPostListingViewModel.isInitialLoading {
                         ProgressIndicator()
+                    } else if historyPostListingViewModel.isInitialLoad, let error = historyPostListingViewModel.error {
+                        Text("Unable to load posts. Tap to retry. Error: \(error.localizedDescription)")
+                            .primaryText()
+                            .padding(16)
+                            .onTapGesture {
+                                historyPostListingViewModel.refreshPosts()
+                            }
                     } else {
                         Text("No posts")
+                            .primaryText()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -134,6 +142,7 @@ struct HistoryPostListingView: View {
                             }
                     )
                 }
+                .showErrorUsingSnackbar(historyPostListingViewModel.$error)
             }
         }
         .applyIf(handleToolbarMenu) {
