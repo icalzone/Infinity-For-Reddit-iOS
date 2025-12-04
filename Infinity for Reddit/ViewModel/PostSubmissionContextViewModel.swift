@@ -11,7 +11,8 @@ class PostSubmissionContextViewModel: ObservableObject {
     @Published var selectedSubreddit: SubscribedSubredditData? = nil {
         didSet {
             selectedFlair = nil
-            error = nil
+            rulesError = nil
+            flairsError = nil
             isLoadingRules = false
             isLoadingFlairs = false
             
@@ -29,12 +30,16 @@ class PostSubmissionContextViewModel: ObservableObject {
     @Published var isSensitive: Bool = false
     @Published var receivePostReplyNotification: Bool = true
     
-    @Published var error: Error?
+    @Published var rulesError: Error?
+    @Published var flairsError: Error?
     @Published var rules: [Rule] = []
     @Published var flairs: [Flair] = []
     
     @Published var isLoadingRules: Bool = false
     @Published var isLoadingFlairs: Bool = false
+    
+    private var loadRulesTask: Task<Void, Error>?
+    private var loadFlairsTask: Task<Void, Error>?
     
     private var allRules: [String: [Rule]] = [:]
     private var allFlairs: [String: [Flair]] = [:]
@@ -47,8 +52,8 @@ class PostSubmissionContextViewModel: ObservableObject {
         self.flairRepository = flairRepository
     }
     
-    func fetchRules(forceFetch: Bool = false) async {
-        guard let subredditName = selectedSubreddit?.name, !subredditName.isEmpty else {
+    func fetchRules(forceFetch: Bool = false) {
+        guard loadRulesTask == nil, let subredditName = selectedSubreddit?.name, !subredditName.isEmpty else {
             self.rules = []
             return
         }
@@ -59,21 +64,24 @@ class PostSubmissionContextViewModel: ObservableObject {
         }
         
         isLoadingRules = true
-        error = nil
+        rulesError = nil
         
-        do {
-            try Task.checkCancellation()
+        loadRulesTask = Task {
+            do {
+                try Task.checkCancellation()
+                
+                let fetched = try await ruleRepository.fetchRules(subredditName: subredditName)
+                
+                rules = fetched
+                allRules[subredditName] = fetched
+            } catch {
+                rules = []
+                self.rulesError = error
+            }
             
-            let fetched = try await ruleRepository.fetchRules(subredditName: subredditName)
-            
-            rules = fetched
-            allRules[subredditName] = fetched
-        } catch {
-            rules = []
-            self.error = error
+            loadRulesTask = nil
+            isLoadingRules = false
         }
-        
-        isLoadingRules = false
     }
     
     func fetchFlairs(forceFetch: Bool = false) async {
@@ -85,7 +93,7 @@ class PostSubmissionContextViewModel: ObservableObject {
         }
         
         isLoadingFlairs = true
-        error = nil
+        flairsError = nil
         
         do {
             try Task.checkCancellation()
@@ -95,7 +103,7 @@ class PostSubmissionContextViewModel: ObservableObject {
             flairs = fetched
             allFlairs[subredditName] = fetched
         } catch {
-            self.error = error
+            self.flairsError = error
             flairs = []
         }
         

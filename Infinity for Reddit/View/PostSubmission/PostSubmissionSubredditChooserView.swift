@@ -61,9 +61,6 @@ struct PostSubmissionSubredditChooserView: View {
                         onShowNoSubredditAlert()
                     } else {
                         showRulesSheet = true
-                        Task {
-                            await postSubmissionContextViewModel.fetchRules()
-                        }
                     }
                 }
                 .filledButton()
@@ -73,8 +70,8 @@ struct PostSubmissionSubredditChooserView: View {
             .padding(16)
             .contentShape(Rectangle())
         }
-        .wrapContentSheet(isPresented: $showRulesSheet) {
-            SubredditRulesView()
+        .sheet(isPresented: $showRulesSheet) {
+            SubredditRulesSheet()
                 .environmentObject(postSubmissionContextViewModel)
         }
         .sheet(isPresented: $showSubredditSelectionSheet) {
