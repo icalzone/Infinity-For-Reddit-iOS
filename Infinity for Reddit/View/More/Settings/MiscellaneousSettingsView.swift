@@ -15,11 +15,13 @@ struct MiscellaneousSettingsView: View {
     private let notificationSettingsViewModel = NotificationSettingsViewModel()
     
     var body: some View {
-        List {
-            TogglePreference(isEnabled: $saveLastSeenPostInFrontPage, title: "Save Last Seen Post in Front Page")
-                .listPlainItemNoInsets()
+        RootView {
+            List {
+                TogglePreference(isEnabled: $saveLastSeenPostInFrontPage, title: "Save Last Seen Post in Front Page")
+                    .listPlainItemNoInsets()
+            }
+            .themedList()
         }
-        .themedList()
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Miscellaneous")
     }

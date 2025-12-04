@@ -27,7 +27,7 @@ struct SubscribedSubredditListingView: View {
     }
     
     var body: some View {
-        Group {
+        RootView {
             if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
                 ZStack {
                     if subscriptionListingViewModel.isLoadingSubscriptions {

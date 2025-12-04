@@ -2139,6 +2139,9 @@
     "Unable to load comments. Tap to retry. Error: %@" : {
 
     },
+    "Unable to load custom feeds. Tap to retry. Error: %@" : {
+
+    },
     "Unable to load flairs. Tap to retry. Error: %@" : {
 
     },

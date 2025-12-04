@@ -15,7 +15,7 @@ struct SubscribedUserListingView: View {
     let onSelectCustomAction: ((SubscribedUserData) -> Void)?
     
     var body: some View {
-        Group {
+        RootView {
             if subscriptionListingViewModel.userSubscriptions.isEmpty {
                 ZStack {
                     if subscriptionListingViewModel.isLoadingSubscriptions {

@@ -13,7 +13,7 @@ struct SubscribedSubredditListingMultiSelectionView: View {
     @ObservedObject var subscriptionListingViewModel: SubscriptionListingViewModel
 
     var body: some View {
-        Group {
+        RootView {
             if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
                 ZStack {
                     if subscriptionListingViewModel.isLoadingSubscriptions {

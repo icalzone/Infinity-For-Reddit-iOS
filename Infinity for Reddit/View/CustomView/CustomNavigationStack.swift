@@ -260,10 +260,10 @@ struct CustomNavigationStack<Content: View>: View {
                 .navigationDestination(for: InterfaceSettingsViewNavigation.self) { destination in
                     switch destination {
                     case .font:
-                        FontInterfaceView()
+                        InterfaceFontSettingsView()
                             .environmentObject(navigationManager)
                     case .timeFormat:
-                        InterfaceTimeFormatView()
+                        InterfaceTimeFormatSettingsView()
                     case .post:
                         InterfacePostSettingsView()
                     case .postDetails:
@@ -276,7 +276,7 @@ struct CustomNavigationStack<Content: View>: View {
                 .navigationDestination(for: FontSettingsViewNavigation.self) { destination in
                     switch destination {
                     case .fontPreview:
-                        FontPreviewView()
+                        InterfaceFontFontPreviewSettingsView()
                     }
                 }
         }
