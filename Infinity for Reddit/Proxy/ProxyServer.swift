@@ -17,7 +17,6 @@ enum ProxyResourceFormat: String, CaseIterable {
     case m4s
     case m4a
     case m4v
-    case mpd
     case jpg
     case jpeg
     case png
@@ -237,10 +236,13 @@ final class ProxyServer {
             throw URLError(.cannotDecodeRawData)
         }
 
-        let rewritten = original
-            .components(separatedBy: .newlines)
-            .map { processPlaylistLine($0, originURL: originURL) }
-            .joined(separator: "\n")
+        var rewritten = ""
+        rewritten.reserveCapacity(original.count)
+        original.enumerateLines { line, _ in
+            let processed = self.processPlaylistLine(line, originURL: originURL)
+            rewritten.append(processed)
+            rewritten.append("\n")
+        }
 
         guard let data = rewritten.data(using: .utf8) else {
             throw URLError(.cannotDecodeRawData)
