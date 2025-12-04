@@ -454,7 +454,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     func getDownloadMediaType(galleryIndex: Int = 0) -> DownloadMediaType? {
         switch postType {
         case .image:
-            return .image(downloadUrlString: url, fileName: "test.jpg")
+            return .image(downloadUrlString: url, fileName: "\(fileNameWithoutExtension).jpg")
         case .imageWithUrlPreview:
             return .image(downloadUrlString: url, fileName: "\(fileNameWithoutExtension).jpg")
         case .gif:

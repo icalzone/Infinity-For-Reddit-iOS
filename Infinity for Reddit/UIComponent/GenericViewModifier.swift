@@ -46,19 +46,19 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
                             if let post {
                                 switch post.postType {
                                 case .image:
-                                    fullScreenMediaViewModel.show(.image(urlString: post.url, aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
+                                    fullScreenMediaViewModel.show(.image(urlString: post.url, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg", matchedGeometryEffectId: matchedGeometryEffectId))
                                 case .imageWithUrlPreview(let urlPreview):
-                                    fullScreenMediaViewModel.show(.image(urlString: urlPreview, aspectRatio: aspectRatio, post: post, matchedGeometryEffectId: matchedGeometryEffectId))
+                                    fullScreenMediaViewModel.show(.image(urlString: urlPreview, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg", matchedGeometryEffectId: matchedGeometryEffectId))
                                 case .gif:
                                     if post.preview.images.isEmpty == false {
                                         if let previewImage = post.preview.images.first {
                                             if let mp4 = previewImage.mp4Variant {
                                                 fullScreenMediaViewModel.show(.video(urlString: mp4.source.url, post: post))
                                             } else if let gif = previewImage.gifVariant {
-                                                fullScreenMediaViewModel.show(.gif(urlString: gif.source.url, post: post))
+                                                fullScreenMediaViewModel.show(.gif(urlString: gif.source.url, post: post, fileName: "\(post.fileNameWithoutExtension).gif"))
                                             }
                                         } else {
-                                            fullScreenMediaViewModel.show(.gif(urlString: post.url, post: post))
+                                            fullScreenMediaViewModel.show(.gif(urlString: post.url, post: post, fileName: "\(post.fileNameWithoutExtension).gif"))
                                         }
                                     }
                                 case .redditVideo(let videoUrlString, _):

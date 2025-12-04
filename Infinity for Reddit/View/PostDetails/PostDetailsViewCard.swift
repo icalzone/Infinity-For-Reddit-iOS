@@ -13,6 +13,7 @@ import Flow
 struct PostDetailsViewCard: View {
     @EnvironmentObject private var accountViewModel: AccountViewModel
     @EnvironmentObject var navigationManager: NavigationManager
+    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     
     @StateObject var postViewModel: PostViewModel
     @State var voteTask: Task<Void, Never>?
@@ -229,7 +230,7 @@ struct PostDetailsViewCard: View {
             
             if let selftext = postViewModel.post.selftextProcessedMarkdown {
                 Markdown(selftext)
-                    .markdownImageProvider(WebImageProvider(mediaMetadata: postViewModel.post.mediaMetadata))
+                    .markdownImageProvider(MarkdownImageProvider(mediaMetadata: postViewModel.post.mediaMetadata, fullScreenMediaViewModel: fullScreenMediaViewModel))
                     .padding(.horizontal, 16)
                     .padding(.top, 6)
                     .themedPostCommentMarkdown()

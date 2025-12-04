@@ -12,11 +12,13 @@ struct ImageFullScreenView: View {
     @State private var isToolbarVisible: Bool = true
     
     let urlString: String
+    let fileName: String
     let matchedGeometryEffectId: String?
     let onDismiss: () -> Void
     
-    init(urlString: String, matchedGeometryEffectId: String? = nil, onDismiss: @escaping () -> Void) {
+    init(urlString: String, fileName: String, matchedGeometryEffectId: String? = nil, onDismiss: @escaping () -> Void) {
         self.urlString = urlString
+        self.fileName = fileName
         self.matchedGeometryEffectId = matchedGeometryEffectId
         self.onDismiss = onDismiss
     }
@@ -45,7 +47,7 @@ struct ImageFullScreenView: View {
             }
             
             ImageFullScreenToolbar(
-                downloadMediaType: DownloadMediaType.image(downloadUrlString: urlString, fileName: "test.jpg"),
+                downloadMediaType: DownloadMediaType.image(downloadUrlString: urlString, fileName: fileName),
                 isVisible: $isToolbarVisible,
                 onDismiss: {
                     withAnimation {

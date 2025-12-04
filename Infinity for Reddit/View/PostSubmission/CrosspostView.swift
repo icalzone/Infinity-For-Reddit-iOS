@@ -11,6 +11,7 @@ import MarkdownUI
 struct CrosspostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     @EnvironmentObject private var snackbarManager: SnackbarManager
+    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     
     @StateObject private var postSubmissionContextViewModel: PostSubmissionContextViewModel
     @StateObject private var crosspostViewModel: CrosspostViewModel
@@ -86,7 +87,7 @@ struct CrosspostView: View {
                         
                         if let selftext = crosspostViewModel.postToBeCrossposted.selftextProcessedMarkdown {
                             Markdown(selftext)
-                                .markdownImageProvider(WebImageProvider(mediaMetadata: crosspostViewModel.postToBeCrossposted.mediaMetadata))
+                                .markdownImageProvider(MarkdownImageProvider(mediaMetadata: crosspostViewModel.postToBeCrossposted.mediaMetadata, fullScreenMediaViewModel: fullScreenMediaViewModel))
                                 .font(.system(size: 24))
                                 .padding(.horizontal, 16)
                                 .padding(.bottom, 16)

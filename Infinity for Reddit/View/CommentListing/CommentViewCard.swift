@@ -14,6 +14,7 @@ struct CommentViewCard: View {
     @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
     @EnvironmentObject private var snackbarManager: SnackbarManager
+    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
     
     @AppStorage(InterfaceCommentUserDefaultsUtils.showCommentDividerKey, store: .interfaceComment)
     private var showCommentDivider: Bool = false
@@ -127,7 +128,7 @@ struct CommentViewCard: View {
                     Group {
                         if let processedMarkdown = commentViewModel.comment.bodyProcessedMarkdown {
                             Markdown(processedMarkdown)
-                                .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
+                                .markdownImageProvider(MarkdownImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata, fullScreenMediaViewModel: fullScreenMediaViewModel))
                                 .padding(.horizontal, 16)
                                 .padding(.bottom, 12)
                                 .themedCommentMarkdown()
@@ -136,7 +137,7 @@ struct CommentViewCard: View {
                                 }
                         } else {
                             Markdown(commentViewModel.comment.body)
-                                .markdownImageProvider(WebImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata))
+                                .markdownImageProvider(MarkdownImageProvider(mediaMetadata: commentViewModel.comment.mediaMetadata, fullScreenMediaViewModel: fullScreenMediaViewModel))
                                 .padding(.horizontal, 16)
                                 .padding(.bottom, 12)
                                 .themedCommentMarkdown()
