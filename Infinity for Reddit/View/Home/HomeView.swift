@@ -9,6 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 import SDWebImageSwiftUI
+import SwiftUIIntrospect
 
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -48,11 +49,16 @@ struct HomeView: View {
     
     init(fullScreenMediaViewModel: FullScreenMediaViewModel) {
         self.fullScreenMediaViewModel = fullScreenMediaViewModel
-        _tab1NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel))
-        _tab2NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel))
-        _tab3NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel))
-        _tab4NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel))
-        _tab5NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel))
+        _tab1NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel,
+                                                                             firstViewShouldHideNavigationBarOnScroll: true))
+        _tab2NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel,
+                                                                             firstViewShouldHideNavigationBarOnScroll: false))
+        _tab3NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel,
+                                                                             firstViewShouldHideNavigationBarOnScroll: false))
+        _tab4NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel,
+                                                                             firstViewShouldHideNavigationBarOnScroll: false))
+        _tab5NavigationManager = StateObject(wrappedValue: NavigationManager(fullScreenMediaViewModel: fullScreenMediaViewModel,
+                                                                             firstViewShouldHideNavigationBarOnScroll: false))
     }
     
     var body: some View {
