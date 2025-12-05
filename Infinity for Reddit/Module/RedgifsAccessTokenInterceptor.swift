@@ -68,7 +68,8 @@ final class RedgifsAccessTokenInterceptor: RequestInterceptor {
     func refreshAccessToken(completion: @escaping (Result<String, Error>) -> Void) {
         let headers: HTTPHeaders = ["User-Agent": APIUtils.USER_AGENT]
         
-        AF.request("https://api.redgifs.com/v2/auth/temporary", method: .get, encoding: URLEncoding.default, headers: headers)
+        let session = ProxyUtils.makeSession()
+        session.request("https://api.redgifs.com/v2/auth/temporary", method: .get, encoding: URLEncoding.default, headers: headers)
             .validate()
             .responseDecodable(of: AccessTokenResponse.self) { response in
                 switch response.result {

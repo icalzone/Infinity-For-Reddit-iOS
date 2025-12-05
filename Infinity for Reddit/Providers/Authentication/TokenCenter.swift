@@ -61,7 +61,7 @@ public actor TokenCenter: TokenProvider {
             }
         }
         
-        let refreshSession = Session(configuration: .af.default)
+        let refreshSession = ProxyUtils.makeSession()
         let result = await refreshSession.request(
             "https://www.reddit.com/api/v1/access_token",
             method: .post,

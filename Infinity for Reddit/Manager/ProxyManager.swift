@@ -30,9 +30,9 @@ final class ProxyManager {
     private init() {
         _ = ProxyManager.ensureGCDWebServerInitialized
         controlQueue.sync {
-            if let configuration = ProxyConfiguration() {
-                self.configuration = configuration
-                configureProxyServer(with: configuration)
+            if let proxyConfiguration = ProxyConfiguration() {
+                self.configuration = proxyConfiguration
+                configureProxyServer(with: proxyConfiguration)
             } else {
                 self.configuration = nil
                 print("Proxy: Proxy disabled or misconfigured")
@@ -46,7 +46,7 @@ final class ProxyManager {
         sessionConfiguration.timeoutIntervalForRequest = ProxyUtils.timeoutRequest
         sessionConfiguration.timeoutIntervalForResource = ProxyUtils.timeoutResource
 
-        print("Proxy: URLSession configured with proxy: \(configuration.host):\(configuration.port) (\(configuration.type.rawValueString))")
+        print("Proxy: URLSession configured with proxy: \(configuration.host):\(configuration.port) (\(configuration.type.description))")
 
         let delegateQueue = OperationQueue()
         delegateQueue.qualityOfService = .userInteractive
@@ -121,76 +121,4 @@ final class ProxyManager {
             self.startLocked()
         }
     }
-
-}
-
-private struct ProxyConfiguration {
-    enum ProxyType: Int {
-        case http = 0
-        case socks = 1
-
-        var rawValueString: String {
-            switch self {
-            case .http: return "HTTP"
-            case .socks: return "SOCKS"
-            }
-        }
-    }
-
-    let host: String
-    let port: Int
-    let type: ProxyType
-
-    var connectionProxyDictionary: [AnyHashable: Any] {
-        switch type {
-        case .http:
-            return [
-                kCFNetworkProxiesHTTPEnable as String: true,
-                kCFNetworkProxiesHTTPProxy as String: host,
-                kCFNetworkProxiesHTTPPort as String: port,
-                ProxyKey.httpsEnable: true,
-                ProxyKey.httpsProxy: host,
-                ProxyKey.httpsPort: port
-            ]
-        case .socks:
-            return [
-                ProxyKey.socksEnable: true,
-                ProxyKey.socksProxy: host,
-                ProxyKey.socksPort: port
-            ]
-        }
-    }
-
-    init?() {
-        guard ProxyUserDefaultsUtils.enableProxy else {
-            return nil
-        }
-
-        let rawHost = ProxyUserDefaultsUtils.proxyHostname.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !rawHost.isEmpty else {
-            return nil
-        }
-
-        let rawPort = ProxyUserDefaultsUtils.proxyPort.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard let port = Int(rawPort), port > 0 else {
-            return nil
-        }
-
-        guard let proxyType = ProxyType(rawValue: ProxyUserDefaultsUtils.proxyType) else {
-            return nil
-        }
-
-        self.host = rawHost
-        self.port = port
-        self.type = proxyType
-    }
-}
-
-private enum ProxyKey {
-    static let httpsEnable = "HTTPSEnable"
-    static let httpsProxy = "HTTPSProxy"
-    static let httpsPort = "HTTPSPort"
-    static let socksEnable = "SOCKSEnable"
-    static let socksProxy = "SOCKSProxy"
-    static let socksPort = "SOCKSPort"
 }

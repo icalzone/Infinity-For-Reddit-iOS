@@ -28,7 +28,7 @@ struct LoginView: View {
         guard let resolvedOperationQueue = DependencyManager.shared.container.resolve(OperationQueue.self) else {
             fatalError("Failed to resolve OperationQueue")
         }
-        self.session = Session(configuration: URLSessionConfiguration.af.default)
+        self.session = ProxyUtils.makeSession()
         self.dbPool = resolvedDBPool
         self.operationQueue = resolvedOperationQueue
     }
