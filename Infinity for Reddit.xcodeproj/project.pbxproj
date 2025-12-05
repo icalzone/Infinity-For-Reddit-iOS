@@ -639,8 +639,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Giphy/giphy-ios-sdk/";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.16;
+				kind = exactVersion;
+				version = 2.2.16;
 			};
 		};
 		55155ADF2CFD5BCF003D5F14 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {

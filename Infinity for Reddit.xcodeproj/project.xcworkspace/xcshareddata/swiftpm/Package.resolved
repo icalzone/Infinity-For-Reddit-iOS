@@ -1,5 +1,5 @@
 {
-  "originHash" : "89df3697d735655cf2422be01ee88b4c76aed4c9f57eeded0e6c9a13b377e833",
+  "originHash" : "2b06aacf208759f32c8615a28ece8699d8c483879e9f92277e1bd55e620b8fa1",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Giphy/giphy-ios-sdk/",
       "state" : {
-        "revision" : "f7a8edf513ab14147ef33c942b10b45cdac1e765",
-        "version" : "2.3.0"
+        "revision" : "37f5b1ff6cf8bc4a78c0bc5eb1b814381bac9580",
+        "version" : "2.2.16"
       }
     },
     {
