@@ -100,12 +100,6 @@ final class ProxyManager {
         proxyServer?.stop()
         proxyServer = nil
 
-        if configuration.type == .direct {
-            print("Proxy: Direct proxy selected, requests will bypass the proxy server")
-            updateStateLocked(.configured)
-            return true
-        }
-
         guard let proxyDictionary = configuration.connectionProxyDictionary,
               let host = configuration.host,
               let port = configuration.port else {
@@ -139,11 +133,6 @@ final class ProxyManager {
             return
         }
 
-        guard configuration.type != .direct else {
-            updateStateLocked(.configured)
-            return
-        }
-
         guard let proxyServer else {
             updateStateLocked(.error(.serverNotConfigured))
             return
@@ -161,11 +150,6 @@ final class ProxyManager {
         guard let configuration else {
             proxyServer?.stop()
             updateStateLocked(.disabled)
-            return
-        }
-
-        guard configuration.type != .direct else {
-            updateStateLocked(.configured)
             return
         }
 
@@ -195,10 +179,6 @@ final class ProxyManager {
     func proxyURL(_ url: URL) -> URL {
         controlQueue.sync {
             guard let configuration else {
-                return url
-            }
-
-            guard configuration.type != .direct else {
                 return url
             }
 

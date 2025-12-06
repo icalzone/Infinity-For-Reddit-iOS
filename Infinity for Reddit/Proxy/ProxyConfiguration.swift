@@ -11,13 +11,11 @@ struct ProxyConfiguration {
     enum ProxyType: Int {
         case http = 0
         case socks = 1
-        case direct = 2
         
         var description: String {
             switch self {
             case .http: return "HTTP"
-            case .socks: return "SOCKS"
-            case .direct: return "Direct"
+            case .socks: return "Socks"
             }
         }
     }
@@ -32,10 +30,6 @@ struct ProxyConfiguration {
         }
         
         guard let proxyType = ProxyType(rawValue: ProxyUserDefaultsUtils.proxyType) else {
-            return nil
-        }
-        
-        if proxyType == .direct {
             return nil
         }
         
@@ -76,8 +70,6 @@ struct ProxyConfiguration {
                 "SOCKSProxy": host,
                 "SOCKSPort": port
             ]
-        case .direct:
-            return nil
         }
     }
 }
