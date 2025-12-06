@@ -26,6 +26,7 @@ extension UserDefaults {
     static let dataSavingMode = UserDefaults.standard
     static let miscellaneous = UserDefaults.standard
     static let proxy = UserDefaults.standard
+    static let security = UserDefaults(suiteName: "com.docilealligator.infinityforreddit.security")
 }
 
 extension UserDefaults {

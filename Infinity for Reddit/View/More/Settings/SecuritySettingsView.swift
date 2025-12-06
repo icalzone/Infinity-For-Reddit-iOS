@@ -10,9 +10,27 @@ import Swinject
 import GRDB
 
 struct SecuritySettingsView: View {
-    @Environment(\.dependencyManager) private var dependencyManager: Container
+    @AppStorage(SecurityUserDefaultsUtils.appLockKey, store: .security) private var appLock: Bool = false
+    @AppStorage(SecurityUserDefaultsUtils.appLockTimeoutKey, store: .security) private var appLockTimeout: Int = 600000
     
     var body: some View {
-        Text("Security")
+        RootView {
+            List {
+                TogglePreference(isEnabled: $appLock, title: "App Lock")
+                    .listPlainItemNoInsets()
+                
+                BarebonePickerPreference(
+                    selected: $appLockTimeout,
+                    items: SecurityUserDefaultsUtils.appLockTimeouts,
+                    title: "App Lock Timeout"
+                ) { timeout in
+                    SecurityUserDefaultsUtils.appLockTimeoutsText[SecurityUserDefaultsUtils.appLockTimeouts.firstIndex(of: timeout) ?? 4]
+                }
+                .listPlainItemNoInsets()
+            }
+            .themedList()
+        }
+        .themedNavigationBar()
+        .addTitleToInlineNavigationBar("Security")
     }
 }

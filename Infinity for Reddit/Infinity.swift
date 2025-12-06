@@ -15,10 +15,15 @@ import Kingfisher
 struct Infinity: App {
     @Environment(\.scenePhase) private var scenePhase
     
-    @StateObject var accountViewModel: AccountViewModel
-    @StateObject var customThemeViewModel: CustomThemeViewModel
-    @StateObject var fullScreenMediaViewModel: FullScreenMediaViewModel
-    @StateObject var networkManager: NetworkManager = NetworkManager()
+    @StateObject private var accountViewModel: AccountViewModel
+    @StateObject private var customThemeViewModel: CustomThemeViewModel
+    @StateObject private var fullScreenMediaViewModel: FullScreenMediaViewModel
+    @StateObject private var networkManager: NetworkManager = NetworkManager()
+    
+    @State private var showAppLockScreen: Bool = false
+    
+    @AppStorage(SecurityUserDefaultsUtils.appLockKey, store: .security) private var appLock: Bool = false
+    @AppStorage(SecurityUserDefaultsUtils.appLockTimeoutKey, store: .security) private var appLockTimeout: Int = 600000
     
     let container: Container = {
         let container = Container()
@@ -54,46 +59,57 @@ struct Infinity: App {
 
     var body: some Scene {
         WindowGroup {
-            HomeView(fullScreenMediaViewModel: fullScreenMediaViewModel)
-                .id(accountViewModel.account.username)
-                .environment(\.dependencyManager, DependencyManager.shared.container)
-                .environmentObject(accountViewModel)
-                .environmentObject(customThemeViewModel)
-                .environmentObject(fullScreenMediaViewModel)
-                .environmentObject(networkManager)
-                .environment(\.defaultMinListRowHeight, 0)
-                .onOpenURL { url in
-                    guard let appDeepLinkType = AppDeepLink.getAppDeepLinkType(url) else {
-                        return
-                    }
-                    switch appDeepLinkType {
-                    case .inbox(let account, let viewMessage, let fullname):
-                        var userInfo: [String: Any] = [
-                            AppDeepLink.accountNameKey: account,
-                            AppDeepLink.viewMessageKey: viewMessage
-                        ]
-                        if let fullname {
-                            userInfo[AppDeepLink.fullnameKey] = fullname
+            ZStack {
+                HomeView(fullScreenMediaViewModel: fullScreenMediaViewModel)
+                    .id(accountViewModel.account.username)
+                    .environment(\.dependencyManager, DependencyManager.shared.container)
+                    .environmentObject(accountViewModel)
+                    .environmentObject(customThemeViewModel)
+                    .environmentObject(fullScreenMediaViewModel)
+                    .environmentObject(networkManager)
+                    .environment(\.defaultMinListRowHeight, 0)
+                    .onOpenURL { url in
+                        guard let appDeepLinkType = AppDeepLink.getAppDeepLinkType(url) else {
+                            return
                         }
-                        NotificationCenter.default.post(name: .inboxDeepLink, object: nil, userInfo: userInfo)
-                    case .context(let account, let context, let fullname):
-                        var userInfo: [String: Any] = [
-                            AppDeepLink.accountNameKey: account,
-                            AppDeepLink.contextKey: context
-                        ]
-                        if let fullname {
-                            userInfo[AppDeepLink.fullnameKey] = fullname
+                        switch appDeepLinkType {
+                        case .inbox(let account, let viewMessage, let fullname):
+                            var userInfo: [String: Any] = [
+                                AppDeepLink.accountNameKey: account,
+                                AppDeepLink.viewMessageKey: viewMessage
+                            ]
+                            if let fullname {
+                                userInfo[AppDeepLink.fullnameKey] = fullname
+                            }
+                            NotificationCenter.default.post(name: .inboxDeepLink, object: nil, userInfo: userInfo)
+                        case .context(let account, let context, let fullname):
+                            var userInfo: [String: Any] = [
+                                AppDeepLink.accountNameKey: account,
+                                AppDeepLink.contextKey: context
+                            ]
+                            if let fullname {
+                                userInfo[AppDeepLink.fullnameKey] = fullname
+                            }
+                            NotificationCenter.default.post(name: .contextDeepLink, object: nil, userInfo: userInfo)
                         }
-                        NotificationCenter.default.post(name: .contextDeepLink, object: nil, userInfo: userInfo)
                     }
-                }
-                .onAppear {
-                    Giphy.configure(apiKey: APIUtils.GIPHY_GIF_API_KEY)
-                }
+                    .onAppear {
+                        Giphy.configure(apiKey: APIUtils.GIPHY_GIF_API_KEY)
+                    }
+            }
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background, NotificationUserDefaultsUtils.enableNotification  {
-                PullNotificationBackgroundTaskManager.shared.scheduleBackgroundTask()
+            if newPhase == .background  {
+                if NotificationUserDefaultsUtils.enableNotification {
+                    PullNotificationBackgroundTaskManager.shared.scheduleBackgroundTask()
+                }
+                if appLock {
+                    SecurityUserDefaultsUtils.saveLastForegroundTime()
+                }
+            } else if newPhase == .active {
+                if Int(Utils.getCurrentTimeEpoch()) - SecurityUserDefaultsUtils.getLastForegroundTime() >= appLockTimeout {
+                    showAppLockScreen = true
+                }
             }
         }
     }
