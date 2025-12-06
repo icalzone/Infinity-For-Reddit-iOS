@@ -80,7 +80,8 @@ class VideoFullScreenViewModel: ObservableObject {
             }
             if let url = finalURL {
                 loadedURL = finalURL
-                let item = try await loadPlayerItem(from: url)
+                let proxiedURL = ProxyManager.shared.proxyURL(url)
+                let item = try await loadPlayerItem(from: proxiedURL)
                 player.replaceCurrentItem(with: item)
                 
                 await MainActor.run {

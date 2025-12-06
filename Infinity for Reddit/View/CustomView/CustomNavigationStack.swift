@@ -206,7 +206,7 @@ struct CustomNavigationStack<Content: View>: View {
                         DataSavingModeSettingsView()
                             .environmentObject(navigationManager)
                     case .proxy:
-                        EmptyView()
+                        ProxySettingsView()
                     case .postHistory:
                         PostHistorySettingsView()
                             .environmentObject(navigationManager)

@@ -25,6 +25,7 @@ extension UserDefaults {
     static let interfaceFont = UserDefaults.standard
     static let dataSavingMode = UserDefaults.standard
     static let miscellaneous = UserDefaults.standard
+    static let proxy = UserDefaults.standard
 }
 
 extension UserDefaults {

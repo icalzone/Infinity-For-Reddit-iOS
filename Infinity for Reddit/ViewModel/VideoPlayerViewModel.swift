@@ -43,7 +43,8 @@ class VideoPlayerViewModel: NSObject, ObservableObject {
         }
 
         do {
-            let item = try await loadPlayerItem(from: url)
+            let proxiedURL = ProxyManager.shared.proxyURL(url)
+            let item = try await loadPlayerItem(from: proxiedURL)
             player.replaceCurrentItem(with: item)
             
             await MainActor.run {

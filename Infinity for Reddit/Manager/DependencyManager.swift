@@ -23,33 +23,27 @@ struct DependencyManager {
     private func registerDependencies(_ c: Container) {
         // TODO register dependencies on container
         c.register(Session.self) { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration, interceptor: RedditAccessTokenInterceptor())
+            ProxyUtils.makeSession(interceptor: RedditAccessTokenInterceptor())
         }.inObjectScope(.container) // Singleton
         
         c.register(Session.self, name: "plain") { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration)
+            ProxyUtils.makeSession()
         }.inObjectScope(.container)
         
         c.register(Session.self, name: "redgifs") { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration, interceptor: RedgifsAccessTokenInterceptor())
+            ProxyUtils.makeSession(interceptor: RedgifsAccessTokenInterceptor())
         }.inObjectScope(.container)
         
         c.register(Session.self, name: "streamable") { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration)
+            ProxyUtils.makeSession()
         }.inObjectScope(.container)
         
         c.register(Session.self, name: "vReddIt") { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration)
+            ProxyUtils.makeSession()
         }.inObjectScope(.container)
         
         c.register(Session.self, name: "imgur") { _ in
-            let configuration = URLSessionConfiguration.af.default
-            return Session(configuration: configuration)
+            ProxyUtils.makeSession()
         }.inObjectScope(.container)
         
         c.register(DatabasePool.self) { _ in

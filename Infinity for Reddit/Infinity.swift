@@ -9,6 +9,7 @@ import SwiftUI
 import Swinject
 import GRDB
 import GiphyUISDK
+import Kingfisher
 
 @main
 struct Infinity: App {
@@ -46,6 +47,9 @@ struct Infinity: App {
         PullNotificationBackgroundTaskManager.shared.registerAndScheduleBackgroundTask()
 
         FontUtils.registerCustomFonts()
+
+        ProxyManager.shared.start()
+        KingfisherManager.shared.defaultOptions += [.requestModifier(ProxyRequestModifier())]
     }
 
     var body: some Scene {

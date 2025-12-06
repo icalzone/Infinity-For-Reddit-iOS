@@ -12,9 +12,7 @@ class SessionProvider {
     static func getAccountSpecificSession(account: Account) -> Session {
         let username = account.username
         let provider = TokenCenter.shared
-        let configuration = URLSessionConfiguration.af.default
-        return Session(
-            configuration: configuration,
+        return ProxyUtils.makeSession(
             interceptor: RedditPerAccountAccessTokenInterceptor(
                 getToken: { await provider.currentAccessToken(for: username) },
                 refreshToken: { try await provider.forceRefresh(for: username) }
