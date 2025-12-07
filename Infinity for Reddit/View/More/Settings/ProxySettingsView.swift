@@ -25,10 +25,14 @@ struct ProxySettingsView: View {
         RootView {
             ScrollView {
                 VStack(spacing: 0) {
+                    InfoPreference(
+                        title: "Restart the app to see the changes",
+                        icon: "info.circle"
+                    )
+                    
                     TogglePreference(
                         isEnabled: $enableProxy,
-                        title: "Proxy Enabled",
-                        subtitle: "Restart the app to see the changes"
+                        title: "Proxy"
                     )
                     .transition(.opacity)
                     

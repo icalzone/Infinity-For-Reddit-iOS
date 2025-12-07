@@ -20,6 +20,8 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         }
     }
     
+    // This coder only encodes objects that adopt NSSecureCoding (object is of class '__SwiftValue').'
+    // Look at https://stackoverflow.com/questions/54762443/how-to-fix-this-coder-only-encodes-objects-that-adopt-nssecurecoding-object-is
     func postNotification(
         notificationId: String,
         threadId: String,
