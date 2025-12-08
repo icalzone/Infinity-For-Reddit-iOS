@@ -83,7 +83,6 @@ class NavigationManager: ObservableObject {
         } else if case .openInBrowser(let url) = linkDestination {
             UIApplication.shared.open(url)
         } else if case .fullScreenMedia(let fullScreenMediaType) = linkDestination {
-            print(fullScreenMediaType)
             fullScreenMediaViewModel.show(fullScreenMediaType)
         }
     }
@@ -95,7 +94,6 @@ class NavigationManager: ObservableObject {
         } else if case .openInBrowser(let url) = linkDestination {
             UIApplication.shared.open(url)
         } else if case .fullScreenMedia(let fullScreenMediaType) = linkDestination {
-            print(fullScreenMediaType)
             fullScreenMediaViewModel.show(fullScreenMediaType)
         }
     }

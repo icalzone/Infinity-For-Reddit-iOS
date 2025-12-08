@@ -177,10 +177,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.isAmoledTheme
         case "isLightStatusBar":
             return $customizeCustomThemeViewModel.customTheme.isLightStatusBar
-        case "isLightNavBar":
-            return $customizeCustomThemeViewModel.customTheme.isLightNavBar
-        case "isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface":
-            return $customizeCustomThemeViewModel.customTheme.isChangeStatusBarIconColorAfterToolbarCollapsedInImmersiveInterface
         default:
             return nil
         }
@@ -190,12 +186,8 @@ struct CustomizeCustomThemeView: View {
         switch fieldName {
         case "colorPrimary":
             return $customizeCustomThemeViewModel.customTheme.colorPrimary
-        case "colorPrimaryDark":
-            return $customizeCustomThemeViewModel.customTheme.colorPrimaryDark
         case "colorAccent":
             return $customizeCustomThemeViewModel.customTheme.colorAccent
-        case "colorPrimaryLightTheme":
-            return $customizeCustomThemeViewModel.customTheme.colorPrimaryLightTheme
         case "primaryTextColor":
             return $customizeCustomThemeViewModel.customTheme.primaryTextColor
         case "secondaryTextColor":
@@ -212,8 +204,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentColor
         case "buttonTextColor":
             return $customizeCustomThemeViewModel.customTheme.buttonTextColor
-        case "chipTextColor":
-            return $customizeCustomThemeViewModel.customTheme.chipTextColor
         case "linkColor":
             return $customizeCustomThemeViewModel.customTheme.linkColor
         case "receivedMessageTextColor":
@@ -234,8 +224,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentBackgroundColor
         case "fullyCollapsedCommentBackgroundColor":
             return $customizeCustomThemeViewModel.customTheme.fullyCollapsedCommentBackgroundColor
-        case "awardedCommentBackgroundColor":
-            return $customizeCustomThemeViewModel.customTheme.awardedCommentBackgroundColor
         case "receivedMessageBackgroundColor":
             return $customizeCustomThemeViewModel.customTheme.receivedMessageBackgroundColor
         case "sentMessageBackgroundColor":
@@ -256,10 +244,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.sendMessageIconColor
         case "toolbarPrimaryTextAndIconColor":
             return $customizeCustomThemeViewModel.customTheme.toolbarPrimaryTextAndIconColor
-        case "toolbarSecondaryTextColor":
-            return $customizeCustomThemeViewModel.customTheme.toolbarSecondaryTextColor
-        case "circularProgressBarBackground":
-            return $customizeCustomThemeViewModel.customTheme.circularProgressBarBackground
         case "mediaIndicatorIconColor":
             return $customizeCustomThemeViewModel.customTheme.mediaIndicatorIconColor
         case "mediaIndicatorBackgroundColor":
@@ -270,12 +254,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.tabLayoutWithExpandedCollapsingToolbarTextColor
         case "tabLayoutWithExpandedCollapsingToolbarTabIndicator":
             return $customizeCustomThemeViewModel.customTheme.tabLayoutWithExpandedCollapsingToolbarTabIndicator
-        case "tabLayoutWithCollapsedCollapsingToolbarTabBackground":
-            return $customizeCustomThemeViewModel.customTheme.tabLayoutWithCollapsedCollapsingToolbarTabBackground
-        case "tabLayoutWithCollapsedCollapsingToolbarTextColor":
-            return $customizeCustomThemeViewModel.customTheme.tabLayoutWithCollapsedCollapsingToolbarTextColor
-        case "tabLayoutWithCollapsedCollapsingToolbarTabIndicator":
-            return $customizeCustomThemeViewModel.customTheme.tabLayoutWithCollapsedCollapsingToolbarTabIndicator
         case "upvoted":
             return $customizeCustomThemeViewModel.customTheme.upvoted
         case "downvoted":
@@ -296,10 +274,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.flairBackgroundColor
         case "flairTextColor":
             return $customizeCustomThemeViewModel.customTheme.flairTextColor
-        case "awardsBackgroundColor":
-            return $customizeCustomThemeViewModel.customTheme.awardsBackgroundColor
-        case "awardsTextColor":
-            return $customizeCustomThemeViewModel.customTheme.awardsTextColor
         case "archivedTint":
             return $customizeCustomThemeViewModel.customTheme.archivedTint
         case "lockedIconTint":
@@ -352,8 +326,6 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor6
         case "commentVerticalBarColor7":
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor7
-        case "navBarColor":
-            return $customizeCustomThemeViewModel.customTheme.navBarColor
         default:
             return nil
         }

@@ -12,7 +12,7 @@ struct TabViewCustomThemeViewModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimary))
+            .tint(Color(hex: themeViewModel.currentCustomTheme.colorPrimaryLightTheme))
     }
 }
 
