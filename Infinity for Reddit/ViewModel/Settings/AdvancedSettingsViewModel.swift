@@ -13,6 +13,10 @@ import GRDB
 final class AdvancedSettingsViewModel: ObservableObject {
     private let container: Container
     private let dbPool: DatabasePool
+    private let subredditDao: SubredditDao
+    private let userDao: UserDao
+    private let postHistoryDao: PostHistoryDao
+    private let customThemeDao: CustomThemeDao
     
     init(container: Container = DependencyManager.shared.container) {
         self.container = container
@@ -20,14 +24,18 @@ final class AdvancedSettingsViewModel: ObservableObject {
             fatalError("Failed to resolve DatabasePool")
         }
         self.dbPool = resolvedPool
+        self.subredditDao = SubredditDao(dbPool: resolvedPool)
+        self.userDao = UserDao(dbPool: resolvedPool)
+        self.postHistoryDao = PostHistoryDao(dbPool: resolvedPool)
+        self.customThemeDao = CustomThemeDao(dbPool: resolvedPool)
     }
     
     func deleteAllSubreddits() async throws {
-
+        try await subredditDao.deleteAllSubreddits()
     }
     
     func deleteAllUsers() async throws {
-        
+        try await userDao.deleteAllUsers()
     }
     
     func deleteAllSortTypes() async {
@@ -39,7 +47,7 @@ final class AdvancedSettingsViewModel: ObservableObject {
     }
     
     func deleteAllThemes() async throws {
-        
+        try await customThemeDao.deleteAllCustomThemes()
     }
     
     func deleteFrontPagePositions() async {
@@ -47,7 +55,7 @@ final class AdvancedSettingsViewModel: ObservableObject {
     }
     
     func deleteReadPosts() async throws {
-        
+        try await postHistoryDao.deleteAllReadPosts()
     }
     
     func deleteLegacySettings() async {
