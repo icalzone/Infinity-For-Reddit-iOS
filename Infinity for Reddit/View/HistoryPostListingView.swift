@@ -122,6 +122,7 @@ struct HistoryPostListingView: View {
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
+                    .scrollIndicators(.hidden)
                     .refreshable {
                         await historyPostListingViewModel.refreshPostsWithContinuation()
                     }

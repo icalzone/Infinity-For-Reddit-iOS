@@ -177,6 +177,7 @@ struct PostListingView: View {
                     }
                     .scrollBounceBehavior(.basedOnSize)
                     .themedList()
+                    .scrollIndicators(.hidden)
                     .refreshable {
                         await postListingViewModel.refreshPostsWithContinuation()
                     }

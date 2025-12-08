@@ -216,18 +216,18 @@ struct PostDetailsView: View {
                                             }
                                         }
                                         .transition(.slide)
-                                        .onAppear {
-                                            postDetailsViewModel.insertIntoAppearedComments(commentItem)
-                                            
-                                            if showAuthorAvatar {
-                                                postDetailsViewModel.loadIcon(comment: comment)
-                                            }
-                                        }
-                                        .onDisappear {
-                                            postDetailsViewModel.appearedComments.removeAll {
-                                                $0.id == commentItem.id
-                                            }
-                                        }
+//                                        .onAppear {
+//                                            postDetailsViewModel.insertIntoAppearedComments(commentItem)
+//                                            
+//                                            if showAuthorAvatar {
+//                                                postDetailsViewModel.loadIcon(comment: comment)
+//                                            }
+//                                        }
+//                                        .onDisappear {
+//                                            postDetailsViewModel.appearedComments.removeAll {
+//                                                $0.id == commentItem.id
+//                                            }
+//                                        }
                                     } else if case let .more(commentMore) = commentItem {
                                         CommentMoreViewCard(commentMore: commentMore)
                                             .listPlainItemNoInsets()
@@ -263,6 +263,7 @@ struct PostDetailsView: View {
                             }
                         }
                         .themedList()
+                        .scrollIndicators(.hidden)
                         .scrollBounceBehavior(.basedOnSize)
                         .onAppear {
                             self.listProxy = proxy
@@ -273,12 +274,16 @@ struct PostDetailsView: View {
                         .onScrollPhaseChange { _, phase in
                             switch phase {
                             case .idle:
-                                withAnimation {
-                                    showActionBar = true
+                                if !showActionBar {
+                                    withAnimation {
+                                        showActionBar = true
+                                    }
                                 }
                             case .interacting:
-                                withAnimation {
-                                    showActionBar = false
+                                if showActionBar {
+                                    withAnimation {
+                                        showActionBar = false
+                                    }
                                 }
                             default:
                                 break
@@ -629,27 +634,27 @@ struct PostDetailsView: View {
                 content: item.title ?? item.content
             )
         }
-        .overlay(
-            CustomAlert(
-                title: activeAlert?.title ?? "",
-                confirmButtonText: activeAlert?.confirmButtonText ?? "",
-                buttonStyle: activeAlert?.buttonStyle ?? .info,
-                isPresented: Binding(
-                    get: { activeAlert != nil },
-                    set: { newValue in
-                        if !newValue {
-                            activeAlert = nil
-                        }
-                    }
-                )) {} onConfirm: {
-                    if let alert = activeAlert {
-                        switch alert {
-                        case .deletePost:
-                            postDetailsViewModel.deletePost()
-                        }
-                    }
-                }
-        )
+//        .overlay(
+//            CustomAlert(
+//                title: activeAlert?.title ?? "",
+//                confirmButtonText: activeAlert?.confirmButtonText ?? "",
+//                buttonStyle: activeAlert?.buttonStyle ?? .info,
+//                isPresented: Binding(
+//                    get: { activeAlert != nil },
+//                    set: { newValue in
+//                        if !newValue {
+//                            activeAlert = nil
+//                        }
+//                    }
+//                )) {} onConfirm: {
+//                    if let alert = activeAlert {
+//                        switch alert {
+//                        case .deletePost:
+//                            postDetailsViewModel.deletePost()
+//                        }
+//                    }
+//                }
+//        )
     }
     
     private func setUpMenu() {
