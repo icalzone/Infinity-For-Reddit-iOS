@@ -49,7 +49,7 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
         
         try Task.checkCancellation()
         
-        let interceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
+        let interceptor = await RedditAccessTokenProvider.shared.getRedditPerAccountInterceptor(account: account)
         let data = try await session.request(RedditOAuthAPI.sendCommentOrReplyToMessage(params: params), interceptor: interceptor)
             .validate()
             .serializingData(automaticallyCancelling: true)

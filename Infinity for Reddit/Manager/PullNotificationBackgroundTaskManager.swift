@@ -89,7 +89,7 @@ class PullNotificationBackgroundTaskManager {
         var newTime = lastTime
         
         for account in accounts {
-            let perAccountAccessTokenInterceptor = await TokenCenter.shared.getRedditPerAccountInterceptor(account: account)
+            let perAccountAccessTokenInterceptor = await RedditAccessTokenProvider.shared.getRedditPerAccountInterceptor(account: account)
             
             guard let unreadListing = try? await fetchInboxListing(account, interceptor: perAccountAccessTokenInterceptor) else {
                 successful = false
