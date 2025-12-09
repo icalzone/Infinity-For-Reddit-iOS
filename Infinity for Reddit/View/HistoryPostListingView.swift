@@ -105,11 +105,16 @@ struct HistoryPostListingView: View {
                             .id(ObjectIdentifier(post))
                             .listPlainItemNoInsets()
                             .onAppear {
+                                historyPostListingViewModel.insertIntoAppearedPosts(post)
+                                
                                 if post.subredditOrUserIcon == nil {
                                     Task {
                                         await historyPostListingViewModel.loadIcon(post: post)
                                     }
                                 }
+                            }
+                            .onDisappear {
+                                historyPostListingViewModel.appearedPosts.remove(id: post.id)
                             }
                         }
                         if historyPostListingViewModel.hasMorePages {
@@ -378,6 +383,7 @@ struct HistoryPostListingView: View {
         
         if historyPostListingViewModel.lazyModeScrolledPost == nil {
             if !historyPostListingViewModel.appearedPosts.isEmpty {
+                historyPostListingViewModel.sortAppearedPosts()
                 historyPostListingViewModel.lazyModeScrolledPost = historyPostListingViewModel.appearedPosts[0]
             } else if !historyPostListingViewModel.posts.isEmpty {
                 historyPostListingViewModel.lazyModeScrolledPost = historyPostListingViewModel.posts[0]
@@ -404,6 +410,7 @@ struct HistoryPostListingView: View {
                             } else {
                                 historyPostListingViewModel.lazyModeScrolledPost = nil
                                 if !historyPostListingViewModel.appearedPosts.isEmpty {
+                                    historyPostListingViewModel.sortAppearedPosts()
                                     historyPostListingViewModel.lazyModeScrolledPost = historyPostListingViewModel.appearedPosts[historyPostListingViewModel.appearedPosts.count - 1]
                                     for appearedPost in historyPostListingViewModel.appearedPosts.reversed() {
                                         if let index = historyPostListingViewModel.posts.index(id: appearedPost.id) {
@@ -425,6 +432,7 @@ struct HistoryPostListingView: View {
                             }
                         } else {
                             if !historyPostListingViewModel.appearedPosts.isEmpty {
+                                historyPostListingViewModel.sortAppearedPosts()
                                 historyPostListingViewModel.lazyModeScrolledPost = historyPostListingViewModel.appearedPosts[historyPostListingViewModel.appearedPosts.count - 1]
                                 for appearedPost in historyPostListingViewModel.appearedPosts.reversed() {
                                     if let index = historyPostListingViewModel.posts.index(id: appearedPost.id) {
