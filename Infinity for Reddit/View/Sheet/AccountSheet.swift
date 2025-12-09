@@ -64,7 +64,7 @@ struct AccountSheet: View {
                     VStack(spacing: 0) {
                         VStack {
                             Text(accountViewModel.account.isAnonymous() == true ? "Anonymous" : accountViewModel.account.username)
-                                .font(.largeTitle)
+                                .primaryText(.f24)
                                 .fontWeight(.bold)
                             
                             if accountViewModel.account.isAnonymous() != true {
