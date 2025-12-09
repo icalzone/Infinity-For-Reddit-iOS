@@ -9,7 +9,6 @@ import SwiftUI
 
 struct SegmentedPicker: View {
     @EnvironmentObject var themeViewModel: CustomThemeViewModel
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace var pickerAnimation
     
     var selectedValue: Binding<Int>

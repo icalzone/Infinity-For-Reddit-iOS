@@ -164,19 +164,18 @@ struct UserDetailsView: View {
                             }
                             .tag(1)
                         }
-                        .themedTabViewGroup()
                         .toolbar(tabBarVisibility, for: .tabBar)
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                tabBarVisibility = .visible
-                            }
-                        }
-                        .onDisappear {
-                            tabBarVisibility = .hidden
-                        }
-                        .animation(.easeInOut(duration: 0.2), value: tabBarVisibility)
                     }
                     .themedTabView()
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            tabBarVisibility = .visible
+                        }
+                    }
+                    .onDisappear {
+                        tabBarVisibility = .hidden
+                    }
+                    .animation(.easeInOut(duration: 0.2), value: tabBarVisibility)
                     .animation(.bouncy, value: navigationManager.rootTabLabelVisibility)
                 }
                 .overlay(alignment: .top) {

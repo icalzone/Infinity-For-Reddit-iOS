@@ -64,18 +64,92 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                Group {
+                ZStack {
+                    CustomNavigationStack(navigationManager: tab1NavigationManager) {
+                        PostListingView(
+                            postListingMetadata: PostListingMetadata(
+                                // Anonymous subscriptions will be fetched later in PostListingViewModel
+                                postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
+                                headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
+                                queries: nil,
+                                params: nil
+                            ),
+                            handleToolbarMenu: false
+                        )
+                        .setUpHomeTabViewChildNavigationBar()
+                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                    }
+                    
+                    Snackbar()
+                        .zIndex(1)
+                }
+                .id(accountViewModel.account.username)
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
+                .tag(Tab.home)
+                .environmentObject(tab1NavigationBarMenuManager)
+                .environmentObject(tab1SnackbarManager)
+                .onChange(of: tab1NavigationManager.path) {
+                    tab1SnackbarManager.dismissIfIndefinite()
+                }
+                
+                ZStack {
+                    CustomNavigationStack(navigationManager: tab2NavigationManager) {
+                        Group {
+                            if accountViewModel.account.isAnonymous() {
+                                AnonymousSubscriptionsView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            } else {
+                                SubscriptionsView()
+                                    .setUpHomeTabViewChildNavigationBar()
+                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                            }
+                        }
+                    }
+                    
+                    Snackbar()
+                        .zIndex(1)
+                }
+                .id(accountViewModel.account.username)
+                .tabItem {
+                    Label("Subscriptions", systemImage: "book")
+                }
+                .tag(Tab.subscriptions)
+                .environmentObject(tab2NavigationBarMenuManager)
+                .environmentObject(tab2SnackbarManager)
+                .onChange(of: tab2NavigationManager.path) {
+                    tab2SnackbarManager.dismissIfIndefinite()
+                }
+                
+                if !accountViewModel.account.isAnonymous() {
                     ZStack {
-                        CustomNavigationStack(navigationManager: tab1NavigationManager) {
-                            PostListingView(
-                                postListingMetadata: PostListingMetadata(
-                                    // Anonymous subscriptions will be fetched later in PostListingViewModel
-                                    postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
-                                    headers: APIUtils.getOAuthHeader(accessToken: accountViewModel.account.accessToken ?? ""),
-                                    queries: nil,
-                                    params: nil
-                                ),
-                                handleToolbarMenu: false
+                        CustomNavigationStack(navigationManager: tab3NavigationManager) {
+                            NewPostTypeChooserView()
+                                .setUpHomeTabViewChildNavigationBar()
+                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        }
+                        
+                        Snackbar()
+                            .zIndex(1)
+                    }
+                    .id(accountViewModel.account.username)
+                    .tabItem {
+                        Label("New Post", systemImage: "plus.circle")
+                    }
+                    .tag(Tab.newPost)
+                    .environmentObject(tab3NavigationBarMenuManager)
+                    .environmentObject(homeViewModel)
+                    .environmentObject(tab3SnackbarManager)
+                    .onChange(of: tab3NavigationManager.path) {
+                        tab3SnackbarManager.dismissIfIndefinite()
+                    }
+                    
+                    ZStack {
+                        CustomNavigationStack(navigationManager: tab4NavigationManager) {
+                            InboxView(
+                                account: accountViewModel.account
                             )
                             .setUpHomeTabViewChildNavigationBar()
                             .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
@@ -86,117 +160,20 @@ struct HomeView: View {
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {
-                        Label("Home", systemImage: "house")
+                        Label("Inbox", systemImage: "envelope")
                     }
-                    .tag(Tab.home)
-                    .environmentObject(tab1NavigationBarMenuManager)
-                    .environmentObject(tab1SnackbarManager)
-                    .onChange(of: tab1NavigationManager.path) {
-                        tab1SnackbarManager.dismissIfIndefinite()
+                    .tag(Tab.inbox)
+                    .badge(homeViewModel.inboxCount > 0 ? String(homeViewModel.inboxCount) : nil)
+                    .environmentObject(tab4NavigationBarMenuManager)
+                    .environmentObject(homeViewModel)
+                    .environmentObject(tab4SnackbarManager)
+                    .onChange(of: tab4NavigationManager.path) {
+                        tab4SnackbarManager.dismissIfIndefinite()
                     }
-                    
+                } else {
                     ZStack {
-                        CustomNavigationStack(navigationManager: tab2NavigationManager) {
-                            Group {
-                                if accountViewModel.account.isAnonymous() {
-                                    AnonymousSubscriptionsView()
-                                        .setUpHomeTabViewChildNavigationBar()
-                                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                                } else {
-                                    SubscriptionsView()
-                                        .setUpHomeTabViewChildNavigationBar()
-                                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                                }
-                            }
-                        }
-                        
-                        Snackbar()
-                            .zIndex(1)
-                    }
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("Subscriptions", systemImage: "book")
-                    }
-                    .tag(Tab.subscriptions)
-                    .environmentObject(tab2NavigationBarMenuManager)
-                    .environmentObject(tab2SnackbarManager)
-                    .onChange(of: tab2NavigationManager.path) {
-                        tab2SnackbarManager.dismissIfIndefinite()
-                    }
-                    
-                    if !accountViewModel.account.isAnonymous() {
-                        ZStack {
-                            CustomNavigationStack(navigationManager: tab3NavigationManager) {
-                                NewPostTypeChooserView()
-                                    .setUpHomeTabViewChildNavigationBar()
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            }
-                            
-                            Snackbar()
-                                .zIndex(1)
-                        }
-                        .id(accountViewModel.account.username)
-                        .tabItem {
-                            Label("New Post", systemImage: "plus.circle")
-                        }
-                        .tag(Tab.newPost)
-                        .environmentObject(tab3NavigationBarMenuManager)
-                        .environmentObject(homeViewModel)
-                        .environmentObject(tab3SnackbarManager)
-                        .onChange(of: tab3NavigationManager.path) {
-                            tab3SnackbarManager.dismissIfIndefinite()
-                        }
-                        
-                        ZStack {
-                            CustomNavigationStack(navigationManager: tab4NavigationManager) {
-                                InboxView(
-                                    account: accountViewModel.account
-                                )
-                                .setUpHomeTabViewChildNavigationBar()
-                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            }
-                            
-                            Snackbar()
-                                .zIndex(1)
-                        }
-                        .id(accountViewModel.account.username)
-                        .tabItem {
-                            Label("Inbox", systemImage: "envelope")
-                        }
-                        .tag(Tab.inbox)
-                        .badge(homeViewModel.inboxCount > 0 ? String(homeViewModel.inboxCount) : nil)
-                        .environmentObject(tab4NavigationBarMenuManager)
-                        .environmentObject(homeViewModel)
-                        .environmentObject(tab4SnackbarManager)
-                        .onChange(of: tab4NavigationManager.path) {
-                            tab4SnackbarManager.dismissIfIndefinite()
-                        }
-                    } else {
-                        ZStack {
-                            CustomNavigationStack(navigationManager: tab4NavigationManager) {
-                                SearchView()
-                                    .setUpHomeTabViewChildNavigationBar()
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            }
-                            
-                            Snackbar()
-                                .zIndex(1)
-                        }
-                        .id(accountViewModel.account.username)
-                        .tabItem {
-                            Label("Search", systemImage: "magnifyingglass")
-                        }
-                        .tag(Tab.search)
-                        .environmentObject(tab4NavigationBarMenuManager)
-                        .environmentObject(tab4SnackbarManager)
-                        .onChange(of: tab4NavigationManager.path) {
-                            tab4SnackbarManager.dismissIfIndefinite()
-                        }
-                    }
-                    
-                    ZStack {
-                        CustomNavigationStack(navigationManager: tab5NavigationManager) {
-                            MoreView()
+                        CustomNavigationStack(navigationManager: tab4NavigationManager) {
+                            SearchView()
                                 .setUpHomeTabViewChildNavigationBar()
                                 .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
                         }
@@ -206,16 +183,36 @@ struct HomeView: View {
                     }
                     .id(accountViewModel.account.username)
                     .tabItem {
-                        Label("More", systemImage: "ellipsis.circle.fill")
+                        Label("Search", systemImage: "magnifyingglass")
                     }
-                    .tag(Tab.more)
-                    .environmentObject(tab5NavigationBarMenuManager)
-                    .environmentObject(tab5SnackbarManager)
-                    .onChange(of: tab5NavigationManager.path) {
-                        tab5SnackbarManager.dismissIfIndefinite()
+                    .tag(Tab.search)
+                    .environmentObject(tab4NavigationBarMenuManager)
+                    .environmentObject(tab4SnackbarManager)
+                    .onChange(of: tab4NavigationManager.path) {
+                        tab4SnackbarManager.dismissIfIndefinite()
                     }
                 }
-                .themedTabViewGroup()
+                
+                ZStack {
+                    CustomNavigationStack(navigationManager: tab5NavigationManager) {
+                        MoreView()
+                            .setUpHomeTabViewChildNavigationBar()
+                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                    }
+                    
+                    Snackbar()
+                        .zIndex(1)
+                }
+                .id(accountViewModel.account.username)
+                .tabItem {
+                    Label("More", systemImage: "ellipsis.circle.fill")
+                }
+                .tag(Tab.more)
+                .environmentObject(tab5NavigationBarMenuManager)
+                .environmentObject(tab5SnackbarManager)
+                .onChange(of: tab5NavigationManager.path) {
+                    tab5SnackbarManager.dismissIfIndefinite()
+                }
             }
             .themedTabView()
             .onAppear {

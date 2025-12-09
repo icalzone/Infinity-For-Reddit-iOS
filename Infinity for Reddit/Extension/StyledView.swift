@@ -61,10 +61,6 @@ extension View {
         self.modifier(TabViewCustomThemeViewModifier())
     }
     
-    func themedTabViewGroup() -> some View {
-        self.modifier(TabViewGroupViewModifier())
-    }
-    
     func listSectionHeader() -> some View {
         self.modifier(ListSectionHeaderViewModifier())
     }
