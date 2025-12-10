@@ -12,11 +12,13 @@ import GRDB
 struct CustomThemeListingView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     
-    @StateObject private var customThemeListingViewModel = CustomThemeListingViewModel()
+    @StateObject private var customThemeListingViewModel: CustomThemeListingViewModel
     
     init() {
         _customThemeListingViewModel = StateObject(
-            wrappedValue: CustomThemeListingViewModel()
+            wrappedValue: CustomThemeListingViewModel(
+                customThemeListingRepository: CustomThemeListingRepository()
+            )
         )
     }
     
@@ -28,6 +30,15 @@ struct CustomThemeListingView: View {
                         navigationManager.append(CustomThemeSettingsViewNavigation.customizeCustomTheme(customTheme: customTheme))
                     }
                     .listPlainItemNoInsets()
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            customThemeListingViewModel.deleteTheme(customTheme)
+                        } label: {
+                            Text("Delete")
+                                .foregroundStyle(.white)
+                        }
+                        .tint(.red)
+                    }
                 }
             }
             .themedList()
