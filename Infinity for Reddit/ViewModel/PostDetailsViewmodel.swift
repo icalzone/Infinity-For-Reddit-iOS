@@ -47,6 +47,7 @@ public class PostDetailsViewModel: ObservableObject {
     private let historyPostsRepository: HistoryPostsRepositoryProtocol
     private let flairRepository: FlairRepositoryProtocol
     private let thingModerationRepository: ThingModerationRepositoryProtocol
+    private let postRepository: PostRepositoryProtocol
     private let commentRepository: CommentRepositoryProtocol
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
@@ -78,6 +79,7 @@ public class PostDetailsViewModel: ObservableObject {
         historyPostsRepository: HistoryPostsRepositoryProtocol,
         flairRepository: FlairRepositoryProtocol,
         thingModerationRepository: ThingModerationRepositoryProtocol,
+        postRepository: PostRepositoryProtocol,
         commentRepository: CommentRepositoryProtocol,
         isContinueThread: Bool = false
     ) {
@@ -88,6 +90,7 @@ public class PostDetailsViewModel: ObservableObject {
         self.historyPostsRepository = historyPostsRepository
         self.flairRepository = flairRepository
         self.thingModerationRepository = thingModerationRepository
+        self.postRepository = postRepository
         self.commentRepository = commentRepository
         self.showTopLevelCommentsFirst = InterfaceCommentUserDefaultsUtils.showTopLevelCommentsFirst
         if isContinueThread {
@@ -872,6 +875,123 @@ public class PostDetailsViewModel: ObservableObject {
             }
             
             selectFlairTask = nil
+        }
+    }
+    
+    @MainActor
+    func votePost(vote: Int) {
+        Task {
+            guard !account.isAnonymous(), let post else {
+                await votePostAnonymous(vote: vote)
+                return
+            }
+            
+            let previousVote = post.likes
+            
+            var point: String
+            let finalVote: Int
+            if vote == post.likes {
+                point = "0"
+                finalVote = 0
+                post.likes = 0
+            } else {
+                point = String(vote)
+                finalVote = vote
+                post.likes = vote
+            }
+            self.objectWillChange.send()
+            
+            defer {
+                self.objectWillChange.send()
+            }
+            
+            do {
+                try await postRepository.votePost(post: post, point: point)
+                self.post?.likes = finalVote
+            } catch {
+                self.post?.likes = previousVote
+                self.error = error
+                print("Error voting post: \(error)")
+            }
+        }
+    }
+    
+    @MainActor
+    private func votePostAnonymous(vote: Int) async {
+        guard let post else {
+            return
+        }
+        
+        let finalVote: Int
+        if vote == post.likes {
+            finalVote = 0
+            self.post?.likes = 0
+        } else {
+            finalVote = vote
+            self.post?.likes = vote
+        }
+        try? await postRepository.votePostAnonymous(post: post, vote: finalVote)
+    }
+    
+    @MainActor
+    func toggleSavePost(save: Bool) {
+        Task {
+            guard !account.isAnonymous(), let post else {
+                await toggleSavePostAnonymous(save: save)
+                return
+            }
+            
+            let previousSaved = post.saved
+            
+            post.saved = save
+            
+            self.objectWillChange.send()
+            
+            defer {
+                self.objectWillChange.send()
+            }
+            
+            do {
+                try await postRepository.savePost(post: post, save: save)
+            } catch {
+                self.post?.saved = previousSaved
+                self.error = error
+                print("Error (un)saving post: \(error)")
+            }
+        }
+    }
+    
+    @MainActor
+    private func toggleSavePostAnonymous(save: Bool) async {
+        guard let post else {
+            return
+        }
+        
+        post.saved = save
+        try? await postRepository.savePostAnonymous(post: post, save: save)
+    }
+    
+    @MainActor
+    func readPost(markPostsAsRead: Bool, limitReadPosts: Bool, readPostsLimit: Int) {
+        guard let post, !post.isRead, markPostsAsRead else {
+            return
+        }
+        
+        Task {
+            do {
+                try await postRepository.readPost(
+                    post: post,
+                    account: AccountViewModel.shared.account,
+                    limitReadPosts: limitReadPosts,
+                    readPostsLimit: readPostsLimit
+                )
+                
+                await MainActor.run {
+                    post.isRead = true
+                }
+            } catch {
+                print("Mark post as read failed with error: \(error)")
+            }
         }
     }
     

@@ -44,6 +44,12 @@ struct PostDetailsView: View {
     @State private var listProxy: ScrollViewProxy?
     @State private var commentToBeModerated: Comment?
     
+    @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadKey, store: .postHistory)
+    private var markPostsAsRead: Bool = true
+    @AppStorage(PostHistoryUserDefaultsUtils.limitReadPostsKey, store: .postHistory)
+    private var limitReadPosts: Bool = true
+    @AppStorage(PostHistoryUserDefaultsUtils.readPostsLimitKey, store: .postHistory)
+    private var readPostsLimit: Int = 500
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
@@ -67,6 +73,7 @@ struct PostDetailsView: View {
                 historyPostsRepository: HistoryPostsRepository(),
                 flairRepository: FlairRepository(),
                 thingModerationRepository: thingModerationRepository,
+                postRepository: PostRepository(),
                 commentRepository: CommentRepository(),
                 isContinueThread: isContinueThread
             )
@@ -83,6 +90,22 @@ struct PostDetailsView: View {
                                 account: account,
                                 post: post,
                                 isFromSubredditPostListing: isFromSubredditPostListing,
+                                onUpvote: {
+                                    postDetailsViewModel.votePost(vote: 1)
+                                },
+                                onDownvote: {
+                                    postDetailsViewModel.votePost(vote: -1)
+                                },
+                                onToggleSave: {
+                                    postDetailsViewModel.toggleSavePost(save: !post.saved)
+                                },
+                                onReadPost: {
+                                    postDetailsViewModel.readPost(
+                                        markPostsAsRead: markPostsAsRead,
+                                        limitReadPosts: limitReadPosts,
+                                        readPostsLimit: readPostsLimit
+                                    )
+                                },
                                 onSendComment: {
                                     sendComment()
                                 },
@@ -104,6 +127,24 @@ struct PostDetailsView: View {
                                         await postDetailsViewModel.loadPostIcon(isFromSubredditPostListing: isFromSubredditPostListing)
                                     }
                                 }
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button {
+                                    postDetailsViewModel.votePost(vote: 1)
+                                } label: {
+                                    SwiftUI.Image(systemName: "arrowshape.up")
+                                        .foregroundStyle(.white)
+                                }
+                                .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
+                            }
+                            .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                Button {
+                                    postDetailsViewModel.votePost(vote: -1)
+                                } label: {
+                                    SwiftUI.Image(systemName: "arrowshape.down")
+                                        .foregroundStyle(.white)
+                                }
+                                .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
                             }
                             
                             if case .postAndCommentId(_, let commentId) = postDetailsViewModel.postDetailsInput, commentId != nil {
