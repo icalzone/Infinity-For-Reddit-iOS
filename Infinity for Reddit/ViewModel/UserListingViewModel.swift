@@ -82,8 +82,7 @@ public class UserListingViewModel: ObservableObject {
         self.sensitiveContent = ContentSensitivityFilterUserDetailsUtils.sensitiveContent
         NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)
             .sink { [weak self] _ in
-                let sensitiveContent = UserDefaults.contentSensitivityFilter.bool(forKey: ContentSensitivityFilterUserDetailsUtils.sensitiveContentKey)
-                self?.setSensitiveContent(sensitiveContent)
+                self?.setSensitiveContent(UserDefaults.contentSensitivityFilter.bool(forKey: ContentSensitivityFilterUserDetailsUtils.sensitiveContentKey))
             }
             .store(in: &cancellables)
     }
