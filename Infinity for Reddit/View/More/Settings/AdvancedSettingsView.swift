@@ -66,22 +66,6 @@ struct AdvancedSettingsView: View {
                     .listPlainItemNoInsets()
                     .disabled(isPerformingAction)
                 }
-                
-                CustomListSection("Backup & Restore") {
-                    PreferenceEntry(title: "Backup Settings", icon: "arrow.up.doc") { }
-                        .listPlainItemNoInsets()
-                        .disabled(isPerformingAction)
-                    
-                    PreferenceEntry(title: "Restore Settings", icon: "arrow.down.doc") { }
-                        .listPlainItemNoInsets()
-                        .disabled(isPerformingAction)
-                }
-                
-                CustomListSection("Diagnostics") {
-                    PreferenceEntry(title: "Crash Reports", icon: "exclamationmark.triangle") { }
-                        .listPlainItemNoInsets()
-                        .disabled(isPerformingAction)
-                }
             }
             .themedList()
         }

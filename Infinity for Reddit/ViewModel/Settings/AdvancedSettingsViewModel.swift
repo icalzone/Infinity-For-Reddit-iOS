@@ -92,16 +92,4 @@ final class AdvancedSettingsViewModel: ObservableObject {
                 forKey: ContentSensitivityFilterUserDetailsUtils.disableSensitiveContentForeverKey)
         }
     }
-    
-    func backupSettings() async throws {
-
-    }
-    
-    func restoreSettings() async throws {
-
-    }
-    
-    func openCrashReports() {
-
-    }
 }
