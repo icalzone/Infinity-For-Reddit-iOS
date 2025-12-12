@@ -209,6 +209,7 @@ public class PostDetailsViewModel: ObservableObject {
                     throw PostDetailsViewModelError.postFetchError
                 }
                 let post = postDetails.postListing.posts[0]
+                await readPost(post: post)
                 await postProcessPost(post)
                 
                 await MainActor.run {
@@ -966,28 +967,24 @@ public class PostDetailsViewModel: ObservableObject {
         post.saved = save
         try? await postRepository.savePostAnonymous(post: post, save: save)
     }
-    
-    @MainActor
-    func readPost(markPostsAsRead: Bool, limitReadPosts: Bool, readPostsLimit: Int) {
-        guard let post, !post.isRead, markPostsAsRead else {
+
+    func readPost(post: Post) async {
+        guard UserDefaults.postHistory.bool(forKey: PostHistoryUserDefaultsUtils.markPostsAsReadKey, false) else {
             return
         }
         
-        Task {
-            do {
-                try await postRepository.readPost(
-                    post: post,
-                    account: AccountViewModel.shared.account,
-                    limitReadPosts: limitReadPosts,
-                    readPostsLimit: readPostsLimit
-                )
-                
-                await MainActor.run {
-                    post.isRead = true
-                }
-            } catch {
-                print("Mark post as read failed with error: \(error)")
-            }
+        let limitReadPosts = UserDefaults.postHistory.bool(forKey: PostHistoryUserDefaultsUtils.limitReadPostsKey, true)
+        let readPostsLimit = UserDefaults.postHistory.integer(forKey: PostHistoryUserDefaultsUtils.readPostsLimitKey, 500)
+        
+        do {
+            try await postRepository.readPost(
+                post: post,
+                account: AccountViewModel.shared.account,
+                limitReadPosts: limitReadPosts,
+                readPostsLimit: readPostsLimit
+            )
+        } catch {
+            print("Mark post as read failed with error: \(error)")
         }
     }
     

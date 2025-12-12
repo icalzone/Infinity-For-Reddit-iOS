@@ -45,12 +45,6 @@ struct PostDetailsView: View {
     @State private var commentToBeModerated: Comment?
     @State private var voteTask: Task<Void, Never>?
     
-    @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadKey, store: .postHistory)
-    private var markPostsAsRead: Bool = true
-    @AppStorage(PostHistoryUserDefaultsUtils.limitReadPostsKey, store: .postHistory)
-    private var limitReadPosts: Bool = true
-    @AppStorage(PostHistoryUserDefaultsUtils.readPostsLimitKey, store: .postHistory)
-    private var readPostsLimit: Int = 500
     @AppStorage(InterfaceCommentUserDefaultsUtils.fullyCollapseCommentKey, store: .interfaceComment)
     private var fullyCollapseComment: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
