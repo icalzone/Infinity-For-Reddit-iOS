@@ -34,7 +34,6 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var showMediaDownloadFinishedMessageTrigger: Bool = false
     @Published var showAllGalleryMediaDownloadFinishedMessageTrigger: Bool = false
     
-    private let account: Account
     private var commentMore: CommentMore?
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
     private var commentFilter: CommentFilter?
@@ -73,7 +72,6 @@ public class PostDetailsViewModel: ObservableObject {
     
     // MARK: - Initializer
     init(
-        account: Account,
         postDetailsInput: PostDetailsInput,
         postDetailsRepository: PostDetailsRepositoryProtocol,
         historyPostsRepository: HistoryPostsRepositoryProtocol,
@@ -83,7 +81,6 @@ public class PostDetailsViewModel: ObservableObject {
         commentRepository: CommentRepositoryProtocol,
         isContinueThread: Bool = false
     ) {
-        self.account = account
         self.postDetailsInput = postDetailsInput
         self.sortTypeKind = SortTypeUserDetailsUtils.postComment
         self.postDetailsRepository = postDetailsRepository
@@ -290,14 +287,14 @@ public class PostDetailsViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(post)
         post.selftextProcessedMarkdown = MarkdownContent(post.selftext)
         
-        if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .upvoted) {
+        if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(postId: post.id, postHistoryType: .upvoted) {
             post.likes = 1
-        } else if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .downvoted) {
+        } else if await historyPostsRepository.getIfExistInHistoryPostsAnonymous(postId: post.id, postHistoryType: .downvoted) {
             post.likes = -1
         }
         
-        post.hidden = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .hidden)
-        post.saved = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(account: account, postId: post.id, postHistoryType: .saved)
+        post.hidden = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(postId: post.id, postHistoryType: .hidden)
+        post.saved = await historyPostsRepository.getIfExistInHistoryPostsAnonymous(postId: post.id, postHistoryType: .saved)
     }
     
     public func fetchCommentsPagination() async {
@@ -724,7 +721,7 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        guard !account.isAnonymous() else {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
             toggleHidePostAnonymous(post, onFinish: onFinish)
             return
         }
@@ -767,7 +764,7 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        guard !account.isAnonymous() else {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
             return
         }
         
@@ -799,7 +796,7 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        guard !account.isAnonymous() else {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
             return
         }
         
@@ -835,7 +832,7 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        guard !account.isAnonymous() else {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
             return
         }
         
@@ -854,7 +851,7 @@ public class PostDetailsViewModel: ObservableObject {
             return
         }
         
-        guard !account.isAnonymous() else {
+        guard !AccountViewModel.shared.account.isAnonymous() else {
             return
         }
         
@@ -881,7 +878,7 @@ public class PostDetailsViewModel: ObservableObject {
     
     @MainActor
     func votePost(vote: Int) async {
-        guard !account.isAnonymous(), let post else {
+        guard !AccountViewModel.shared.account.isAnonymous(), let post else {
             await votePostAnonymous(vote: vote)
             return
         }
@@ -934,7 +931,7 @@ public class PostDetailsViewModel: ObservableObject {
     
     @MainActor
     func toggleSavePost(save: Bool) async {
-        guard !account.isAnonymous(), let post else {
+        guard !AccountViewModel.shared.account.isAnonymous(), let post else {
             await toggleSavePostAnonymous(save: save)
             return
         }
@@ -969,19 +966,16 @@ public class PostDetailsViewModel: ObservableObject {
     }
 
     func readPost(post: Post) async {
-        guard UserDefaults.postHistory.bool(forKey: PostHistoryUserDefaultsUtils.markPostsAsReadKey, false) else {
+        guard PostHistoryUserDefaultsUtils.markPostsAsRead else {
             return
         }
-        
-        let limitReadPosts = UserDefaults.postHistory.bool(forKey: PostHistoryUserDefaultsUtils.limitReadPostsKey, true)
-        let readPostsLimit = UserDefaults.postHistory.integer(forKey: PostHistoryUserDefaultsUtils.readPostsLimitKey, 500)
         
         do {
             try await postRepository.readPost(
                 post: post,
                 account: AccountViewModel.shared.account,
-                limitReadPosts: limitReadPosts,
-                readPostsLimit: readPostsLimit
+                limitReadPosts: PostHistoryUserDefaultsUtils.limitReadPosts,
+                readPostsLimit: PostHistoryUserDefaultsUtils.readPostsLimit
             )
         } catch {
             print("Mark post as read failed with error: \(error)")
@@ -1190,7 +1184,7 @@ public class PostDetailsViewModel: ObservableObject {
                 try await thingModerationRepository.approveThing(thingFullname: post.name)
                 
                 self.post?.approved = true
-                self.post?.approvedBy = account.username
+                self.post?.approvedBy = AccountViewModel.shared.account.username
                 self.post?.approvedAtUtc = Utils.getCurrentTimeEpoch()
                 self.post?.removed = false
                 self.post?.removedBy = ""
@@ -1215,7 +1209,7 @@ public class PostDetailsViewModel: ObservableObject {
                 switch allComments[allIndex] {
                 case .comment(let oldComment):
                     oldComment.approved = true
-                    oldComment.approvedBy = account.username
+                    oldComment.approvedBy = AccountViewModel.shared.account.username
                     oldComment.approvedAtUtc = Utils.getCurrentTimeEpoch()
                     oldComment.removed = false
                     oldComment.spam = false
@@ -1243,7 +1237,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.approvedBy = ""
                 self.post?.approvedAtUtc = 0
                 self.post?.removed = true
-                self.post?.removedBy = account.username
+                self.post?.removedBy = AccountViewModel.shared.account.username
                 self.post?.removedByCategory = "moderator"
                 self.post?.spam = isSpam
             } catch {

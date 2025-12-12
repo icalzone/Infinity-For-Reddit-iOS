@@ -31,7 +31,7 @@ class HistoryPostsRepository: HistoryPostsRepositoryProtocol {
         }
     }
     
-    func getHistoryPostsIdsByIdsAnonymous(account: Account, postIds: [String], postHistoryType: PostHistoryType) async -> Set<String> {
+    func getHistoryPostsIdsByIdsAnonymous(postIds: [String], postHistoryType: PostHistoryType) async -> Set<String> {
         do {
             return Set(try await readPostDao.getHistoryPostsIdsByIds(ids: postIds, username: Account.ANONYMOUS_ACCOUNT.username, postHistoryType: postHistoryType))
         } catch {
@@ -40,7 +40,7 @@ class HistoryPostsRepository: HistoryPostsRepositoryProtocol {
         }
     }
     
-    func getIfExistInHistoryPostsAnonymous(account: Account, postId: String, postHistoryType: PostHistoryType) async -> Bool {
+    func getIfExistInHistoryPostsAnonymous(postId: String, postHistoryType: PostHistoryType) async -> Bool {
         do {
             return try await !readPostDao.getHistoryPostsIdsByIds(ids: [postId], username: Account.ANONYMOUS_ACCOUNT.username, postHistoryType: postHistoryType).isEmpty
         } catch {

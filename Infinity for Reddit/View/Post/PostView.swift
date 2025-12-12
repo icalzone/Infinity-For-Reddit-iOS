@@ -7,10 +7,13 @@
 import SwiftUI
 
 struct PostView: View {
-    @EnvironmentObject private var accountViewModel: AccountViewModel
     @EnvironmentObject private var navigationManager: NavigationManager
     
     @StateObject private var postViewModel: PostViewModel
+    
+    @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadKey, store: .postHistory) private var markPostsAsRead: Bool = false
+    @AppStorage(PostHistoryUserDefaultsUtils.limitReadPostsKey, store: .postHistory) private var limitReadPosts: Bool = true
+    @AppStorage(PostHistoryUserDefaultsUtils.readPostsLimitKey, store: .postHistory) private var readPostsLimit: Int = 500
     
     let post: Post
     let postLayout: PostLayout
@@ -50,7 +53,6 @@ struct PostView: View {
         self.onReadPost = onReadPost
         _postViewModel = StateObject(
             wrappedValue: PostViewModel(
-                account: AccountViewModel.shared.account,
                 post: post,
                 postRepository: PostRepository()
             )
@@ -105,7 +107,7 @@ struct PostView: View {
     
     private func onPostTap() {
         Task {
-            await postViewModel.readPost()
+            await postViewModel.readPost(markPostsAsRead: markPostsAsRead, limitReadPosts: limitReadPosts, readPostsLimit: readPostsLimit)
         }
         
         navigationManager.append(
@@ -140,19 +142,6 @@ struct PostView: View {
         )
     }
     
-//    private func vote(_ direction: Int) {
-//        guard !accountViewModel.account.isAnonymous() else { return }
-//        Task {
-//            await postViewModel.votePost(vote: direction)
-//        }
-//    }
-    
-//    private func savePost() {
-//        Task {
-//            await postViewModel.savePost(save: !postViewModel.post.saved)
-//        }
-//    }
-    
     private func onCommentsTap() {
         // TODO: Open post details and focus on comments section.
     }
@@ -160,7 +149,7 @@ struct PostView: View {
     private func openLink(_ url: URL) {
         navigationManager.openLink(url)
         Task {
-            await postViewModel.readPost()
+            await postViewModel.readPost(markPostsAsRead: markPostsAsRead, limitReadPosts: limitReadPosts, readPostsLimit: readPostsLimit)
         }
     }
 }

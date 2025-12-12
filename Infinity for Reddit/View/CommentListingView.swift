@@ -77,7 +77,6 @@ struct CommentListingView: View {
                             )
                         }) {
                             CommentViewCard(
-                                account: accountViewModel.account,
                                 comment: comment,
                                 isInPostDetails: false,
                                 thingModerationRepository: thingModerationRepository,

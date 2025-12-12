@@ -17,6 +17,7 @@ struct PostDetailsView: View {
     @EnvironmentObject private var postEditingShareableViewModel: PostEditingShareableViewModel
     @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     @EnvironmentObject private var snackbarManager: SnackbarManager
+    @EnvironmentObject private var accountViewModel: AccountViewModel
     
     @StateObject var playerManager = PlayerManager()
     @StateObject var postDetailsViewModel: PostDetailsViewModel
@@ -50,19 +51,16 @@ struct PostDetailsView: View {
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
     private var showAuthorAvatar: Bool = false
     
-    private let account: Account
     private let isFromSubredditPostListing: Bool
     private let thingModerationRepository: ThingModerationRepositoryProtocol
     
-    init(account: Account, postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false) {
-        self.account = account
+    init(postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false) {
         self.isFromSubredditPostListing = isFromSubredditPostListing
         let thingModerationRepository = ThingModerationRepository()
         self.thingModerationRepository = thingModerationRepository
         
         _postDetailsViewModel = StateObject(
             wrappedValue: PostDetailsViewModel(
-                account: account,
                 postDetailsInput: postDetailsInput,
                 postDetailsRepository: PostDetailsRepository(),
                 historyPostsRepository: HistoryPostsRepository(),
@@ -82,7 +80,6 @@ struct PostDetailsView: View {
                     ScrollViewReader { proxy in
                         List {
                             PostDetailsViewCard(
-                                account: account,
                                 post: post,
                                 isFromSubredditPostListing: isFromSubredditPostListing,
                                 onUpvote: {
@@ -184,7 +181,6 @@ struct PostDetailsView: View {
                                 ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
                                     if case let .comment(comment) = commentItem {
                                         CommentViewCard(
-                                            account: account,
                                             comment: comment,
                                             isInPostDetails: true,
                                             highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id || postDetailsViewModel.searchedComment?.id == comment.id,
@@ -836,7 +832,7 @@ struct PostDetailsView: View {
             ]
         }
         
-        if !account.isAnonymous() && postDetailsViewModel.post?.canReply == true {
+        if !accountViewModel.account.isAnonymous() && postDetailsViewModel.post?.canReply == true {
             menuItems.append(
                 NavigationBarMenuItem(title: "Send comment") {
                     sendComment()

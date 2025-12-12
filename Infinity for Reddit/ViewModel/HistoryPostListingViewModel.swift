@@ -220,22 +220,18 @@ public class HistoryPostListingViewModel: ObservableObject {
     
     func postProcessPosts(_ posts: [Post]) async -> [Post] {
         let upvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
-            account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .upvoted
         ) : Set<String>()
         let downvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
-            account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .downvoted
         ) : Set<String>()
         let hiddenPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
-            account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .hidden
         ) : Set<String>()
         let savedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
-            account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id },
             postHistoryType: .saved
         ) : Set<String>()

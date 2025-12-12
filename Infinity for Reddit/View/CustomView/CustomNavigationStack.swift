@@ -33,15 +33,15 @@ struct CustomNavigationStack<Content: View>: View {
                         LoginView()
                             .environmentObject(navigationManager)
                     case .postDetails(let postDetailsInput, let isFromSubredditPostListing):
-                        PostDetailsView(account: self.accountViewModel.account, postDetailsInput: postDetailsInput, isFromSubredditPostListing: isFromSubredditPostListing)
+                        PostDetailsView(postDetailsInput: postDetailsInput, isFromSubredditPostListing: isFromSubredditPostListing)
                             .environmentObject(navigationManager)
                             .environmentObject(commentSubmissionShareableViewModel)
                             .environmentObject(postEditingShareableViewModel)
                     case .postDetailsWithId(let postId, let commentId, let isContinueThread):
-                        PostDetailsView(account: self.accountViewModel.account,
-                                        postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId),
-                                        isFromSubredditPostListing: false,
-                                        isContinueThread: isContinueThread
+                        PostDetailsView(
+                            postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId),
+                            isFromSubredditPostListing: false,
+                            isContinueThread: isContinueThread
                         )
                         .environmentObject(navigationManager)
                         .environmentObject(commentSubmissionShareableViewModel)

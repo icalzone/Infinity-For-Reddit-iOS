@@ -51,7 +51,6 @@ struct CommentViewCard: View {
     let onCopy: () -> Void
     
     init(
-        account: Account,
         comment: Comment,
         isInPostDetails: Bool,
         highlightComment: Bool = false,
@@ -80,7 +79,7 @@ struct CommentViewCard: View {
         self.onModerate = onModerate
         self.onCopy = onCopy
         self.isToolbarHidden = isInPostDetails ? UserDefaults.interfaceComment.bool(forKey: InterfaceCommentUserDefaultsUtils.hideToolbarKey) : false
-        _commentViewModel = StateObject(wrappedValue: CommentViewModel(account: account, comment: comment, commentRepository: CommentRepository(), thingModerationRepository: ThingModerationRepository()))
+        _commentViewModel = StateObject(wrappedValue: CommentViewModel(comment: comment))
     }
     
     var body: some View {
@@ -252,7 +251,7 @@ struct CommentViewCard: View {
                                     .contentShape(Rectangle())
                                 }
                                 
-                                if !AccountViewModel.shared.account.isAnonymous() {
+                                if !accountViewModel.account.isAnonymous() {
                                     Button(action: {
                                         onToggleSave()
                                     }) {
@@ -265,7 +264,7 @@ struct CommentViewCard: View {
                                     .contentShape(Rectangle())
                                 }
                                 
-                                if isInPostDetails && !AccountViewModel.shared.account.isAnonymous() {
+                                if isInPostDetails && !accountViewModel.account.isAnonymous() {
                                     Button(action: {
                                         if commentViewModel.comment.locked {
                                             snackbarManager.showSnackbar(.info("This comment is locked."))
@@ -294,7 +293,7 @@ struct CommentViewCard: View {
                                         }
                                     }
                                     
-                                    if !AccountViewModel.shared.account.isAnonymous() {
+                                    if !accountViewModel.account.isAnonymous() {
                                         Button(commentViewModel.comment.saved ? "Unsave" : "Save") {
                                             onToggleSave()
                                         }
@@ -308,7 +307,7 @@ struct CommentViewCard: View {
                                         onCopy()
                                     }
                                     
-                                    if isInPostDetails && !AccountViewModel.shared.account.isAnonymous() {
+                                    if isInPostDetails && !accountViewModel.account.isAnonymous() {
                                         Button("Reply") {
                                             if commentViewModel.comment.locked {
                                                 snackbarManager.showSnackbar(.info("This comment is locked."))

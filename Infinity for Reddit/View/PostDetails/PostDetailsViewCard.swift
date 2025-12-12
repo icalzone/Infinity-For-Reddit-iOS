@@ -42,7 +42,6 @@ struct PostDetailsViewCard: View {
     private let iconSize: CGFloat = 24
     
     init(
-        account: Account,
         post: Post,
         isFromSubredditPostListing: Bool,
         onUpvote: @escaping () async -> Void,
@@ -59,7 +58,7 @@ struct PostDetailsViewCard: View {
         self.onSendComment = onSendComment
         self.onLongPress = onLongPress
         self.onLongPressOnContent = onLongPressOnContent
-        _postViewModel = StateObject(wrappedValue: PostViewModel(account: account, post: post, postRepository: PostRepository()))
+        _postViewModel = StateObject(wrappedValue: PostViewModel(post: post, postRepository: PostRepository()))
     }
     
     var body: some View {
