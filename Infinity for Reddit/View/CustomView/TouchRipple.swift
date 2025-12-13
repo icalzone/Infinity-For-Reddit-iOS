@@ -40,88 +40,46 @@ struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
                 excludedViews = dict[id] ?? []
             }
             .modify {
-                if #available(iOS 26, *) {
-                    $0.gesture(
-                        SimultaneousGesture(
-                            onBegan: {
-                                print("Long Press Began")
-                            },
-                            onChanged: { recognizer in
-                                let location = recognizer.location(in: recognizer.view)
-                                if dragStartLocation == nil {
-                                    dragStartLocation = location
+                $0.simultaneousGesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            if dragStartLocation == nil {
+                                dragStartLocation = value.startLocation
+                            }
+                            
+                            guard let start = dragStartLocation else {
+                                return
+                            }
+                            let distance = hypot(value.location.x - start.x, value.location.y - start.y)
+                            
+                            if distance <= maxTapMovement && validTouch && isOutsideExcludedViews(value.location) {
+                                if !isPressed {
+                                    isPressed = true
                                 }
-                                
-                                guard let start = dragStartLocation else { return }
-                                
-                                let distance = hypot(location.x - start.x, location.y - start.y)
-                                
-                                if distance <= maxTapMovement && validTouch && isOutsideExcludedViews(location) {
-                                    if !isPressed {
-                                        isPressed = true
-                                    }
-                                } else {
-                                    validTouch = false
-                                    if isPressed {
-                                        isPressed = false
-                                    }
-                                }
-                            },
-                            onEnded: { recognizer in
-                                defer {
-                                    dragStartLocation = nil
+                            } else {
+                                validTouch = false
+                                if isPressed {
                                     isPressed = false
-                                    validTouch = true
-                                }
-
-                                guard let start = dragStartLocation, validTouch else { return }
-                                let location = recognizer.location(in: recognizer.view)
-                                let dragDistance = hypot(location.x - start.x, location.y - start.y)
-                                
-                                if dragDistance <= maxTapMovement {
-                                    action?()
                                 }
                             }
-                        )
-                    )
-                } else {
-                    $0.simultaneousGesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                if dragStartLocation == nil {
-                                    dragStartLocation = value.startLocation
-                                }
-                                
-                                guard let start = dragStartLocation else { return }
-                                let distance = hypot(value.location.x - start.x, value.location.y - start.y)
-                                
-                                if distance <= maxTapMovement && validTouch && isOutsideExcludedViews(value.location) {
-                                    if !isPressed {
-                                        isPressed = true
-                                    }
-                                } else {
-                                    validTouch = false
-                                    if isPressed {
-                                        isPressed = false
-                                    }
-                                }
+                        }
+                        .onEnded { value in
+                            defer {
+                                dragStartLocation = nil
+                                isPressed = false
+                                validTouch = true
                             }
-                            .onEnded { value in
-                                defer {
-                                    dragStartLocation = nil
-                                    isPressed = false
-                                    validTouch = true
-                                }
-
-                                guard let start = dragStartLocation, validTouch else { return }
-                                let dragDistance = hypot(value.location.x - start.x, value.location.y - start.y)
-                                
-                                if dragDistance <= maxTapMovement {
-                                    action?()
-                                }
+                            
+                            guard let start = dragStartLocation, validTouch else {
+                                return
                             }
-                    )
-                }
+                            let dragDistance = hypot(value.location.x - start.x, value.location.y - start.y)
+                            
+                            if dragDistance <= maxTapMovement {
+                                action?()
+                            }
+                        }
+                )
             }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 0)
