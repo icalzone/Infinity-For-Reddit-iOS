@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 struct AboutSettingsView: View {
     @EnvironmentObject var navigationManager: NavigationManager

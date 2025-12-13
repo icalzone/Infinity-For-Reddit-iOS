@@ -2,7 +2,7 @@
 //  AboutSettingsViewNavigation.swift
 //  Infinity for Reddit
 //
-//  Created by joeylr2042 on 2024-12-09
+//  Created by joeylr2042 on 2025-12-11
 //
 
 enum AboutSettingsViewNavigation: Hashable {

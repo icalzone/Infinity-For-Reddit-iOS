@@ -2,7 +2,7 @@
 //  AcknowledgementView.swift
 //  Infinity for Reddit
 //
-//  Created by joeylr20242 on 2025-12-11.
+//  Created by joeylr2042 on 2025-12-11.
 //
 
 import SwiftUI
