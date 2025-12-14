@@ -15,6 +15,8 @@ struct CustomizeCommentFilterView: View {
     
     @StateObject private var customizeCommentFilterViewModel: CustomizeCommentFilterViewModel
     
+    @State private var showUserSelectionSheet: Bool = false
+    
     @FocusState private var focusedField: FieldType?
     
     init(_ commentFilter: CommentFilter?, commentToBeAdded: Comment? = nil, selectedFieldsToAddToCommentFilter: [SelectedFieldToAddToCommentFilter]? = nil) {
@@ -107,9 +109,14 @@ struct CustomizeCommentFilterView: View {
                                         .lineLimit(1...5)
                                         .id(FieldType.excludeUsers)
                                     
-                                    Button(action: {}) {
-                                        SwiftUI.Image(systemName: "plus")
+                                    Button(action: {
+                                        showUserSelectionSheet = true
+                                    }) {
+                                        SwiftUI.Image(systemName: "person.crop.circle.badge.plus")
+                                            .resizable()
+                                            .scaledToFit()
                                             .primaryIcon()
+                                            .frame(width: 36)
                                     }
                                     .padding(.leading, 16)
                                 }
@@ -212,6 +219,30 @@ struct CustomizeCommentFilterView: View {
         }
         .onChange(of: customizeCommentFilterViewModel.savedCommentFilterFlag) {
             dismiss()
+        }
+        .sheet(isPresented: $showUserSelectionSheet) {
+            NavigationStack {
+                UserSelectionSheet { thing in
+                    switch thing {
+                    case .subscribedUser(let subscribedUserData):
+                        addUserToExcludeUsers(subscribedUserData.name)
+                    case .user(let userData):
+                        addUserToExcludeUsers(userData.name)
+                    default:
+                        break
+                    }
+                }
+            }
+        }
+    }
+    
+    private func addUserToExcludeUsers(_ username: String) {
+        if customizeCommentFilterViewModel.excludeUsers.isEmpty {
+            customizeCommentFilterViewModel.excludeUsers = username
+        } else if customizeCommentFilterViewModel.excludeUsers.last != "," {
+            customizeCommentFilterViewModel.excludeUsers += ",\(username)"
+        } else {
+            customizeCommentFilterViewModel.excludeUsers += username
         }
     }
     
