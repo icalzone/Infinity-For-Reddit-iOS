@@ -23,7 +23,7 @@ struct SearchSubredditsAndUsersSheet: View {
             }
         }
         .id(accountViewModel.account.username)
-        .addTitleToInlineNavigationBar("Search Subreddits and Users")
+        .addTitleToInlineNavigationBar(navigationBarTitle)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
@@ -65,6 +65,17 @@ struct SearchSubredditsAndUsersSheet: View {
                     dismiss()
                 })
             }
+        }
+    }
+    
+    private var navigationBarTitle: String {
+        switch thingSelectionMode {
+        case .subredditMultiSelection(selectedSubreddits: let selectedSubreddits, onConfirmSelection: let onConfirmSelection):
+            return "Search Subreddits"
+        case .userMultiSelection(selectedUsers: let selectedUsers, onConfirmSelection: let onConfirmSelection):
+            return "Search Users"
+        default:
+            return "Search Subreddits and Users"
         }
     }
     

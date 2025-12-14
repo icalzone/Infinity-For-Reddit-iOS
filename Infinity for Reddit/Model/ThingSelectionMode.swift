@@ -16,7 +16,7 @@ enum ThingSelectionMode {
     
     var isMultiSelection: Bool {
         switch self {
-        case .subredditAndUserMultiSelection, .subredditMultiSelection:
+        case .subredditAndUserMultiSelection, .subredditMultiSelection, .userMultiSelection:
             return true
         default:
             return false
