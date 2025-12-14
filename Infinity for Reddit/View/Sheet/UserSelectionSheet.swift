@@ -1,28 +1,27 @@
 //
-// SubredditSelectionSheet.swift
-// Infinity for Reddit
+//  UserSelectionSheet.swift
+//  Infinity for Reddit
 //
-// Created by joeylr2042 on 2025-08-21
-        
+//  Created by Docile Alligator on 2025-12-14.
+//
+
 import SwiftUI
 import Swinject
 import GRDB
 import Alamofire
 
-struct SubredditSelectionSheet: View {
+struct UserSelectionSheet: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     
     @Environment(\.dismiss) private var dismiss
     
     @StateObject var subscriptionListingViewModel: SubscriptionListingViewModel
     
-    @State private var showSearchSubredditsSheet: Bool = false
+    @State private var showSearchUsersSheet: Bool = false
     
-    let showCurrentAccountSubreddit: Bool
     let onThingSelected: (Thing) -> Void
     
     init(showCurrentAccountSubreddit: Bool = false, onThingSelected: @escaping (Thing) -> Void) {
-        self.showCurrentAccountSubreddit = showCurrentAccountSubreddit
         _subscriptionListingViewModel = StateObject(
             wrappedValue: SubscriptionListingViewModel(
                 // We don't care about the selection mode here cuz we are not using SubscriptionsView
@@ -35,29 +34,28 @@ struct SubredditSelectionSheet: View {
 
     var body: some View {
         SheetRootView {
-            SubscribedSubredditListingView(
-                showCurrentAccountSubreddit: showCurrentAccountSubreddit,
+            SubscribedUserListingView(
                 subscriptionListingViewModel: subscriptionListingViewModel
-            ) { subscribedSubredditData in
-                onThingSelected(.subscribedSubreddit(subscribedSubredditData))
+            ) { subscribedUserData in
+                onThingSelected(.subscribedUser(subscribedUserData))
                 dismiss()
             }
         }
         .themedNavigationBar()
-        .addTitleToInlineNavigationBar("Select a Subreddit")
+        .addTitleToInlineNavigationBar("Select a User")
         .task {
             await subscriptionListingViewModel.loadSubscriptionsOnline()
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    showSearchSubredditsSheet = true
+                    showSearchUsersSheet = true
                 } label: {
                     SwiftUI.Image(systemName: "magnifyingglass")
                 }
             }
         }
-        .sheet(isPresented: $showSearchSubredditsSheet) {
+        .sheet(isPresented: $showSearchUsersSheet) {
             NavigationStack {
                 SearchSubredditsSheet { thing in
                     onThingSelected(thing)

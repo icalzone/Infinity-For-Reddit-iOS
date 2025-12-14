@@ -108,8 +108,13 @@ struct MarkdownImageProvider: ImageProvider {
                     if markdownEmbeddedMediaType.allowVideo {
                         VStack {
                             if let url = URL(string: media.hlsUrl) {
-                                InlineVideoPlayer(videoURL: url, aspectRatio: CGSize(width: media.x, height: media.y), muteVideo: VideoUserDefaultsUtils.muteAutoplayingVideo, isSensitive: isSensitive)
-                                    .id(url)
+                                InlineVideoPlayer(
+                                    videoURL: url,
+                                    aspectRatio: CGSize(width: media.x, height: media.y),
+                                    muteVideo: VideoUserDefaultsUtils.muteAutoplayingVideo,
+                                    isSensitive: isSensitive
+                                )
+                                .id(url)
                             }
                             
                             if media.caption != nil {
