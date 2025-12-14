@@ -57,7 +57,7 @@ struct UserSelectionSheet: View {
         }
         .sheet(isPresented: $showSearchUsersSheet) {
             NavigationStack {
-                SearchSubredditsSheet { thing in
+                SearchUsersSheet { thing in
                     onThingSelected(thing)
                     dismiss()
                 }
