@@ -81,6 +81,7 @@ struct PostFilterUsageListingView: View {
                 showPostFilterUsageSheet = true
             }
         }
+        .showErrorUsingSnackbar(postFilterUsageViewModel.$error)
         .wrapContentSheet(isPresented: $showPostFilterUsageSheet) {
             PostFilterUsageSheet { usageType, nameOfUsage in
                 postFilterUsageViewModel.savePostFilterUsage(usageType: usageType, nameOfUsage: nameOfUsage)

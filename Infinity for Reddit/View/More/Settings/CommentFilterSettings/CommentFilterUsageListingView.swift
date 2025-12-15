@@ -79,6 +79,7 @@ struct CommentFilterUsageListingView: View {
                 showCommentFilterUsageSheet = true
             }
         }
+        .showErrorUsingSnackbar(commentFilterUsageListingViewModel.$error)
         .wrapContentSheet(isPresented: $showCommentFilterUsageSheet) {
             CommentFilterUsageSheet { usageType, nameOfUsage in
                 commentFilterUsageListingViewModel.saveCommentFilterUsage(usageType: usageType, nameOfUsage: nameOfUsage)
