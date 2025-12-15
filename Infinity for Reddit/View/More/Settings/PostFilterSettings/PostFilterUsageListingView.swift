@@ -9,8 +9,8 @@ import SwiftUI
 
 struct PostFilterUsageListingView: View {
     @StateObject private var postFilterUsageViewModel: PostFilterUsageListingViewModel
-    @State private var showPostFilterUsageSheet: Bool = false
     
+    @State private var showPostFilterUsageSheet: Bool = false
     @State private var showSelectSubredditsSheet: Bool = false
     @State private var showSelectUsersSheet: Bool = false
     @State private var showSelectCustomFeedsSheet: Bool = false
