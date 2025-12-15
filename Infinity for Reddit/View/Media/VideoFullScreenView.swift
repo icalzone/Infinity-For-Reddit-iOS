@@ -91,6 +91,7 @@ struct VideoFullScreenView<Content: View>: View {
                     downloadProgress: videoFullScreenViewModel.downloadProgress,
                     showDownloadFinishedMessage: videoFullScreenViewModel.showDownloadFinishedMessage,
                     hasDescription: hasDescription,
+                    canDownload: canDownload,
                     onTogglePlayPause: {
                         if videoFullScreenViewModel.isPlaying {
                             videoFullScreenViewModel.pause(userPaused: true)
@@ -234,6 +235,7 @@ struct VideoController<Content: View>: View {
     let downloadProgress: Double
     let showDownloadFinishedMessage: Bool
     let hasDescription: Bool
+    let canDownload: Bool
     let onTogglePlayPause: () -> Void
     let onFastForward: () -> Void
     let onRewind: () -> Void
@@ -259,6 +261,7 @@ struct VideoController<Content: View>: View {
         downloadProgress: Double,
         showDownloadFinishedMessage: Bool,
         hasDescription: Bool,
+        canDownload: Bool,
         onTogglePlayPause: @escaping () -> Void,
         onFastForward: @escaping () -> Void,
         onRewind: @escaping () -> Void,
@@ -283,6 +286,7 @@ struct VideoController<Content: View>: View {
         self.downloadProgress = downloadProgress
         self.showDownloadFinishedMessage = showDownloadFinishedMessage
         self.hasDescription = hasDescription
+        self.canDownload = canDownload
         self.onTogglePlayPause = onTogglePlayPause
         self.onFastForward = onFastForward
         self.onRewind = onRewind
@@ -327,13 +331,15 @@ struct VideoController<Content: View>: View {
                         }
                     }
                     
-                    Button {
-                        onDownload()
-                        onResetControllerTimer()
-                    } label: {
-                        SwiftUI.Image(systemName: "arrow.down.square")
-                            .font(.system(size: 24))
-                            .foregroundStyle(.white)
+                    if canDownload {
+                        Button {
+                            onDownload()
+                            onResetControllerTimer()
+                        } label: {
+                            SwiftUI.Image(systemName: "arrow.down.square")
+                                .font(.system(size: 24))
+                                .foregroundStyle(.white)
+                        }
                     }
                     
                     Button {

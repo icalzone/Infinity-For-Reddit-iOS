@@ -243,7 +243,8 @@ struct HomeView: View {
                         post: post,
                         videoType: videoType,
                         videoFullScreenViewModel: videoFullScreenViewModel,
-                        muteVideo: VideoUserDefaultsUtils.muteVideo || ((post?.over18 ?? false) && VideoUserDefaultsUtils.muteSensitiveVideo)
+                        muteVideo: VideoUserDefaultsUtils.muteVideo || ((post?.over18 ?? false) && VideoUserDefaultsUtils.muteSensitiveVideo),
+                        canDownload: canDownload
                     ) {
                         fullScreenMediaViewModel.dismiss()
                         videoFullScreenViewModel.resetState()
