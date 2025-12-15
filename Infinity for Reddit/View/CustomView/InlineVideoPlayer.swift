@@ -112,67 +112,74 @@ private struct InlineVideoPlayerWithControls: View {
                     manager.toggleControls()
                 }
 
-            VStack {
-                Spacer()
-                
-                HStack {
-                    Button(action: {
-                        manager.togglePlayPause()
-                        manager.resetControlsTimer()
-                    }) {
-                        SwiftUI.Image(systemName: manager.isPlaying ? "pause.fill" : "play.fill")
-                            .resizable()
-                            .frame(width: 24, height: 24)
-                            .foregroundColor(.white)
-                    }
-                    .buttonStyle(.borderless)
-
-                    Text(formatTime(manager.currentTime))
-                        .foregroundColor(.white)
-                        .font(.caption)
-                        .frame(width: 50, alignment: .trailing)
-
-                    Slider(value: $manager.currentTime, in: 0...manager.duration, onEditingChanged: { editing in
-                        manager.isDragging = editing
-                        if !editing {
-                            manager.seek(to: manager.currentTime)
-                        }
-                    })
-                    .accentColor(.white)
-                    .onChange(of: manager.currentTime, initial: false) { _, _  in
-                        if manager.isDragging {
-                            manager.resetControlsTimer()
+            ZStack {
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        
+                        if manager.hasAudio {
+                            Button(action: {
+                                let isMuted = manager.toggleMute()
+                                manager.resetControlsTimer()
+                                postListingVideoManager?.isMuted = isMuted
+                            }) {
+                                SwiftUI.Image(systemName: manager.isMuted ? "speaker.slash" : "speaker.wave.2")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .foregroundColor(.white)
+                            }
+                            .buttonStyle(.borderless)
                         }
                     }
-
-                    Text(formatTime(manager.duration))
-                        .foregroundColor(.white)
-                        .font(.caption)
-                        .frame(width: 50, alignment: .leading)
+                    .padding(16)
                     
-                    if manager.hasAudio {
-                        Button(action: {
-                            let isMuted = manager.toggleMute()
-                            manager.resetControlsTimer()
-                            postListingVideoManager?.isMuted = isMuted
-                        }) {
-                            SwiftUI.Image(systemName: manager.isMuted ? "speaker.slash" : "speaker.wave.2")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(.white)
+                    Spacer()
+                    
+                    HStack(spacing: 0) {
+                        Text(formatTime(manager.currentTime))
+                            .foregroundColor(.white)
+                            .font(.caption)
+                            .frame(width: 50)
+
+                        Slider(value: $manager.currentTime, in: 0...manager.duration, onEditingChanged: { editing in
+                            print(editing)
+                            manager.isDragging = editing
+                            if !editing {
+                                manager.seek(to: manager.currentTime)
+                            }
+                        })
+                        .accentColor(.white)
+                        .onChange(of: manager.currentTime, initial: false) { _, _  in
+                            if manager.isDragging {
+                                manager.resetControlsTimer()
+                            }
                         }
-                        .buttonStyle(.borderless)
+
+                        Text(formatTime(manager.duration))
+                            .foregroundColor(.white)
+                            .font(.caption)
+                            .frame(width: 50)
                     }
+                    .padding(8)
                 }
-                .padding()
-                .background(Color.black)
-                .opacity(manager.showControls ? 1 : 0)
+                
+                Button(action: {
+                    manager.togglePlayPause()
+                    manager.resetControlsTimer()
+                }) {
+                    SwiftUI.Image(systemName: manager.isPlaying ? "pause.fill" : "play.fill")
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .foregroundColor(.white)
+                }
+                .buttonStyle(.borderless)
             }
-            .onTapGesture {
-                manager.resetControlsTimer()
-            }
+            .background(Color.black.opacity(0.5))
             .opacity(manager.showControls ? 1 : 0)
             .animation(.easeInOut(duration: 0.3), value: manager.showControls)
+//            .onTapGesture {
+//                manager.resetControlsTimer()
+//            }
         }
         .applyIf(aspectRatio != nil) {
             $0.aspectRatio(aspectRatio!, contentMode: .fit)
