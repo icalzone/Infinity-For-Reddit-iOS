@@ -44,6 +44,7 @@ struct CustomizeCommentFilterView: View {
                                 CustomTextField("Comment Filter Name",
                                                 text: $customizeCommentFilterViewModel.name,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .commentFilterName,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -85,6 +86,7 @@ struct CustomizeCommentFilterView: View {
                                 
                                 CustomTextField("Title: excludes keywords (key1,key2)",
                                                 text: $customizeCommentFilterViewModel.excludesKeywords,
+                                                showBackground: false,
                                                 fieldType: .excludeKeywords,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -104,6 +106,7 @@ struct CustomizeCommentFilterView: View {
                                 HStack {
                                     CustomTextField("E.g. Hostilenemy,random",
                                                     text: $customizeCommentFilterViewModel.excludeUsers,
+                                                    showBackground: false,
                                                     fieldType: .excludeUsers,
                                                     focusedField: $focusedField)
                                         .lineLimit(1...5)
@@ -135,6 +138,7 @@ struct CustomizeCommentFilterView: View {
                                 CustomTextField("Min vote (-1: no restriction)",
                                                 text: $customizeCommentFilterViewModel.minVoteString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .minVotes,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -166,6 +170,7 @@ struct CustomizeCommentFilterView: View {
                                 CustomTextField("Max vote (-1: no restriction)",
                                                 text: $customizeCommentFilterViewModel.maxVoteString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .maxVotes,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)

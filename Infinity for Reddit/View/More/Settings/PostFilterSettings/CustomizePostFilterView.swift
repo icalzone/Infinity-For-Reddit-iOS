@@ -92,6 +92,7 @@ struct CustomizePostFilterView: View {
                                 CustomTextField("Post Filter Name",
                                                 text: $customizePostFilterViewModel.name,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .postFilterName,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -153,6 +154,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Title: excludes keywords (key1,key2)",
                                                 text: $customizePostFilterViewModel.excludesKeywords,
+                                                showBackground: false,
                                                 fieldType: .excludeKeywords,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -164,6 +166,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Title: contains keywords (key1,key2)",
                                                 text: $customizePostFilterViewModel.containsKeywords,
+                                                showBackground: false,
                                                 fieldType: .containKeywords,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -182,6 +185,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Title: excludes regex",
                                                 text: $customizePostFilterViewModel.excludesRegex,
+                                                showBackground: false,
                                                 fieldType: .titleExcludeRegex,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -193,6 +197,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Title: contains regex",
                                                 text: $customizePostFilterViewModel.containsRegex,
+                                                showBackground: false,
                                                 fieldType: .titleContainRegex,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -212,6 +217,7 @@ struct CustomizePostFilterView: View {
                                 HStack(spacing: 0) {
                                     CustomTextField("E.g. funny,AskReddit",
                                                     text: $customizePostFilterViewModel.excludeSubreddits,
+                                                    showBackground: false,
                                                     fieldType: .excludeSubreddits,
                                                     focusedField: $focusedField)
                                         .lineLimit(1...5)
@@ -236,6 +242,7 @@ struct CustomizePostFilterView: View {
                                 HStack {
                                     CustomTextField("E.g. Hostilenemy,random",
                                                     text: $customizePostFilterViewModel.excludeUsers,
+                                                    showBackground: false,
                                                     fieldType: .excludeUsers,
                                                     focusedField: $focusedField)
                                         .lineLimit(1...5)
@@ -266,6 +273,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Exclude flairs (e.g., flair1,flair2)",
                                                 text: $customizePostFilterViewModel.excludeFlairs,
+                                                showBackground: false,
                                                 fieldType: .excludeFlairs,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -277,6 +285,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Contain flairs (e.g., flair1,flair2)",
                                                 text: $customizePostFilterViewModel.containFlairs,
+                                                showBackground: false,
                                                 fieldType: .containFlairs,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -295,6 +304,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Exclude domains",
                                                 text: $customizePostFilterViewModel.excludeDomains,
+                                                showBackground: false,
                                                 fieldType: .excludeDomains,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -306,6 +316,7 @@ struct CustomizePostFilterView: View {
                                 
                                 CustomTextField("Contain domains",
                                                 text: $customizePostFilterViewModel.containDomains,
+                                                showBackground: false,
                                                 fieldType: .containDomains,
                                                 focusedField: $focusedField)
                                     .lineLimit(1...5)
@@ -325,6 +336,7 @@ struct CustomizePostFilterView: View {
                                 CustomTextField("Min vote (-1: no restriction)",
                                                 text: $customizePostFilterViewModel.minVoteString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .minVotes,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -357,6 +369,7 @@ struct CustomizePostFilterView: View {
                                 CustomTextField("Max vote (-1: no restriction)",
                                                 text: $customizePostFilterViewModel.maxVoteString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .maxVotes,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -396,6 +409,7 @@ struct CustomizePostFilterView: View {
                                 CustomTextField("Min comments (-1: no restriction)",
                                                 text: $customizePostFilterViewModel.minCommentsString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .minComments,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
@@ -428,6 +442,7 @@ struct CustomizePostFilterView: View {
                                 CustomTextField("Max comments (-1: no restriction)",
                                                 text: $customizePostFilterViewModel.maxCommentsString,
                                                 singleLine: true,
+                                                showBackground: false,
                                                 fieldType: .maxComments,
                                                 focusedField: $focusedField)
                                 .submitLabel(.done)
