@@ -17,8 +17,10 @@ struct SavedView: View {
     var body: some View {
         RootView {
             VStack(spacing: 0) {
-                SegmentedPicker(selectedValue: $selectedOption, values: accountViewModel.account.isAnonymous() ? ["Posts"] : ["Posts", "Comments"])
-                    .padding(4)
+                if !accountViewModel.account.isAnonymous() {
+                    SegmentedPicker(selectedValue: $selectedOption, values: ["Posts", "Comments"])
+                        .padding(4)
+                }
                 
                 TabView(selection: $selectedOption) {
                     Group {
@@ -44,7 +46,7 @@ struct SavedView: View {
                     }
                     .tag(0)
                     
-                    if accountViewModel.account.isAnonymous() {
+                    if !accountViewModel.account.isAnonymous() {
                         CommentListingView(
                             commentListingMetadata: CommentListingMetadata(
                                 commentListingType:.userSaved,
@@ -55,7 +57,6 @@ struct SavedView: View {
                         .tag(1)
                     }
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
             }
         }
         .themedNavigationBar()
