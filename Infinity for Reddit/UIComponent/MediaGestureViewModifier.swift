@@ -14,10 +14,12 @@ struct MediaGestureViewModifier: ViewModifier {
     
     @State private var lastTransform: CGAffineTransform = .identity
     @State private var transform: CGAffineTransform = .identity
-    @State private var predictedEndTranslation: CGSize = .zero
     @State private var containerSize: CGSize = .zero
     @State private var contentSize: CGSize = .zero
+    @State private var dismissStarted: Bool = false
+    
     let onDragEnded: (CGAffineTransform) -> Bool
+    let onStartDismiss: () -> Void
     let onDismiss: () -> Void
     
     func body(content: Content) -> some View {
@@ -41,17 +43,17 @@ struct MediaGestureViewModifier: ViewModifier {
                         }
                     }
                     .animatableTransformEffect(transform)
-                    .gesture(dragGesture)
+                    .gesture(dragGesture, isEnabled: !dismissStarted)
                     .modify { view in
                         if #available(iOS 17.0, *) {
-                            view.gesture(magnificationGesture)
+                            view.gesture(magnificationGesture, isEnabled: !dismissStarted)
                         } else {
-                            view.gesture(oldMagnificationGesture)
+                            view.gesture(oldMagnificationGesture, isEnabled: !dismissStarted)
                         }
                     }
-                    .gesture(doubleTapGesture)
+                    .gesture(doubleTapGesture, isEnabled: !dismissStarted)
             }
-            .gesture(dragGesture)
+            .gesture(dragGesture, isEnabled: !dismissStarted)
             .onAppear {
                 containerSize = proxy.size
             }
@@ -116,21 +118,45 @@ struct MediaGestureViewModifier: ViewModifier {
                         x: value.translation.width / transform.scaleX,
                         y: value.translation.height / transform.scaleY
                     )
-                    
                 }
             }
-            .onEnded { _ in
+            .onEnded { value in
                 if onDragEnded(transform) {
-                    withAnimation {
-                        onDismiss()
-                    } completion: {
-                        transform = .identity
-                        lastTransform = .identity
-                    }
+                    handleDragEnded(predictedEndTranslation: value.predictedEndTranslation, velocity: value.velocity, frameSize: containerSize)
                 } else {
                     onEndGesture()
                 }
             }
+    }
+    
+    func handleDragEnded(predictedEndTranslation: CGSize, velocity: CGSize, frameSize: CGSize) {
+        let dismissDistance = Swift.max(frameSize.width, frameSize.height) * 1.5
+        
+        let animation: Animation
+        let endTranslation: CGSize
+        
+        if #available(iOS 17, *) {
+            endTranslation = predictedEndTranslation.normalized * dismissDistance
+            let initialVelocity = velocity.magnitude / dismissDistance
+            animation = .interpolatingSpring(.smooth, initialVelocity: initialVelocity)
+        } else {
+            animation = .spring
+            endTranslation = predictedEndTranslation.normalized * dismissDistance
+        }
+        
+        dismissStarted = true
+        onStartDismiss()
+        withAnimation(animation) {
+            transform = lastTransform.translatedBy(
+                x: endTranslation.width,
+                y: endTranslation.height
+            )
+        } completion: {
+            onDismiss()
+            dismissStarted = false
+            transform = .identity
+            lastTransform = .identity
+        }
     }
     
     private func onEndGesture() {
@@ -183,5 +209,21 @@ struct MediaGestureViewModifier: ViewModifier {
         
         let yDistance = min(abs(transform.ty), maxYDistance)
         return Double(1 - (yDistance / maxYDistance))
+    }
+}
+
+extension CGSize {
+    var magnitude: CGFloat {
+        sqrt(pow(width, 2) + pow(height, 2))
+    }
+    
+    var normalized: CGSize {
+        let mag = magnitude
+        guard mag > 0 else { return .zero }
+        return CGSize(width: width / mag, height: height / mag)
+    }
+    
+    static func * (size: CGSize, scalar: CGFloat) -> CGSize {
+        return CGSize(width: size.width * scalar, height: size.height * scalar)
     }
 }

@@ -39,6 +39,11 @@ struct ImageFullScreenView: View {
                     }
                     return false
                 },
+                onStartDismiss: {
+                    withAnimation {
+                        isToolbarVisible = false
+                    }
+                },
                 onDismiss: onDismiss
             )
             .onTapGesture {

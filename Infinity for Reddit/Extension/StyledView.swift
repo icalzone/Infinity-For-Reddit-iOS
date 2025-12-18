@@ -282,6 +282,7 @@ extension View {
         doubleTapZoomScale: CGFloat = 2,
         outOfBoundsColor: Color = .black,
         onDragEnded: @escaping (CGAffineTransform) -> Bool,
+        onStartDismiss: @escaping () -> Void,
         onDismiss: @escaping () -> Void
     ) -> some View {
         self.modifier(MediaGestureViewModifier(
@@ -289,6 +290,7 @@ extension View {
             doubleTapZoomScale: doubleTapZoomScale,
             outOfBoundsColor: outOfBoundsColor,
             onDragEnded: onDragEnded,
+            onStartDismiss: onStartDismiss,
             onDismiss: onDismiss
         ))
     }
