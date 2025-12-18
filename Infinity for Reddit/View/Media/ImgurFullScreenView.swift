@@ -79,6 +79,8 @@ struct ImgurFullScreenView: View {
                             }
                         }
                     }
+                    .edgesIgnoringSafeArea(.all)
+                    .ignoresSafeArea()
                     .tabViewStyle(.page(indexDisplayMode: .never))
                 }
             } else {
@@ -155,6 +157,7 @@ struct ImgurImageView: View {
     @State private var hasStartedDragging: Bool = false
     @State private var isAnimatingBack: Bool = false
     @State private var isToolbarVisible: Bool = true
+    @State private var dismissStarted: Bool = false
     
     let imgurMediaItem: ImgurMediaItem
     let imgurMedia: ImgurMedia
@@ -164,59 +167,32 @@ struct ImgurImageView: View {
     
     var body: some View {
         ZStack {
-            ZoomableScrollView(
-                content: {
-                    CustomWebImage(
-                        imgurMediaItem.link,
-                        handleImageTapGesture: false
-                    )
-                    .offset(y: currentDragOffset)
+            CustomWebImage(
+                imgurMediaItem.link,
+                handleImageTapGesture: false
+            )
+            .tabItemMediaGesture(
+                onDragEnded: { transform in
+                    if transform.scaleX == 1 && transform.scaleY == 1 && abs(transform.ty) > 100 {
+                        return true
+                    }
+                    return false
                 },
-                onSingleTap: {
+                onStartDismiss: {
+                    dismissStarted = true
+                    withAnimation {
+                        isToolbarVisible = false
+                    }
+                },
+                onDismiss: onDismiss
+            )
+            .onTapGesture {
+                if !dismissStarted {
                     withAnimation {
                         isToolbarVisible.toggle()
                     }
-                },
-                currentZoomScale: $currentImageZoom
-            )
-            .simultaneousGesture(
-                DragGesture()
-                    .updating($dragOffset) { value, state, _ in
-                        // Only allow vertical drag to trigger dismiss
-                        if !hasStartedDragging && abs(value.translation.width) < 4 && currentImageZoom == 1.0 {
-                            hasStartedDragging = true
-                        }
-                        if hasStartedDragging {
-                            state = value.translation
-                        }
-                    }
-                    .onChanged { value in
-                        // Adjust the scale based on the drag distance
-                        if hasStartedDragging {
-                            currentDragOffset = value.translation.height
-                        }
-                    }
-                    .onEnded { value in
-                        if hasStartedDragging && abs(value.translation.height) > 100 {
-                            withAnimation(.linear(duration: 0.25)) {
-                                if value.translation.height < 0 {
-                                    // Dragged up
-                                    currentDragOffset = -UIScreen.main.bounds.height
-                                } else {
-                                    // Dragged down
-                                    currentDragOffset = UIScreen.main.bounds.height
-                                }
-                            } completion: {
-                                onDismiss()
-                            }
-                        } else {
-                            withAnimation {
-                                currentDragOffset = 0.0
-                            }
-                        }
-                        hasStartedDragging = false
-                    }
-            )
+                }
+            }
             
             ImgurImageToolbar(
                 downloadMediaType: imgurMediaItem.toDownloadMediaType(post: post),

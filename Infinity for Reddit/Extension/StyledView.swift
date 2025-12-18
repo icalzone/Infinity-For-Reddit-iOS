@@ -295,6 +295,24 @@ extension View {
         ))
     }
     
+    func tabItemMediaGesture(
+        minZoomScale: CGFloat = 1,
+        doubleTapZoomScale: CGFloat = 2,
+        outOfBoundsColor: Color = .black,
+        onDragEnded: @escaping (CGAffineTransform) -> Bool,
+        onStartDismiss: @escaping () -> Void,
+        onDismiss: @escaping () -> Void
+    ) -> some View {
+        self.modifier(TabItemMediaGestureViewModifier(
+            minZoomScale: minZoomScale,
+            doubleTapZoomScale: doubleTapZoomScale,
+            outOfBoundsColor: outOfBoundsColor,
+            onDragEnded: onDragEnded,
+            onStartDismiss: onStartDismiss,
+            onDismiss: onDismiss
+        ))
+    }
+    
     func authorFlairText() -> some View {
         self.modifier(AuthorFlairTextViewModifier())
     }
