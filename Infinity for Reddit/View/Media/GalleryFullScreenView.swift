@@ -339,6 +339,7 @@ struct GalleryImageToolbar: View {
                             
                             ProgressView(value: fullScreenMediaToolbarViewModel.downloadGalleryAllMediaProgress)
                                 .tint(.white)
+                                .customFont(fontSize: .f17)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -351,9 +352,11 @@ struct GalleryImageToolbar: View {
                         HStack {
                             SwiftUI.Image(systemName: "checkmark.seal")
                                 .foregroundStyle(.white)
+                                .customFont(fontSize: .f24)
                             
                             Text("All media downloaded")
                                 .foregroundStyle(.white)
+                                .customFont(fontSize: .f17)
                         }
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -362,6 +365,23 @@ struct GalleryImageToolbar: View {
                                 .fill(Color(hex: "#6B6B6B", opacity: 0.5))
                         )
                         .opacity(fullScreenMediaToolbarViewModel.showFinishedDownloadAllMediaMessage ? 1 : 0)
+                        
+                        HStack {
+                            SwiftUI.Image(systemName: "xmark.seal")
+                                .foregroundStyle(.white)
+                                .customFont(fontSize: .f24)
+                            
+                            Text("Some media couldn’t be downloaded.")
+                                .foregroundStyle(.white)
+                                .customFont(fontSize: .f17)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(hex: "#6B6B6B", opacity: 0.5))
+                        )
+                        .opacity(fullScreenMediaToolbarViewModel.hasErrorWhenDownloadAllMedia ? 1 : 0)
                     }
                 }
                 .padding(.horizontal, 32)

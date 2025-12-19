@@ -16,6 +16,7 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
     @Published var showFinishedDownloadAllMediaMessage: Bool = false
     @Published var showFinishedDownloadMessage: Bool = false
     @Published var error: Error?
+    @Published var hasErrorWhenDownloadAllMedia: Bool = false
     
     private let downloadMediaType: DownloadMediaType
     private var downloadTask: Task<Void, Never>?
@@ -96,17 +97,14 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
                 
                 await MainActor.run {
                     self.downloadGalleryAllMediaProgress = 0
-                    self.showFinishedDownloadAllMediaMessage = true
+                    self.showFinishedDownloadAllMediaMessage = !hasErrorWhenDownloadAllMedia
                 }
                 
-                do {
-                    try await Task.sleep(for: .seconds(1))
-                } catch {
-                    // Ignore
-                }
+                try? await Task.sleep(for: .seconds(1))
                 
                 await MainActor.run {
                     self.showFinishedDownloadAllMediaMessage = false
+                    self.hasErrorWhenDownloadAllMedia = false
                     self.downloadGalleryAllMediaTask = nil
                 }
             }
@@ -134,17 +132,14 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
                 
                 await MainActor.run {
                     self.downloadImgurAllMediaProgress = 0
-                    self.showFinishedDownloadAllMediaMessage = true
+                    self.showFinishedDownloadAllMediaMessage = !hasErrorWhenDownloadAllMedia
                 }
                 
-                do {
-                    try await Task.sleep(for: .seconds(1))
-                } catch {
-                    // Ignore
-                }
+                try? await Task.sleep(for: .seconds(1))
                 
                 await MainActor.run {
                     self.showFinishedDownloadAllMediaMessage = false
+                    self.hasErrorWhenDownloadAllMedia = false
                     self.downloadImgurAllMediaTask = nil
                 }
             }
@@ -157,7 +152,7 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
         } catch {
             print(error)
             await MainActor.run {
-                self.error = error
+                self.hasErrorWhenDownloadAllMedia = true
             }
         }
     }
