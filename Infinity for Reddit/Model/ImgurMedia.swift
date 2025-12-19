@@ -6,6 +6,7 @@
 //
 
 import SwiftyJSON
+import Foundation
 
 class ImgurMediaRootClass {
 
@@ -139,12 +140,15 @@ class ImgurMediaItem: Identifiable {
     
     enum ImgurMediaItemType {
         case image
+        case gif
         case video
     }
     
     var mediaType : ImgurMediaItemType {
-        if type.contains("gif") || type.contains("mp4") {
+        if type.contains("mp4") {
             return .video
+        } else if type.contains("gif") {
+            return .gif
         } else {
             return .image
         }
@@ -162,16 +166,16 @@ class ImgurMediaItem: Identifiable {
         description = json["description"].stringValue
         edited = json["edited"].stringValue
         favorite = json["favorite"].boolValue
-        gifv = json["gifv"].stringValue
+        gifv = json["gifv"].stringValue.ensureHTTPS()
         hasSound = json["has_sound"].boolValue
         height = json["height"].intValue
-        hls = json["hls"].stringValue
+        hls = json["hls"].stringValue.ensureHTTPS()
         id = json["id"].stringValue
         inGallery = json["in_gallery"].boolValue
         inMostViral = json["in_most_viral"].boolValue
         isAd = json["is_ad"].boolValue
-        link = json["link"].stringValue
-        mp4 = json["mp4"].stringValue
+        link = json["link"].stringValue.ensureHTTPS()
+        mp4 = json["mp4"].stringValue.ensureHTTPS()
         mp4Size = json["mp4_size"].intValue
         size = json["size"].intValue
         title = json["title"].stringValue
