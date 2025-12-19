@@ -371,9 +371,26 @@ public class PostListingViewModel: ObservableObject {
             account: AccountViewModel.shared.account,
             postIds: posts.map { $0.id }
         )
+        let upvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            postIds: posts.map { $0.id },
+            postHistoryType: .upvoted
+        ) : Set<String>()
+        let downvotedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            postIds: posts.map { $0.id },
+            postHistoryType: .downvoted
+        ) : Set<String>()
+        let hiddenPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            postIds: posts.map { $0.id },
+            postHistoryType: .hidden
+        ) : Set<String>()
+        let savedPostIdsAnonymous = AccountViewModel.shared.account.isAnonymous() ? await historyPostsRepository.getHistoryPostsIdsByIdsAnonymous(
+            postIds: posts.map { $0.id },
+            postHistoryType: .saved
+        ) : Set<String>()
         
         return posts.filter { post in
             return PostFilter.isPostAllowed(post: post, postFilter: postFilter)
+            && !(AccountViewModel.shared.account.isAnonymous() && hiddenPostIdsAnonymous.contains(post.id))
         }.map {
             if !$0.selftext.isEmpty {
                 modifyPostBody($0)
@@ -382,6 +399,14 @@ public class PostListingViewModel: ObservableObject {
             
             if readPostIds.contains($0.id) {
                 $0.isRead = true
+            }
+            if AccountViewModel.shared.account.isAnonymous() {
+                if upvotedPostIdsAnonymous.contains($0.id) {
+                    $0.likes = 1
+                } else if downvotedPostIdsAnonymous.contains($0.id) {
+                    $0.likes = -1
+                }
+                $0.saved = savedPostIdsAnonymous.contains($0.id)
             }
             
             return $0
