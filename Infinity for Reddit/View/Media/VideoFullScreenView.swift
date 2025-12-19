@@ -64,26 +64,6 @@ struct VideoFullScreenView<Content: View>: View {
                         }
                     }
                 }
-                .mediaGesture(
-                    onDragEnded: { transform in
-                        if transform.scaleX == 1 && transform.scaleY == 1 && abs(transform.ty) > 100 {
-                            return true
-                        }
-                        return false
-                    },
-                    onStartDismiss: {
-                        dismissStarted = true
-                        
-                        withAnimation {
-                            videoFullScreenViewModel.isShowingController = false
-                        }
-                    },
-                    onDismiss: {
-                        videoFullScreenViewModel.resetState()
-                        videoFullScreenViewModel.removeControllerTimer()
-                        onDismiss()
-                    }
-                )
             
             if let error = videoFullScreenViewModel.error {
                 HStack(spacing: 16) {
@@ -161,6 +141,29 @@ struct VideoFullScreenView<Content: View>: View {
         }
         .edgesIgnoringSafeArea(.all)
         .ignoresSafeArea()
+        .applyIf(onDownloadAllMedia == nil) {
+            // In TabVideoView
+            $0.mediaGesture(
+                onDragEnded: { transform in
+                    if transform.scaleX == 1 && transform.scaleY == 1 && abs(transform.ty) > 100 {
+                        return true
+                    }
+                    return false
+                },
+                onStartDismiss: {
+                    dismissStarted = true
+                    
+                    withAnimation {
+                        videoFullScreenViewModel.isShowingController = false
+                    }
+                },
+                onDismiss: {
+                    videoFullScreenViewModel.resetState()
+                    videoFullScreenViewModel.removeControllerTimer()
+                    onDismiss()
+                }
+            )
+        }
         .appForegroundBackgroundListener(onAppEntersForeground: {
             videoFullScreenViewModel.play(respectUserPaused: true)
         }, onAppEntersBackground: {
