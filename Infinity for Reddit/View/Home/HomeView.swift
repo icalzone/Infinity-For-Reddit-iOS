@@ -284,6 +284,11 @@ struct HomeView: View {
                 currentNavigationManager.openLink(context)
                 accountViewModel.pendingContextAfterNotificationClicked = nil
             }
+            
+            if let inboxFullname = accountViewModel.pendingInboxFullname, !inboxFullname.isEmpty {
+                homeViewModel.readInbox(inboxFullname: inboxFullname)
+                accountViewModel.pendingInboxFullname = nil
+            }
         }
         .task {
             await homeViewModel.fetchInboxCount()
@@ -310,6 +315,7 @@ struct HomeView: View {
         .onReceive(NotificationCenter.default.publisher(for: .inboxDeepLink)) { note in
             let accountName = (note.userInfo?[AppDeepLink.accountNameKey] as? String) ?? ""
             let viewMessage = (note.userInfo?[AppDeepLink.viewMessageKey] as? Bool) ?? false
+            let inboxFullname = note.userInfo?[AppDeepLink.fullnameKey] as? String
             
             Task {
                 if !accountName.isEmpty {
@@ -321,9 +327,13 @@ struct HomeView: View {
                         await MainActor.run {
                             selectedTab = .inbox
                         }
+                        if let inboxFullname {
+                            homeViewModel.readInbox(inboxFullname: inboxFullname)
+                        }
                     } else {
                         await MainActor.run {
                             accountViewModel.pendingInboxTabAfterNotificationClicked = true
+                            accountViewModel.pendingInboxFullname = inboxFullname
                         }
                     }
                 }
@@ -331,6 +341,7 @@ struct HomeView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .contextDeepLink)) { note in
             let accountName = (note.userInfo?[AppDeepLink.accountNameKey] as? String) ?? ""
+            let inboxFullname = note.userInfo?[AppDeepLink.fullnameKey] as? String
             
             Task {
                 if !accountName.isEmpty {
@@ -339,11 +350,15 @@ struct HomeView: View {
                             await MainActor.run {
                                 currentNavigationManager.openLink(context)
                             }
+                            if let inboxFullname {
+                                homeViewModel.readInbox(inboxFullname: inboxFullname)
+                            }
                         }
                     } else {
                         if let context = (note.userInfo?[AppDeepLink.contextKey] as? String) {
                             await MainActor.run {
                                 accountViewModel.pendingContextAfterNotificationClicked = context
+                                accountViewModel.pendingInboxFullname = inboxFullname
                             }
                         }
                     }

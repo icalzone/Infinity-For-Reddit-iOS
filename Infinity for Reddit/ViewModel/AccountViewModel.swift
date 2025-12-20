@@ -28,6 +28,7 @@ public class AccountViewModel: ObservableObject {
     @Published var inboxNavigationTarget: InboxNavigationTarget?
     @Published var pendingInboxTabAfterNotificationClicked: Bool = false
     @Published var pendingContextAfterNotificationClicked: String?
+    @Published var pendingInboxFullname: String?
     
     private let accountDao: AccountDao
     private var cancellables: Set<AnyCancellable> = []
