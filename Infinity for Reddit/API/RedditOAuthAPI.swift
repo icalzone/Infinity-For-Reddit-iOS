@@ -330,6 +330,7 @@ enum RedditOAuthAPI: URLRequestConvertible {
         var request = URLRequest(url: url)
         request.method = method
         request.headers = headers ?? HTTPHeaders()
+        request.headers["User-Agent"] = APIUtils.USER_AGENT
         
         switch self {
         case .submitGalleryPost(let body), .submitPollPost(let body):
