@@ -45,8 +45,7 @@ struct MoreView: View {
                         withAnimation(.linear(duration: 0.2)) {
                             handleLinkUrlString = ""
                             activeAlert = .handleLink
-                        }
-                        //navigationManager.openLink("https://imgur.com/gallery/scattershot-2-first-monsoon-of-year-has-arrived-vE6YoyH#/t/album")
+                        }                        
                     }
                     .listPlainItemNoInsets()
                     

@@ -247,6 +247,7 @@ struct TabItemMediaGestureViewModifier: ViewModifier {
                                 }
                         }
                     }
+                    .animatableTransformEffect(transform)
                     // This is a placeholder gesture that prevents the stupid as hell TabView from getting the gesture
                     .gesture(DragGesture(), isEnabled: hasZoomed)
                     .simultaneousGesture(simultaneousDragGesture, isEnabled: !dismissStarted)
@@ -259,7 +260,6 @@ struct TabItemMediaGestureViewModifier: ViewModifier {
                     }
                     .gesture(doubleTapGesture, isEnabled: !dismissStarted)
             }
-            .animatableTransformEffect(transform)
             // This is a placeholder gesture that prevents the stupid as hell TabView from getting the gesture
             .gesture(DragGesture(), isEnabled: hasZoomed)
             .simultaneousGesture(simultaneousDragGesture, isEnabled: !dismissStarted)
