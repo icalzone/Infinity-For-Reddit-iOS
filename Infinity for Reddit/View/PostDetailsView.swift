@@ -78,411 +78,398 @@ struct PostDetailsView: View {
     var body: some View {
         RootView {
             if let post = postDetailsViewModel.post {
-                ZStack(alignment: .bottom) {
-                    ScrollViewReader { proxy in
-                        List {
-                            PostDetailsViewCard(
-                                post: post,
-                                isFromSubredditPostListing: isFromSubredditPostListing,
-                                onUpvote: {
-                                    await postDetailsViewModel.votePost(vote: 1)
-                                },
-                                onDownvote: {
-                                    await postDetailsViewModel.votePost(vote: -1)
-                                },
-                                onToggleSave: {
-                                    await postDetailsViewModel.toggleSavePost(save: !post.saved)
-                                },
-                                onSendComment: {
-                                    sendComment()
-                                },
-                                onLongPress: {
-                                    showPostOptionsSheet = true
-                                },
-                                onLongPressOnContent: {
-                                    titleToBeCopied = post.title
-                                    markdownToBeCopied = post.selftext
-                                    plainTextToBeCopied = post.selftextHtml
-                                    showCopyContentOptionsSheet = true
+                GeometryReader { geometryProxy in
+                    ZStack(alignment: .bottom) {
+                        HStack(spacing: 0) {
+                            if geometryProxy.size.width > 500 {
+                                List {
+                                    PostDetailsItemView(
+                                        postDetailsViewModel: postDetailsViewModel,
+                                        post: post,
+                                        isFromSubredditPostListing: isFromSubredditPostListing,
+                                        onSendComment: sendComment,
+                                        onLongPress: {
+                                            showPostOptionsSheet = true
+                                        },
+                                        onLongPressOnContent: {
+                                            titleToBeCopied = post.title
+                                            markdownToBeCopied = post.selftext
+                                            plainTextToBeCopied = post.selftextHtml
+                                            showCopyContentOptionsSheet = true
+                                        }
+                                    )
                                 }
-                            )
-                            .listPlainItemNoInsets()
-                            .id(ObjectIdentifier(post))
-                            .onAppear {
-                                if post.subredditOrUserIconInPostDetails == nil {
-                                    Task {
-                                        await postDetailsViewModel.loadPostIcon(isFromSubredditPostListing: isFromSubredditPostListing)
-                                    }
-                                }
-                            }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                Button {
-                                    voteTask?.cancel()
-                                    voteTask = Task {
-                                        await postDetailsViewModel.votePost(vote: 1)
-                                    }
-                                } label: {
-                                    SwiftUI.Image(systemName: "arrowshape.up")
-                                        .foregroundStyle(.white)
-                                }
-                                .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
-                            }
-                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                Button {
-                                    voteTask?.cancel()
-                                    voteTask = Task {
-                                        await postDetailsViewModel.votePost(vote: -1)
-                                    }
-                                } label: {
-                                    SwiftUI.Image(systemName: "arrowshape.down")
-                                        .foregroundStyle(.white)
-                                }
-                                .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
+                                .themedList()
+                                .scrollIndicators(.hidden)
+                                .scrollBounceBehavior(.basedOnSize)
                             }
                             
-                            if case .postAndCommentId(_, let commentId) = postDetailsViewModel.postDetailsInput, commentId != nil {
-                                TouchRipple(action: {
-                                    guard let post = postDetailsViewModel.post else { return }
-                                    postDetailsViewModel.postDetailsInput = .post(post)
-                                    postDetailsViewModel.refreshPostAndComments()
-                                }) {
-                                    Text("Click here to browse all comments")
-                                        .frame(maxWidth: .infinity)
-                                        .contentShape(Rectangle())
-                                        .padding(16)
-                                        .colorAccentText()
-                                }
-                                .listPlainItemNoInsets()
-                            }
-                            
-                            if postDetailsViewModel.visibleComments.isEmpty {
-                                if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
-                                    ProgressIndicator()
-                                        .frame(maxWidth: .infinity)
-                                        .listPlainItem()
-                                } else {
-                                    ZStack {
-                                        VStack(spacing: 8) {
-                                            SwiftUI.Image(systemName: "plus.circle")
-                                                .primaryIcon()
-                                            
-                                            Text("No comments yet. Be the first to share your thoughts!")
-                                                .primaryText()
-                                                .multilineTextAlignment(.center)
-                                        }
-                                        .contentShape(Rectangle())
-                                        .onTapGesture {
-                                            sendComment()
-                                        }
+                            ScrollViewReader { proxy in
+                                List {
+                                    if geometryProxy.size.width <= 500 {
+                                        PostDetailsItemView(
+                                            postDetailsViewModel: postDetailsViewModel,
+                                            post: post,
+                                            isFromSubredditPostListing: isFromSubredditPostListing,
+                                            onSendComment: sendComment,
+                                            onLongPress: {
+                                                showPostOptionsSheet = true
+                                            },
+                                            onLongPressOnContent: {
+                                                titleToBeCopied = post.title
+                                                markdownToBeCopied = post.selftext
+                                                plainTextToBeCopied = post.selftextHtml
+                                                showCopyContentOptionsSheet = true
+                                            }
+                                        )
                                     }
-                                    .frame(maxWidth: .infinity)
-                                    .padding(16)
-                                    .listPlainItemNoInsets()
-                                }
-                            } else {
-                                ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
-                                    if case let .comment(comment) = commentItem {
-                                        CommentViewCard(
-                                            comment: comment,
-                                            isInPostDetails: true,
-                                            highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id || postDetailsViewModel.searchedComment?.id == comment.id,
-                                            thingModerationRepository: thingModerationRepository,
-                                            onUpvote: {
-                                                postDetailsViewModel.voteComment(comment, vote: 1)
-                                            },
-                                            onDownvote: {
-                                                postDetailsViewModel.voteComment(comment, vote: -1)
-                                            },
-                                            onToggleSave: {
-                                                postDetailsViewModel.toggleSaveComment(comment, save: !comment.saved)
-                                            },
-                                            onToggleExpand: {
-                                                if fullyCollapseComment {
-                                                    if comment.isCollasped {
-                                                        postDetailsViewModel.expandComments(comment: comment)
-                                                    } else {
-                                                        postDetailsViewModel.collapseComments(comment: comment)
+                                    
+                                    if case .postAndCommentId(_, let commentId) = postDetailsViewModel.postDetailsInput, commentId != nil {
+                                        TouchRipple(action: {
+                                            guard let post = postDetailsViewModel.post else { return }
+                                            postDetailsViewModel.postDetailsInput = .post(post)
+                                            postDetailsViewModel.refreshPostAndComments()
+                                        }) {
+                                            Text("Click here to browse all comments")
+                                                .frame(maxWidth: .infinity)
+                                                .contentShape(Rectangle())
+                                                .padding(16)
+                                                .colorAccentText()
+                                        }
+                                        .listPlainItemNoInsets()
+                                    }
+                                    
+                                    if postDetailsViewModel.visibleComments.isEmpty {
+                                        if postDetailsViewModel.isInitialLoading || postDetailsViewModel.isInitialLoad {
+                                            ProgressIndicator()
+                                                .frame(maxWidth: .infinity)
+                                                .listPlainItem()
+                                        } else {
+                                            ZStack {
+                                                VStack(spacing: 8) {
+                                                    SwiftUI.Image(systemName: "plus.circle")
+                                                        .primaryIcon()
+                                                    
+                                                    Text("No comments yet. Be the first to share your thoughts!")
+                                                        .primaryText()
+                                                        .multilineTextAlignment(.center)
+                                                }
+                                                .contentShape(Rectangle())
+                                                .onTapGesture {
+                                                    sendComment()
+                                                }
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .padding(16)
+                                            .listPlainItemNoInsets()
+                                        }
+                                    } else {
+                                        ForEach(postDetailsViewModel.visibleComments, id: \.id) { commentItem in
+                                            if case let .comment(comment) = commentItem {
+                                                CommentViewCard(
+                                                    comment: comment,
+                                                    isInPostDetails: true,
+                                                    highlightComment: postDetailsViewModel.postDetailsInput.getHighlightCommentId == comment.id || postDetailsViewModel.searchedComment?.id == comment.id,
+                                                    thingModerationRepository: thingModerationRepository,
+                                                    onUpvote: {
+                                                        postDetailsViewModel.voteComment(comment, vote: 1)
+                                                    },
+                                                    onDownvote: {
+                                                        postDetailsViewModel.voteComment(comment, vote: -1)
+                                                    },
+                                                    onToggleSave: {
+                                                        postDetailsViewModel.toggleSaveComment(comment, save: !comment.saved)
+                                                    },
+                                                    onToggleExpand: {
+                                                        if fullyCollapseComment {
+                                                            if comment.isCollasped {
+                                                                postDetailsViewModel.expandComments(comment: comment)
+                                                            } else {
+                                                                postDetailsViewModel.collapseComments(comment: comment)
+                                                            }
+                                                        } else {
+                                                            withAnimation {
+                                                                if comment.isCollasped {
+                                                                    postDetailsViewModel.expandComments(comment: comment)
+                                                                } else {
+                                                                    postDetailsViewModel.collapseComments(comment: comment)
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    onReply: {
+                                                        let commentParent = CommentParent.comment(parentComment: comment)
+                                                        self.sentCommentParent = commentParent
+                                                        navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
+                                                    },
+                                                    onEdit: {
+                                                        self.commentToBeEdited = comment
+                                                        navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
+                                                    },
+                                                    onDelete: {
+                                                        postDetailsViewModel.deleteComment(comment)
+                                                    },
+                                                    onAddToCommentFilter: {
+                                                        navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
+                                                    },
+                                                    onModerate: {
+                                                        commentToBeModerated = comment
+                                                        showCommentModerationSheet = true
+                                                    },
+                                                    onCopy: {
+                                                        titleToBeCopied = nil
+                                                        markdownToBeCopied = comment.body
+                                                        plainTextToBeCopied = comment.bodyHtml
+                                                        showCopyContentOptionsSheet = true
                                                     }
-                                                } else {
-                                                    withAnimation {
+                                                )
+                                                .listPlainItemNoInsets()
+                                                .id(ObjectIdentifier(comment))
+                                                .onLongPressGesture {
+                                                    if fullyCollapseComment {
                                                         if comment.isCollasped {
                                                             postDetailsViewModel.expandComments(comment: comment)
                                                         } else {
                                                             postDetailsViewModel.collapseComments(comment: comment)
                                                         }
-                                                    }
-                                                }
-                                            },
-                                            onReply: {
-                                                let commentParent = CommentParent.comment(parentComment: comment)
-                                                self.sentCommentParent = commentParent
-                                                navigationManager.append(AppNavigation.submitComment(commentParent: commentParent))
-                                            },
-                                            onEdit: {
-                                                self.commentToBeEdited = comment
-                                                navigationManager.append(AppNavigation.editComment(commentToBeEdited: comment))
-                                            },
-                                            onDelete: {
-                                                postDetailsViewModel.deleteComment(comment)
-                                            },
-                                            onAddToCommentFilter: {
-                                                navigationManager.append(SettingsViewNavigation.commentFilter(commentToBeAdded: comment))
-                                            },
-                                            onModerate: {
-                                                commentToBeModerated = comment
-                                                showCommentModerationSheet = true
-                                            },
-                                            onCopy: {
-                                                titleToBeCopied = nil
-                                                markdownToBeCopied = comment.body
-                                                plainTextToBeCopied = comment.bodyHtml
-                                                showCopyContentOptionsSheet = true
-                                            }
-                                        )
-                                        .listPlainItemNoInsets()
-                                        .id(ObjectIdentifier(comment))
-                                        .onLongPressGesture {
-                                            if fullyCollapseComment {
-                                                if comment.isCollasped {
-                                                    postDetailsViewModel.expandComments(comment: comment)
-                                                } else {
-                                                    postDetailsViewModel.collapseComments(comment: comment)
-                                                }
-                                            } else {
-                                                withAnimation {
-                                                    if comment.isCollasped {
-                                                        postDetailsViewModel.expandComments(comment: comment)
                                                     } else {
-                                                        postDetailsViewModel.collapseComments(comment: comment)
+                                                        withAnimation {
+                                                            if comment.isCollasped {
+                                                                postDetailsViewModel.expandComments(comment: comment)
+                                                            } else {
+                                                                postDetailsViewModel.collapseComments(comment: comment)
+                                                            }
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        }
-                                        .onAppear {
-                                            postDetailsViewModel.insertIntoAppearedComments(commentItem)
-                                            
-                                            if showAuthorAvatar {
-                                                postDetailsViewModel.loadIcon(comment: comment)
-                                            }
-                                        }
-                                        .onDisappear {
-                                            postDetailsViewModel.appearedComments.remove(id: commentItem.id)
-                                        }
-                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                            Button {
-                                                postDetailsViewModel.voteComment(comment, vote: 1)
-                                            } label: {
-                                                SwiftUI.Image(systemName: "arrowshape.up")
-                                                    .foregroundStyle(.white)
-                                            }
-                                            .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
-                                        }
-                                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                            Button {
-                                                postDetailsViewModel.voteComment(comment, vote: -1)
-                                            } label: {
-                                                SwiftUI.Image(systemName: "arrowshape.down")
-                                                    .foregroundStyle(.white)
-                                            }
-                                            .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
-                                        }
-                                    } else if case let .more(commentMore) = commentItem {
-                                        CommentMoreViewCard(commentMore: commentMore)
-                                            .listPlainItemNoInsets()
-                                            .id(commentMore.id)
-                                            .onTapGesture {
-                                                if commentMore.children.count > 0 {
-                                                    Task {
-                                                        await postDetailsViewModel.fetchMoreCommentsInCommentMore(commentMore: commentMore)
-                                                    }
-                                                } else {
-                                                    // Continue thread
-                                                    if let postId = postDetailsViewModel.post?.id {
-                                                        navigationManager.append(
-                                                            AppNavigation.postDetailsWithId(
-                                                                postId: postId,
-                                                                commentId: commentMore.parentFullname.substring(from: 3),
-                                                                isContinueThread: true
-                                                            )
-                                                        )
+                                                .onAppear {
+                                                    postDetailsViewModel.insertIntoAppearedComments(commentItem)
+                                                    
+                                                    if showAuthorAvatar {
+                                                        postDetailsViewModel.loadIcon(comment: comment)
                                                     }
                                                 }
+                                                .onDisappear {
+                                                    postDetailsViewModel.appearedComments.remove(id: commentItem.id)
+                                                }
+                                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                                    Button {
+                                                        postDetailsViewModel.voteComment(comment, vote: 1)
+                                                    } label: {
+                                                        SwiftUI.Image(systemName: "arrowshape.up")
+                                                            .foregroundStyle(.white)
+                                                    }
+                                                    .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
+                                                }
+                                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                                    Button {
+                                                        postDetailsViewModel.voteComment(comment, vote: -1)
+                                                    } label: {
+                                                        SwiftUI.Image(systemName: "arrowshape.down")
+                                                            .foregroundStyle(.white)
+                                                    }
+                                                    .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
+                                                }
+                                            } else if case let .more(commentMore) = commentItem {
+                                                CommentMoreViewCard(commentMore: commentMore)
+                                                    .listPlainItemNoInsets()
+                                                    .id(commentMore.id)
+                                                    .onTapGesture {
+                                                        if commentMore.children.count > 0 {
+                                                            Task {
+                                                                await postDetailsViewModel.fetchMoreCommentsInCommentMore(commentMore: commentMore)
+                                                            }
+                                                        } else {
+                                                            // Continue thread
+                                                            if let postId = postDetailsViewModel.post?.id {
+                                                                navigationManager.append(
+                                                                    AppNavigation.postDetailsWithId(
+                                                                        postId: postId,
+                                                                        commentId: commentMore.parentFullname.substring(from: 3),
+                                                                        isContinueThread: true
+                                                                    )
+                                                                )
+                                                            }
+                                                        }
+                                                    }
                                             }
-                                    }
-                                }
-                                if postDetailsViewModel.hasMoreComments {
-                                    Text("Loading more comments")
-                                        .primaryText()
-                                        .task {
-                                            await postDetailsViewModel.fetchCommentsPagination()
                                         }
-                                        .listPlainItem()
+                                        if postDetailsViewModel.hasMoreComments {
+                                            Text("Loading more comments")
+                                                .primaryText()
+                                                .task {
+                                                    await postDetailsViewModel.fetchCommentsPagination()
+                                                }
+                                                .listPlainItem()
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                        .frame(height: 150)
+                                        .listPlainItemNoInsets()
                                 }
-                            }
-                            
-                            Spacer()
-                                .frame(height: 150)
-                                .listPlainItemNoInsets()
-                        }
-                        .themedList()
-                        .scrollIndicators(.hidden)
-                        .scrollBounceBehavior(.basedOnSize)
-                        .onAppear {
-                            self.listProxy = proxy
-                        }
-                        .refreshable {
-                            await postDetailsViewModel.refreshPostAndCommentsWithContinuation()
-                        }
-                        .onScrollPhaseChange { _, phase in
-                            switch phase {
-                            case .idle:
-                                if !showActionBar {
-                                    withAnimation {
-                                        showActionBar = true
+                                .themedList()
+                                .scrollIndicators(.hidden)
+                                .scrollBounceBehavior(.basedOnSize)
+                                .onAppear {
+                                    self.listProxy = proxy
+                                }
+                                .refreshable {
+                                    await postDetailsViewModel.refreshPostAndCommentsWithContinuation()
+                                }
+                                .onScrollPhaseChange { _, phase in
+                                    switch phase {
+                                    case .idle:
+                                        if !showActionBar {
+                                            withAnimation {
+                                                showActionBar = true
+                                            }
+                                        }
+                                    case .interacting:
+                                        if showActionBar {
+                                            withAnimation {
+                                                showActionBar = false
+                                            }
+                                        }
+                                    default:
+                                        break
                                     }
                                 }
-                            case .interacting:
-                                if showActionBar {
-                                    withAnimation {
-                                        showActionBar = false
-                                    }
-                                }
-                            default:
-                                break
                             }
+                            .frame(maxWidth: .infinity)
                         }
-                    }
-                    
-                    if showSearchBar {
-                        HStack(spacing: 0) {
-                            CustomTextField(
-                                "Search",
-                                text: $postDetailsViewModel.searchQuery,
-                                singleLine: true,
-                                keyboardType: .default,
-                                autocapitalization: .never,
-                                customTextFieldScheme: .fab,
-                                showBorder: false,
-                                showBackground: false,
-                                fieldType: .search,
-                                focusedField: $focusedField
-                            )
-                            .submitLabel(.search)
-                            .onSubmit {
-                                if let listProxy, let commentItem = postDetailsViewModel.getNextSearchedComment() {
-                                    scrollToComment(listProxy: listProxy, commentItem: commentItem)
-                                }
-                            }
-                            
-                            SwiftUI.Image(systemName: "chevron.up")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 16)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if let listProxy, let commentItem = postDetailsViewModel.getPreviousSearchedComment() {
-                                        scrollToComment(listProxy: listProxy, commentItem: commentItem)
-                                    }
-                                }
-                            
-                            SwiftUI.Image(systemName: "chevron.down")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 16)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
+                        
+                        if showSearchBar {
+                            HStack(spacing: 0) {
+                                CustomTextField(
+                                    "Search",
+                                    text: $postDetailsViewModel.searchQuery,
+                                    singleLine: true,
+                                    keyboardType: .default,
+                                    autocapitalization: .never,
+                                    customTextFieldScheme: .fab,
+                                    showBorder: false,
+                                    showBackground: false,
+                                    fieldType: .search,
+                                    focusedField: $focusedField
+                                )
+                                .submitLabel(.search)
+                                .onSubmit {
                                     if let listProxy, let commentItem = postDetailsViewModel.getNextSearchedComment() {
                                         scrollToComment(listProxy: listProxy, commentItem: commentItem)
                                     }
                                 }
-                            
-                            SwiftUI.Image(systemName: "xmark")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 16)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    withAnimation {
-                                        showSearchBar = false
-                                        postDetailsViewModel.searchedComment = nil
-                                        postDetailsViewModel.searchQuery = ""
-                                    }
-                                }
-                        }
-                        .padding(.vertical, 16)
-                        .padding(.leading, 16)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorAccent))
-                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 8)
-                        )
-                        .padding(16)
-                        .contentShape(RoundedRectangle(cornerRadius: 12))
-                        .transition(.move(edge: .bottom))
-                        .zIndex(2)
-                    } else if showActionBar {
-                        HStack(spacing: 0) {
-                            SwiftUI.Image(systemName: "chevron.up")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if let listProxy {
-                                        if let commentItem = postDetailsViewModel.getPreviousParentComment() {
+                                
+                                SwiftUI.Image(systemName: "chevron.up")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if let listProxy, let commentItem = postDetailsViewModel.getPreviousSearchedComment() {
                                             scrollToComment(listProxy: listProxy, commentItem: commentItem)
                                         }
                                     }
-                                }
-                            
-                            SwiftUI.Image(systemName: "magnifyingglass")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    withAnimation {
-                                        showSearchBar = true
-                                    }
-                                }
-                            
-                            SwiftUI.Image(systemName: "chevron.down")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24)
-                                .padding(16)
-                                .fabIcon()
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if let listProxy {
-                                        if let commentItem = postDetailsViewModel.getNextParentComment() {
+                                
+                                SwiftUI.Image(systemName: "chevron.down")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if let listProxy, let commentItem = postDetailsViewModel.getNextSearchedComment() {
                                             scrollToComment(listProxy: listProxy, commentItem: commentItem)
                                         }
                                     }
-                                }
+                                
+                                SwiftUI.Image(systemName: "xmark")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 16)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        withAnimation {
+                                            showSearchBar = false
+                                            postDetailsViewModel.searchedComment = nil
+                                            postDetailsViewModel.searchQuery = ""
+                                        }
+                                    }
+                            }
+                            .padding(.vertical, 16)
+                            .padding(.leading, 16)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorAccent))
+                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 8)
+                            )
+                            .padding(16)
+                            .contentShape(RoundedRectangle(cornerRadius: 12))
+                            .transition(.move(edge: .bottom))
+                            .zIndex(2)
+                        } else if showActionBar {
+                            HStack(spacing: 0) {
+                                SwiftUI.Image(systemName: "chevron.up")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if let listProxy {
+                                            if let commentItem = postDetailsViewModel.getPreviousParentComment() {
+                                                scrollToComment(listProxy: listProxy, commentItem: commentItem)
+                                            }
+                                        }
+                                    }
+                                
+                                SwiftUI.Image(systemName: "magnifyingglass")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        withAnimation {
+                                            showSearchBar = true
+                                        }
+                                    }
+                                
+                                SwiftUI.Image(systemName: "chevron.down")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24)
+                                    .padding(16)
+                                    .fabIcon()
+                                    .contentShape(Rectangle())
+                                    .onTapGesture {
+                                        if let listProxy {
+                                            if let commentItem = postDetailsViewModel.getNextParentComment() {
+                                                scrollToComment(listProxy: listProxy, commentItem: commentItem)
+                                            }
+                                        }
+                                    }
+                            }
+                            .background(
+                                Capsule()
+                                    .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorAccent))
+                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 8)
+                            )
+                            .padding(.bottom, 32)
+                            .contentShape(Capsule())
+                            .transition(.move(edge: .bottom))
+                            .zIndex(1)
                         }
-                        .background(
-                            Capsule()
-                                .fill(Color(hex: customThemeViewModel.currentCustomTheme.colorAccent))
-                                .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 8)
-                        )
-                        .padding(.bottom, 32)
-                        .contentShape(Capsule())
-                        .transition(.move(edge: .bottom))
-                        .zIndex(1)
                     }
+                    .showErrorUsingSnackbar(postDetailsViewModel.$error)
                 }
-                .showErrorUsingSnackbar(postDetailsViewModel.$error)
             } else {
                 ZStack {
                     if postDetailsViewModel.isInitialLoading {
@@ -1001,5 +988,81 @@ struct PostDetailsView: View {
     
     private enum FieldType: Hashable {
         case search
+    }
+}
+
+private struct PostDetailsItemView: View {
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
+    
+    @ObservedObject var postDetailsViewModel: PostDetailsViewModel
+    
+    @State var voteTask: Task<Void, Never>?
+    
+    let post: Post
+    let isFromSubredditPostListing: Bool
+    let onSendComment: () -> Void
+    let onLongPress: () -> Void
+    let onLongPressOnContent: () -> Void
+    
+    var body: some View {
+        PostDetailsViewCard(
+            post: post,
+            isFromSubredditPostListing: isFromSubredditPostListing,
+            onUpvote: {
+                voteTask?.cancel()
+                voteTask = Task {
+                    await postDetailsViewModel.votePost(vote: 1)
+                }
+            },
+            onDownvote: {
+                voteTask?.cancel()
+                voteTask = Task {
+                    await postDetailsViewModel.votePost(vote: -1)
+                }
+            },
+            onToggleSave: {
+                await postDetailsViewModel.toggleSavePost(save: !post.saved)
+            },
+            onSendComment: onSendComment,
+            onLongPress: {
+                onLongPress()
+            },
+            onLongPressOnContent: {
+                onLongPressOnContent()
+            }
+        )
+        .listPlainItemNoInsets()
+        .id(ObjectIdentifier(post))
+        .onAppear {
+            if post.subredditOrUserIconInPostDetails == nil {
+                Task {
+                    await postDetailsViewModel.loadPostIcon(isFromSubredditPostListing: isFromSubredditPostListing)
+                }
+            }
+        }
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button {
+                voteTask?.cancel()
+                voteTask = Task {
+                    await postDetailsViewModel.votePost(vote: 1)
+                }
+            } label: {
+                SwiftUI.Image(systemName: "arrowshape.up")
+                    .foregroundStyle(.white)
+            }
+            .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                voteTask?.cancel()
+                voteTask = Task {
+                    await postDetailsViewModel.votePost(vote: -1)
+                }
+            } label: {
+                SwiftUI.Image(systemName: "arrowshape.down")
+                    .foregroundStyle(.white)
+            }
+            .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
+        }
     }
 }
