@@ -66,7 +66,9 @@ struct PostView: View {
                 PostViewCard(
                     postViewModel: postViewModel,
                     isSubredditPostListing: isSubredditPostListing,
-                    onPostTap: onPostTap,
+                    onPostTap: { videoPlaybackTime in
+                        onPostTap(videoPlaybackTime)
+                    },
                     onIconTap: onIconTap,
                     onSubredditTap: onSubredditTap,
                     onUserTap: onUserTap,
@@ -85,7 +87,9 @@ struct PostView: View {
                 PostViewCompact(
                     postViewModel: postViewModel,
                     isSubredditPostListing: isSubredditPostListing,
-                    onPostTap: onPostTap,
+                    onPostTap: {
+                        onPostTap(0)
+                    },
                     onIconTap: onIconTap,
                     onSubredditTap: onSubredditTap,
                     onUserTap: onUserTap,
@@ -107,7 +111,7 @@ struct PostView: View {
         .frame(maxWidth: 500)
     }
     
-    private func onPostTap() {
+    private func onPostTap(_ videoPlaybackTime: Double) {
         Task {
             await postViewModel.readPost(markPostsAsRead: markPostsAsRead, limitReadPosts: limitReadPosts, readPostsLimit: readPostsLimit)
         }
@@ -115,7 +119,8 @@ struct PostView: View {
         navigationManager.append(
             AppNavigation.postDetails(
                 postDetailsInput: .post(post),
-                isFromSubredditPostListing: isSubredditPostListing
+                isFromSubredditPostListing: isSubredditPostListing,
+                videoPlaybackTime: videoPlaybackTime
             )
         )
     }

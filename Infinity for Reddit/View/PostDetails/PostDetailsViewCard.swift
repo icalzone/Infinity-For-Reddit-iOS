@@ -33,6 +33,7 @@ struct PostDetailsViewCard: View {
     @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
 
     let isFromSubredditPostListing: Bool
+    let playbackTimeToSeekToInitially: Double
     let onUpvote: () -> Void
     let onDownvote: () -> Void
     let onToggleSave: () async -> Void
@@ -45,6 +46,7 @@ struct PostDetailsViewCard: View {
     init(
         post: Post,
         isFromSubredditPostListing: Bool,
+        playbackTimeToSeekToInitially: Double,
         onUpvote: @escaping () -> Void,
         onDownvote: @escaping () -> Void,
         onToggleSave: @escaping () async -> Void,
@@ -53,6 +55,7 @@ struct PostDetailsViewCard: View {
         onLongPressOnContent: @escaping () -> Void
     ) {
         self.isFromSubredditPostListing = isFromSubredditPostListing
+        self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
         self.onUpvote = onUpvote
         self.onDownvote = onDownvote
         self.onToggleSave = onToggleSave
@@ -249,12 +252,12 @@ struct PostDetailsViewCard: View {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString)
+                PostVideoViewSelfContainedViewModel(post: postViewModel.post, videoUrlString: videoUrlString, playbackTimeToSeekToInitially: playbackTimeToSeekToInitially)
             } else if case .video(let videoUrlString, _) = postViewModel.post.postType {
                 Spacer()
                     .frame(height: 10)
                 
-                PostVideoView(post: postViewModel.post, videoUrlString: videoUrlString)
+                PostVideoViewSelfContainedViewModel(post: postViewModel.post, videoUrlString: videoUrlString, playbackTimeToSeekToInitially: playbackTimeToSeekToInitially)
             } else if postViewModel.post.postType.isMedia {
                 Spacer()
                     .frame(height: 10)

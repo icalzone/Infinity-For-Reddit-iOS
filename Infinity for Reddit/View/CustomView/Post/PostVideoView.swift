@@ -11,7 +11,7 @@ struct PostVideoView: View {
     @EnvironmentObject private var networkManager: NetworkManager
     @EnvironmentObject private var fullScreenMediaViewModel: FullScreenMediaViewModel
     
-    @StateObject private var videoPlayerViewModel: VideoPlayerViewModel
+    @ObservedObject private var videoPlayerViewModel: VideoPlayerViewModel
     
     @State private var canPlay: Bool = false
 
@@ -28,19 +28,23 @@ struct PostVideoView: View {
     let post: Post
     let videoUrlString: String
     let inPostListing: Bool
+    let playbackTimeToSeekToInitially: Double
     let onReadPost: (() -> Void)?
     
     init(
         post: Post,
         videoUrlString: String,
         inPostListing: Bool = false,
+        playbackTimeToSeekToInitially: Double = 0,
+        videoPlayerViewModel: VideoPlayerViewModel,
         onReadPost: (() -> Void)? = nil
     ) {
         self.post = post
         self.videoUrlString = videoUrlString
         self.inPostListing = inPostListing
+        self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
         self.onReadPost = onReadPost
-        self._videoPlayerViewModel = StateObject(wrappedValue: VideoPlayerViewModel())
+        self.videoPlayerViewModel = videoPlayerViewModel
     }
     
     private var isDataSavingModeActive: Bool {
@@ -61,6 +65,7 @@ struct PostVideoView: View {
                         muteVideo: muteAutoplayingVideo,
                         canPlay: canPlay,
                         isSensitive: post.over18,
+                        playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                         videoPlayerViewModel: videoPlayerViewModel
                     ) {
                         showFullScreenVideo()
@@ -75,6 +80,7 @@ struct PostVideoView: View {
                         muteVideo: muteAutoplayingVideo,
                         canPlay: canPlay,
                         isSensitive: post.over18,
+                        playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                         videoPlayerViewModel: videoPlayerViewModel
                     ) {
                         showFullScreenVideo()
@@ -158,5 +164,41 @@ struct PostVideoView: View {
         default:
             break
         }
+    }
+}
+
+struct PostVideoViewSelfContainedViewModel: View {
+    @StateObject private var videoPlayerViewModel: VideoPlayerViewModel
+    
+    let post: Post
+    let videoUrlString: String
+    let inPostListing: Bool
+    let playbackTimeToSeekToInitially: Double
+    let onReadPost: (() -> Void)?
+    
+    init(
+        post: Post,
+        videoUrlString: String,
+        inPostListing: Bool = false,
+        playbackTimeToSeekToInitially: Double = 0,
+        onReadPost: (() -> Void)? = nil
+    ) {
+        self.post = post
+        self.videoUrlString = videoUrlString
+        self.inPostListing = inPostListing
+        self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
+        self.onReadPost = onReadPost
+        self._videoPlayerViewModel = StateObject(wrappedValue: VideoPlayerViewModel())
+    }
+    
+    var body: some View {
+        PostVideoView(
+            post: post,
+            videoUrlString: videoUrlString,
+            inPostListing: inPostListing,
+            playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
+            videoPlayerViewModel: videoPlayerViewModel,
+            onReadPost: onReadPost
+        )
     }
 }

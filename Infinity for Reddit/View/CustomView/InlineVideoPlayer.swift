@@ -25,15 +25,26 @@ struct InlineVideoPlayer: View {
     private let muteVideo: Bool
     private let canPlay: Bool
     private let isSensitive: Bool
+    private let playbackTimeToSeekToInitially: Double
     private let onFullScreen: (() -> Void)?
     
-    init(videoURL: URL, aspectRatio: CGSize?, muteVideo: Bool = false, canPlay: Bool = true, isSensitive: Bool, videoPlayerViewModel: VideoPlayerViewModel, onFullScreen: (() -> Void)? = nil) {
+    init(
+        videoURL: URL,
+        aspectRatio: CGSize?,
+        muteVideo: Bool = false,
+        canPlay: Bool = true,
+        isSensitive: Bool,
+        playbackTimeToSeekToInitially: Double = 0,
+        videoPlayerViewModel: VideoPlayerViewModel,
+        onFullScreen: (() -> Void)? = nil
+    ) {
         self.videoURL = videoURL
         self.player = AVPlayer(url: ProxyManager.shared.proxyURL(videoURL))
         self.aspectRatio = aspectRatio
         self.muteVideo = muteVideo
         self.canPlay = canPlay
         self.isSensitive = isSensitive
+        self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
         self.videoPlayerViewModel = videoPlayerViewModel
         self.onFullScreen = onFullScreen
         self.showPlayer = false
@@ -42,7 +53,15 @@ struct InlineVideoPlayer: View {
     var body: some View {
         Group {
             if showPlayer == true {
-                InlineVideoPlayerWithControls(url: videoURL, aspectRatio: aspectRatio, muteVideo: muteVideo, canPlay: canPlay, videoPlayerViewModel: videoPlayerViewModel, onFullScreen: onFullScreen)
+                InlineVideoPlayerWithControls(
+                    url: videoURL,
+                    aspectRatio: aspectRatio,
+                    muteVideo: muteVideo,
+                    canPlay: canPlay,
+                    playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
+                    videoPlayerViewModel: videoPlayerViewModel,
+                    onFullScreen: onFullScreen
+                )
             } else {
                 VStack {
                     Spacer()
@@ -119,13 +138,23 @@ private struct InlineVideoPlayerWithControls: View {
     private let url: URL
     private let aspectRatio: CGSize?
     private let muteVideo: Bool
+    private let playbackTimeToSeekToInitially: Double
     private let onFullScreen: (() -> Void)?
 
-    init(url: URL, aspectRatio: CGSize?, muteVideo: Bool = false, canPlay: Bool, videoPlayerViewModel: VideoPlayerViewModel, onFullScreen: (() -> Void)?) {
+    init(
+        url: URL,
+        aspectRatio: CGSize?,
+        muteVideo: Bool = false,
+        canPlay: Bool,
+        playbackTimeToSeekToInitially: Double,
+        videoPlayerViewModel: VideoPlayerViewModel,
+        onFullScreen: (() -> Void)?
+    ) {
         self.url = url
         self.aspectRatio = aspectRatio
         self.muteVideo = muteVideo
         self.canPlay = canPlay
+        self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
         self.videoPlayerViewModel = videoPlayerViewModel
         self.onFullScreen = onFullScreen
     }
@@ -235,7 +264,11 @@ private struct InlineVideoPlayerWithControls: View {
             videoPlayerViewModel.pause()
         }
         .task {
-            await videoPlayerViewModel.loadAndPlay(url: url, muteVideo: (postListingVideoManager?.syncMuteAcrossFeed ?? false) ? (postListingVideoManager?.isMuted ?? false) : muteVideo)
+            await videoPlayerViewModel.loadAndPlay(
+                url: url,
+                muteVideo: (postListingVideoManager?.syncMuteAcrossFeed ?? false) ? (postListingVideoManager?.isMuted ?? false) : muteVideo,
+                playbackTimeToSeekToInitially: playbackTimeToSeekToInitially
+            )
         }
         .appForegroundBackgroundListener(onAppEntersBackground: {
             videoPlayerViewModel.pause()

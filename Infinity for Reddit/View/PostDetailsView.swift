@@ -54,10 +54,12 @@ struct PostDetailsView: View {
     private var showAuthorAvatar: Bool = false
     
     private let isFromSubredditPostListing: Bool
+    private let playbackTimeToSeekToInitially: Double
     private let thingModerationRepository: ThingModerationRepositoryProtocol
     
-    init(postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false) {
+    init(postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false, videoPlaybackTime: Double = 0) {
         self.isFromSubredditPostListing = isFromSubredditPostListing
+        self.playbackTimeToSeekToInitially = videoPlaybackTime
         let thingModerationRepository = ThingModerationRepository()
         self.thingModerationRepository = thingModerationRepository
         
@@ -87,6 +89,7 @@ struct PostDetailsView: View {
                                         postDetailsViewModel: postDetailsViewModel,
                                         post: post,
                                         isFromSubredditPostListing: isFromSubredditPostListing,
+                                        playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                                         onSendComment: sendComment,
                                         onLongPress: {
                                             showPostOptionsSheet = true
@@ -115,6 +118,7 @@ struct PostDetailsView: View {
                                             postDetailsViewModel: postDetailsViewModel,
                                             post: post,
                                             isFromSubredditPostListing: isFromSubredditPostListing,
+                                            playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                                             onSendComment: sendComment,
                                             onLongPress: {
                                                 showPostOptionsSheet = true
@@ -1017,6 +1021,7 @@ private struct PostDetailsItemView: View {
     
     let post: Post
     let isFromSubredditPostListing: Bool
+    let playbackTimeToSeekToInitially: Double
     let onSendComment: () -> Void
     let onLongPress: () -> Void
     let onLongPressOnContent: () -> Void
@@ -1025,6 +1030,7 @@ private struct PostDetailsItemView: View {
         PostDetailsViewCard(
             post: post,
             isFromSubredditPostListing: isFromSubredditPostListing,
+            playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
             onUpvote: {
                 voteTask?.cancel()
                 voteTask = Task {

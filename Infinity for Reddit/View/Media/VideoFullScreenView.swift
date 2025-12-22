@@ -202,7 +202,7 @@ struct VideoFullScreenView<Content: View>: View {
             videoFullScreenViewModel.player.rate = Float(newValue)
         }
         .task {
-            await videoFullScreenViewModel.loadAndPlay(urlString: urlString, videoType: videoType, muteVideo: muteVideo, playbackTime: playbackTimeToSeekToInitially)
+            await videoFullScreenViewModel.loadAndPlay(urlString: urlString, videoType: videoType, muteVideo: muteVideo, playbackTimeToSeekToInitially: playbackTimeToSeekToInitially)
         }
     }
 }

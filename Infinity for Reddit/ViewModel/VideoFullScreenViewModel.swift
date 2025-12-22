@@ -49,7 +49,7 @@ class VideoFullScreenViewModel: ObservableObject {
         }
     }
     
-    func loadAndPlay(urlString: String, videoType: VideoType, muteVideo: Bool, playbackTime: Double) async {
+    func loadAndPlay(urlString: String, videoType: VideoType, muteVideo: Bool, playbackTimeToSeekToInitially: Double) async {
         guard !isLoaded, !isLoading else {
             if player.currentItem != nil {
                 await MainActor.run {
@@ -95,7 +95,7 @@ class VideoFullScreenViewModel: ObservableObject {
                     isMuted = muteVideo
                     play()
                     player.seek(
-                        to: CMTime(seconds: playbackTime, preferredTimescale: 600)
+                        to: CMTime(seconds: playbackTimeToSeekToInitially, preferredTimescale: 600)
                     )
                     
                     observeCurrentItem()
