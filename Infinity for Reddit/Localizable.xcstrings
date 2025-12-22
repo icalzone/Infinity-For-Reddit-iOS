@@ -72,6 +72,12 @@
     "Clear All" : {
 
     },
+    "Click here to apply your comment filter somewhere. Leave it empty to apply everywhere." : {
+
+    },
+    "Click here to apply your post filter somewhere." : {
+
+    },
     "Click here to browse all comments" : {
 
     },
@@ -370,12 +376,6 @@
 
     },
     "Spoiler" : {
-
-    },
-    "Start by applying your comment filter somewhere" : {
-
-    },
-    "Start by applying your post filter somewhere" : {
 
     },
     "Start by creating a comment filter" : {
