@@ -11,7 +11,6 @@ import Alamofire
 class NavigationManager: ObservableObject {
     @Published var path = NavigationPath()
     
-    var viewShouldHideRootTabLabels: [Bool] = []
     var viewShouldHideNavigationBarOnScroll: [Bool] = []
     
     var fullScreenMediaViewModel: FullScreenMediaViewModel
@@ -19,14 +18,6 @@ class NavigationManager: ObservableObject {
     private var firstViewShouldHideNavigationBarOnScrollDown: Bool
     
     private let session: Session
-    
-    var rootTabLabelVisibility: Visibility {
-        if viewShouldHideRootTabLabels.isEmpty {
-            return .visible
-        } else {
-            return viewShouldHideRootTabLabels.last! ? .hidden : .visible
-        }
-    }
     
     var hideNavigationBarOnScrollDown: Bool {
         if viewShouldHideNavigationBarOnScroll.isEmpty {
@@ -47,13 +38,6 @@ class NavigationManager: ObservableObject {
     }
     
     func append(_ destination: any Hashable) {
-        switch destination {
-        case AppNavigation.userDetails:
-            viewShouldHideRootTabLabels.append(true)
-        default:
-            viewShouldHideRootTabLabels.append(false)
-        }
-        
         switch destination {
         case AppNavigation.postDetails,
             AppNavigation.postDetailsWithId,
@@ -138,7 +122,6 @@ class NavigationManager: ObservableObject {
     }
     
     func replaceCurrentScreen(_ destination: any Hashable) {
-        viewShouldHideRootTabLabels.removeLast()
         viewShouldHideNavigationBarOnScroll.removeLast()
         path.removeLast()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
@@ -147,7 +130,6 @@ class NavigationManager: ObservableObject {
     }
     
     func replaceCurrentScreen(_ urlString: String) {
-        viewShouldHideRootTabLabels.removeLast()
         viewShouldHideNavigationBarOnScroll.removeLast()
         path.removeLast()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {

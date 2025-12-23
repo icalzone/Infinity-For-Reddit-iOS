@@ -222,6 +222,8 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.colorPrimary
         case "colorAccent":
             return $customizeCustomThemeViewModel.customTheme.colorAccent
+        case "colorPrimaryLightTheme":
+            return $customizeCustomThemeViewModel.customTheme.colorPrimaryLightTheme
         case "primaryTextColor":
             return $customizeCustomThemeViewModel.customTheme.primaryTextColor
         case "secondaryTextColor":

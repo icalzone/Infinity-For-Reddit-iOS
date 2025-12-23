@@ -18,7 +18,6 @@ struct UserDetailsView: View {
     @StateObject var userDetailsViewModel : UserDetailsViewModel
     
     @State private var navigationBarMenuKey: UUID?
-    @State private var tabBarVisibility: Visibility = .hidden
     @State private var selectedTab = 0
     @State private var isCurrentUserProfile: Bool = true
     @State private var isUserInfoVisible: Bool = true
@@ -112,6 +111,12 @@ struct UserDetailsView: View {
                             .animation(.easeInOut, value: isUserInfoVisible)
                     }
                     
+                    SegmentedPicker(
+                        selectedValue: $selectedTab,
+                        values: ["Posts", "Comments"]
+                    )
+                    .padding(4)
+                    
                     TabView(selection: $selectedTab) {
                         Group {
                             PostListingView(
@@ -164,19 +169,8 @@ struct UserDetailsView: View {
                             }
                             .tag(1)
                         }
-                        .toolbar(tabBarVisibility, for: .tabBar)
+                        .toolbar(.hidden, for: .tabBar)
                     }
-                    .themedTabView()
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            tabBarVisibility = .visible
-                        }
-                    }
-                    .onDisappear {
-                        tabBarVisibility = .hidden
-                    }
-                    .animation(.easeInOut(duration: 0.2), value: tabBarVisibility)
-                    .animation(.bouncy, value: navigationManager.rootTabLabelVisibility)
                 }
                 .overlay(alignment: .top) {
                     Rectangle()
@@ -228,7 +222,6 @@ struct UserDetailsView: View {
                 NavigationBarMenu()
             }
         }
-        .toolbarBackground(.hidden, for: .navigationBar)
         .onAppear {
             if let key = navigationBarMenuKey {
                 navigationBarMenuManager.pop(key: key)

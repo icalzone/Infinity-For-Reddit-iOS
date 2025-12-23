@@ -294,15 +294,10 @@ struct CustomNavigationStack<Content: View>: View {
         .themedNavigationBarBackButton()
         .onChange(of: navigationManager.path) { _, newValue in
             let newCount = newValue.count
-            if navigationManager.viewShouldHideRootTabLabels.count > newCount {
-                navigationManager.viewShouldHideRootTabLabels = Array(navigationManager.viewShouldHideRootTabLabels.prefix(newCount))
-            }
             if navigationManager.viewShouldHideNavigationBarOnScroll.count > newCount {
                 navigationManager.viewShouldHideNavigationBarOnScroll = Array(navigationManager.viewShouldHideNavigationBarOnScroll.prefix(newCount))
             }
         }
-        .toolbar(navigationManager.rootTabLabelVisibility, for: .tabBar)
-        .animation(.easeInOut(duration: 0.2), value: navigationManager.rootTabLabelVisibility)
         .introspect(.navigationStack, on: .iOS(.v16, .v17, .v18, .v26)) {
             // UINavigationController
             $0.hidesBarsOnSwipe = hideNavigationBarOnScrollDown && navigationManager.hideNavigationBarOnScrollDown
