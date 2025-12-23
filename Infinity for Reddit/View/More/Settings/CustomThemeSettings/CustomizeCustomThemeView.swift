@@ -56,6 +56,7 @@ struct CustomizeCustomThemeView: View {
                             CustomDivider()
                         }
                         .listPlainItemNoInsets()
+                        .limitedWidthListItem()
                         
                         ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
                             if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
@@ -68,6 +69,7 @@ struct CustomizeCustomThemeView: View {
                                         isEnabled: binding
                                     )
                                     .listPlainItemNoInsets()
+                                    .limitedWidthListItem()
                                 }
                             } else {
                                 if let colorBinding = getIntBinding(for: fieldName) {
@@ -78,6 +80,7 @@ struct CustomizeCustomThemeView: View {
                                         color: getWrappedBinding(for: colorBinding)
                                     )
                                     .listPlainItemNoInsets()
+                                    .limitedWidthListItem()
                                 }
                             }
                         }

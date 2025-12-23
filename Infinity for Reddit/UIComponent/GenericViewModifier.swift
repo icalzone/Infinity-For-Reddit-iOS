@@ -309,3 +309,11 @@ struct SnackbarErrorViewModifier<P: Publisher>: ViewModifier where P.Output == E
             }
     }
 }
+
+struct LimitedWidthListItemViewModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: 500)
+            .frame(maxWidth: .infinity, alignment: .center)
+    }
+}

@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CustomNavigationStack<Content: View>: View {
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    
     @EnvironmentObject var accountViewModel: AccountViewModel
     
     @ObservedObject private var navigationManager: NavigationManager

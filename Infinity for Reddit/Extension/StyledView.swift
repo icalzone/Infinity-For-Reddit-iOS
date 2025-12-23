@@ -356,4 +356,8 @@ extension View {
     ) -> some View where P.Output == Error?, P.Failure == Never {
         self.modifier(SnackbarErrorViewModifier(errorPublisher: errorPublisher, showTaskCancelledError: showTaskCancelledError))
     }
+    
+    func limitedWidthListItem() -> some View {
+        self.modifier(LimitedWidthListItemViewModifier())
+    }
 }
