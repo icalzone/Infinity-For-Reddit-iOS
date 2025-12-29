@@ -128,10 +128,8 @@ struct SubredditDetailsView: View {
                     )
                 }
                 .edgesIgnoringSafeArea(.top)
-                .applyIf(true) {
-                    if #available(iOS 26, *) {
-                        $0
-                    } else {
+                .modify {
+                    if #unavailable(iOS 26) {
                         $0.overlay(alignment: .top) {
                                 Rectangle()
                                     .fill(

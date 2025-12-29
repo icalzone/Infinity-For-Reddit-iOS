@@ -189,7 +189,7 @@ struct SearchView: View {
             }
         }
         .themedNavigationBar()
-        .applyIf(true) {
+        .modify {
             if #available(iOS 26, *) {
                 $0.toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

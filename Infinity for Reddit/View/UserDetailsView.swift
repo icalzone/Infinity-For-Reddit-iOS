@@ -184,9 +184,7 @@ struct UserDetailsView: View {
                     .animation(.bouncy, value: navigationManager.rootTabLabelVisibility)
                 }
                 .applyIf(true) {
-                    if #available(iOS 26, *) {
-                        $0
-                    } else {
+                    if #unavailable(iOS 26) {
                         $0.overlay(alignment: .top) {
                             Rectangle()
                                 .fill(

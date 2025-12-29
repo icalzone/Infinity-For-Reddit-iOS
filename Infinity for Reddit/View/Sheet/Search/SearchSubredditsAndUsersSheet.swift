@@ -23,10 +23,8 @@ struct SearchSubredditsAndUsersSheet: View {
             }
         }
         .id(accountViewModel.account.username)
-        .applyIf(true) {
-            if #available(iOS 26, *) {
-                $0
-            } else {
+        .modify {
+            if #unavailable(iOS 26) {
                 $0.addTitleToInlineNavigationBar(navigationBarTitle)
             }
         }

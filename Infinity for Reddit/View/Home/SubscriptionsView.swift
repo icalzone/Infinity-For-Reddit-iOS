@@ -84,7 +84,6 @@ struct SubscriptionsView: View {
                             CustomFeedListingView(subscriptionListingViewModel: subscriptionListingViewModel, onSelectCustomAction: onSelectThing)
                                 .opacity(selectedOption == 2 ? 1 : 0)
                                 .allowsHitTesting(selectedOption == 2)
-                            
                         case .subredditAndUserMultiSelection:
                             SubscribedSubredditListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .opacity(selectedOption == 0 ? 1 : 0)
@@ -93,12 +92,10 @@ struct SubscriptionsView: View {
                             SubscribedUserListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .opacity(selectedOption == 1 ? 1 : 0)
                                 .allowsHitTesting(selectedOption == 1)
-                            
                         case .subredditMultiSelection:
                             SubscribedSubredditListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .opacity(selectedOption == 0 ? 1 : 0)
                                 .allowsHitTesting(selectedOption == 0)
-                            
                         case .userMultiSelection:
                             SubscribedUserListingMultiSelectionView(subscriptionListingViewModel: subscriptionListingViewModel)
                                 .opacity(selectedOption == 0 ? 1 : 0)

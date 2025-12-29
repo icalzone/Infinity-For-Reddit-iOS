@@ -8,71 +8,61 @@
 import SwiftUI
 
 struct TouchRipple<Content: View, BackgroundShape: Shape>: View {
-
     let backgroundShape: BackgroundShape
     let action: (() -> Void)?
     let onLongPress: (() -> Void)?
     let content: () -> Content
-    let allowTapAfterLongPress: Bool
-    
-    @State private var didLongPress = false
 
     init(
         backgroundShape: BackgroundShape = Rectangle(),
         action: (() -> Void)? = nil,
         onLongPress: (() -> Void)? = nil,
-        allowTapAfterLongPress: Bool = true,
         @ViewBuilder content: @escaping () -> Content
     ) {
         self.backgroundShape = backgroundShape
         self.action = action
         self.content = content
         self.onLongPress = onLongPress
-        self.allowTapAfterLongPress = allowTapAfterLongPress
     }
 
     var body: some View {
         Button {
-            if allowTapAfterLongPress || !didLongPress {
-                action?()
-            }
-            didLongPress = false
+            action?()
         } label: {
             content()
                 .contentShape(backgroundShape)
         }
         .buttonStyle(
-            RippleButtonStyle(shape: backgroundShape)
-        )
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    if !allowTapAfterLongPress {
-                        didLongPress = true
-                    }
-                    onLongPress?()
-                }
+            RippleButtonStyle(shape: backgroundShape, onLongPress: onLongPress)
         )
     }
 }
 
-struct RippleButtonStyle<S: Shape>: ButtonStyle {
-
+struct RippleButtonStyle<S: Shape>: PrimitiveButtonStyle {
     let shape: S
-
-    var pressedColor: Color = Color.black.opacity(0.08)
-    var animationDuration: Double = 0.22
-
+    var animationDuration: Double = 0.15
+    
+    let onLongPress: (() -> Void)?
+    
+    @State var isPressed: Bool = false
+    
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .background(
                 shape
-                    .fill(pressedColor)
-                    .opacity(configuration.isPressed ? 1 : 0)
+                    .fill(Color.black.opacity(isPressed ? 0.05 : 0))
+                    .animation(.easeInOut(duration: 0.15), value: isPressed)
             )
-            .animation(
-                .easeOut(duration: animationDuration),
-                value: configuration.isPressed
+            .onTapGesture {
+                configuration.trigger()
+            }
+            .onLongPressGesture(
+                perform: {
+                    self.onLongPress?()
+                },
+                onPressingChanged: { pressing in
+                    self.isPressed = pressing
+                }
             )
     }
 }

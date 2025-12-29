@@ -15,7 +15,6 @@ struct ProxyRequestModifier: ImageDownloadRequestModifier {
         }
         var nextRequest = request
         let ext = url.pathExtension.lowercased()
-        print("Kingfisher proxy format:", ext.isEmpty ? "None" : ext, url.absoluteString)
         nextRequest.url = ProxyManager.shared.proxyURL(url)
         return nextRequest
     }

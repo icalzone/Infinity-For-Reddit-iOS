@@ -14,9 +14,6 @@
         }
       }
     },
-    "%lld" : {
-
-    },
     "%lld days" : {
 
     },
@@ -123,6 +120,9 @@
     "Delete" : {
 
     },
+    "Do you dare interact?" : {
+
+    },
     "Done" : {
 
     },
@@ -166,9 +166,6 @@
 
     },
     "Hide Favorite Subreddits Section" : {
-
-    },
-    "Hide Nav Bar" : {
 
     },
     "Hide Subscribed Subreddits Section" : {
@@ -319,6 +316,9 @@
 
     },
     "Restart the app to see the changes" : {
+
+    },
+    "Ripple Demo" : {
 
     },
     "Rules" : {

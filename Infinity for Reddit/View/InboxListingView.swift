@@ -93,11 +93,17 @@ struct InboxListingView: View {
                     }
                 ])
             } else {
-                if let key = navigationBarMenuKey {
-                    navigationBarMenuManager.pop(key: key)
-                    navigationBarMenuKey = nil
+                guard let navigationBarMenuKey else {
+                    return
                 }
+                navigationBarMenuManager.pop(key: navigationBarMenuKey)
             }
+        }
+        .onDisappear {
+            guard let navigationBarMenuKey else {
+                return
+            }
+            navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
     }
 }

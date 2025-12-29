@@ -3,6 +3,7 @@
 //  Infinity for Reddit
 //
 //  Created by joeylr2042 on 2025-11-01.
+//
 
 import SwiftUI
 
@@ -10,7 +11,6 @@ struct PostView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     
     @StateObject private var postViewModel: PostViewModel
-    @State private var didTriggerLongPress = false
     
     @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadKey, store: .postHistory) private var markPostsAsRead: Bool = false
     @AppStorage(PostHistoryUserDefaultsUtils.limitReadPostsKey, store: .postHistory) private var limitReadPosts: Bool = true
@@ -24,7 +24,7 @@ struct PostView: View {
     let onToggleSave: () async -> Void
     let onPostTypeTap: () -> Void
     let onSensitiveTap: () -> Void
-    let onLongPressPostAction: () -> Void
+    let onLongPressPost: () -> Void
     let onShare: () -> Void
     let onReadPost: () async -> Void
 
@@ -49,7 +49,7 @@ struct PostView: View {
         self.onToggleSave = onToggleSave
         self.onPostTypeTap = onPostTypeTap
         self.onSensitiveTap = onSensitiveTap
-        self.onLongPressPostAction = onLongPressPost
+        self.onLongPressPost = onLongPressPost
         self.onShare = onShare
         self.onReadPost = onReadPost
         _postViewModel = StateObject(
@@ -104,10 +104,6 @@ struct PostView: View {
     }
     
     private func onPostTap() {
-        if didTriggerLongPress {
-            didTriggerLongPress = false
-            return
-        }
         Task {
             await postViewModel.readPost(markPostsAsRead: markPostsAsRead, limitReadPosts: limitReadPosts, readPostsLimit: readPostsLimit)
         }
@@ -118,11 +114,6 @@ struct PostView: View {
                 isFromSubredditPostListing: isSubredditPostListing
             )
         )
-    }
-    
-    private func onLongPressPost() {
-        didTriggerLongPress = true
-        onLongPressPostAction()
     }
     
     private func onIconTap() {
