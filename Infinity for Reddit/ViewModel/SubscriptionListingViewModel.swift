@@ -460,9 +460,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 !subredditSubscriptions.contains { $0.name == existing.name }
             }
             
-            for unsubscribed in unsubscribedSubreddits {
-                try? await subscribedSubredditDao.deleteSubscribedSubreddit(subredditName: unsubscribed.name, accountName: accountName)
-            }
+            try? await subscribedSubredditDao.deleteSubscribedSubreddits(subscribedSubreddits: unsubscribedSubreddits, accountName: accountName)
             
             try? await subscribedSubredditDao.insertAll(
                 subscribedSubredditData: subredditSubscriptions
@@ -476,9 +474,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 !userSubscriptions.contains { $0.name == existing.name }
             }
             
-            for unsubscribed in unsubscribedUsers {
-                try? await subscribedUserDao.deleteSubscribedUser(name: unsubscribed.name, accountName: accountName)
-            }
+            try? await subscribedUserDao.deleteSubscribedUsers(subscribedUsers: unsubscribedUsers, accountName: accountName)
             
             try? await subscribedUserDao.insertAll(
                 subscribedUserDataList: userSubscriptions
@@ -505,9 +501,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 !myCustomFeeds.contains { $0.path == existing.path }
             }
             
-            for unsubscribed in unsubscribedMyCustomFeeds {
-                try? await myCustomFeedDao.deleteMyCustomFeed(path: unsubscribed.path, username: AccountViewModel.shared.account.username)
-            }
+            try? await myCustomFeedDao.deleteMyCustomFeeds(myCustomFeeds: unsubscribedMyCustomFeeds, username: AccountViewModel.shared.account.username)
             
             try await myCustomFeedDao.insertAll(
                 myCustomFeeds: myCustomFeeds

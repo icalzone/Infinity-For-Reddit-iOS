@@ -92,6 +92,20 @@ struct MyCustomFeedDao {
         }
     }
     
+    func deleteMyCustomFeeds(myCustomFeeds: [MyCustomFeed], username: String) async throws {
+        try await dbPool.write { db in
+            for myCustomFeed in myCustomFeeds {
+                try db.execute(
+                    sql: """
+                        DELETE FROM custom_feeds 
+                        WHERE path = ? AND username = ?
+                        """,
+                    arguments: [myCustomFeed.path, username]
+                )
+            }
+        }
+    }
+    
     func anonymousDeleteMyCustomFeed(path: String) async throws {
         try await dbPool.write { db in
             try db.execute(

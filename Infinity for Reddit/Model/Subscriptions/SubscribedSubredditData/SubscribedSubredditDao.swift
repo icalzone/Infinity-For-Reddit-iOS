@@ -98,4 +98,15 @@ struct SubscribedSubredditDao {
                 arguments: [subredditName, accountName])
         }
     }
+    
+    func deleteSubscribedSubreddits(subscribedSubreddits: [SubscribedSubredditData], accountName: String) async throws {
+        try await dbPool.write { db in
+            for subscribedSubreddit in subscribedSubreddits {
+                try db.execute(sql: """
+                    DELETE FROM subscribed_subreddits 
+                    WHERE name = ? COLLATE NOCASE AND username = ? COLLATE NOCASE
+                    """, arguments: [subscribedSubreddit.name, accountName])
+            }
+        }
+    }
 }
