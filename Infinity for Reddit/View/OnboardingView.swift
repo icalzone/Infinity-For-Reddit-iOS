@@ -30,27 +30,31 @@ struct OnboardingView: View {
     ]
     
     var body: some View {
-        VStack {
-            TabView(selection: $currentIndex) {
-                ForEach(pages.indices, id: \.self) { index in
-                    OnboardingPageView(page: pages[index])
-                        .padding(16)
-                        .tag(index)
+        GeometryReader { proxy in
+            VStack {
+                TabView(selection: $currentIndex) {
+                    ForEach(pages.indices, id: \.self) { index in
+                        OnboardingPageView(page: pages[index])
+                            .padding(16)
+                            .tag(index)
+                    }
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                
+                PageIndicator(
+                    count: pages.count,
+                    currentIndex: currentIndex
+                )
+                
+                Button(action: advance) {
+                    Text(currentIndex == pages.count - 1 ? "Get Started" : "Next")
+                        .frame(maxWidth: 500)
+                }
+                .filledButton()
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, proxy.size.height > 1000 ? 120 : 16)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            PageIndicator(
-                count: pages.count,
-                currentIndex: currentIndex
-            )
-            
-            Button(action: advance) {
-                Text(currentIndex == pages.count - 1 ? "Get Started" : "Next")
-                    .frame(maxWidth: .infinity)
-            }
-            .filledButton()
-            .padding(16)
         }
         .animation(.default, value: currentIndex)
     }
@@ -91,6 +95,8 @@ struct OnboardingView: View {
     }
     
     struct PageIndicator: View {
+        @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
+        
         let count: Int
         let currentIndex: Int
 
@@ -98,7 +104,7 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 ForEach(0..<count, id: \.self) { index in
                     Capsule()
-                        .fill(index == currentIndex ? .black : .gray)
+                        .fill(Color(hex: index == currentIndex ? customThemeViewModel.currentCustomTheme.primaryTextColor : customThemeViewModel.currentCustomTheme.secondaryTextColor))
                         .frame(width: index == currentIndex ? 18 : 6, height: 6)
                         .animation(.easeInOut, value: currentIndex)
                 }
