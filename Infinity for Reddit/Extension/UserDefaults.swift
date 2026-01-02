@@ -28,6 +28,7 @@ extension UserDefaults {
     static let proxy = UserDefaults.standard
     static let security = UserDefaults(suiteName: "com.docilealligator.infinityforreddit.security")
     static let gesturesButtons = UserDefaults.standard
+    static let internalState = UserDefaults(suiteName: "com.docilealligator.infinityforreddit.internal_state")
 }
 
 extension UserDefaults {
@@ -52,6 +53,8 @@ enum UserDefaultsResetTargets {
     static var stores: [UserDefaults] {
         [
             UserDefaults.standard,
+            UserDefaults.interfaceComment,
+            UserDefaults.interfacePostDetails,
             UserDefaults.contentSensitivityFilter,
             UserDefaults.miscellaneous
         ]

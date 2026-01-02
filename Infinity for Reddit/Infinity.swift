@@ -27,6 +27,7 @@ struct Infinity: App {
     @AppStorage(SecurityUserDefaultsUtils.appLockKey, store: .security) private var appLock: Bool = false
     @AppStorage(SecurityUserDefaultsUtils.appLockTimeoutKey, store: .security) private var appLockTimeout: Int = 600000
     @AppStorage(CustomThemeUserDefaultsUtils.themeKey, store: .theme) private var theme: Int = CustomThemeUserDefaultsUtils.themeDeviceDefault
+    @AppStorage(InternalStateUserDefaultsUtils.onboardingFinishedKey, store: .internalState) private var onboardingFinished: Bool = false
     
     let container: Container = {
         let container = Container()
@@ -63,79 +64,85 @@ struct Infinity: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                HomeView(fullScreenMediaViewModel: fullScreenMediaViewModel)
-                    .id(accountViewModel.account.username)
-                    .environment(\.dependencyManager, DependencyManager.shared.container)
-                    .environmentObject(accountViewModel)
-                    .environmentObject(fullScreenMediaViewModel)
-                    .environmentObject(networkManager)
-                    .environment(\.defaultMinListRowHeight, 0)
-                    .onOpenURL { url in
-                        guard let appDeepLinkType = AppDeepLink.getAppDeepLinkType(url) else {
-                            return
-                        }
-                        switch appDeepLinkType {
-                        case .inbox(let account, let viewMessage, let fullname):
-                            var userInfo: [String: Any] = [
-                                AppDeepLink.accountNameKey: account,
-                                AppDeepLink.viewMessageKey: viewMessage
-                            ]
-                            if let fullname {
-                                userInfo[AppDeepLink.fullnameKey] = fullname
-                            }
-                            NotificationCenter.default.post(name: .inboxDeepLink, object: nil, userInfo: userInfo)
-                        case .context(let account, let context, let fullname):
-                            var userInfo: [String: Any] = [
-                                AppDeepLink.accountNameKey: account,
-                                AppDeepLink.contextKey: context
-                            ]
-                            if let fullname {
-                                userInfo[AppDeepLink.fullnameKey] = fullname
-                            }
-                            NotificationCenter.default.post(name: .contextDeepLink, object: nil, userInfo: userInfo)
-                        }
+                if !onboardingFinished {
+                    OnboardingView {
+                        onboardingFinished = true
                     }
-                    .onAppear {
-                        Giphy.configure(apiKey: APIUtils.GIPHY_GIF_API_KEY)
-                    }
-                
-                if showAppLockScreen {
-                    GeometryReader { geo in
-                        ZStack {
-                            VStack(spacing: 24) {
-                                RowText("Let’s make sure you’re really you!")
-                                    .primaryText(.f56)
-                                
-                                RowText("We will use Face ID to verify your identity.")
-                                    .secondaryText(.f24)
-                                
-                                Spacer()
+                } else {
+                    HomeView(fullScreenMediaViewModel: fullScreenMediaViewModel)
+                        .id(accountViewModel.account.username)
+                        .environment(\.dependencyManager, DependencyManager.shared.container)
+                        .environmentObject(accountViewModel)
+                        .environmentObject(fullScreenMediaViewModel)
+                        .environmentObject(networkManager)
+                        .environment(\.defaultMinListRowHeight, 0)
+                        .onOpenURL { url in
+                            guard let appDeepLinkType = AppDeepLink.getAppDeepLinkType(url) else {
+                                return
                             }
-                            
-                            VStack(spacing: 0) {
-                                Spacer()
-                                    .frame(height: geo.size.height / 3 * 2)
-                                
-                                Button {
-                                    authenticate()
-                                } label: {
-                                    Text("Yep, That’s Me!")
-                                        .buttonText(.f24)
+                            switch appDeepLinkType {
+                            case .inbox(let account, let viewMessage, let fullname):
+                                var userInfo: [String: Any] = [
+                                    AppDeepLink.accountNameKey: account,
+                                    AppDeepLink.viewMessageKey: viewMessage
+                                ]
+                                if let fullname {
+                                    userInfo[AppDeepLink.fullnameKey] = fullname
                                 }
-                                .filledButton()
-                                
-                                Spacer()
+                                NotificationCenter.default.post(name: .inboxDeepLink, object: nil, userInfo: userInfo)
+                            case .context(let account, let context, let fullname):
+                                var userInfo: [String: Any] = [
+                                    AppDeepLink.accountNameKey: account,
+                                    AppDeepLink.contextKey: context
+                                ]
+                                if let fullname {
+                                    userInfo[AppDeepLink.fullnameKey] = fullname
+                                }
+                                NotificationCenter.default.post(name: .contextDeepLink, object: nil, userInfo: userInfo)
                             }
                         }
-                        .zIndex(1)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(32)
-                        .background(.ultraThinMaterial)
-                    }
-                    .transition(.opacity)
-                    .task {
-                        try? await Task.sleep(for: .seconds(1))
-                        authenticate()
+                        .onAppear {
+                            Giphy.configure(apiKey: APIUtils.GIPHY_GIF_API_KEY)
+                        }
+                    
+                    if showAppLockScreen {
+                        GeometryReader { geo in
+                            ZStack {
+                                VStack(spacing: 24) {
+                                    RowText("Let’s make sure you’re really you!")
+                                        .primaryText(.f56)
+                                    
+                                    RowText("We will use Face ID to verify your identity.")
+                                        .secondaryText(.f24)
+                                    
+                                    Spacer()
+                                }
+                                
+                                VStack(spacing: 0) {
+                                    Spacer()
+                                        .frame(height: geo.size.height / 3 * 2)
+                                    
+                                    Button {
+                                        authenticate()
+                                    } label: {
+                                        Text("Yep, That’s Me!")
+                                            .buttonText(.f24)
+                                    }
+                                    .filledButton()
+                                    
+                                    Spacer()
+                                }
+                            }
+                            .zIndex(1)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .padding(32)
+                            .background(.ultraThinMaterial)
+                        }
+                        .transition(.opacity)
+                        .task {
+                            try? await Task.sleep(for: .seconds(1))
+                            authenticate()
+                        }
                     }
                 }
             }
