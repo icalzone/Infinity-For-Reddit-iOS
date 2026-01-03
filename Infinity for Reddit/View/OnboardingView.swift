@@ -20,7 +20,7 @@ struct OnboardingView: View {
         OnboardingPage(
             title: "Post anything",
             subtitle: "Text, images, videos, GIFs, galleries, links, and polls exactly as you want.",
-            image: "sparkles"
+            image: "wand.and.sparkles"
         ),
         OnboardingPage(
             title: "Browse without limits",
