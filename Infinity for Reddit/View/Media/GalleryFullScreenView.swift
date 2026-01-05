@@ -13,10 +13,6 @@ struct GalleryFullScreenView: View {
     @StateObject private var tabViewDismissalViewModel: TabViewDismissalViewModel
     
     @ObservedObject private var galleryScrollState: GalleryScrollState
-    @GestureState private var dragOffset: CGSize = .zero
-    @State private var currentDragOffset = 0.0
-    @State private var hasStartedDragging: Bool = false
-    @State private var isAnimatingBack: Bool = false
     @State private var sheetGalleryItem: GalleryItem?
     @State private var dismissStarted: Bool = false
     @State private var childViewHasZoomed: Bool = false
@@ -90,11 +86,6 @@ struct GalleryFullScreenView: View {
 }
 
 struct GalleryImageView: View {
-    @State private var currentImageZoom: CGFloat = 1.0
-    @State private var currentDragOffset = 0.0
-    @GestureState private var dragOffset: CGSize = .zero
-    @State private var hasStartedDragging: Bool = false
-    @State private var isAnimatingBack: Bool = false
     @State private var isToolbarVisible: Bool = true
     
     @Binding var childViewHasZoomed: Bool
@@ -173,7 +164,7 @@ struct GalleryImageToolbar: View {
             if isVisible {
                 HStack {
                     Button {
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.15)) {
                             onDismiss()
                         }
                     } label: {

@@ -13,10 +13,6 @@ struct ImgurFullScreenView: View {
     @StateObject private var imgurFullScreenViewModel: ImgurFullScreenViewModel
     @StateObject private var tabViewDismissalViewModel: TabViewDismissalViewModel
 
-    @GestureState private var dragOffset: CGSize = .zero
-    @State private var currentDragOffset = 0.0
-    @State private var hasStartedDragging: Bool = false
-    @State private var isAnimatingBack: Bool = false
     @State private var selectedTab: Int = 0
     @State private var sheetImgurMediaItem: ImgurMediaItem?
     @State private var dismissStarted: Bool = false
@@ -24,6 +20,8 @@ struct ImgurFullScreenView: View {
     
     let post: Post?
     let onDismiss: () -> Void
+    
+    private let buttonSize: CGFloat = 18
     
     init(imgurMediaType: ImgurMediaType, post: Post?, onDismiss: @escaping () -> Void) {
         self.post = post
@@ -45,6 +43,7 @@ struct ImgurFullScreenView: View {
                                 imgurMediaItem: item,
                                 imgurMedia: imgurMedia,
                                 post: post,
+                                dismissStarted: dismissStarted,
                                 onShowDescription: {
                                     sheetImgurMediaItem = item
                                 }
@@ -86,52 +85,55 @@ struct ImgurFullScreenView: View {
                 )
             } else {
                 ZStack {
-                    Color.black
-                        .opacity(opacityForBackground)
+                    Color.clear
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .edgesIgnoringSafeArea(.all)
                         .ignoresSafeArea()
                     
-                    ProgressIndicator()
-                        .offset(y: currentDragOffset)
-                }
-                .gesture(
-                    DragGesture()
-                        .updating($dragOffset) { value, state, _ in
-                            // Only allow vertical drag to trigger dismiss
-                            if !hasStartedDragging && abs(value.translation.width) < 4 {
-                                hasStartedDragging = true
-                            }
-                            if hasStartedDragging {
-                                state = value.translation
-                            }
-                        }
-                        .onChanged { value in
-                            // Adjust the scale based on the drag distance
-                            if hasStartedDragging {
-                                currentDragOffset = value.translation.height
-                            }
-                        }
-                        .onEnded { value in
-                            if hasStartedDragging && abs(value.translation.height) > 100 {
-                                withAnimation(.linear(duration: 0.25)) {
-                                    if value.translation.height < 0 {
-                                        // Dragged up
-                                        currentDragOffset = -UIScreen.main.bounds.height
-                                    } else {
-                                        // Dragged down
-                                        currentDragOffset = UIScreen.main.bounds.height
-                                    }
-                                } completion: {
+                    VStack {
+                        HStack {
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.15)) {
                                     onDismiss()
                                 }
-                            } else {
-                                withAnimation {
-                                    currentDragOffset = 0.0
-                                }
+                            } label: {
+                                SwiftUI.Image(systemName: "xmark")
+                                    .font(.system(size: buttonSize))
+                                    .padding(10)
+                                    .foregroundColor(Color.white)
+                                    .background(
+                                        Circle()
+                                            .fill(Color(hex: "#2E2E2E"))
+                                    )
                             }
-                            hasStartedDragging = false
+                            
+                            Spacer()
                         }
+                        
+                        Spacer()
+                    }
+                    .padding(16)
+                    
+                    if let error = imgurFullScreenViewModel.error {
+                        VStack(spacing: 8) {
+                            SwiftUI.Image(systemName: "info.circle")
+                                .foregroundStyle(.white)
+                            
+                            Text("Failed to load imgur media. Error: \(error.localizedDescription)")
+                                .foregroundStyle(.white)
+                                .customFont()
+                        }
+                        .padding(16)
+                    } else {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    }
+                }
+                .contentShape(Rectangle())
+                .tabItemMediaGesture(
+                    dismissStarted: $dismissStarted,
+                    childViewHasZoomed: childViewHasZoomed,
+                    onDismiss: onDismiss
                 )
             }
         }
@@ -143,28 +145,17 @@ struct ImgurFullScreenView: View {
                 .presentationDetents([.medium, .large])
         }
     }
-    
-    private var opacityForBackground: Double {
-        let maxOffset: CGFloat = UIScreen.main.bounds.height
-        let offset = min(abs(currentDragOffset), maxOffset)
-        return Double(1 - (offset / maxOffset))
-    }
 }
 
 struct ImgurImageView: View {
-    @State private var currentImageZoom: CGFloat = 1.0
-    @State private var currentDragOffset = 0.0
-    @GestureState private var dragOffset: CGSize = .zero
-    @State private var hasStartedDragging: Bool = false
-    @State private var isAnimatingBack: Bool = false
     @State private var isToolbarVisible: Bool = true
-    @State private var dismissStarted: Bool = false
     
     @Binding var childViewHasZoomed: Bool
     
     let imgurMediaItem: ImgurMediaItem
     let imgurMedia: ImgurMedia
     let post: Post?
+    let dismissStarted: Bool
     let onShowDescription: () -> Void
     let onDismiss: () -> Void
     
@@ -239,7 +230,9 @@ struct ImgurImageToolbar: View {
             if isVisible {
                 HStack {
                     Button {
-                        onDismiss()
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            onDismiss()
+                        }
                     } label: {
                         SwiftUI.Image(systemName: "xmark")
                             .font(.system(size: buttonSize))

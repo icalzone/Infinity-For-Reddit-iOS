@@ -112,7 +112,9 @@ struct TabVideoView: View {
                 }
             }
         ) {
-            onDismiss()
+            withAnimation(.easeInOut(duration: 0.15)) {
+                onDismiss()
+            }
         }
         .tabItemMediaGesture(
             childViewHasZoomed: $childViewHasZoomed

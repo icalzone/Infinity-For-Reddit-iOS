@@ -153,6 +153,9 @@
     "Failed to load image — tap to retry." : {
 
     },
+    "Failed to load imgur media. Error: %@" : {
+
+    },
     "Failed to load wiki: %@. Tap to retry" : {
 
     },
