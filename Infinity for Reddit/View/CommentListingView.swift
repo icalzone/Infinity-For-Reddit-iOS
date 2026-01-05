@@ -56,7 +56,7 @@ struct CommentListingView: View {
                 ZStack {
                     if commentListingViewModel.isInitialLoading {
                         ProgressIndicator()
-                    } else if commentListingViewModel.isInitialLoad, let error = commentListingViewModel.error {
+                    } else if commentListingViewModel.isInitialLoad, let error = commentListingViewModel.commentLoadingError {
                         Text("Unable to load comments. Tap to retry. Error: \(error.localizedDescription)")
                             .primaryText()
                             .padding(16)
