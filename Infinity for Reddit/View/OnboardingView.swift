@@ -38,9 +38,14 @@ struct OnboardingView: View {
             VStack {
                 TabView(selection: $currentIndex) {
                     ForEach(pages.indices, id: \.self) { index in
-                        OnboardingPageView(page: pages[index], primaryTextColor: primaryTextColor, secondaryTextColor: secondaryTextColor)
-                            .padding(16)
-                            .tag(index)
+                        OnboardingPageView(
+                            page: pages[index],
+                            horizontalLayout: proxy.size.width > proxy.size.height || proxy.size.width > 1400,
+                            primaryTextColor: primaryTextColor,
+                            secondaryTextColor: secondaryTextColor
+                        )
+                        .padding(16)
+                        .tag(index)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -77,37 +82,56 @@ struct OnboardingView: View {
         }
     }
     
-    struct OnboardingPage: Identifiable {
-        let id = UUID()
-        let title: String
-        let subtitle: String
-        let animation: String
-    }
-    
     struct OnboardingPageView: View {
         let page: OnboardingPage
+        let horizontalLayout: Bool
         let primaryTextColor: Color
         let secondaryTextColor: Color
 
         var body: some View {
-            VStack(spacing: 24) {
-                LottieView(animation: .named(page.animation))
-                  .playing()
-                  .looping()
-                
-                Spacer()
+            if horizontalLayout {
+                HStack(spacing: 24) {
+                    LottieView(animation: .named(page.animation))
+                        .playing()
+                        .looping()
+                        .frame(maxWidth: .infinity)
 
-                Text(page.title)
-                    .font(.system(size: 32, weight: .bold))
-                    .foregroundStyle(primaryTextColor)
-                    .multilineTextAlignment(.center)
+                    VStack(spacing: 24) {
+                        Text(page.title)
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(primaryTextColor)
+                            .multilineTextAlignment(.center)
 
-                Text(page.subtitle)
-                    .font(.body)
-                    .foregroundStyle(secondaryTextColor)
-                    .multilineTextAlignment(.center)
+                        Text(page.subtitle)
+                            .font(.body)
+                            .foregroundStyle(secondaryTextColor)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(16)
+            } else {
+                VStack(spacing: 24) {
+                    Spacer()
+                    
+                    LottieView(animation: .named(page.animation))
+                      .playing()
+                      .looping()
+                    
+                    Spacer()
+
+                    Text(page.title)
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundStyle(primaryTextColor)
+                        .multilineTextAlignment(.center)
+
+                    Text(page.subtitle)
+                        .font(.body)
+                        .foregroundStyle(secondaryTextColor)
+                        .multilineTextAlignment(.center)
+                }
+                .padding(16)
             }
-            .padding(16)
         }
     }
     
@@ -136,5 +160,12 @@ struct OnboardingView: View {
     
     var secondaryTextColor: Color {
         return Color(hex: colorScheme == .light ? "#808080" : "#B3B3B3")
+    }
+    
+    struct OnboardingPage: Identifiable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+        let animation: String
     }
 }
