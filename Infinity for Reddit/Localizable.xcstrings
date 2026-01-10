@@ -531,7 +531,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Used for: navigation bar and filled buttons."
+            "value" : "Used for: navigation bar (iOS < 26) and filled buttons."
           }
         }
       }
@@ -1771,7 +1771,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tab Bar Background Color"
+            "value" : "Tab Bar Background Color (iOS < 26)"
           }
         }
       }
@@ -1791,7 +1791,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unselected Tab Bar Item Color"
+            "value" : "Unselected Tab Bar Item Color (iOS < 26)"
           }
         }
       }
