@@ -1,0 +1,169 @@
+//
+//  CustomThemeSettingsColorModel.swift
+//  Infinity for Reddit
+//
+//  Created by Docile Alligator on 2026-01-11.
+//
+
+import Foundation
+import SwiftUI
+
+class CustomThemeSettingsColorModel: ObservableObject {
+    @Published var colorPrimary: Color
+    @Published var colorAccent: Color
+    @Published var colorPrimaryLightTheme: Color
+    @Published var primaryTextColor: Color
+    @Published var secondaryTextColor: Color
+    @Published var postTitleColor: Color
+    @Published var postContentColor: Color
+    @Published var readPostTitleColor: Color
+    @Published var readPostContentColor: Color
+    @Published var commentColor: Color
+    @Published var buttonTextColor: Color
+    @Published var linkColor: Color
+    @Published var receivedMessageTextColor: Color
+    @Published var sentMessageTextColor: Color
+    @Published var switchColor: Color
+    @Published var backgroundColor: Color
+    @Published var cardViewBackgroundColor: Color
+    @Published var readPostCardViewBackgroundColor: Color
+    @Published var filledCardViewBackgroundColor: Color
+    @Published var readPostFilledCardViewBackgroundColor: Color
+    @Published var commentBackgroundColor: Color
+    @Published var fullyCollapsedCommentBackgroundColor: Color
+    @Published var receivedMessageBackgroundColor: Color
+    @Published var sentMessageBackgroundColor: Color
+    @Published var tabBarBackgroundColor: Color
+    @Published var snackbarTextColor: Color
+    @Published var snackbarActionTextColor: Color
+    @Published var snackbarBackgroundColor: Color
+    @Published var primaryIconColor: Color
+    @Published var tabBarTextAndIconColor: Color
+    @Published var postIconAndInfoColor: Color
+    @Published var commentIconAndInfoColor: Color
+    @Published var fabIconColor: Color
+    @Published var sendMessageIconColor: Color
+    @Published var toolbarPrimaryTextAndIconColor: Color
+    @Published var mediaIndicatorIconColor: Color
+    @Published var mediaIndicatorBackgroundColor: Color
+    @Published var pickerItemTextColor: Color
+    @Published var pickerSelectedItemTextColor: Color
+    @Published var pickerSelectedItemBackgroundColor: Color
+    @Published var upvoted: Color
+    @Published var downvoted: Color
+    @Published var postTypeBackgroundColor: Color
+    @Published var postTypeTextColor: Color
+    @Published var spoilerBackgroundColor: Color
+    @Published var spoilerTextColor: Color
+    @Published var nsfwBackgroundColor: Color
+    @Published var nsfwTextColor: Color
+    @Published var flairBackgroundColor: Color
+    @Published var flairTextColor: Color
+    @Published var archivedTint: Color
+    @Published var lockedIconTint: Color
+    @Published var crosspostIconTint: Color
+    @Published var upvoteRatioIconTint: Color
+    @Published var stickiedPostIconTint: Color
+    @Published var noPreviewPostTypeIconTint: Color
+    @Published var subscribed: Color
+    @Published var unsubscribed: Color
+    @Published var username: Color
+    @Published var subreddit: Color
+    @Published var authorFlairTextColor: Color
+    @Published var submitter: Color
+    @Published var moderator: Color
+    @Published var currentUser: Color
+    @Published var singleCommentThreadBackgroundColor: Color
+    @Published var unreadMessageBackgroundColor: Color
+    @Published var dividerColor: Color
+    @Published var noPreviewPostTypeBackgroundColor: Color
+    @Published var voteAndReplyUnavailableButtonColor: Color
+    @Published var commentVerticalBarColor1: Color
+    @Published var commentVerticalBarColor2: Color
+    @Published var commentVerticalBarColor3: Color
+    @Published var commentVerticalBarColor4: Color
+    @Published var commentVerticalBarColor5: Color
+    @Published var commentVerticalBarColor6: Color
+    @Published var commentVerticalBarColor7: Color
+    
+    init(
+        customTheme: CustomTheme
+    ) {
+        self.colorPrimary = Color(hex: customTheme.colorPrimary)
+        self.colorAccent = Color(hex: customTheme.colorAccent)
+        self.colorPrimaryLightTheme = Color(hex: customTheme.colorPrimaryLightTheme)
+        self.primaryTextColor = Color(hex: customTheme.primaryTextColor)
+        self.secondaryTextColor = Color(hex: customTheme.secondaryTextColor)
+        self.postTitleColor = Color(hex: customTheme.postTitleColor)
+        self.postContentColor = Color(hex: customTheme.postContentColor)
+        self.readPostTitleColor = Color(hex: customTheme.readPostTitleColor)
+        self.readPostContentColor = Color(hex: customTheme.readPostContentColor)
+        self.commentColor = Color(hex: customTheme.commentColor)
+        self.buttonTextColor = Color(hex: customTheme.buttonTextColor)
+        self.switchColor = Color(hex: customTheme.switchColor)
+        self.backgroundColor = Color(hex: customTheme.backgroundColor)
+        self.cardViewBackgroundColor = Color(hex: customTheme.cardViewBackgroundColor)
+        self.readPostCardViewBackgroundColor = Color(hex: customTheme.readPostCardViewBackgroundColor)
+        self.filledCardViewBackgroundColor = Color(hex: customTheme.filledCardViewBackgroundColor)
+        self.readPostFilledCardViewBackgroundColor = Color(hex: customTheme.readPostFilledCardViewBackgroundColor)
+        self.commentBackgroundColor = Color(hex: customTheme.commentBackgroundColor)
+        self.tabBarBackgroundColor = Color(hex: customTheme.tabBarBackgroundColor)
+        self.snackbarTextColor = Color(hex: customTheme.snackbarTextColor)
+        self.snackbarActionTextColor = Color(hex: customTheme.snackbarActionTextColor)
+        self.snackbarBackgroundColor = Color(hex: customTheme.snackbarBackgroundColor)
+        self.primaryIconColor = Color(hex: customTheme.primaryIconColor)
+        self.tabBarTextAndIconColor = Color(hex: customTheme.tabBarTextAndIconColor)
+        self.postIconAndInfoColor = Color(hex: customTheme.postIconAndInfoColor)
+        self.commentIconAndInfoColor = Color(hex: customTheme.commentIconAndInfoColor)
+        self.toolbarPrimaryTextAndIconColor = Color(hex: customTheme.toolbarPrimaryTextAndIconColor)
+        self.mediaIndicatorIconColor = Color(hex: customTheme.mediaIndicatorIconColor)
+        self.mediaIndicatorBackgroundColor = Color(hex: customTheme.mediaIndicatorBackgroundColor)
+        self.pickerItemTextColor = Color(hex: customTheme.pickerItemTextColor)
+        self.pickerSelectedItemTextColor = Color(hex: customTheme.pickerSelectedItemTextColor)
+        self.pickerSelectedItemBackgroundColor = Color(hex: customTheme.pickerSelectedItemBackgroundColor)
+        self.upvoted = Color(hex: customTheme.upvoted)
+        self.downvoted = Color(hex: customTheme.downvoted)
+        self.postTypeBackgroundColor = Color(hex: customTheme.postTypeBackgroundColor)
+        self.postTypeTextColor = Color(hex: customTheme.postTypeTextColor)
+        self.spoilerBackgroundColor = Color(hex: customTheme.spoilerBackgroundColor)
+        self.spoilerTextColor = Color(hex: customTheme.spoilerTextColor)
+        self.nsfwBackgroundColor = Color(hex: customTheme.nsfwBackgroundColor)
+        self.nsfwTextColor = Color(hex: customTheme.nsfwTextColor)
+        self.flairBackgroundColor = Color(hex: customTheme.flairBackgroundColor)
+        self.flairTextColor = Color(hex: customTheme.flairTextColor)
+        self.archivedTint = Color(hex: customTheme.archivedTint)
+        self.lockedIconTint = Color(hex: customTheme.lockedIconTint)
+        self.crosspostIconTint = Color(hex: customTheme.crosspostIconTint)
+        self.upvoteRatioIconTint = Color(hex: customTheme.upvoteRatioIconTint)
+        self.stickiedPostIconTint = Color(hex: customTheme.stickiedPostIconTint)
+        self.noPreviewPostTypeIconTint = Color(hex: customTheme.noPreviewPostTypeIconTint)
+        self.subscribed = Color(hex: customTheme.subscribed)
+        self.unsubscribed = Color(hex: customTheme.unsubscribed)
+        self.username = Color(hex: customTheme.username)
+        self.subreddit = Color(hex: customTheme.subreddit)
+        self.authorFlairTextColor = Color(hex: customTheme.authorFlairTextColor)
+        self.submitter = Color(hex: customTheme.submitter)
+        self.moderator = Color(hex: customTheme.moderator)
+        self.currentUser = Color(hex: customTheme.currentUser)
+        self.singleCommentThreadBackgroundColor = Color(hex: customTheme.singleCommentThreadBackgroundColor)
+        self.unreadMessageBackgroundColor = Color(hex: customTheme.unreadMessageBackgroundColor)
+        self.dividerColor = Color(hex: customTheme.dividerColor)
+        self.noPreviewPostTypeBackgroundColor = Color(hex: customTheme.noPreviewPostTypeBackgroundColor)
+        self.voteAndReplyUnavailableButtonColor = Color(hex: customTheme.voteAndReplyUnavailableButtonColor)
+        self.commentVerticalBarColor1 = Color(hex: customTheme.commentVerticalBarColor1)
+        self.commentVerticalBarColor2 = Color(hex: customTheme.commentVerticalBarColor2)
+        self.commentVerticalBarColor3 = Color(hex: customTheme.commentVerticalBarColor3)
+        self.commentVerticalBarColor4 = Color(hex: customTheme.commentVerticalBarColor4)
+        self.commentVerticalBarColor5 = Color(hex: customTheme.commentVerticalBarColor5)
+        self.commentVerticalBarColor6 = Color(hex: customTheme.commentVerticalBarColor6)
+        self.commentVerticalBarColor7 = Color(hex: customTheme.commentVerticalBarColor7)
+        self.fabIconColor = Color(hex: customTheme.fabIconColor)
+        self.linkColor = Color(hex: customTheme.linkColor)
+        self.receivedMessageTextColor = Color(hex: customTheme.receivedMessageTextColor)
+        self.sentMessageTextColor = Color(hex: customTheme.sentMessageTextColor)
+        self.receivedMessageBackgroundColor = Color(hex: customTheme.receivedMessageBackgroundColor)
+        self.sentMessageBackgroundColor = Color(hex: customTheme.sentMessageBackgroundColor)
+        self.sendMessageIconColor = Color(hex: customTheme.sendMessageIconColor)
+        self.fullyCollapsedCommentBackgroundColor = Color(hex: customTheme.fullyCollapsedCommentBackgroundColor)
+    }
+}

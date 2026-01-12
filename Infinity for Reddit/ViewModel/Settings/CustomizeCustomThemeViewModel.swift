@@ -11,6 +11,7 @@ import GRDB
 @MainActor
 class CustomizeCustomThemeViewModel: ObservableObject {
     @Published var backingCustomTheme: CustomTheme?
+    @Published var backingCustomThemeSettingsColorModel: CustomThemeSettingsColorModel?
     @Published var loadState: LoadState = .idle
     @Published var savingSuccess: Bool = false
     @Published var error: Error?
@@ -21,6 +22,18 @@ class CustomizeCustomThemeViewModel: ObservableObject {
         }
         set {
             backingCustomTheme = newValue
+            if backingCustomThemeSettingsColorModel == nil {
+                backingCustomThemeSettingsColorModel = CustomThemeSettingsColorModel(customTheme: newValue)
+            }
+        }
+    }
+    
+    var customThemeSettingsColorModel: CustomThemeSettingsColorModel {
+        get {
+            backingCustomThemeSettingsColorModel ?? CustomThemeSettingsColorModel(customTheme: CustomTheme.getIndigo())
+        }
+        set {
+            backingCustomThemeSettingsColorModel = newValue
         }
     }
     

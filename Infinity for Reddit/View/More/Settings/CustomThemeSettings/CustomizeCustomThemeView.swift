@@ -41,49 +41,46 @@ struct CustomizeCustomThemeView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 VStack {
-                    List {
-                        VStack(alignment: .leading, spacing: 0) {
-                            CustomTextField(
-                                "Name",
-                                text: $customizeCustomThemeViewModel.customTheme.name,
-                                singleLine: true,
-                                fieldType: FieldType.name,
-                                focusedField: $focusedField
-                            )
-                            .submitLabel(.done)
-                            .padding(16)
+                    ScrollView {
+                        LazyVStack {
+                            VStack(alignment: .leading, spacing: 0) {
+                                CustomTextField(
+                                    "Name",
+                                    text: $customizeCustomThemeViewModel.customTheme.name,
+                                    singleLine: true,
+                                    fieldType: FieldType.name,
+                                    focusedField: $focusedField
+                                )
+                                .submitLabel(.done)
+                                .padding(16)
+                                
+                                CustomDivider()
+                            }
                             
-                            CustomDivider()
-                        }
-                        .listPlainItemNoInsets()
-                        .limitedWidthListItem()
-                        
-                        ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
-                            if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
-                                if let binding = getBooleanBinding(for: fieldName) {
-                                    BooleanEntry(
-                                        fieldName: fieldName,
-                                        title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
-                                        isEnabled: binding
-                                    )
-                                    .listPlainItemNoInsets()
-                                    .limitedWidthListItem()
-                                }
-                            } else {
-                                if let colorBinding = getIntBinding(for: fieldName) {
+                            ForEach(customizeCustomThemeViewModel.customThemeFields, id: \.self) { fieldName in
+                                if customizeCustomThemeViewModel.customThemeFieldsBoolType.contains(fieldName) {
+                                    if let binding = getBooleanBinding(for: fieldName) {
+                                        BooleanEntry(
+                                            fieldName: fieldName,
+                                            title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
+                                            isEnabled: binding
+                                        )
+                                    }
+                                } else {
+                                    let colorIntBinding = getColorIntBinding(for: fieldName)!
+                                    let colorBinding = getColorBinding(for: fieldName)!
+                                    
                                     ColorEntry(
+                                        colorInt: colorIntBinding,
+                                        color: colorBinding,
                                         fieldName: fieldName,
                                         title: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.title ?? "",
-                                        description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? "",
-                                        color: getWrappedBinding(for: colorBinding)
+                                        description: customizeCustomThemeViewModel.customThemeSettingsItems[fieldName]?.description ?? ""
                                     )
-                                    .listPlainItemNoInsets()
-                                    .limitedWidthListItem()
                                 }
                             }
                         }
                     }
-                    .themedList()
                     
                     KeyboardToolbar {
                         focusedField = nil
@@ -117,10 +114,20 @@ struct CustomizeCustomThemeView: View {
     }
     
     private struct ColorEntry: View {
+        @Binding var colorInt: Int
+        @Binding var color: Color
+        
         let fieldName: String
         let title: String
         let description: String
-        let color: IdentifiableBinding<Int>
+        
+        init(colorInt: Binding<Int>, color: Binding<Color>, fieldName: String, title: String, description: String) {
+            _colorInt = colorInt
+            _color = color
+            self.fieldName = fieldName
+            self.title = title
+            self.description = description
+        }
         
         var body: some View {
             VStack(spacing: 0) {
@@ -141,9 +148,12 @@ struct CustomizeCustomThemeView: View {
                     Spacer()
                     
                     ColorPicker("Choose color", selection: Binding(
-                        get: { Color(hex: color.binding.wrappedValue) },
+                        get: {
+                            color
+                        },
                         set: { newColor in
-                            color.binding.wrappedValue = newColor.toHex()
+                            color = newColor
+                            colorInt = newColor.toHex()
                         }
                     ))
                     .frame(width: 24, height: 24)
@@ -185,16 +195,6 @@ struct CustomizeCustomThemeView: View {
         }
     }
     
-    private func getWrappedBinding<T>(for binding: Binding<T>) -> IdentifiableBinding<T> {
-        return IdentifiableBinding(binding: Binding(
-            get: { binding.wrappedValue },
-            set: { newValue in
-                binding.wrappedValue = newValue
-                customizeCustomThemeViewModel.objectWillChange.send()
-            }
-        ))
-    }
-    
     private func getBooleanBinding(for fieldName: String) -> Binding<Bool>? {
         switch fieldName {
         case "isLightTheme":
@@ -208,7 +208,7 @@ struct CustomizeCustomThemeView: View {
         }
     }
     
-    private func getIntBinding(for fieldName: String) -> Binding<Int>? {
+    private func getColorIntBinding(for fieldName: String) -> Binding<Int>? {
         switch fieldName {
         case "colorPrimary":
             return $customizeCustomThemeViewModel.customTheme.colorPrimary
@@ -362,6 +362,165 @@ struct CustomizeCustomThemeView: View {
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor6
         case "commentVerticalBarColor7":
             return $customizeCustomThemeViewModel.customTheme.commentVerticalBarColor7
+        default:
+            return nil
+        }
+    }
+    
+    private func getColorBinding(for fieldName: String) -> Binding<Color>? {
+        switch fieldName {
+        case "colorPrimary":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.colorPrimary
+        case "colorAccent":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.colorAccent
+        case "colorPrimaryLightTheme":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.colorPrimaryLightTheme
+        case "primaryTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.primaryTextColor
+        case "secondaryTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.secondaryTextColor
+        case "postTitleColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.postTitleColor
+        case "postContentColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.postContentColor
+        case "readPostTitleColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.readPostTitleColor
+        case "readPostContentColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.readPostContentColor
+        case "commentColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentColor
+        case "buttonTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.buttonTextColor
+        case "linkColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.linkColor
+        case "receivedMessageTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.receivedMessageTextColor
+        case "sentMessageTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.sentMessageTextColor
+        case "switchColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.switchColor
+        case "backgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.backgroundColor
+        case "cardViewBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.cardViewBackgroundColor
+        case "readPostCardViewBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.readPostCardViewBackgroundColor
+        case "filledCardViewBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.filledCardViewBackgroundColor
+        case "readPostFilledCardViewBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.readPostFilledCardViewBackgroundColor
+        case "commentBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentBackgroundColor
+        case "fullyCollapsedCommentBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.fullyCollapsedCommentBackgroundColor
+        case "receivedMessageBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.receivedMessageBackgroundColor
+        case "sentMessageBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.sentMessageBackgroundColor
+        case "tabBarBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.tabBarBackgroundColor
+        case "snackbarTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.snackbarTextColor
+        case "snackbarActionTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.snackbarActionTextColor
+        case "snackbarBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.snackbarBackgroundColor
+        case "primaryIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.primaryIconColor
+        case "tabBarTextAndIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.tabBarTextAndIconColor
+        case "postIconAndInfoColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.postIconAndInfoColor
+        case "commentIconAndInfoColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentIconAndInfoColor
+        case "fabIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.fabIconColor
+        case "sendMessageIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.sendMessageIconColor
+        case "toolbarPrimaryTextAndIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.toolbarPrimaryTextAndIconColor
+        case "mediaIndicatorIconColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.mediaIndicatorIconColor
+        case "mediaIndicatorBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.mediaIndicatorBackgroundColor
+        case "pickerItemTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.pickerItemTextColor
+        case "pickerSelectedItemTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.pickerSelectedItemTextColor
+        case "pickerSelectedItemBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.pickerSelectedItemBackgroundColor
+        case "upvoted":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.upvoted
+        case "downvoted":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.downvoted
+        case "postTypeBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.postTypeBackgroundColor
+        case "postTypeTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.postTypeTextColor
+        case "spoilerBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.spoilerBackgroundColor
+        case "spoilerTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.spoilerTextColor
+        case "nsfwBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.nsfwBackgroundColor
+        case "nsfwTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.nsfwTextColor
+        case "flairBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.flairBackgroundColor
+        case "flairTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.flairTextColor
+        case "archivedTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.archivedTint
+        case "lockedIconTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.lockedIconTint
+        case "crosspostIconTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.crosspostIconTint
+        case "upvoteRatioIconTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.upvoteRatioIconTint
+        case "stickiedPostIconTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.stickiedPostIconTint
+        case "noPreviewPostTypeIconTint":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.noPreviewPostTypeIconTint
+        case "subscribed":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.subscribed
+        case "unsubscribed":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.unsubscribed
+        case "username":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.username
+        case "subreddit":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.subreddit
+        case "authorFlairTextColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.authorFlairTextColor
+        case "submitter":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.submitter
+        case "moderator":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.moderator
+        case "currentUser":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.currentUser
+        case "singleCommentThreadBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.singleCommentThreadBackgroundColor
+        case "unreadMessageBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.unreadMessageBackgroundColor
+        case "dividerColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.dividerColor
+        case "noPreviewPostTypeBackgroundColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.noPreviewPostTypeBackgroundColor
+        case "voteAndReplyUnavailableButtonColor":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.voteAndReplyUnavailableButtonColor
+        case "commentVerticalBarColor1":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor1
+        case "commentVerticalBarColor2":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor2
+        case "commentVerticalBarColor3":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor3
+        case "commentVerticalBarColor4":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor4
+        case "commentVerticalBarColor5":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor5
+        case "commentVerticalBarColor6":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor6
+        case "commentVerticalBarColor7":
+            return $customizeCustomThemeViewModel.customThemeSettingsColorModel.commentVerticalBarColor7
         default:
             return nil
         }
