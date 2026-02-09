@@ -78,6 +78,7 @@ struct OnboardingView: View {
                 Button(action: advance) {
                     Text(currentIndex == 0 ? "Take a Quick Tour" : currentIndex == pages.count ? "Get Started" : "Next")
                         .frame(maxWidth: 500)
+                        .font(.system(size: !((proxy.size.width > proxy.size.height || proxy.size.width > 1400) && proxy.size.height < 500) && proxy.size.width > 500 ? 24 : 17))
                 }
                 .foregroundColor(.white)
                 .tint(Color(hex: "#0336FF"))
