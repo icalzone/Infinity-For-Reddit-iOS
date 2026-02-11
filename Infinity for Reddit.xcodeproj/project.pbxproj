@@ -22,6 +22,7 @@
 		5597B1E12EE3417000D79683 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 5597B1E02EE3417000D79683 /* SwiftUIIntrospect */; };
 		55AAB5322D3A9E3E006816B2 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 55AAB5312D3A9E3E006816B2 /* MarkdownUI */; };
 		55BA78B52F21D4270087037D /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 55BA78B42F21D4270087037D /* AppIcon.icon */; };
+		55BA78BA2F3AE62D0087037D /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 55BA78B92F3AE62D0087037D /* Launch Screen.storyboard */; };
 		55C7421F2CFD1E4300853D4E /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 55C7421E2CFD1E4300853D4E /* SwiftyJSON */; };
 		824357B22CFCFF1A0091EFF1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 824357B12CFCFF1A0091EFF1 /* Alamofire */; };
 /* End PBXBuildFile section */
@@ -62,6 +63,7 @@
 		559BD2452CF7D58600621685 /* Infinity for RedditTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Infinity for RedditTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		559BD24F2CF7D58600621685 /* Infinity for RedditUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Infinity for RedditUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		55BA78B42F21D4270087037D /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppIcon.icon; sourceTree = "<group>"; };
+		55BA78B92F3AE62D0087037D /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -125,6 +127,7 @@
 		559BD22A2CF7D58500621685 = {
 			isa = PBXGroup;
 			children = (
+				55BA78B92F3AE62D0087037D /* Launch Screen.storyboard */,
 				559BD2352CF7D58500621685 /* Infinity for Reddit */,
 				559BD2482CF7D58600621685 /* Infinity for RedditTests */,
 				559BD2522CF7D58600621685 /* Infinity for RedditUITests */,
@@ -297,6 +300,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				55BA78B52F21D4270087037D /* AppIcon.icon in Resources */,
+				55BA78BA2F3AE62D0087037D /* Launch Screen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -495,6 +499,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -530,6 +535,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

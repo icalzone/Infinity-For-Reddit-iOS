@@ -55,7 +55,7 @@ struct Infinity: App {
     var body: some Scene {
         WindowGroup {
             ZStack {
-                if !onboardingFinished {
+                if true {
                     OnboardingView {
                         onboardingFinished = true
                     }

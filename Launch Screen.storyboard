@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_bottom_icon" translatesAutoresizingMaskIntoConstraints="NO" id="aSb-J2-fsO" userLabel="Bottom Icon">
+                                <rect key="frame" x="0.0" y="662.66666666666663" width="393" height="157.33333333333337"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="aSb-J2-fsO" secondAttribute="height" multiplier="800:320" id="CIN-WT-vkA"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="Mht-Mr-Ddk"/>
+                                </constraints>
+                            </imageView>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" image="splash_app_icon" translatesAutoresizingMaskIntoConstraints="NO" id="ySq-R7-3eS" userLabel="Icon">
+                                <rect key="frame" x="121.66666666666669" y="363.66666666666669" width="150" height="150.00000000000006"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="150" id="9or-hM-E13"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="72" id="iep-mX-38j"/>
+                                    <constraint firstAttribute="width" secondItem="ySq-R7-3eS" secondAttribute="height" multiplier="1:1" id="nAJ-MC-SdE"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="aSb-J2-fsO" firstAttribute="top" relation="greaterThanOrEqual" secondItem="ySq-R7-3eS" secondAttribute="bottom" priority="750" constant="72" id="GFD-qi-RO6"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="aSb-J2-fsO" secondAttribute="trailing" id="KJj-do-Gxt"/>
+                            <constraint firstItem="ySq-R7-3eS" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" id="Uam-HI-z9K"/>
+                            <constraint firstAttribute="bottom" secondItem="aSb-J2-fsO" secondAttribute="bottom" constant="32" id="WkB-pt-igf"/>
+                            <constraint firstItem="aSb-J2-fsO" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="cl0-Gd-dz4"/>
+                            <constraint firstItem="aSb-J2-fsO" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="lai-cz-lIG"/>
+                            <constraint firstItem="ySq-R7-3eS" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="xRu-Bp-8oS"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="52.671755725190835" y="374.64788732394368"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="splash_app_icon" width="1024" height="1024"/>
+        <image name="splash_bottom_icon" width="1080" height="432"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
