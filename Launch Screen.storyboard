@@ -17,10 +17,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splash_bottom_icon" translatesAutoresizingMaskIntoConstraints="NO" id="aSb-J2-fsO" userLabel="Bottom Icon">
-                                <rect key="frame" x="0.0" y="662.66666666666663" width="393" height="157.33333333333337"/>
+                                <rect key="frame" x="46.666666666666657" y="700" width="300" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="aSb-J2-fsO" secondAttribute="height" multiplier="800:320" id="CIN-WT-vkA"/>
-                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="400" id="Mht-Mr-Ddk"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="Mht-Mr-Ddk"/>
                                 </constraints>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="500" verticalCompressionResistancePriority="500" image="splash_app_icon" translatesAutoresizingMaskIntoConstraints="NO" id="ySq-R7-3eS" userLabel="Icon">
@@ -52,7 +52,7 @@
     </scenes>
     <resources>
         <image name="splash_app_icon" width="1024" height="1024"/>
-        <image name="splash_bottom_icon" width="1080" height="432"/>
+        <image name="splash_bottom_icon" width="960" height="320"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
