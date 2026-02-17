@@ -133,11 +133,23 @@ struct MarkdownImageProvider: ImageProvider {
                             .linkText(.f15)
                     }
                 } else {
-                    EmptyView()
+                    if media.status == "invalid" {
+                        Text(unescapedUrl)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .customContentFont(fontSize: fontSize)
+                    } else {
+                        EmptyView()
+                    }
                 }
             } else {
                 // When there is no MediaMetadata
-                EmptyView()
+                if let urlString = url?.absoluteString {
+                    Text(urlString)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .customContentFont(fontSize: fontSize)
+                } else {
+                    EmptyView()
+                }
             }
         }
         .environment(\.openURL, OpenURLAction(handler: { url in
