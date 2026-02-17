@@ -234,6 +234,19 @@ public class Comment : NSObject, Validatable, Identifiable, ObservableObject {
             
             for (key, value) in mediaMetaData {
                 let media = try MediaMetadata(fromJson: value)
+                if media.status == "invalid" && key.starts(with: "giphy|") {
+                    let parts = key.components(separatedBy: "|")
+                    guard parts.count >= 2 else {
+                        continue
+                    }
+                    let giphyId = parts[1]
+                    let gifUrl = "https://media.giphy.com/media/\(giphyId)/giphy.gif"
+                    let mp4Url = "https://media.giphy.com/media/\(giphyId)/giphy.mp4"
+                    media.e = "AnimatedImage"
+                    media.id = giphyId
+                    media.isGif = true
+                    media.s = MediaMetadataSource(gif: gifUrl, mp4: mp4Url)
+                }
                 parsedMediaMetadata[key] = media
             }
             mediaMetadata = parsedMediaMetadata

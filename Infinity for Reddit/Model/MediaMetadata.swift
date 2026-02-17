@@ -104,4 +104,12 @@ class MediaMetadataSource : NSObject {
         x = json["x"].intValue
         y = json["y"].intValue
     }
+    
+    // Fallback for invalid giphy gifs
+    init(gif: String, mp4: String) {
+        self.gif = gif
+        self.mp4 = mp4
+        self.x = 480
+        self.y = 480
+    }
 }
