@@ -31,7 +31,6 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
     private let anonymousSubscriptionListingRepository: AnonymousSubscriptionListingRepositoryProtocol
     
     private var cancellables = Set<AnyCancellable>()
-    private let operationqueue: OperationQueue
     private let dbPool: DatabasePool
     
     private let searchQueryPublisher = CurrentValueSubject<String, Error>("")
@@ -44,10 +43,6 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
     
     // MARK: - Initializer
     init(subscriptionSelectionMode: ThingSelectionMode, anonymousSubscriptionListingRepository: AnonymousSubscriptionListingRepositoryProtocol) {
-        guard let resolvedOperationQueue = DependencyManager.shared.container.resolve(OperationQueue.self) else {
-            fatalError("Could not resolve OperationQueue")
-        }
-        
         guard let resolvedDatabasePool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Could not resolve DatabasePool")
         }
@@ -89,7 +84,6 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
             break
         }
         self.anonymousSubscriptionListingRepository = anonymousSubscriptionListingRepository
-        self.operationqueue = resolvedOperationQueue
         self.dbPool = resolvedDatabasePool
         
         let subscribedSubredditDao = SubscribedSubredditDao(dbPool: dbPool)

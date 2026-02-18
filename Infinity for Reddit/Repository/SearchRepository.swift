@@ -9,11 +9,9 @@ import Foundation
 
 class SearchRepository: SearchRepositoryProtocol {
     private let recentSearchQueryDao: RecentSearchQueryDao
-    private let operationQueue: OperationQueue
     
-    init(recentSearchQueryDao: RecentSearchQueryDao, operationQueue: OperationQueue) {
+    init(recentSearchQueryDao: RecentSearchQueryDao) {
         self.recentSearchQueryDao = recentSearchQueryDao
-        self.operationQueue = operationQueue
     }
     
     func saveSearchQuery(username: String,

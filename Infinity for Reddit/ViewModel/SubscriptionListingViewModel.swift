@@ -37,7 +37,6 @@ public class SubscriptionListingViewModel: ObservableObject {
     private var after: String? = nil
     
     private var cancellables = Set<AnyCancellable>()
-    private let operationqueue: OperationQueue
     private let dbPool: DatabasePool
     private let refreshInterval = 60 * 60 * 24
     
@@ -91,15 +90,11 @@ public class SubscriptionListingViewModel: ObservableObject {
             break
         }
         self.subscriptionListingRepository = subscriptionListingRepository
-        guard let resolvedOperationQueue = DependencyManager.shared.container.resolve(OperationQueue.self) else {
-            fatalError("Could not resolve OperationQueue")
-        }
         
         guard let resolvedDatabasePool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Could not resolve DatabasePool")
         }
         
-        self.operationqueue = resolvedOperationQueue
         self.dbPool = resolvedDatabasePool
         
         let subscribedSubredditDao = SubscribedSubredditDao(dbPool: dbPool)

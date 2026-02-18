@@ -55,10 +55,6 @@ class SearchViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        guard let resolvedOperationQueue = DependencyManager.shared.container.resolve(OperationQueue.self) else {
-            fatalError("Could not resolve OperationQueue")
-        }
-        
         guard let resolvedDatabasePool = DependencyManager.shared.container.resolve(DatabasePool.self) else {
             fatalError("Could not resolve DatabasePool")
         }
@@ -67,7 +63,7 @@ class SearchViewModel: ObservableObject {
         self.dbPool = resolvedDatabasePool
         
         let recentSearchQueryDao = RecentSearchQueryDao(dbPool: dbPool)
-        self.searchRepository = SearchRepository(recentSearchQueryDao: recentSearchQueryDao, operationQueue: resolvedOperationQueue)
+        self.searchRepository = SearchRepository(recentSearchQueryDao: recentSearchQueryDao)
         recentSearchQueriesPublisher = recentSearchQueryDao.getAllRecentSearchQueriesLiveData(username: username)
         
         receiveRecentSearchQueries()
