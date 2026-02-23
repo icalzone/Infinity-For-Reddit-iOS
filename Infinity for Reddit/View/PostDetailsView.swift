@@ -356,12 +356,15 @@ struct PostDetailsView: View {
                                                 showActionBar = true
                                             }
                                         }
+                                        postDetailsViewModel.isScrollIdle = true
+                                        postDetailsViewModel.applyPendingUserIconUrlString()
                                     case .interacting:
                                         if showActionBar {
                                             withAnimation {
                                                 showActionBar = false
                                             }
                                         }
+                                        postDetailsViewModel.isScrollIdle = false
                                     default:
                                         break
                                     }

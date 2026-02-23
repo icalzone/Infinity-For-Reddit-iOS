@@ -37,6 +37,8 @@ public class PostDetailsViewModel: ObservableObject {
     @Published var showAllGalleryMediaDownloadFinishedMessageTrigger: Bool = false
     
     @Published var showSensitiveContentWarningTrigger: Bool = false
+    
+    var isScrollIdle: Bool = true
 
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
     private var commentFilter: CommentFilter?
@@ -51,6 +53,7 @@ public class PostDetailsViewModel: ObservableObject {
     private let thingModerationRepository: ThingModerationRepositoryProtocol
     private let postRepository: PostRepositoryProtocol
     private let commentRepository: CommentRepositoryProtocol
+    private var userIconStringUrlCache: [String: String] = [:]
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -586,9 +589,27 @@ public class PostDetailsViewModel: ObservableObject {
         Task {
             let iconUrl = await UserProfileImageBatchLoader.shared.loadIcons(comments: commentBatch)
             await MainActor.run {
-                comment.authorIconUrlString = iconUrl
+                if isScrollIdle {
+                    comment.authorIconUrlString = iconUrl
+                } else {
+                    userIconStringUrlCache[comment.id] = iconUrl
+                }
             }
         }
+    }
+    
+    func applyPendingUserIconUrlString() {
+        for (commentId, userIconUrlString) in userIconStringUrlCache {
+            if let index = visibleComments.firstIndex(where: { $0.id == commentId }) {
+                switch visibleComments[index] {
+                case .comment(let comment):
+                    comment.authorIconUrlString = userIconUrlString
+                default:
+                    break
+                }
+            }
+        }
+        userIconStringUrlCache.removeAll()
     }
     
 //    func loadPostIcon(isFromSubredditPostListing: Bool) async {
