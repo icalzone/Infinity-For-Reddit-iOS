@@ -119,11 +119,11 @@ struct MoreView: View {
                     .listPlainItemNoInsets()
                     .limitedWidthListItem()
                     
-                    SimpleTouchItemRow(text: "Test", icon: "testtube.2") {
-                        navigationManager.append(MoreViewNavigation.test)
-                    }
-                    .listPlainItemNoInsets()
-                    .limitedWidthListItem()
+//                    SimpleTouchItemRow(text: "Test", icon: "testtube.2") {
+//                        navigationManager.append(MoreViewNavigation.test)
+//                    }
+//                    .listPlainItemNoInsets()
+//                    .limitedWidthListItem()
                 }
             }
             .themedList()

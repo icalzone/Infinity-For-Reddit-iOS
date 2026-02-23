@@ -53,12 +53,17 @@ struct PostDetailsView: View {
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
     private var showAuthorAvatar: Bool = false
     
-    private let isFromSubredditPostListing: Bool
+    //private let isFromSubredditPostListing: Bool
     private let playbackTimeToSeekToInitially: Double
     private let thingModerationRepository: ThingModerationRepositoryProtocol
     
-    init(postDetailsInput: PostDetailsInput, isFromSubredditPostListing: Bool, isContinueThread: Bool = false, videoPlaybackTime: Double = 0) {
-        self.isFromSubredditPostListing = isFromSubredditPostListing
+    init(
+        postDetailsInput: PostDetailsInput,
+        //isFromSubredditPostListing: Bool,
+        isContinueThread: Bool = false,
+        videoPlaybackTime: Double = 0
+    ) {
+        //self.isFromSubredditPostListing = isFromSubredditPostListing
         self.playbackTimeToSeekToInitially = videoPlaybackTime
         let thingModerationRepository = ThingModerationRepository()
         self.thingModerationRepository = thingModerationRepository
@@ -88,7 +93,7 @@ struct PostDetailsView: View {
                                     PostDetailsItemView(
                                         postDetailsViewModel: postDetailsViewModel,
                                         post: post,
-                                        isFromSubredditPostListing: isFromSubredditPostListing,
+                                        //isFromSubredditPostListing: isFromSubredditPostListing,
                                         playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                                         onSendComment: sendComment,
                                         onLongPress: {
@@ -117,7 +122,7 @@ struct PostDetailsView: View {
                                         PostDetailsItemView(
                                             postDetailsViewModel: postDetailsViewModel,
                                             post: post,
-                                            isFromSubredditPostListing: isFromSubredditPostListing,
+                                            //isFromSubredditPostListing: isFromSubredditPostListing,
                                             playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
                                             onSendComment: sendComment,
                                             onLongPress: {
@@ -1022,7 +1027,7 @@ private struct PostDetailsItemView: View {
     @State var voteTask: Task<Void, Never>?
     
     let post: Post
-    let isFromSubredditPostListing: Bool
+    //let isFromSubredditPostListing: Bool
     let playbackTimeToSeekToInitially: Double
     let onSendComment: () -> Void
     let onLongPress: () -> Void
@@ -1031,7 +1036,7 @@ private struct PostDetailsItemView: View {
     var body: some View {
         PostDetailsViewCard(
             post: post,
-            isFromSubredditPostListing: isFromSubredditPostListing,
+            //isFromSubredditPostListing: isFromSubredditPostListing,
             playbackTimeToSeekToInitially: playbackTimeToSeekToInitially,
             onUpvote: {
                 voteTask?.cancel()
@@ -1058,13 +1063,13 @@ private struct PostDetailsItemView: View {
         )
         .listPlainItemNoInsets()
         .id(ObjectIdentifier(post))
-        .onAppear {
-            if post.subredditOrUserIconInPostDetails == nil {
-                Task {
-                    await postDetailsViewModel.loadPostIcon(isFromSubredditPostListing: isFromSubredditPostListing)
-                }
-            }
-        }
+//        .onAppear {
+//            if post.subredditOrUserIconInPostDetails == nil {
+//                Task {
+//                    await postDetailsViewModel.loadPostIcon(isFromSubredditPostListing: isFromSubredditPostListing)
+//                }
+//            }
+//        }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
                 voteTask?.cancel()

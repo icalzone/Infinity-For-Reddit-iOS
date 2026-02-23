@@ -87,21 +87,21 @@ enum RedditAPI: URLRequestConvertible {
         case .getAccessToken(let queries, _, _):
             return queries
         case .getFrontPagePosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSubredditPosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserPosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSearchPosts(let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getMultiredditPosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSubredditConcatPosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserComments(_, let queries):
             return ["raw_json": "1", "sort": "best"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getPostAndCommentsById(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .searchSubreddits(let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .searchUsers(let queries):

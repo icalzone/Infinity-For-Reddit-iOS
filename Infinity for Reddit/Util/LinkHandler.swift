@@ -106,9 +106,9 @@ class LinkHandler {
             let postId = segments[index + 1]
             if segments.count > index + 3 {
                 let commentId = segments.last!
-                return LinkDestination.navigation(AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId), isFromSubredditPostListing: false))
+                return LinkDestination.navigation(AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId)))
             } else {
-                return LinkDestination.navigation(AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId), isFromSubredditPostListing: false))
+                return LinkDestination.navigation(AppNavigation.postDetails(postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId)))
             }
         } else if path == "/media", let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
                   let realURLString = query.first(where: { $0.name == "url" })?.value,

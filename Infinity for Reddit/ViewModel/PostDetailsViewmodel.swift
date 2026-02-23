@@ -591,23 +591,23 @@ public class PostDetailsViewModel: ObservableObject {
         }
     }
     
-    func loadPostIcon(isFromSubredditPostListing: Bool) async {
-        guard let post else { return }
-        guard post.subredditOrUserIconInPostDetails == nil else { return }
-        
-        if !isFromSubredditPostListing && post.subredditOrUserIcon != nil {
-            await MainActor.run {
-                post.subredditOrUserIconInPostDetails = post.subredditOrUserIcon
-            }
-            return
-        }
-        
-        do {
-            try await postDetailsRepository.loadPostIcon(post: post, isFromSubredditPostListing: isFromSubredditPostListing)
-        } catch {
-            print("Load icon failed")
-        }
-    }
+//    func loadPostIcon(isFromSubredditPostListing: Bool) async {
+//        guard let post else { return }
+//        guard post.subredditOrUserIconInPostDetails == nil else { return }
+//        
+//        if !isFromSubredditPostListing && post.subredditOrUserIcon != nil {
+//            await MainActor.run {
+//                post.subredditOrUserIconInPostDetails = post.subredditOrUserIcon
+//            }
+//            return
+//        }
+//        
+//        do {
+//            try await postDetailsRepository.loadPostIcon(post: post, isFromSubredditPostListing: isFromSubredditPostListing)
+//        } catch {
+//            print("Load icon failed")
+//        }
+//    }
     
     func changeSortTypeKind(sortTypeKind: SortType.Kind) {
         if sortTypeKind != self.sortTypeKind {

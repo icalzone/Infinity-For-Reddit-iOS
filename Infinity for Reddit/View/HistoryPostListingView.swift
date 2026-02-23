@@ -91,7 +91,7 @@ struct HistoryPostListingView: View {
                             PostView(
                                 post: post,
                                 postLayout: getPostLayout(post),
-                                isSubredditPostListing: false,
+                                displaySubredditIcon: false,
                                 onUpvote: {
                                     await historyPostListingViewModel.votePost(post: post, vote: 1)
                                 },
@@ -124,11 +124,11 @@ struct HistoryPostListingView: View {
                             .onAppear {
                                 historyPostListingViewModel.insertIntoAppearedPosts(post)
                                 
-                                if post.subredditOrUserIcon == nil {
-                                    Task {
-                                        await historyPostListingViewModel.loadIcon(post: post)
-                                    }
-                                }
+//                                if post.subredditOrUserIcon == nil {
+//                                    Task {
+//                                        await historyPostListingViewModel.loadIcon(post: post)
+//                                    }
+//                                }
                             }
                             .onDisappear {
                                 historyPostListingViewModel.appearedPosts.remove(id: post.id)

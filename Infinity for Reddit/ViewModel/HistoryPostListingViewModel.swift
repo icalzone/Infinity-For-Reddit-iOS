@@ -272,15 +272,15 @@ public class HistoryPostListingViewModel: ObservableObject {
         self.postFilter?.allowSpoiler = spoilerContent
     }
     
-    func loadIcon(post: Post) async {
-        guard post.subredditOrUserIcon == nil else { return }
-        
-        do {
-            try await historyPostListingRepository.loadIcon(post: post)
-        } catch {
-            print("Load icon failed")
-        }
-    }
+//    func loadIcon(post: Post) async {
+//        guard post.subredditOrUserIcon == nil else { return }
+//        
+//        do {
+//            try await historyPostListingRepository.loadIcon(post: post)
+//        } catch {
+//            print("Load icon failed")
+//        }
+//    }
     
     func setSensitiveContent(_ sensitiveContent: Bool) {
         if sensitiveContent != self.sensitiveContent {

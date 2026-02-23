@@ -34,15 +34,14 @@ struct CustomNavigationStack<Content: View>: View {
                     case .login:
                         LoginView()
                             .environmentObject(navigationManager)
-                    case .postDetails(let postDetailsInput, let isFromSubredditPostListing, let videoPlaybackTime):
-                        PostDetailsView(postDetailsInput: postDetailsInput, isFromSubredditPostListing: isFromSubredditPostListing, videoPlaybackTime: videoPlaybackTime)
+                    case .postDetails(let postDetailsInput, let videoPlaybackTime):
+                        PostDetailsView(postDetailsInput: postDetailsInput, videoPlaybackTime: videoPlaybackTime)
                             .environmentObject(navigationManager)
                             .environmentObject(commentSubmissionShareableViewModel)
                             .environmentObject(postEditingShareableViewModel)
                     case .postDetailsWithId(let postId, let commentId, let isContinueThread):
                         PostDetailsView(
                             postDetailsInput: PostDetailsInput.postAndCommentId(postId: postId, commentId: commentId),
-                            isFromSubredditPostListing: false,
                             isContinueThread: isContinueThread
                         )
                         .environmentObject(navigationManager)

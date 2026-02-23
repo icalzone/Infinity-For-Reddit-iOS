@@ -488,7 +488,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Infinity for Reddit/Preview Content\"";
-				DEVELOPMENT_TEAM = 5372BY2RR8;
+				DEVELOPMENT_TEAM = 5P86PK4YC6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Infinity-for-Reddit-Info.plist";
@@ -524,7 +524,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Infinity for Reddit/Preview Content\"";
-				DEVELOPMENT_TEAM = 5372BY2RR8;
+				DEVELOPMENT_TEAM = 5P86PK4YC6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Infinity-for-Reddit-Info.plist";

@@ -18,7 +18,7 @@ struct PostView: View {
     
     let post: Post
     let postLayout: PostLayout
-    let isSubredditPostListing: Bool
+    let displaySubredditIcon: Bool
     let onUpvote: () async -> Void
     let onDownvote: () async -> Void
     let onToggleSave: () async -> Void
@@ -31,7 +31,7 @@ struct PostView: View {
     init(
         post: Post,
         postLayout: PostLayout,
-        isSubredditPostListing: Bool,
+        displaySubredditIcon: Bool,
         onUpvote: @escaping () async -> Void,
         onDownvote: @escaping () async -> Void,
         onToggleSave: @escaping () async -> Void,
@@ -43,7 +43,7 @@ struct PostView: View {
     ) {
         self.post = post
         self.postLayout = postLayout
-        self.isSubredditPostListing = isSubredditPostListing
+        self.displaySubredditIcon = displaySubredditIcon
         self.onUpvote = onUpvote
         self.onDownvote = onDownvote
         self.onToggleSave = onToggleSave
@@ -66,7 +66,7 @@ struct PostView: View {
             case .card:
                 PostViewCard(
                     postViewModel: postViewModel,
-                    isSubredditPostListing: isSubredditPostListing,
+                    displaySubredditIcon: displaySubredditIcon,
                     onPostTap: { videoPlaybackTime in
                         onPostTap(videoPlaybackTime)
                     },
@@ -87,7 +87,7 @@ struct PostView: View {
             case .compact:
                 PostViewCompact(
                     postViewModel: postViewModel,
-                    isSubredditPostListing: isSubredditPostListing,
+                    displaySubredditIcon: displaySubredditIcon,
                     onPostTap: {
                         onPostTap(0)
                     },
@@ -118,14 +118,14 @@ struct PostView: View {
         navigationManager.append(
             AppNavigation.postDetails(
                 postDetailsInput: .post(post),
-                isFromSubredditPostListing: isSubredditPostListing,
+                //isFromSubredditPostListing: isSubredditPostListing,
                 videoPlaybackTime: videoPlaybackTime
             )
         )
     }
     
     private func onIconTap() {
-        if !isSubredditPostListing {
+        if displaySubredditIcon {
             navigationManager.append(
                 AppNavigation.subredditDetails(subredditName: post.subreddit)
             )

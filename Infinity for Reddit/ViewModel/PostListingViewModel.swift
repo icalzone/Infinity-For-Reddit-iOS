@@ -39,8 +39,10 @@ public class PostListingViewModel: ObservableObject {
     @Published var loadPostsTaskId = UUID()
     @Published var postLayout: PostLayout
     
-    @Published var appearedPosts: IdentifiedArrayOf<Post> = []
-    @Published var lazyModeScrolledPost: Post?
+    var appearedPosts: IdentifiedArrayOf<Post> = []
+    var lazyModeScrolledPost: Post?
+    var userIconStringUrlCache: [String: String] = [:]
+    var isScrollIdle: Bool = true
     
     @Published var showMediaDownloadFinishedMessageTrigger: Bool = false
     @Published var showAllGalleryMediaDownloadFinishedMessageTrigger: Bool = false
@@ -424,28 +426,33 @@ public class PostListingViewModel: ObservableObject {
         self.postFilter?.allowSpoiler = spoilerContent
     }
     
-    func loadIcon(post: Post, displaySubredditIcon: Bool) {
-        guard post.subredditOrUserIcon == nil else { return }
+    func loadIcon(post: Post) {
+        guard post.userIconUrlString == nil else { return }
         
         Task {
-            do {
-                if displaySubredditIcon {
-                    try await postListingRepository.loadIcon(post: post)
-                } else {
-                    let startIndex = posts.index(id: post.id) ?? 0
-                    let postBatch = Array(
-                        posts[startIndex..<min(posts.count, startIndex + UserProfileImageBatchLoader.batchSize)]
-                    )
+            let startIndex = posts.index(id: post.id) ?? 0
+            let postBatch = Array(
+                posts[startIndex..<min(posts.count, startIndex + UserProfileImageBatchLoader.batchSize)]
+            )
 
-                    let iconUrl = await UserProfileImageBatchLoader.shared.loadIcons(posts: postBatch)
-                    await MainActor.run {
-                        post.subredditOrUserIcon = iconUrl
-                    }
+            let iconUrl = await UserProfileImageBatchLoader.shared.loadIcons(posts: postBatch)
+            await MainActor.run {
+                if isScrollIdle {
+                    post.userIconUrlString = iconUrl
+                } else {
+                    userIconStringUrlCache[post.id] = iconUrl
                 }
-            } catch {
-                print("Load icon failed")
             }
         }
+    }
+    
+    func applyPendingUserIconUrlString() {
+        for (postId, userIconUrlString) in userIconStringUrlCache {
+            if let index = posts.firstIndex(where: { $0.id == postId }) {
+                posts[index].userIconUrlString = userIconUrlString
+            }
+        }
+        userIconStringUrlCache.removeAll()
     }
     
     func changeSortTypeKind(_ sortTypeKind: SortType.Kind) {

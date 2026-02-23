@@ -30,7 +30,7 @@ struct PostViewCard: View {
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
 
-    let isSubredditPostListing: Bool
+    let displaySubredditIcon: Bool
     let onPostTap: (Double) -> Void
     let onIconTap: () -> Void
     let onSubredditTap: () -> Void
@@ -50,7 +50,7 @@ struct PostViewCard: View {
 
     init(
         postViewModel: PostViewModel,
-        isSubredditPostListing: Bool,
+        displaySubredditIcon: Bool,
         onPostTap: @escaping (Double) -> Void,
         onIconTap: @escaping () -> Void,
         onSubredditTap: @escaping () -> Void,
@@ -67,7 +67,7 @@ struct PostViewCard: View {
         onLongPressPost: @escaping () -> Void
     ) {
         self.postViewModel = postViewModel
-        self.isSubredditPostListing = isSubredditPostListing
+        self.displaySubredditIcon = displaySubredditIcon
         self.onPostTap = onPostTap
         self.onIconTap = onIconTap
         self.onSubredditTap = onSubredditTap
@@ -101,13 +101,13 @@ struct PostViewCard: View {
                 
                 HStack {
                     CustomWebImage(
-                        postViewModel.post.subredditOrUserIcon,
+                        displaySubredditIcon ? postViewModel.post.subredditIconUrlString : postViewModel.post.userIconUrlString,
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
                         handleImageTapGesture: false,
                         fallbackView: {
-                            InitialLetterAvatarImageFallbackView(name: isSubredditPostListing ? postViewModel.post.author : postViewModel.post.subreddit, size: iconSize)
+                            InitialLetterAvatarImageFallbackView(name: displaySubredditIcon ? postViewModel.post.subreddit : postViewModel.post.author, size: iconSize)
                         }
                     )
                     .frame(width: iconSize, height: iconSize)

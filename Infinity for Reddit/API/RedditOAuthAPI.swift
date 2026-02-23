@@ -232,23 +232,23 @@ enum RedditOAuthAPI: URLRequestConvertible {
         case .getMyInfo:
             return ["raw_json": "1"]
         case .getFrontPagePosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserData:
             return ["raw_json": "1"]
         case .getSubredditData:
             return ["raw_json": "1"]
         case .getSubredditPosts(_, let queries):
-            return ["raw_json": "1", "always_show_media": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "always_show_media": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserPosts(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSearchPosts(let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSearchPostsInSpecificThing(_, let queries):
-            return ["raw_json": "1", "restrict_sr": "on", "sr_detail": "true", "always_show_media": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "restrict_sr": "on", "sr_detail": "1", "always_show_media": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getCustomFeedPosts(_, let queries):
-            return ["raw_json": "1", "always_show_media": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "always_show_media": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSubredditConcatPosts(_, let queries):
-            return ["raw_json": "1", "always_show_media": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "always_show_media": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getSubscribedThings(let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getUserComments(_, let queries):
@@ -256,9 +256,9 @@ enum RedditOAuthAPI: URLRequestConvertible {
         case .getUserSavedComments(_, let queries):
             return ["type": "comments", "raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getPostAndCommentsById(_, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .getPostAndCommentsSingleThreadById(_, _, let queries):
-            return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
+            return ["raw_json": "1", "sr_detail": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .searchSubreddits(let queries):
             return ["raw_json": "1"].merging(queries, uniquingKeysWith: { _, new in new })
         case .searchUsers(let queries):

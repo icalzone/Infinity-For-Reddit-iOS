@@ -23,7 +23,7 @@ struct PostViewCompact: View {
     @State private var voteTask: Task<Void, Never>?
     @State private var saveTask: Task<Void, Never>?
 
-    let isSubredditPostListing: Bool
+    let displaySubredditIcon: Bool
     let onPostTap: () -> Void
     let onIconTap: () -> Void
     let onSubredditTap: () -> Void
@@ -43,7 +43,7 @@ struct PostViewCompact: View {
 
     init(
         postViewModel: PostViewModel,
-        isSubredditPostListing: Bool,
+        displaySubredditIcon: Bool,
         onPostTap: @escaping () -> Void,
         onIconTap: @escaping () -> Void,
         onSubredditTap: @escaping () -> Void,
@@ -60,7 +60,7 @@ struct PostViewCompact: View {
         onLongPressPost: @escaping () -> Void
     ) {
         self.postViewModel = postViewModel
-        self.isSubredditPostListing = isSubredditPostListing
+        self.displaySubredditIcon = displaySubredditIcon
         self.onPostTap = onPostTap
         self.onIconTap = onIconTap
         self.onSubredditTap = onSubredditTap
@@ -92,13 +92,13 @@ struct PostViewCompact: View {
                 
                 HStack(spacing: 8) {
                     CustomWebImage(
-                        postViewModel.post.subredditOrUserIcon,
+                        displaySubredditIcon ? postViewModel.post.subredditIconUrlString : postViewModel.post.userIconUrlString,
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
                         handleImageTapGesture: false,
                         fallbackView: {
-                            InitialLetterAvatarImageFallbackView(name: isSubredditPostListing ? postViewModel.post.author : postViewModel.post.subreddit, size: iconSize)
+                            InitialLetterAvatarImageFallbackView(name: displaySubredditIcon ? postViewModel.post.subreddit : postViewModel.post.author, size: iconSize)
                         }
                     )
                     .frame(width: iconSize, height: iconSize)

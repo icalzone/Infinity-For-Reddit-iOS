@@ -144,7 +144,7 @@ struct PostListingView: View {
                             PostView(
                                 post: post,
                                 postLayout: getPostLayout(post),
-                                isSubredditPostListing: isSubredditPostListing,
+                                displaySubredditIcon: displaySubredditIcon,
                                 onUpvote: {
                                     await postListingViewModel.votePost(post: post, vote: 1)
                                 },
@@ -178,18 +178,22 @@ struct PostListingView: View {
                             .onAppear {
                                 postListingViewModel.insertIntoAppearedPosts(post, saveLastSeenPostInFrontPage: saveLastSeenPostInFrontPage)
                                 
-                                if post.subredditOrUserIcon == nil {
+                                if !displaySubredditIcon && post.userIconUrlString == nil {
                                     postListingViewModel.loadIcon(
-                                        post: post,
-                                        displaySubredditIcon: !isSubredditPostListing || (isSubredditPostListing && postListingMetadata.postListingType.isPopularOrAll)
+                                        post: post
                                     )
                                 }
                             }
                             .onDisappear {
                                 postListingViewModel.appearedPosts.remove(id: post.id)
-                                if !post.isRead {
+                                if !post.isRead && markPostsAsRead {
                                     Task {
-                                        await postListingViewModel.readPost(post: post, markPostsAsRead: markPostsAsRead, limitReadPosts: limitReadPosts, readPostsLimit: readPostsLimit)
+                                        await postListingViewModel.readPost(
+                                            post: post,
+                                            markPostsAsRead: markPostsAsRead,
+                                            limitReadPosts: limitReadPosts,
+                                            readPostsLimit: readPostsLimit
+                                        )
                                     }
                                 }
                             }
@@ -261,10 +265,13 @@ struct PostListingView: View {
                             if lazyModeState == .paused {
                                 resumeLazyMode()
                             }
+                            postListingViewModel.isScrollIdle = true
+                            postListingViewModel.applyPendingUserIconUrlString()
                         case .interacting:
                             if lazyModeState == .started {
                                 pauseLazyMode(resetScrolledPost: true)
                             }
+                            postListingViewModel.isScrollIdle = false
                         default:
                             break
                         }
@@ -321,6 +328,10 @@ struct PostListingView: View {
             }, onAppEntersBackground: {
                 if lazyModeState == .started {
                     pauseLazyMode(resetScrolledPost: false)
+                }
+                
+                if saveLastSeenPostInFrontPage {
+                    postListingViewModel.saveLastSeenFrontPagePost()
                 }
             }
         )
@@ -514,6 +525,10 @@ struct PostListingView: View {
             loadPostsTaskId: postListingViewModel.loadPostsTaskId,
             isPresented: isPresented
         )
+    }
+    
+    private var displaySubredditIcon: Bool {
+        return !isSubredditPostListing || (isSubredditPostListing && postListingMetadata.postListingType.isPopularOrAll)
     }
     
     private func getPostLayout(_ post: Post) -> PostLayout {

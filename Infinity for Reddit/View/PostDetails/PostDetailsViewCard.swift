@@ -31,7 +31,6 @@ struct PostDetailsViewCard: View {
     @AppStorage(InterfacePostDetailsUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfacePostDetails) private var markdownEmbeddedMediaType: Int = 15
     @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
 
-    let isFromSubredditPostListing: Bool
     let playbackTimeToSeekToInitially: Double
     let onUpvote: () -> Void
     let onDownvote: () -> Void
@@ -44,7 +43,6 @@ struct PostDetailsViewCard: View {
     
     init(
         post: Post,
-        isFromSubredditPostListing: Bool,
         playbackTimeToSeekToInitially: Double,
         onUpvote: @escaping () -> Void,
         onDownvote: @escaping () -> Void,
@@ -53,7 +51,6 @@ struct PostDetailsViewCard: View {
         onLongPress: @escaping () -> Void,
         onLongPressOnContent: @escaping () -> Void
     ) {
-        self.isFromSubredditPostListing = isFromSubredditPostListing
         self.playbackTimeToSeekToInitially = playbackTimeToSeekToInitially
         self.onUpvote = onUpvote
         self.onDownvote = onDownvote
@@ -71,7 +68,7 @@ struct PostDetailsViewCard: View {
             
             HStack {
                 CustomWebImage(
-                    postViewModel.post.subredditOrUserIconInPostDetails,
+                    postViewModel.post.subredditIconUrlString,
                     width: iconSize,
                     height: iconSize,
                     circleClipped: true,
