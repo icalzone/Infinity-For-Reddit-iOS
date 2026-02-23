@@ -41,8 +41,9 @@ public class PostListingViewModel: ObservableObject {
     
     var appearedPosts: IdentifiedArrayOf<Post> = []
     var lazyModeScrolledPost: Post?
-    var userIconStringUrlCache: [String: String] = [:]
     var isScrollIdle: Bool = true
+    
+    private var userIconStringUrlCache: [String: String] = [:]
     
     @Published var showMediaDownloadFinishedMessageTrigger: Bool = false
     @Published var showAllGalleryMediaDownloadFinishedMessageTrigger: Bool = false
