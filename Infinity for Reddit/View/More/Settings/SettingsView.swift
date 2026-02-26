@@ -106,7 +106,7 @@ struct SettingsView: View {
                 .listPlainItemNoInsets()
                 
                 PreferenceEntryWithBackground(title: "Terms of Use", icon: "doc.text") {
-                    navigationManager.openLink("https://foxanastudio.com/terms")
+                    navigationManager.openLink("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
                 }
                 .listPlainItemNoInsets()
                 
