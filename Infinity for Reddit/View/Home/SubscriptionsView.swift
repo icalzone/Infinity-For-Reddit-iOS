@@ -175,6 +175,8 @@ struct SubscriptionsView: View {
                 }
             }
         }
+        .frame(maxWidth: 500)
+        .frame(maxWidth: .infinity, alignment: .center)
         .task(id: subscriptionListingViewModel.subscriptionAndCustomFeedLoadingTaskFlag) {
             await subscriptionListingViewModel.loadSubscriptionsOnline()
             await subscriptionListingViewModel.loadMyCustomFeedsOnline()
