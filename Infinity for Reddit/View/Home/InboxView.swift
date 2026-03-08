@@ -47,6 +47,8 @@ struct InboxView: View {
                 }
             }
         }
+        .frame(maxWidth: 500)
+        .frame(maxWidth: .infinity, alignment: .center)
         .id(accountViewModel.account.username)
         .onAppear {
             applyPendingRouteIfAny()
