@@ -15,11 +15,15 @@ struct AnonymousSubscriptionsView: View {
     
     @EnvironmentObject private var navigationBarMenuManager: NavigationBarMenuManager
     @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var customThemeViewModel: CustomThemeViewModel
     
     @StateObject var anonymousSubscriptionListingViewModel: AnonymousSubscriptionListingViewModel
+    
+    @FocusState private var focusedField: FieldType?
 
     @State private var selectedOption = 0
     @State private var navigationBarMenuKey: UUID?
+    @State private var searchQuery: String = ""
     
     init(subscriptionSelectionMode: ThingSelectionMode = .noSelection) {
         _anonymousSubscriptionListingViewModel = StateObject(
@@ -51,6 +55,26 @@ struct AnonymousSubscriptionsView: View {
                     )
                     .padding(4)
                 }
+                
+                HStack(spacing: 8) {
+                    SwiftUI.Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    
+                    CustomTextField("Search",
+                                    text: $searchQuery,
+                                    singleLine: true,
+                                    autocapitalization: .never,
+                                    showBorder: false,
+                                    showBackground: false,
+                                    fieldType: FieldType.search,
+                                    focusedField: $focusedField)
+                    .padding(16)
+                    .submitLabel(.search)
+                }
+                .padding(.leading, 12)
+                .background(Color(hex: customThemeViewModel.currentCustomTheme.filledCardViewBackgroundColor))
+                .cornerRadius(10)
+                .padding(.horizontal, 16)
                 
                 ZStack {
                     switch anonymousSubscriptionListingViewModel.subscriptionSelectionMode {
@@ -137,6 +161,13 @@ struct AnonymousSubscriptionsView: View {
                 default:
                     EmptyView()
                 }
+                
+                KeyboardToolbar {
+                    focusedField = nil
+                    UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+
+                    searchQuery = ""
+                }
             }
         }
         .onAppear {
@@ -154,6 +185,9 @@ struct AnonymousSubscriptionsView: View {
                 return
             }
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
+        }
+        .onChange(of: searchQuery) { _, newValue in
+            anonymousSubscriptionListingViewModel.setSearchQuery(newValue)
         }
     }
 
@@ -225,4 +259,8 @@ struct AnonymousSubscriptionsView: View {
             }
         }
     }
+}
+
+private enum FieldType: Hashable {
+    case search
 }
