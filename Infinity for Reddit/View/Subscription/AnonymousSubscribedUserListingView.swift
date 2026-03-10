@@ -44,6 +44,7 @@ struct AnonymousSubscribedUserListingView: View {
                                     subscription.isFavorite.toggle()
                                     anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
                                 }
+                                .id(ObjectIdentifier(subscription))
                                 .listPlainItemNoInsets()
                                 .applyIf(onSelectCustomAction == nil) {
                                     $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -74,6 +75,7 @@ struct AnonymousSubscribedUserListingView: View {
                                 subscription.isFavorite.toggle()
                                 anonymousSubscriptionListingViewModel.toggleFavoriteUser(subscription)
                             }
+                            .id(ObjectIdentifier(subscription))
                             .listPlainItemNoInsets()
                             .applyIf(onSelectCustomAction == nil) {
                                 $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {

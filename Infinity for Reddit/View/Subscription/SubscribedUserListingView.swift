@@ -50,6 +50,7 @@ struct SubscribedUserListingView: View {
                                         await subscriptionListingViewModel.toggleFavoriteUser(subscription)
                                     }
                                 }
+                                .id(ObjectIdentifier(subscription))
                                 .listPlainItemNoInsets()
                                 .applyIf(onSelectCustomAction == nil) {
                                     $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -82,6 +83,7 @@ struct SubscribedUserListingView: View {
                                     await subscriptionListingViewModel.toggleFavoriteUser(subscription)
                                 }
                             }
+                            .id(ObjectIdentifier(subscription))
                             .listPlainItemNoInsets()
                             .applyIf(onSelectCustomAction == nil) {
                                 $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {

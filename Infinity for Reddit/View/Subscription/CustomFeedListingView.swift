@@ -49,6 +49,7 @@ struct CustomFeedListingView: View {
                                         await subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                     }
                                 }
+                                .id(ObjectIdentifier(customFeed))
                                 .listPlainItemNoInsets()
                                 .applyIf(onSelectCustomAction == nil) {
                                     $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -81,6 +82,7 @@ struct CustomFeedListingView: View {
                                     await subscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                 }
                             }
+                            .id(ObjectIdentifier(customFeed))
                             .listPlainItemNoInsets()
                             .applyIf(onSelectCustomAction == nil) {
                                 $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {

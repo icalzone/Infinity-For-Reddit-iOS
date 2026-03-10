@@ -74,6 +74,7 @@ struct SubscribedSubredditListingView: View {
                                         await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
                                     }
                                 }
+                                .id(ObjectIdentifier(subscription))
                                 .listPlainItemNoInsets()
                                 .applyIf(onSelectCustomAction == nil) {
                                     $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {
@@ -106,6 +107,7 @@ struct SubscribedSubredditListingView: View {
                                     await subscriptionListingViewModel.toggleFavoriteSubreddit(subscription)
                                 }
                             }
+                            .id(ObjectIdentifier(subscription))
                             .listPlainItemNoInsets()
                             .applyIf(onSelectCustomAction == nil) {
                                 $0.swipeActions(edge: .trailing, allowsFullSwipe: false) {

@@ -215,6 +215,7 @@ struct AnonymousSubscriptionsView: View {
                                         customFeed.isFavorite.toggle()
                                         anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                     }
+                                    .id(ObjectIdentifier(customFeed))
                                     .listPlainItemNoInsets()
                                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                         Button(role: .destructive) {
@@ -239,6 +240,7 @@ struct AnonymousSubscriptionsView: View {
                                     customFeed.isFavorite.toggle()
                                     anonymousSubscriptionListingViewModel.toggleFavoriteCustomFeed(customFeed)
                                 }
+                                .id(ObjectIdentifier(customFeed))
                                 .listPlainItemNoInsets()
                                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                     Button(role: .destructive) {

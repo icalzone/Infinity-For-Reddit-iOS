@@ -230,6 +230,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         searchQueryPublisher.send(query)
     }
     
+    @MainActor
     func toggleFavoriteSubreddit(_ subscribedSubreddit: SubscribedSubredditData) {
         Task {
             do {
@@ -241,6 +242,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func toggleFavoriteUser(_ subscribedUser: SubscribedUserData) {
         Task {
             do {
@@ -252,6 +254,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func toggleFavoriteCustomFeed(_ myCustomFeed: MyCustomFeed) {
         Task {
             do {
@@ -263,36 +266,33 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func unsubscribeFromSubreddit(_ subscribedSubreddit: SubscribedSubredditData) async {
         do {
             try await anonymousSubscriptionListingRepository.unsubscribeFromSubreddit(subscribedSubreddit)
         } catch {
             print("Unsubscribe from subreddit error: \(error)")
-            await MainActor.run {
-                self.error = error
-            }
+            self.error = error
         }
     }
     
+    @MainActor
     func unfollowUser(_ subscribedUser: SubscribedUserData) async {
         do {
             try await anonymousSubscriptionListingRepository.unfollowUser(subscribedUser)
         } catch {
             print("Unfollow user error: \(error)")
-            await MainActor.run {
-                self.error = error
-            }
+            self.error = error
         }
     }
     
+    @MainActor
     func deleteCustomFeed(_ myCustomFeed: MyCustomFeed) async {
         do {
             try await anonymousSubscriptionListingRepository.deleteCustomFeed(myCustomFeed)
         } catch {
             print("Delete custom feed error: \(error)")
-            await MainActor.run {
-                self.error = error
-            }
+            self.error = error
         }
     }
     
