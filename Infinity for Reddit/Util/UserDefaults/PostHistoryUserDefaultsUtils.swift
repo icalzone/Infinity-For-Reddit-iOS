@@ -33,8 +33,8 @@ enum PostHistoryUserDefaultsUtils {
         return UserDefaults.postHistory.bool(forKey: markPostsAsReadOnScrollKey)
     }
     
-    static let hideReadPostsKey = "hide_read_posts"
-    static var hideReadPosts: Bool {
-        return UserDefaults.postHistory.bool(forKey: hideReadPostsKey)
+    static let hideReadPostsAutomaticallyKey = "hide_read_posts_automatically"
+    static var hideReadPostsAutomatically: Bool {
+        return UserDefaults.postHistory.bool(forKey: hideReadPostsAutomaticallyKey)
     }
 }

@@ -12,10 +12,6 @@ struct PostView: View {
     
     @StateObject private var postViewModel: PostViewModel
     
-    @AppStorage(PostHistoryUserDefaultsUtils.saveReadPostsKey, store: .postHistory) private var saveReadPosts: Bool = false
-    @AppStorage(PostHistoryUserDefaultsUtils.limitHistorySizeKey, store: .postHistory) private var limitHistorySize: Bool = true
-    @AppStorage(PostHistoryUserDefaultsUtils.historyLimitKey, store: .postHistory) private var historyLimit: Int = 500
-    
     let post: Post
     let postLayout: PostLayout
     let displaySubredditIcon: Bool
@@ -111,7 +107,7 @@ struct PostView: View {
     
     private func onPostTap(_ videoPlaybackTime: Double) {
         Task {
-            await postViewModel.readPost(markPostsAsRead: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
+            await onReadPost()
         }
         
         navigationManager.append(
@@ -154,7 +150,7 @@ struct PostView: View {
     private func openLink(_ url: URL) {
         navigationManager.openLink(url)
         Task {
-            await postViewModel.readPost(markPostsAsRead: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
+            await onReadPost()
         }
     }
 }

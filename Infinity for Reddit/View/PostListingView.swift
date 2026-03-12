@@ -43,6 +43,8 @@ struct PostListingView: View {
     @AppStorage(PostHistoryUserDefaultsUtils.saveReadPostsKey, store: .postHistory) private var saveReadPosts: Bool = false
     @AppStorage(PostHistoryUserDefaultsUtils.limitHistorySizeKey, store: .postHistory) private var limitHistorySize: Bool = true
     @AppStorage(PostHistoryUserDefaultsUtils.historyLimitKey, store: .postHistory) private var historyLimit: Int = 500
+    @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadAfterVotingKey, store: .postHistory) private var markPostsAsReadAfterVoting: Bool = false
+    @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadOnScrollKey, store: .postHistory) private var markPostsAsReadOnScroll: Bool = false
     
     private let postListingMetadata: PostListingMetadata
     private var isSubredditPostListing: Bool = false
@@ -146,10 +148,24 @@ struct PostListingView: View {
                                 postLayout: getPostLayout(post),
                                 displaySubredditIcon: displaySubredditIcon,
                                 onUpvote: {
-                                    await postListingViewModel.votePost(post: post, vote: 1)
+                                    await postListingViewModel.votePost(
+                                        post: post,
+                                        vote: 1,
+                                        saveReadPosts: saveReadPosts,
+                                        limitHistorySize: limitHistorySize,
+                                        historyLimit: historyLimit,
+                                        markPostsAsReadAfterVoting: markPostsAsReadAfterVoting
+                                    )
                                 },
                                 onDownvote: {
-                                    await postListingViewModel.votePost(post: post, vote: -1)
+                                    await postListingViewModel.votePost(
+                                        post: post,
+                                        vote: -1,
+                                        saveReadPosts: saveReadPosts,
+                                        limitHistorySize: limitHistorySize,
+                                        historyLimit: historyLimit,
+                                        markPostsAsReadAfterVoting: markPostsAsReadAfterVoting
+                                    )
                                 },
                                 onToggleSave: {
                                     await postListingViewModel.savePost(post: post, save: !post.saved)
@@ -169,7 +185,7 @@ struct PostListingView: View {
                                     showPostShareSheet = true
                                 },
                                 onReadPost: {
-                                    await postListingViewModel.readPost(post: post, markPostsAsRead: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
+                                    await postListingViewModel.readPost(post: post, saveReadPosts: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
                                 }
                             )
                             .limitedWidth()
@@ -186,11 +202,11 @@ struct PostListingView: View {
                             }
                             .onDisappear {
                                 postListingViewModel.appearedPosts.remove(id: post.id)
-                                if !post.isRead && saveReadPosts {
+                                if !post.isRead && saveReadPosts && markPostsAsReadOnScroll {
                                     Task {
                                         await postListingViewModel.readPost(
                                             post: post,
-                                            markPostsAsRead: saveReadPosts,
+                                            saveReadPosts: saveReadPosts,
                                             limitHistorySize: limitHistorySize,
                                             historyLimit: historyLimit
                                         )
@@ -200,7 +216,14 @@ struct PostListingView: View {
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                 Button {
                                     Task {
-                                        await postListingViewModel.votePost(post: post, vote: 1)
+                                        await postListingViewModel.votePost(
+                                            post: post,
+                                            vote: 1,
+                                            saveReadPosts: saveReadPosts,
+                                            limitHistorySize: limitHistorySize,
+                                            historyLimit: historyLimit,
+                                            markPostsAsReadAfterVoting: markPostsAsReadAfterVoting
+                                        )
                                     }
                                 } label: {
                                     SwiftUI.Image(systemName: "arrowshape.up")
@@ -211,7 +234,14 @@ struct PostListingView: View {
                             .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                 Button {
                                     Task {
-                                        await postListingViewModel.votePost(post: post, vote: -1)
+                                        await postListingViewModel.votePost(
+                                            post: post,
+                                            vote: -1,
+                                            saveReadPosts: saveReadPosts,
+                                            limitHistorySize: limitHistorySize,
+                                            historyLimit: historyLimit,
+                                            markPostsAsReadAfterVoting: markPostsAsReadAfterVoting
+                                        )
                                     }
                                 } label: {
                                     SwiftUI.Image(systemName: "arrowshape.down")

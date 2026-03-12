@@ -389,9 +389,12 @@ public class PostListingViewModel: ObservableObject {
             postHistoryType: .saved
         ) : Set<String>()
         
+        let hideReadPostsAutomatically = PostHistoryUserDefaultsUtils.hideReadPostsAutomatically
+        
         return posts.filter { post in
             return PostFilter.isPostAllowed(post: post, postFilter: postFilter)
             && !(AccountViewModel.shared.account.isAnonymous() && hiddenPostIdsAnonymous.contains(post.id))
+            && !(hideReadPostsAutomatically && readPostIds.contains(post.id))
         }.map {
             if !$0.selftext.isEmpty {
                 modifyPostBody($0)
@@ -727,7 +730,11 @@ public class PostListingViewModel: ObservableObject {
     }
     
     @MainActor
-    func votePost(post: Post, vote: Int) async {
+    func votePost(post: Post, vote: Int, saveReadPosts: Bool, limitHistorySize: Bool, historyLimit: Int, markPostsAsReadAfterVoting: Bool) async {
+        if saveReadPosts && markPostsAsReadAfterVoting {
+            await readPost(post: post, saveReadPosts: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
+        }
+        
         guard !AccountViewModel.shared.account.isAnonymous() else {
             await votePostAnonymous(post: post, vote: vote)
             return
@@ -808,8 +815,8 @@ public class PostListingViewModel: ObservableObject {
     }
     
     @MainActor
-    func readPost(post: Post, markPostsAsRead: Bool, limitHistorySize: Bool, historyLimit: Int) async {
-        guard !post.isRead, markPostsAsRead else {
+    func readPost(post: Post, saveReadPosts: Bool, limitHistorySize: Bool, historyLimit: Int) async {
+        guard !post.isRead, saveReadPosts else {
             return
         }
         

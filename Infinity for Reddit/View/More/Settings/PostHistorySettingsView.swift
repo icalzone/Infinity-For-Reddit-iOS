@@ -25,8 +25,8 @@ struct PostHistorySettingsView: View {
     @AppStorage(PostHistoryUserDefaultsUtils.markPostsAsReadOnScrollKey, store: .postHistory)
     private var markPostsAsReadOnScroll: Bool = false
     
-    @AppStorage(PostHistoryUserDefaultsUtils.hideReadPostsKey, store: .postHistory)
-    private var hideReadPosts: Bool = false
+    @AppStorage(PostHistoryUserDefaultsUtils.hideReadPostsAutomaticallyKey, store: .postHistory)
+    private var hideReadPostsAutomatically: Bool = false
     
     @FocusState private var focusedField: FieldType?
     
@@ -68,7 +68,7 @@ struct PostHistorySettingsView: View {
                             TogglePreference(isEnabled: $markPostsAsReadOnScroll, title: "Mark Posts As Read on Scroll")
                                 .listPlainItemNoInsets()
 
-                            TogglePreference(isEnabled: $hideReadPosts, title: "Hide Read Posts Automatically")
+                            TogglePreference(isEnabled: $hideReadPostsAutomatically, title: "Hide Read Posts Automatically")
                                 .listPlainItemNoInsets()
                         }
                     }

@@ -27,25 +27,4 @@ class PostViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
-    func readPost(markPostsAsRead: Bool, limitHistorySize: Bool, historyLimit: Int) async {
-        guard !post.isRead, markPostsAsRead else {
-            return
-        }
-        
-        do {
-            try await postRepository.readPost(
-                post: post,
-                account: AccountViewModel.shared.account,
-                limitHistorySize: limitHistorySize,
-                historyLimit: historyLimit
-            )
-            
-            await MainActor.run {
-                post.isRead = true
-            }
-        } catch {
-            print("Mark post as read failed with error: \(error)")
-        }
-    }
 }
