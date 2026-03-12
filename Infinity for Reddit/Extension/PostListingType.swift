@@ -205,3 +205,21 @@ extension PostListingType {
         }
     }
 }
+
+extension PostListingType {
+    var hideReadPostsAutomatically: Bool {
+        switch self {
+        case .subreddit(let subredditName):
+            if subredditName == "popular" || subredditName == "all" {
+                return PostHistoryUserDefaultsUtils.hideReadPostsAutomatically
+            }
+            return PostHistoryUserDefaultsUtils.hideReadPostsAutomatically && PostHistoryUserDefaultsUtils.hideReadPostsAutomaticallyInSubreddits
+        case .user:
+            return PostHistoryUserDefaultsUtils.hideReadPostsAutomatically && PostHistoryUserDefaultsUtils.hideReadPostsAutomaticallyInUsers
+        case .search:
+            return PostHistoryUserDefaultsUtils.hideReadPostsAutomatically && PostHistoryUserDefaultsUtils.hideReadPostsAutomaticallyInSearch
+        default:
+            return PostHistoryUserDefaultsUtils.hideReadPostsAutomatically
+        }
+    }
+}

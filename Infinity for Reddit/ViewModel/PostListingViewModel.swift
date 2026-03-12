@@ -388,7 +388,7 @@ public class PostListingViewModel: ObservableObject {
             postHistoryType: .saved
         ) : Set<String>()
         
-        let hideReadPosts = PostHistoryUserDefaultsUtils.saveReadPosts && PostHistoryUserDefaultsUtils.hideReadPostsAutomatically
+        let hideReadPosts = postListingMetadata.postListingType.hideReadPostsAutomatically
         
         return posts.filter { post in
             return PostFilter.isPostAllowed(post: post, postFilter: postFilter)

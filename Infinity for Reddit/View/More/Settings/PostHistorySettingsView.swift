@@ -80,14 +80,16 @@ struct PostHistorySettingsView: View {
                             TogglePreference(isEnabled: $hideReadPostsAutomatically, title: "Hide Read Posts Automatically")
                                 .listPlainItemNoInsets()
                             
-                            TogglePreference(isEnabled: $hideReadPostsAutomaticallyInSubreddits, title: "Hide Read Posts Automatically in Subreddits")
-                                .listPlainItemNoInsets()
-                            
-                            TogglePreference(isEnabled: $hideReadPostsAutomaticallyInUsers, title: "Hide Read Posts Automatically in Users")
-                                .listPlainItemNoInsets()
-                            
-                            TogglePreference(isEnabled: $hideReadPostsAutomaticallyInSearch, title: "Hide Read Posts Automatically in Search")
-                                .listPlainItemNoInsets()
+                            if hideReadPostsAutomatically {
+                                TogglePreference(isEnabled: $hideReadPostsAutomaticallyInSubreddits, title: "Hide Read Posts Automatically in Subreddits")
+                                    .listPlainItemNoInsets()
+                                
+                                TogglePreference(isEnabled: $hideReadPostsAutomaticallyInUsers, title: "Hide Read Posts Automatically in Users")
+                                    .listPlainItemNoInsets()
+                                
+                                TogglePreference(isEnabled: $hideReadPostsAutomaticallyInSearch, title: "Hide Read Posts Automatically in Search")
+                                    .listPlainItemNoInsets()
+                            }
                         }
                     }
                     .themedList()
@@ -101,6 +103,7 @@ struct PostHistorySettingsView: View {
                     }
                 }
                 .animation(.easeInOut, value: saveReadPosts)
+                .animation(.easeInOut, value: hideReadPostsAutomatically)
                 
                 KeyboardToolbar {
                     focusedField = nil
