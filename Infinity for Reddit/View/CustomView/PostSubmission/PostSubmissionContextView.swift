@@ -48,7 +48,7 @@ struct PostSubmissionContextView: View {
             }
         }
         .sheet(isPresented: $showFlairSheet) {
-            FlairChooserSheet(postSubmissionContextViewModel: postSubmissionContextViewModel) { flair in
+            PostSubmissionFlairChooserSheet(postSubmissionContextViewModel: postSubmissionContextViewModel) { flair in
                 postSubmissionContextViewModel.selectedFlair = flair
             }
             .presentationDetents([.medium, .large])

@@ -40,7 +40,10 @@ struct PostSubmissionSubredditChooserView: View {
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
-                        handleImageTapGesture: false
+                        handleImageTapGesture: false,
+                        fallbackView: {
+                            InitialLetterAvatarImageFallbackView(name: postSubmissionContextViewModel.selectedSubreddit?.name, size: iconSize)
+                        }
                     )
                 } else {
                     Spacer()

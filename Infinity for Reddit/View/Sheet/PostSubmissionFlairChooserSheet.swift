@@ -1,12 +1,12 @@
 //
-// FlairChooserSheet.swift
+// PostSubmissionFlairChooserSheet.swift
 // Infinity for Reddit
 //
 // Created by joeylr2042 on 2025-09-03
 
 import SwiftUI
 
-struct FlairChooserSheet: View {
+struct PostSubmissionFlairChooserSheet: View {
     @Environment(\.dismiss) var dismiss
     
     @ObservedObject var postSubmissionContextViewModel: PostSubmissionContextViewModel
