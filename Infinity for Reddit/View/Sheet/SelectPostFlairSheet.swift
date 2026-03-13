@@ -24,7 +24,9 @@ struct SelectPostFlairSheet: View {
                                     onFlairSelected(flair)
                                     dismiss()
                                 }) {
-                                    FlairRowView(flair: flair)
+                                    FlairRowView(flair: flair) {
+                                        
+                                    }
                                 }
                             }
                         } else {

@@ -8,6 +8,8 @@ import SwiftUI
 
 struct FlairRowView: View {
     let flair: Flair
+    let onEditFlair: () -> Void
+    
     private let emojiSize: CGFloat = 14
     
     var body: some View {
@@ -35,7 +37,7 @@ struct FlairRowView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        // TODO modify flair
+                        onEditFlair()
                     }
                 }
             }

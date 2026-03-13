@@ -8,7 +8,7 @@ import Foundation
 
 public struct Flair: Codable, Identifiable, Hashable {
     public let id: String
-    let text: String
+    var text: String
     let type: String
     let isEditable: Bool
     let richtext: [FlairRichtext]?
