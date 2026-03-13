@@ -32,7 +32,9 @@ struct CommentViewCard: View {
     private var voteButtonsOnTheRight: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.markdownEmbeddedMediaTypeKey, store: .interfaceComment) private var markdownEmbeddedMediaType: Int = 15
     
-    @StateObject var commentViewModel: CommentViewModel
+    //@StateObject var commentViewModel: CommentViewModel
+    @ObservedObject private var comment: Comment
+    
     @State private var voteTask: Task<Void, Never>? = nil
     @State private var saveTask: Task<Void, Never>? = nil
     @State private var isToolbarHidden: Bool
@@ -67,6 +69,7 @@ struct CommentViewCard: View {
         onModerate: @escaping () -> Void,
         onCopy: @escaping () -> Void
     ) {
+        self.comment = comment
         self.isInPostDetails = isInPostDetails
         self.highlightComment = highlightComment
         self.onUpvote = onUpvote
@@ -80,68 +83,68 @@ struct CommentViewCard: View {
         self.onModerate = onModerate
         self.onCopy = onCopy
         self.isToolbarHidden = isInPostDetails ? UserDefaults.interfaceComment.bool(forKey: InterfaceCommentUserDefaultsUtils.hideToolbarKey) : false
-        _commentViewModel = StateObject(wrappedValue: CommentViewModel(comment: comment))
+        //_commentViewModel = StateObject(wrappedValue: CommentViewModel(comment: comment))
     }
     
     var body: some View {
         HStack(spacing: 0) {
-            CommentIndentationView(depth: commentViewModel.comment.depth)
+            CommentIndentationView(depth: comment.depth)
             
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 8) {
                     if isInPostDetails && showAuthorAvatar {
                         CustomWebImage(
-                            commentViewModel.comment.authorIconUrlString,
+                            comment.authorIconUrlString,
                             width: userIconSize,
                             height: userIconSize,
                             circleClipped: true,
                             handleImageTapGesture: false,
                             fallbackView: {
-                                InitialLetterAvatarImageFallbackView(name: commentViewModel.comment.author, size: userIconSize)
+                                InitialLetterAvatarImageFallbackView(name: comment.author, size: userIconSize)
                             }
                         )
                         .frame(width: userIconSize, height: userIconSize)
                         .onTapGesture {
-                            navigationManager.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
+                            navigationManager.append(AppNavigation.userDetails(username: comment.author))
                         }
                     }
                     
                     
                     if !isInPostDetails {
-                        Text(commentViewModel.comment.subredditNamePrefixed)
+                        Text(comment.subredditNamePrefixed)
                             .subreddit()
                             .onTapGesture {
-                                navigationManager.append(AppNavigation.subredditDetails(subredditName: commentViewModel.comment.subreddit))
+                                navigationManager.append(AppNavigation.subredditDetails(subredditName: comment.subreddit))
                             }
                     } else {
                         VStack(alignment: .leading, spacing: 0) {
-                            CommentAuthorView(comment: commentViewModel.comment)
-                                .id(commentViewModel.comment.author)
+                            CommentAuthorView(comment: comment)
+                                .id(comment.author)
                             
-                            AuthorFlairView(flairRichtext: commentViewModel.comment.authorFlairRichtext, flairText: commentViewModel.comment.authorFlairText)
+                            AuthorFlairView(flairRichtext: comment.authorFlairRichtext, flairText: comment.authorFlairText)
                         }
                         .onTapGesture {
-                            navigationManager.append(AppNavigation.userDetails(username: commentViewModel.comment.author))
+                            navigationManager.append(AppNavigation.userDetails(username: comment.author))
                         }
                     }
                     
                     Spacer()
                     
-                    TimeText(timeUTCInSeconds: commentViewModel.comment.createdUtc)
+                    TimeText(timeUTCInSeconds: comment.createdUtc)
                         .secondaryText()
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
                 
-                if !((commentViewModel.comment.isCollasped && fullyCollapseComment && commentViewModel.comment.hasExpandedBefore) || (commentViewModel.comment.isFilteredOut && !commentViewModel.comment.hasExpandedBefore)) {
+                if !((comment.isCollasped && fullyCollapseComment && comment.hasExpandedBefore) || (comment.isFilteredOut && !comment.hasExpandedBefore)) {
                     Group {
-                        if let processedMarkdown = commentViewModel.comment.bodyProcessedMarkdown {
+                        if let processedMarkdown = comment.bodyProcessedMarkdown {
                             Markdown(processedMarkdown)
                                 .markdownImageProvider(
                                     MarkdownImageProvider(
-                                        mediaMetadata: commentViewModel.comment.mediaMetadata,
+                                        mediaMetadata: comment.mediaMetadata,
                                         markdownEmbeddedMediaType: markdownEmbeddedMediaType,
-                                        isSensitive: commentViewModel.comment.over18,
+                                        isSensitive: comment.over18,
                                         fontSize: .f15,
                                         linkColor: Color(hex: customThemeViewModel.currentCustomTheme.linkColor),
                                         fullScreenMediaViewModel: fullScreenMediaViewModel,
@@ -157,12 +160,12 @@ struct CommentViewCard: View {
                                     navigationManager.openLink(url)
                                 }
                         } else {
-                            Markdown(commentViewModel.comment.body)
+                            Markdown(comment.body)
                                 .markdownImageProvider(
                                     MarkdownImageProvider(
-                                        mediaMetadata: commentViewModel.comment.mediaMetadata,
+                                        mediaMetadata: comment.mediaMetadata,
                                         markdownEmbeddedMediaType: markdownEmbeddedMediaType,
-                                        isSensitive: commentViewModel.comment.over18,
+                                        isSensitive: comment.over18,
                                         fontSize: .f15,
                                         linkColor: Color(hex: customThemeViewModel.currentCustomTheme.linkColor),
                                         fullScreenMediaViewModel: fullScreenMediaViewModel,
@@ -186,15 +189,15 @@ struct CommentViewCard: View {
                                 Button(action: {
                                     onUpvote()
                                 }) {
-                                    SwiftUI.Image(systemName: commentViewModel.comment.likes == 1 ? "arrowshape.up.fill" : "arrowshape.up")
+                                    SwiftUI.Image(systemName: comment.likes == 1 ? "arrowshape.up.fill" : "arrowshape.up")
                                         .commentIconTemplateRendering()
-                                        .commentUpvoteIcon(isUpvoted: commentViewModel.comment.likes == 1)
+                                        .commentUpvoteIcon(isUpvoted: comment.likes == 1)
                                 }
                                 .buttonStyle(.borderless)
                                 .padding(8)
                                 .contentShape(Rectangle())
 
-                                VotesText(votes: commentViewModel.comment.score + commentViewModel.comment.likes, hideNVotes: hideNVotes)
+                                VotesText(votes: comment.score + comment.likes, hideNVotes: hideNVotes)
                                     .frame(width: 72, alignment: .center)
                                     .commentInfo()
                                     .onTapGesture {}
@@ -202,9 +205,9 @@ struct CommentViewCard: View {
                                 Button(action: {
                                     onDownvote()
                                 }) {
-                                    SwiftUI.Image(systemName: commentViewModel.comment.likes == -1 ? "arrowshape.down.fill" : "arrowshape.down")
+                                    SwiftUI.Image(systemName: comment.likes == -1 ? "arrowshape.down.fill" : "arrowshape.down")
                                         .commentIconTemplateRendering()
-                                        .commentDownvoteIcon(isDownvoted: commentViewModel.comment.likes == -1)
+                                        .commentDownvoteIcon(isDownvoted: comment.likes == -1)
                                 }
                                 .buttonStyle(.borderless)
                                 .padding(8)
@@ -214,9 +217,9 @@ struct CommentViewCard: View {
                             
                             Spacer()
                             
-                            if commentViewModel.comment.depth < showFewerToolbarOptionsThreshold && isInPostDetails {
+                            if comment.depth < showFewerToolbarOptionsThreshold && isInPostDetails {
                                 Menu {
-                                    ShareLink(item: "https://reddit.com" + commentViewModel.comment.permalink) {
+                                    ShareLink(item: "https://reddit.com" + comment.permalink) {
                                         Text("Share")
                                     }
                                     
@@ -224,7 +227,7 @@ struct CommentViewCard: View {
                                         onCopy()
                                     }
                                     
-                                    if accountViewModel.account.username == commentViewModel.comment.author {
+                                    if accountViewModel.account.username == comment.author {
                                         Button("Edit") {
                                             onEdit()
                                         }
@@ -242,11 +245,11 @@ struct CommentViewCard: View {
                                         if accountViewModel.account.isAnonymous() {
                                             navigationManager.openLink("https://www.reddit.com/report")
                                         } else {
-                                            navigationManager.append(AppNavigation.report(subredditName: commentViewModel.comment.subreddit, thingFullname: commentViewModel.comment.name))
+                                            navigationManager.append(AppNavigation.report(subredditName: comment.subreddit, thingFullname: comment.name))
                                         }
                                     }
                                     
-                                    if commentViewModel.comment.canModComment {
+                                    if comment.canModComment {
                                         Button("Moderate") {
                                             onModerate()
                                         }
@@ -258,15 +261,15 @@ struct CommentViewCard: View {
                                 }
                                 .padding(8)
                                 
-                                if let onToggleExpand, commentViewModel.comment.hasReplies {
+                                if let onToggleExpand, comment.hasReplies {
                                     Button(action: {
                                         onToggleExpand()
                                     }) {
                                         SwiftUI.Image(systemName: "chevron.up")
                                             .commentIconTemplateRendering()
                                             .commentIcon()
-                                            .rotationEffect(.degrees(commentViewModel.comment.isCollasped ? 180 : 0))
-                                            .animation(.easeInOut(duration: 0.25), value: commentViewModel.comment.isCollasped)
+                                            .rotationEffect(.degrees(comment.isCollasped ? 180 : 0))
+                                            .animation(.easeInOut(duration: 0.25), value: comment.isCollasped)
                                     }
                                     .buttonStyle(.borderless)
                                     .padding(8)
@@ -277,7 +280,7 @@ struct CommentViewCard: View {
                                     Button(action: {
                                         onToggleSave()
                                     }) {
-                                        SwiftUI.Image(systemName: commentViewModel.comment.saved ? "bookmark.fill" : "bookmark")
+                                        SwiftUI.Image(systemName: comment.saved ? "bookmark.fill" : "bookmark")
                                             .commentIconTemplateRendering()
                                             .commentIcon()
                                     }
@@ -288,7 +291,7 @@ struct CommentViewCard: View {
                                 
                                 if isInPostDetails && !accountViewModel.account.isAnonymous() {
                                     Button(action: {
-                                        if commentViewModel.comment.locked {
+                                        if comment.locked {
                                             snackbarManager.showSnackbar(.info("This comment is locked."))
                                         } else {
                                             onReply?()
@@ -296,10 +299,10 @@ struct CommentViewCard: View {
                                     }) {
                                         SwiftUI.Image(systemName: "arrowshape.turn.up.left.fill")
                                             .commentIconTemplateRendering()
-                                            .applyIf(commentViewModel.comment.locked) {
+                                            .applyIf(comment.locked) {
                                                 $0.voteAndReplyUnavailbleIcon()
                                             }
-                                            .applyIf(!commentViewModel.comment.locked) {
+                                            .applyIf(!comment.locked) {
                                                 $0.commentIcon()
                                             }
                                     }
@@ -309,19 +312,19 @@ struct CommentViewCard: View {
                                 }
                             } else {
                                 Menu {
-                                    if let onToggleExpand, commentViewModel.comment.hasReplies {
-                                        Button(commentViewModel.comment.isCollasped ? "Expand" : "Collapse") {
+                                    if let onToggleExpand, comment.hasReplies {
+                                        Button(comment.isCollasped ? "Expand" : "Collapse") {
                                             onToggleExpand()
                                         }
                                     }
                                     
                                     if !accountViewModel.account.isAnonymous() {
-                                        Button(commentViewModel.comment.saved ? "Unsave" : "Save") {
+                                        Button(comment.saved ? "Unsave" : "Save") {
                                             onToggleSave()
                                         }
                                     }
                                     
-                                    ShareLink(item: "https://reddit.com" + commentViewModel.comment.permalink) {
+                                    ShareLink(item: "https://reddit.com" + comment.permalink) {
                                         Text("Share")
                                     }
                                     
@@ -331,7 +334,7 @@ struct CommentViewCard: View {
                                     
                                     if isInPostDetails && !accountViewModel.account.isAnonymous() {
                                         Button("Reply") {
-                                            if commentViewModel.comment.locked {
+                                            if comment.locked {
                                                 snackbarManager.showSnackbar(.info("This comment is locked."))
                                             } else {
                                                 onReply?()
@@ -339,7 +342,7 @@ struct CommentViewCard: View {
                                         }
                                     }
                                     
-                                    if accountViewModel.account.username == commentViewModel.comment.author {
+                                    if accountViewModel.account.username == comment.author {
                                         Button("Edit") {
                                             onEdit()
                                         }
@@ -357,11 +360,11 @@ struct CommentViewCard: View {
                                         if accountViewModel.account.isAnonymous() {
                                             navigationManager.openLink("https://www.reddit.com/report")
                                         } else {
-                                            navigationManager.append(AppNavigation.report(subredditName: commentViewModel.comment.subreddit, thingFullname: commentViewModel.comment.name))
+                                            navigationManager.append(AppNavigation.report(subredditName: comment.subreddit, thingFullname: comment.name))
                                         }
                                     }
                                     
-                                    if commentViewModel.comment.canModComment {
+                                    if comment.canModComment {
                                         Button("Moderate") {
                                             onModerate()
                                         }
@@ -394,8 +397,8 @@ struct CommentViewCard: View {
     }
     
     private var backgroundColor: Color {
-        return (commentViewModel.comment.isCollasped && fullyCollapseComment && commentViewModel.comment.hasExpandedBefore)
-        || (commentViewModel.comment.isFilteredOut && !commentViewModel.comment.hasExpandedBefore) ? Color(hex: customThemeViewModel.currentCustomTheme.fullyCollapsedCommentBackgroundColor)
+        return (comment.isCollasped && fullyCollapseComment && comment.hasExpandedBefore)
+        || (comment.isFilteredOut && !comment.hasExpandedBefore) ? Color(hex: customThemeViewModel.currentCustomTheme.fullyCollapsedCommentBackgroundColor)
         : (highlightComment ? Color(hex: customThemeViewModel.currentCustomTheme.singleCommentThreadBackgroundColor) : Color.clear)
     }
 }
