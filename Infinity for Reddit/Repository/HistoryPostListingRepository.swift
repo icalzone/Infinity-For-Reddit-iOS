@@ -29,6 +29,7 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
     private let session: Session
     private let postHistoryDao: PostHistoryDao
     private let subredditDao: SubredditDao
+    private let userDao: UserDao
     private let postFilterDao: PostFilterDao
     private var subredditOrUserIcons: [String: String] = [:]
     
@@ -42,6 +43,7 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         self.session = resolvedSession
         self.postHistoryDao = PostHistoryDao(dbPool: resolvedDBPool)
         self.subredditDao = SubredditDao(dbPool: resolvedDBPool)
+        self.userDao = UserDao(dbPool: resolvedDBPool)
         self.postFilterDao = PostFilterDao(dbPool: resolvedDBPool)
     }
     
@@ -121,14 +123,10 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
             return post.resolvedSubredditIconUrlString ?? ""
         }
         
-        do {
-            let subredditData = try await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
-            if let subredditData {
-                subredditOrUserIcons[post.subreddit] = subredditData.iconUrl ?? ""
-                return subredditData.iconUrl ?? ""
-            }
-        } catch {
-            // Ignore
+        let subredditData = try? await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
+        if let subredditData {
+            subredditOrUserIcons[post.subreddit] = subredditData.iconUrl ?? ""
+            return subredditData.iconUrl ?? ""
         }
         
         let data = try await self.session.request(
@@ -145,13 +143,14 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
             throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
         }
 
-        let subredditData = try? SubredditDetailRootClass(fromJson: json).toSubredditData()
-        guard let subredditData else {
+        let loadedSubredditData = try? SubredditDetailRootClass(fromJson: json).toSubredditData()
+        guard let loadedSubredditData else {
+            subredditOrUserIcons[post.subreddit] = ""
             return ""
         }
         
-        try? await subredditDao.insert(subredditData: subredditData)
-        subredditOrUserIcons[post.subreddit] = subredditData.iconUrl ?? ""
+        try? await subredditDao.insert(subredditData: loadedSubredditData)
+        subredditOrUserIcons[post.subreddit] = loadedSubredditData.iconUrl ?? ""
         return subredditOrUserIcons[post.subreddit] ?? ""
     }
     
@@ -160,6 +159,12 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         
         guard post.resolvedSubredditIconUrlString == nil else {
             return post.resolvedSubredditIconUrlString ?? ""
+        }
+        
+        let userData = try? await userDao.getUserData(username: post.author)
+        if let userData {
+            subredditOrUserIcons[post.author] = userData.iconUrl ?? ""
+            return userData.iconUrl ?? ""
         }
         
         let data = try await self.session.request(
@@ -176,7 +181,14 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
             throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
         }
         
-        subredditOrUserIcons[post.author] = try? UserDetailRootClass(fromJson: json).toUserData().iconUrl ?? ""
+        let loadedUserData = try? UserDetailRootClass(fromJson: json).toUserData()
+        guard let loadedUserData else {
+            subredditOrUserIcons[post.author] = ""
+            return ""
+        }
+        
+        try? await userDao.insert(userData: loadedUserData)
+        subredditOrUserIcons[post.author] = loadedUserData.iconUrl ?? ""
         return subredditOrUserIcons[post.author] ?? ""
     }
     
