@@ -48,8 +48,6 @@ public class HistoryPostListingViewModel: ObservableObject {
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
-    private var paginationTask: Task<Void, Never>?
-    
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initializer
@@ -100,17 +98,6 @@ public class HistoryPostListingViewModel: ObservableObject {
         await loadPosts(isRefreshWithContinuation: refreshPostsContinuation != nil)
     }
     
-    public func loadPostsPagination(index: Int) {
-        guard paginationTask == nil else { return }
-        
-        guard index >= posts.count - 3 else { return }
-        
-        paginationTask = Task {
-            defer { paginationTask = nil }
-            await loadPosts()
-        }
-    }
-    
     /// Fetches the next page of posts
     public func loadPosts(isRefreshWithContinuation: Bool = false) async {
         guard !isInitialLoading, !isLoadingMore, hasMorePages else { return }
@@ -121,7 +108,6 @@ public class HistoryPostListingViewModel: ObservableObject {
             if posts.isEmpty {
                 isInitialLoading = true
             } else {
-                print("isloadingmore is true")
                 isLoadingMore = true
             }
             
@@ -138,6 +124,21 @@ public class HistoryPostListingViewModel: ObservableObject {
                 username: AccountViewModel.shared.account.username,
                 before: before
             )
+            
+            guard let result else {
+                await MainActor.run {
+                    hasMorePages = false
+                    self.before = nil
+                    
+                    if isRefreshWithContinuation {
+                        finishPullToRefresh()
+                    }
+                    
+                    isInitialLoading = false
+                    isLoadingMore = false
+                }
+                return
+            }
             
             let postListing = result.postListing
             

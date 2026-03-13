@@ -51,10 +51,15 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         historyPostListingType: HistoryPostListingType,
         username: String,
         before: Int64?
-    ) async throws -> HistoryPostListingResult {
+    ) async throws -> HistoryPostListingResult? {
         let apiRequest: URLRequestConvertible
         let beforeResult: Int64
         let postHistory = try await postHistoryDao.getAllHistoryPosts(username: username, before: before, postHistoryType: historyPostListingType.postHistoryTypeForDB)
+        
+        guard !postHistory.isEmpty else {
+            return nil
+        }
+        
         let postFullnames = postHistory.map {
             "t3_\($0.postId)"
         }.joined(separator: ",")

@@ -9,7 +9,7 @@ import Combine
 import Alamofire
 
 public protocol HistoryPostListingRepositoryProtocol {
-    func fetchPosts(historyPostListingType: HistoryPostListingType, username: String, before: Int64?) async throws -> HistoryPostListingResult
+    func fetchPosts(historyPostListingType: HistoryPostListingType, username: String, before: Int64?) async throws -> HistoryPostListingResult?
     func getPostFilter(historyPostListingType: HistoryPostListingType, externalPostFilter: PostFilter?) async -> PostFilter
     func loadIcon(post: Post) async throws -> String
     func toggleHidePost(_ post: Post) async throws
