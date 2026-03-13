@@ -30,7 +30,7 @@ struct PostViewCard: View {
     @AppStorage(InterfacePostUserDefaultsUtils.limitMediaHeightKey, store: .interfacePost) private var limitMediaHeight: Bool = false
     @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
 
-    let displaySubredditIcon: Bool
+    let iconType: IconType
     let onPostTap: (Double) -> Void
     let onIconTap: () -> Void
     let onSubredditTap: () -> Void
@@ -50,7 +50,7 @@ struct PostViewCard: View {
 
     init(
         postViewModel: PostViewModel,
-        displaySubredditIcon: Bool,
+        iconType: IconType,
         onPostTap: @escaping (Double) -> Void,
         onIconTap: @escaping () -> Void,
         onSubredditTap: @escaping () -> Void,
@@ -67,7 +67,7 @@ struct PostViewCard: View {
         onLongPressPost: @escaping () -> Void
     ) {
         self.postViewModel = postViewModel
-        self.displaySubredditIcon = displaySubredditIcon
+        self.iconType = iconType
         self.onPostTap = onPostTap
         self.onIconTap = onIconTap
         self.onSubredditTap = onSubredditTap
@@ -101,13 +101,13 @@ struct PostViewCard: View {
                 
                 HStack {
                     CustomWebImage(
-                        displaySubredditIcon ? postViewModel.post.subredditIconUrlString : postViewModel.post.userIconUrlString,
+                        iconUrl,
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
                         handleImageTapGesture: false,
                         fallbackView: {
-                            InitialLetterAvatarImageFallbackView(name: displaySubredditIcon ? postViewModel.post.subreddit : postViewModel.post.author, size: iconSize)
+                            InitialLetterAvatarImageFallbackView(name: iconFallbackText, size: iconSize)
                         }
                     )
                     .frame(width: iconSize, height: iconSize)
@@ -397,6 +397,25 @@ struct PostViewCard: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 4)
         }
         .padding(.vertical, 8)
+    }
+    
+    var iconUrl: String? {
+        switch iconType {
+        case .subreddit:
+            return postViewModel.post.subredditIconUrlString
+        case .user:
+            return postViewModel.post.userIconUrlString
+        case .fromAPI:
+            return postViewModel.post.resolvedSubredditIconUrlString
+        }
+    }
+    
+    var iconFallbackText: String {
+        if iconType == .user {
+            return postViewModel.post.author
+        }
+        
+        return postViewModel.post.subreddit
     }
 }
 

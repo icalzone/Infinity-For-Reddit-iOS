@@ -149,6 +149,7 @@ public class Post : NSObject, ObservableObject, Identifiable {
     
     var postType: PostType
     @Published var userIconUrlString: String?
+    @Published var resolvedSubredditIconUrlString: String?
     //@Published var subredditOrUserIconInPostDetails: String?
     @Published var isRead: Bool = false
     

@@ -146,7 +146,7 @@ struct PostListingView: View {
                             PostView(
                                 post: post,
                                 postLayout: getPostLayout(post),
-                                displaySubredditIcon: displaySubredditIcon,
+                                iconType: iconType,
                                 onUpvote: {
                                     await postListingViewModel.votePost(
                                         post: post,
@@ -194,7 +194,7 @@ struct PostListingView: View {
                             .onAppear {
                                 postListingViewModel.insertIntoAppearedPosts(post, saveLastSeenPostInFrontPage: saveLastSeenPostInFrontPage)
                                 
-                                if !displaySubredditIcon && post.userIconUrlString == nil {
+                                if iconType == .user && post.userIconUrlString == nil {
                                     postListingViewModel.loadIcon(
                                         post: post
                                     )
@@ -552,8 +552,8 @@ struct PostListingView: View {
         )
     }
     
-    private var displaySubredditIcon: Bool {
-        return !isSubredditPostListing || (isSubredditPostListing && postListingMetadata.postListingType.isPopularOrAll)
+    private var iconType: IconType {
+        return (!isSubredditPostListing || (isSubredditPostListing && postListingMetadata.postListingType.isPopularOrAll)) ? .subreddit : .user
     }
     
     private func getPostLayout(_ post: Post) -> PostLayout {

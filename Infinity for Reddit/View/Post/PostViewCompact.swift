@@ -23,7 +23,7 @@ struct PostViewCompact: View {
     @State private var voteTask: Task<Void, Never>?
     @State private var saveTask: Task<Void, Never>?
 
-    let displaySubredditIcon: Bool
+    let iconType: IconType
     let onPostTap: () -> Void
     let onIconTap: () -> Void
     let onSubredditTap: () -> Void
@@ -43,7 +43,7 @@ struct PostViewCompact: View {
 
     init(
         postViewModel: PostViewModel,
-        displaySubredditIcon: Bool,
+        iconType: IconType,
         onPostTap: @escaping () -> Void,
         onIconTap: @escaping () -> Void,
         onSubredditTap: @escaping () -> Void,
@@ -60,7 +60,7 @@ struct PostViewCompact: View {
         onLongPressPost: @escaping () -> Void
     ) {
         self.postViewModel = postViewModel
-        self.displaySubredditIcon = displaySubredditIcon
+        self.iconType = iconType
         self.onPostTap = onPostTap
         self.onIconTap = onIconTap
         self.onSubredditTap = onSubredditTap
@@ -92,13 +92,13 @@ struct PostViewCompact: View {
                 
                 HStack(spacing: 8) {
                     CustomWebImage(
-                        displaySubredditIcon ? postViewModel.post.subredditIconUrlString : postViewModel.post.userIconUrlString,
+                        iconUrl,
                         width: iconSize,
                         height: iconSize,
                         circleClipped: true,
                         handleImageTapGesture: false,
                         fallbackView: {
-                            InitialLetterAvatarImageFallbackView(name: displaySubredditIcon ? postViewModel.post.subreddit : postViewModel.post.author, size: iconSize)
+                            InitialLetterAvatarImageFallbackView(name: iconFallbackText, size: iconSize)
                         }
                     )
                     .frame(width: iconSize, height: iconSize)
@@ -308,6 +308,25 @@ struct PostViewCompact: View {
             Rectangle()
                 .fill(Color(hex: postViewModel.post.isRead ? themeViewModel.currentCustomTheme.readPostCardViewBackgroundColor : themeViewModel.currentCustomTheme.cardViewBackgroundColor))
         }
+    }
+    
+    var iconUrl: String? {
+        switch iconType {
+        case .subreddit:
+            return postViewModel.post.subredditIconUrlString
+        case .user:
+            return postViewModel.post.userIconUrlString
+        case .fromAPI:
+            return postViewModel.post.resolvedSubredditIconUrlString
+        }
+    }
+    
+    var iconFallbackText: String {
+        if iconType == .user {
+            return postViewModel.post.author
+        }
+        
+        return postViewModel.post.subreddit
     }
 }
 

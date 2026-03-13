@@ -91,7 +91,7 @@ struct HistoryPostListingView: View {
                             PostView(
                                 post: post,
                                 postLayout: getPostLayout(post),
-                                displaySubredditIcon: false,
+                                iconType: .fromAPI,
                                 onUpvote: {
                                     await historyPostListingViewModel.votePost(post: post, vote: 1)
                                 },
@@ -119,16 +119,17 @@ struct HistoryPostListingView: View {
                                     await historyPostListingViewModel.readPost(post: post, markPostsAsRead: saveReadPosts, limitHistorySize: limitHistorySize, historyLimit: historyLimit)
                                 }
                             )
+                            .limitedWidth()
                             .id(ObjectIdentifier(post))
                             .listPlainItemNoInsets()
                             .onAppear {
                                 historyPostListingViewModel.insertIntoAppearedPosts(post)
                                 
-//                                if post.subredditOrUserIcon == nil {
-//                                    Task {
-//                                        await historyPostListingViewModel.loadIcon(post: post)
-//                                    }
-//                                }
+                                if post.resolvedSubredditIconUrlString == nil {
+                                    Task {
+                                        await historyPostListingViewModel.loadIcon(post: post)
+                                    }
+                                }
                             }
                             .onDisappear {
                                 historyPostListingViewModel.appearedPosts.remove(id: post.id)
@@ -186,6 +187,17 @@ struct HistoryPostListingView: View {
                                 }
                             }
                     )
+                    .onScrollPhaseChange { _, phase in
+                        switch phase {
+                        case .idle:
+                            historyPostListingViewModel.isScrollIdle = true
+                            historyPostListingViewModel.applyPendingResolvedIconUrlString()
+                        case .interacting:
+                            historyPostListingViewModel.isScrollIdle = false
+                        default:
+                            break
+                        }
+                    }
                 }
                 .showErrorUsingSnackbar(historyPostListingViewModel.$error)
             }

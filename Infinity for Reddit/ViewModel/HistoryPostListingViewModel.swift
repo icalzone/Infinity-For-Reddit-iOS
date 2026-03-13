@@ -29,6 +29,8 @@ public class HistoryPostListingViewModel: ObservableObject {
     @Published var showMediaDownloadFinishedMessageTrigger: Bool = false
     @Published var showAllGalleryMediaDownloadFinishedMessageTrigger: Bool = false
     
+    var isScrollIdle: Bool = true
+    
     private var historyPostListingMetadata: HistoryPostListingMetadata
     private var externalPostFilter: PostFilter?
     private var postFilter: PostFilter?
@@ -42,6 +44,7 @@ public class HistoryPostListingViewModel: ObservableObject {
     private let historyPostsRepository: HistoryPostsRepositoryProtocol
     private let thingModerationRepository: ThingModerationRepositoryProtocol
     private let postRepository: PostRepositoryProtocol
+    private var resolvedIconStringUrlCache: [String: String] = [:]
     
     private var refreshPostsContinuation: CheckedContinuation<Void, Never>?
     
@@ -272,15 +275,31 @@ public class HistoryPostListingViewModel: ObservableObject {
         self.postFilter?.allowSpoiler = spoilerContent
     }
     
-//    func loadIcon(post: Post) async {
-//        guard post.subredditOrUserIcon == nil else { return }
-//        
-//        do {
-//            try await historyPostListingRepository.loadIcon(post: post)
-//        } catch {
-//            print("Load icon failed")
-//        }
-//    }
+    func loadIcon(post: Post) async {
+        guard post.resolvedSubredditIconUrlString == nil else { return }
+        
+        do {
+            let resolvedIconUrlString = try await historyPostListingRepository.loadIcon(post: post)
+            await MainActor.run {
+                if isScrollIdle {
+                    post.resolvedSubredditIconUrlString = resolvedIconUrlString
+                } else {
+                    resolvedIconStringUrlCache[post.id] = resolvedIconUrlString
+                }
+            }
+        } catch {
+            print("Load icon failed")
+        }
+    }
+    
+    func applyPendingResolvedIconUrlString() {
+        for (postId, resolvedIconUrlString) in resolvedIconStringUrlCache {
+            if let index = posts.firstIndex(where: { $0.id == postId }) {
+                posts[index].resolvedSubredditIconUrlString = resolvedIconUrlString
+            }
+        }
+        resolvedIconStringUrlCache.removeAll()
+    }
     
     func setSensitiveContent(_ sensitiveContent: Bool) {
         if sensitiveContent != self.sensitiveContent {

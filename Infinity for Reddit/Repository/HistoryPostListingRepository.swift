@@ -91,93 +91,94 @@ public class HistoryPostListingRepository: HistoryPostListingRepositoryProtocol 
         }
     }
     
-//    public func loadIcon(post: Post) async throws {
-//        try Task.checkCancellation()
-//        
-//        guard post.subredditOrUserIcon == nil else { return }
-//        
-//        if "u/\(post.author ?? "")" == post.subredditNamePrefixed {
-//            // User's own subreddit
-//            if subredditOrUserIcons[post.author] != nil {
-//                await MainActor.run {
-//                    post.subredditOrUserIcon = subredditOrUserIcons[post.author]
-//                }
-//            } else {
-//                try await loadUserIcon(post: post)
-//            }
-//        } else {
-//            if subredditOrUserIcons[post.subreddit] != nil {
-//                await MainActor.run {
-//                    post.subredditOrUserIcon = subredditOrUserIcons[post.subreddit]
-//                }
-//            } else {
-//                try await loadSubredditIcon(post: post)
-//            }
-//        }
-//    }
-//    
-//    private func loadSubredditIcon(post: Post) async throws {
-//        try Task.checkCancellation()
-//        
-//        guard post.subredditOrUserIcon == nil else { return }
-//        
-//        do {
-//            let subredditData = try await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
-//            if let subredditData {
-//                await MainActor.run {
-//                    post.subredditOrUserIcon = subredditData.iconUrl ?? ""
-//                    subredditOrUserIcons[post.subreddit] = post.subredditOrUserIcon
-//                }
-//                return
-//            }
-//        } catch {
-//            // Ignore
-//        }
-//        
-//        let data = try await self.session.request(
-//            RedditOAuthAPI.getSubredditData(subredditName: post.subreddit)
-//        )
-//            .validate()
-//            .serializingData(automaticallyCancelling: true)
-//            .value
-//        
-//        try Task.checkCancellation()
-//        
-//        let json = JSON(data)
-//        if let error = json.error {
-//            throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
-//        }
-//        
-//        await MainActor.run {
-//            post.subredditOrUserIcon = try? SubredditDetailRootClass(fromJson: json).toSubredditData().iconUrl ?? ""
-//            subredditOrUserIcons[post.subreddit] = post.subredditOrUserIcon
-//        }
-//    }
-//    
-//    private func loadUserIcon(post: Post) async throws {
-//        try Task.checkCancellation()
-//        
-//        guard post.subredditOrUserIcon == nil else { return }
-//        
-//        let data = try await self.session.request(
-//            RedditAPI.getUserData(username: post.author)
-//        )
-//        .validate()
-//        .serializingData()
-//        .value
-//        
-//        try Task.checkCancellation()
-//        
-//        let json = JSON(data)
-//        if let error = json.error {
-//            throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
-//        }
-//        
-//        try await MainActor.run {
-//            post.subredditOrUserIcon = try UserDetailRootClass(fromJson: json).toUserData().iconUrl ?? ""
-//            subredditOrUserIcons[post.author] = post.subredditOrUserIcon
-//        }
-//    }
+    public func loadIcon(post: Post) async throws -> String {
+        try Task.checkCancellation()
+        
+        guard post.resolvedSubredditIconUrlString == nil else {
+            return post.resolvedSubredditIconUrlString ?? ""
+        }
+        
+        if "u/\(post.author ?? "")" == post.subredditNamePrefixed {
+            // User's own subreddit
+            if subredditOrUserIcons[post.author] != nil {
+                return subredditOrUserIcons[post.author] ?? ""
+            } else {
+                return try await loadUserIcon(post: post)
+            }
+        } else {
+            if subredditOrUserIcons[post.subreddit] != nil {
+                return subredditOrUserIcons[post.subreddit] ?? ""
+            } else {
+                return try await loadSubredditIcon(post: post)
+            }
+        }
+    }
+    
+    private func loadSubredditIcon(post: Post) async throws -> String {
+        try Task.checkCancellation()
+        
+        guard post.resolvedSubredditIconUrlString == nil else {
+            return post.resolvedSubredditIconUrlString ?? ""
+        }
+        
+        do {
+            let subredditData = try await subredditDao.getSubredditDataByName(subredditName: post.subreddit)
+            if let subredditData {
+                subredditOrUserIcons[post.subreddit] = subredditData.iconUrl ?? ""
+                return subredditData.iconUrl ?? ""
+            }
+        } catch {
+            // Ignore
+        }
+        
+        let data = try await self.session.request(
+            RedditOAuthAPI.getSubredditData(subredditName: post.subreddit)
+        )
+            .validate()
+            .serializingData(automaticallyCancelling: true)
+            .value
+        
+        try Task.checkCancellation()
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
+        }
+
+        let subredditData = try? SubredditDetailRootClass(fromJson: json).toSubredditData()
+        guard let subredditData else {
+            return ""
+        }
+        
+        try? await subredditDao.insert(subredditData: subredditData)
+        subredditOrUserIcons[post.subreddit] = subredditData.iconUrl ?? ""
+        return subredditOrUserIcons[post.subreddit] ?? ""
+    }
+    
+    private func loadUserIcon(post: Post) async throws -> String {
+        try Task.checkCancellation()
+        
+        guard post.resolvedSubredditIconUrlString == nil else {
+            return post.resolvedSubredditIconUrlString ?? ""
+        }
+        
+        let data = try await self.session.request(
+            RedditAPI.getUserData(username: post.author)
+        )
+        .validate()
+        .serializingData()
+        .value
+        
+        try Task.checkCancellation()
+        
+        let json = JSON(data)
+        if let error = json.error {
+            throw HistoryPostListingRepositoryError.JSONDecodingError(error.localizedDescription)
+        }
+        
+        subredditOrUserIcons[post.author] = try? UserDetailRootClass(fromJson: json).toUserData().iconUrl ?? ""
+        return subredditOrUserIcons[post.author] ?? ""
+    }
     
     public func toggleHidePost(_ post: Post) async throws {
         let params = ["id": post.name]

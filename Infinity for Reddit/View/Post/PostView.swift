@@ -14,7 +14,7 @@ struct PostView: View {
     
     let post: Post
     let postLayout: PostLayout
-    let displaySubredditIcon: Bool
+    let iconType: IconType
     let onUpvote: () async -> Void
     let onDownvote: () async -> Void
     let onToggleSave: () async -> Void
@@ -27,7 +27,7 @@ struct PostView: View {
     init(
         post: Post,
         postLayout: PostLayout,
-        displaySubredditIcon: Bool,
+        iconType: IconType,
         onUpvote: @escaping () async -> Void,
         onDownvote: @escaping () async -> Void,
         onToggleSave: @escaping () async -> Void,
@@ -39,7 +39,7 @@ struct PostView: View {
     ) {
         self.post = post
         self.postLayout = postLayout
-        self.displaySubredditIcon = displaySubredditIcon
+        self.iconType = iconType
         self.onUpvote = onUpvote
         self.onDownvote = onDownvote
         self.onToggleSave = onToggleSave
@@ -62,7 +62,7 @@ struct PostView: View {
             case .card:
                 PostViewCard(
                     postViewModel: postViewModel,
-                    displaySubredditIcon: displaySubredditIcon,
+                    iconType: iconType,
                     onPostTap: { videoPlaybackTime in
                         onPostTap(videoPlaybackTime)
                     },
@@ -83,7 +83,7 @@ struct PostView: View {
             case .compact:
                 PostViewCompact(
                     postViewModel: postViewModel,
-                    displaySubredditIcon: displaySubredditIcon,
+                    iconType: iconType,
                     onPostTap: {
                         onPostTap(0)
                     },
@@ -120,7 +120,7 @@ struct PostView: View {
     }
     
     private func onIconTap() {
-        if displaySubredditIcon {
+        if iconType == .subreddit {
             navigationManager.append(
                 AppNavigation.subredditDetails(subredditName: post.subreddit)
             )
