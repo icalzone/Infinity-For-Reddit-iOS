@@ -342,11 +342,25 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
         }
 
         for p in postFilters {
-            merged.maxVote = min(p.maxVote, merged.maxVote)
+            if merged.maxVote == -1 {
+                merged.maxVote = p.maxVote
+            } else if p.maxVote != -1 {
+                merged.maxVote = min(merged.maxVote, p.maxVote)
+            }
             merged.minVote = max(p.minVote, merged.minVote)
-            merged.maxComments = min(p.maxComments, merged.maxComments)
+            
+            if merged.maxComments == -1 {
+                merged.maxComments = p.maxComments
+            } else if p.maxComments != -1 {
+                merged.maxComments = min(merged.maxComments, p.maxComments)
+            }
             merged.minComments = max(p.minComments, merged.minComments)
-            merged.maxAwards = min(p.maxAwards, merged.maxAwards)
+            
+            if merged.maxAwards == -1 {
+                merged.maxAwards = p.maxAwards
+            } else if p.maxAwards != -1 {
+                merged.maxAwards = min(merged.maxAwards, p.maxAwards)
+            }
             merged.minAwards = max(p.minAwards, merged.minAwards)
 
             merged.onlySensitive = p.onlySensitive || merged.onlySensitive
