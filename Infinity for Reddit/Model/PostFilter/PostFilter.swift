@@ -160,16 +160,16 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
             return false
         }
         
-        if postFilter.maxVote > 0 && post.likes + post.score > postFilter.maxVote {
+        if postFilter.maxVote >= 0 && post.likes + post.score > postFilter.maxVote {
             return false
         }
-        if postFilter.minVote > 0 && post.likes + post.score < postFilter.minVote {
+        if postFilter.minVote >= 0 && post.likes + post.score < postFilter.minVote {
             return false
         }
-        if postFilter.maxComments > 0 && post.numComments > postFilter.maxComments {
+        if postFilter.maxComments >= 0 && post.numComments > postFilter.maxComments {
             return false
         }
-        if postFilter.minComments > 0 && post.numComments < postFilter.minComments {
+        if postFilter.minComments >= 0 && post.numComments < postFilter.minComments {
             return false
         }
         if postFilter.onlySensitive && !post.over18 {
