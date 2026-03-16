@@ -97,7 +97,7 @@ struct AccountSheet: View {
                         }
                         
                         if accountViewModel.account.isAnonymous() == false {
-                            SimpleTouchItemRow(text: "Anonymous", icon: "person.fill.questionmark") {
+                            SimpleTouchItemRow(text: "Use Anonymous Mode", icon: "person.fill.questionmark") {
                                 do {
                                     try accountViewModel.switchToAnonymous()
                                 } catch {
