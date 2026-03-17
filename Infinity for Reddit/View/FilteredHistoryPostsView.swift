@@ -57,7 +57,7 @@ struct FilteredHistoryPostsView: View {
                 filteredHistoryPostsViewModel.postFilter,
                 showInSheet: true
             ) { postFilter in
-                print(postFilter)
+                printInDebugOnly(postFilter)
                 filteredHistoryPostsViewModel.postFilter = postFilter
             }
         }

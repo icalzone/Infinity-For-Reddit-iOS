@@ -227,7 +227,7 @@ public class CustomizePostFilterViewModel: ObservableObject {
                 try await customizePostFilterRepository.savePostFilter(postFilter)
                 savedPostFilterFlag.toggle()
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

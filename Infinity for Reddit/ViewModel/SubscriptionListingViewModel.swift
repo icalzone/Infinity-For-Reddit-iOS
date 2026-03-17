@@ -143,9 +143,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -162,9 +162,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -181,9 +181,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -200,9 +200,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -219,9 +219,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -238,9 +238,9 @@ public class SubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { [weak self] result in
@@ -322,7 +322,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 self.after = nil
                 self.isLoadingSubscriptions = false
                 
-                print("Error fetching subscriptions: \(error)")
+                printInDebugOnly("Error fetching subscriptions: \(error)")
             }
         }
     }
@@ -425,7 +425,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 self.isLoadingMyCustomFeeds = false
             }
             
-            print("Error fetching custom feeds: \(error)")
+            printInDebugOnly("Error fetching custom feeds: \(error)")
         }
     }
     
@@ -478,7 +478,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             
             try await SubredditDao(dbPool: dbPool).insertAll(subredditData: subreddits)
         } catch {
-            print("Error updating subscribed things: \(error)")
+            printInDebugOnly("Error updating subscribed things: \(error)")
         }
     }
     
@@ -503,7 +503,7 @@ public class SubscriptionListingViewModel: ObservableObject {
                 myCustomFeeds: myCustomFeeds
             )
         } catch {
-            print("Error updating my custom feeds: \(error)")
+            printInDebugOnly("Error updating my custom feeds: \(error)")
         }
     }
     
@@ -512,7 +512,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             try await subscriptionListingRepository.toggleFavoriteSubreddit(subscribedSubreddit)
         } catch {
             // TODO handle error
-            print("Toggle favorite subreddit error: \(error)")
+            printInDebugOnly("Toggle favorite subreddit error: \(error)")
             await MainActor.run {
                 self.error = error
             }
@@ -524,7 +524,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             try await subscriptionListingRepository.toggleFavoriteUser(subscribedUser)
         } catch {
             // TODO handle error
-            print("Toggle favorite user error: \(error)")
+            printInDebugOnly("Toggle favorite user error: \(error)")
             await MainActor.run {
                 self.error = error
             }
@@ -536,7 +536,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             try await subscriptionListingRepository.toggleFavoriteCustomFeed(myCustomFeed)
         } catch {
             // TODO handle error
-            print("Toggle favorite custom feed error: \(error)")
+            printInDebugOnly("Toggle favorite custom feed error: \(error)")
             await MainActor.run {
                 self.error = error
             }
@@ -547,7 +547,7 @@ public class SubscriptionListingViewModel: ObservableObject {
         do {
             try await subscriptionListingRepository.unsubscribeFromSubreddit(subscribedSubreddit)
         } catch {
-            print("Unsubscribe from subreddit error: \(error)")
+            printInDebugOnly("Unsubscribe from subreddit error: \(error)")
             await MainActor.run {
                 self.error = error
             }
@@ -558,7 +558,7 @@ public class SubscriptionListingViewModel: ObservableObject {
         do {
             try await subscriptionListingRepository.unfollowUser(subscribedUser)
         } catch {
-            print("Unfollow user error: \(error)")
+            printInDebugOnly("Unfollow user error: \(error)")
             await MainActor.run {
                 self.error = error
             }
@@ -569,7 +569,7 @@ public class SubscriptionListingViewModel: ObservableObject {
         do {
             try await subscriptionListingRepository.deleteCustomFeed(myCustomFeed)
         } catch {
-            print("Delete custom feed error: \(error)")
+            printInDebugOnly("Delete custom feed error: \(error)")
             await MainActor.run {
                 self.error = error
             }

@@ -328,12 +328,12 @@
 //                hcView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
 //                hcView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
 //            ])
-//            print("HostingCollectionViewCell \(ObjectIdentifier(self)): Created new UIHostingController for view type \(type(of: view)).")
+//            printInDebugOnly("HostingCollectionViewCell \(ObjectIdentifier(self)): Created new UIHostingController for view type \(type(of: view)).")
 //        } else {
 //            // If a hosting controller already exists, just update its `rootView`.
 //            // SwiftUI will handle diffing and updating its hierarchy efficiently.
 //            hostingController?.rootView = view
-//            print("HostingCollectionViewCell \(ObjectIdentifier(self)): Updated existing UIHostingController's rootView to view type \(type(of: view)).")
+//            printInDebugOnly("HostingCollectionViewCell \(ObjectIdentifier(self)): Updated existing UIHostingController's rootView to view type \(type(of: view)).")
 //        }
 //        
 //        // CRITICAL: Force layout on the hosted view. This tells SwiftUI to re-evaluate its content
@@ -341,7 +341,7 @@
 //        // This is essential for SwiftUI views to correctly self-size within a UIKit container.
 //        hostingController?.view.setNeedsLayout()
 //        hostingController?.view.layoutIfNeeded()
-//        print("HostingCollectionViewCell \(ObjectIdentifier(self)): Forced layoutIfNeeded on hosted view.")
+//        printInDebugOnly("HostingCollectionViewCell \(ObjectIdentifier(self)): Forced layoutIfNeeded on hosted view.")
 //    }
 //
 //    /// Called when the cell is about to be reused by the collection view.
@@ -351,7 +351,7 @@
 //        // Reset hosted view to an empty state. This effectively "cleans" the cell
 //        // before it's used to display new content.
 //        hostingController?.rootView = AnyView(EmptyView())
-//        print("HostingCollectionViewCell \(ObjectIdentifier(self)): prepareForReuse - Resetting hosted view.")
+//        printInDebugOnly("HostingCollectionViewCell \(ObjectIdentifier(self)): prepareForReuse - Resetting hosted view.")
 //    }
 //    
 //    /// This method is called by UICollectionViewLayout to determine the cell's preferred size.
@@ -390,7 +390,7 @@
 //
 //            layoutAttributes.frame.size = CGSize(width: targetWidth, height: fittingSize.height)
 //
-//            print("HostingCollectionViewCell \(ObjectIdentifier(self)): preferredLayoutAttributesFitting - measured size \(fittingSize) for width \(targetWidth).")
+//            printInDebugOnly("HostingCollectionViewCell \(ObjectIdentifier(self)): preferredLayoutAttributesFitting - measured size \(fittingSize) for width \(targetWidth).")
 //
 //            return layoutAttributes
 //    }
@@ -437,9 +437,9 @@
 //    /// Called by UICollectionView when the layout needs to be calculated or invalidated.
 //    /// This is where all item frames are determined.
 //    override func prepare() {
-//        print("--- StaggeredGridLayout.prepare() called ---")
+//        printInDebugOnly("--- StaggeredGridLayout.prepare() called ---")
 //        guard let collectionView = collectionView else {
-//            print("StaggeredGridLayout.prepare(): collectionView is nil.")
+//            printInDebugOnly("StaggeredGridLayout.prepare(): collectionView is nil.")
 //            return
 //        }
 //
@@ -450,11 +450,11 @@
 //        let shouldRecalculate = cache.isEmpty || columnHeights.isEmpty || newContentWidth != currentLayoutContentWidth
 //
 //        if !shouldRecalculate {
-//            print("StaggeredGridLayout.prepare(): Cache valid, content width unchanged (\(newContentWidth)). Skipping full recalculation.")
+//            printInDebugOnly("StaggeredGridLayout.prepare(): Cache valid, content width unchanged (\(newContentWidth)). Skipping full recalculation.")
 //            return
 //        }
 //        
-//        print("StaggeredGridLayout.prepare(): Performing full layout recalculation (width change or initial load).")
+//        printInDebugOnly("StaggeredGridLayout.prepare(): Performing full layout recalculation (width change or initial load).")
 //        cache.removeAll() // Clear old layout attributes
 //        columnHeights = Array(repeating: sectionInsets.top, count: columns) // Reset column heights to top inset
 //        currentLayoutContentWidth = newContentWidth // Update the tracked width for future comparisons
@@ -463,7 +463,7 @@
 //        let availableWidthForItems = newContentWidth - (CGFloat(columns - 1) * spacing)
 //        let columnWidth = max(0, availableWidthForItems / CGFloat(columns))
 //        
-//        print("StaggeredGridLayout.prepare(): Calculated columnWidth = \(columnWidth), newContentWidth = \(newContentWidth)")
+//        printInDebugOnly("StaggeredGridLayout.prepare(): Calculated columnWidth = \(columnWidth), newContentWidth = \(newContentWidth)")
 //
 //        // Iterate through all items in the first section (assuming single section for simplicity)
 //        for item in 0..<collectionView.numberOfItems(inSection: 0) {
@@ -489,7 +489,7 @@
 //            // Update the height of the column where the item was just placed, adding spacing for the next item.
 //            columnHeights[shortestColumnIndex] = yOffset + itemHeight + spacing
 //        }
-//        print("--- End StaggeredGridLayout.prepare() ---")
+//        printInDebugOnly("--- End StaggeredGridLayout.prepare() ---")
 //    }
 //
 //    /// Returns the total scrollable size of the content within the collection view.
@@ -499,7 +499,7 @@
 //        let contentWidth = collectionView.bounds.width // The content width is typically the collection view's width
 //        let contentHeight = (columnHeights.max() ?? 0) + sectionInsets.bottom // The height is determined by the tallest column plus bottom inset
 //        
-//        print("StaggeredGridLayout.collectionViewContentSize: calculated height = \(contentHeight) for width \(contentWidth).")
+//        printInDebugOnly("StaggeredGridLayout.collectionViewContentSize: calculated height = \(contentHeight) for width \(contentWidth).")
 //        return CGSize(width: contentWidth, height: contentHeight)
 //    }
 //
@@ -538,7 +538,7 @@
 //        let invalidate = newBounds.width != collectionView.bounds.width
 //        
 //        if invalidate {
-//            print("StaggeredGridLayout.shouldInvalidateLayout: Invalidating layout due to width change (\(collectionView.bounds.width) -> \(newBounds.width)).")
+//            printInDebugOnly("StaggeredGridLayout.shouldInvalidateLayout: Invalidating layout due to width change (\(collectionView.bounds.width) -> \(newBounds.width)).")
 //            // Crucial: Clear internal caches (`cache` and `columnHeights`) here.
 //            // This forces `prepare()` to run a full recalculation and re-measure all items
 //            // with the new column width when `invalidateLayout()` is processed.
@@ -550,7 +550,7 @@
 //        } else {
 //            // This path means only the scroll offset (bounds.origin) changed, not the size.
 //            // For a performant staggered grid, we do NOT need to re-layout on just scrolling.
-//            print("StaggeredGridLayout.shouldInvalidateLayout: Not invalidating layout (only scroll position changed).")
+//            printInDebugOnly("StaggeredGridLayout.shouldInvalidateLayout: Not invalidating layout (only scroll position changed).")
 //        }
 //        // Return `true` if invalidation is needed, `false` otherwise.
 //        return invalidate
@@ -587,7 +587,7 @@
 //        collectionView.showsHorizontalScrollIndicator = false
 //        collectionView.contentInsetAdjustmentBehavior = .always // Handles safe area insets automatically
 //        
-//        print("MultiColumnList.makeUIView: Created UICollectionView.")
+//        printInDebugOnly("MultiColumnList.makeUIView: Created UICollectionView.")
 //        return collectionView
 //    }
 //
@@ -602,7 +602,7 @@
 //
 //        // Check if the number of columns has changed.
 //        if layout.columns != numberOfColumns {
-//            print("MultiColumnList.updateUIView: Column count changed from \(layout.columns) to \(numberOfColumns). Forcing layout update.")
+//            printInDebugOnly("MultiColumnList.updateUIView: Column count changed from \(layout.columns) to \(numberOfColumns). Forcing layout update.")
 //            layout.columns = numberOfColumns
 //            context.coordinator.itemHeightCache.removeAll() // Clear height cache as new columns mean new item widths/heights
 //            // The `shouldInvalidateLayout` method of StaggeredGridLayout will handle clearing its own internal cache
@@ -617,7 +617,7 @@
 //            uiView.reloadData()
 //        }
 //        
-//        print("MultiColumnList.updateUIView: layout.invalidateLayout() and reloadData() called.")
+//        printInDebugOnly("MultiColumnList.updateUIView: layout.invalidateLayout() and reloadData() called.")
 //    }
 //
 //    // MARK: - Coordinator Class
@@ -632,14 +632,14 @@
 //
 //        init(_ parent: MultiColumnList) {
 //            self.parent = parent
-//            print("Coordinator: Initialized with parent.")
+//            printInDebugOnly("Coordinator: Initialized with parent.")
 //        }
 //
 //        // MARK: UICollectionViewDataSource
 //
 //        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 //            let count = parent.items.count
-//            print("Coordinator.collectionView(_:numberOfItemsInSection:): Returning \(count) items.")
+//            printInDebugOnly("Coordinator.collectionView(_:numberOfItemsInSection:): Returning \(count) items.")
 //            return count
 //        }
 //
@@ -655,7 +655,7 @@
 //            let totalSpacingInColumns = layout.spacing * CGFloat(layout.columns - 1)
 //            let columnWidth = max(0, (availableContentWidth - totalSpacingInColumns) / CGFloat(layout.columns))
 //            
-//            print("Coordinator.collectionView(_:cellForItemAt:): Item \(indexPath.item) - Calculated columnWidth for cell: \(columnWidth).")
+//            printInDebugOnly("Coordinator.collectionView(_:cellForItemAt:): Item \(indexPath.item) - Calculated columnWidth for cell: \(columnWidth).")
 //
 //            // Host the SwiftUI view.
 //            // `.id(columnWidth)` is crucial: it tells SwiftUI that if `columnWidth` changes,
@@ -675,13 +675,13 @@
 //        func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 //            guard indexPath.item < parent.items.count else { return }
 //            let item = parent.items[indexPath.item]
-//            print("Coordinator.collectionView(_:willDisplay:): Item \(indexPath.item) will appear.")
+//            printInDebugOnly("Coordinator.collectionView(_:willDisplay:): Item \(indexPath.item) will appear.")
 //            parent.onItemAppear?(indexPath.item, item)
 //        }
 //        
 //        /// Called after a cell has been removed from the screen. Useful for resource cleanup.
 //        func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-//             print("Coordinator.collectionView(_:didEndDisplaying:): Item \(indexPath.item) did disappear.")
+//             printInDebugOnly("Coordinator.collectionView(_:didEndDisplaying:): Item \(indexPath.item) did disappear.")
 //            // You might implement an `onItemDisappear` callback here if needed for specific cleanup.
 //        }
 //
@@ -691,7 +691,7 @@
 //        /// It is the most critical part for correctly sizing SwiftUI views within the grid.
 //        func staggeredGridLayout(_ layout: StaggeredGridLayout, heightForItemAtIndexPath indexPath: IndexPath, columnWidth: CGFloat) -> CGFloat {
 //            guard indexPath.item < parent.items.count else {
-//                print("Coordinator.staggeredGridLayout: Index path out of bounds for item \(indexPath.item). Returning 0 height.")
+//                printInDebugOnly("Coordinator.staggeredGridLayout: Index path out of bounds for item \(indexPath.item). Returning 0 height.")
 //                return 0
 //            }
 //            let item = parent.items[indexPath.item]
@@ -699,11 +699,11 @@
 //            // Check the cache first to avoid redundant, expensive SwiftUI view measurements.
 //            // The cache is cleared when `MultiColumnList` detects a column count or width change.
 //            if let cachedHeight = itemHeightCache[item.id] {
-//                print("Coordinator.staggeredGridLayout: Using cached height \(cachedHeight) for item \(indexPath.item) at width \(columnWidth).")
+//                printInDebugOnly("Coordinator.staggeredGridLayout: Using cached height \(cachedHeight) for item \(indexPath.item) at width \(columnWidth).")
 //                return cachedHeight
 //            }
 //
-//            print("Coordinator.staggeredGridLayout: Measuring item \(indexPath.item) for height at columnWidth: \(columnWidth).")
+//            printInDebugOnly("Coordinator.staggeredGridLayout: Measuring item \(indexPath.item) for height at columnWidth: \(columnWidth).")
 //
 //            // Create a dummy `UIHostingController` to measure the SwiftUI view's intrinsic size.
 //            // It is absolutely critical that this "dummy" view receives the *exact same inputs*
@@ -727,14 +727,14 @@
 //            )
 //
 //            let calculatedHeight = fittingSize.height
-//            print("Coordinator.staggeredGridLayout: Measured height for item \(indexPath.item): \(calculatedHeight) at width: \(columnWidth).")
+//            printInDebugOnly("Coordinator.staggeredGridLayout: Measured height for item \(indexPath.item): \(calculatedHeight) at width: \(columnWidth).")
 //
 //            itemHeightCache[item.id] = calculatedHeight // Cache the calculated height for future use
 //            return calculatedHeight
 //        }
 //        
 //        func staggeredGridLayoutDidInvalidateLayoutDueToWidthChange(_ layout: StaggeredGridLayout) {
-//            print("Coordinator: Layout invalidated due to width change. Clearing item height cache.")
+//            printInDebugOnly("Coordinator: Layout invalidated due to width change. Clearing item height cache.")
 //            itemHeightCache.removeAll()
 //        }
 //    }

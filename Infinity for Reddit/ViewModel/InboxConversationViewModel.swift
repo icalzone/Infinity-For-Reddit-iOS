@@ -77,7 +77,7 @@ class InboxConversationViewModel: ObservableObject {
                 self.error = error
             }
             
-            print("Error sending message: \(error)")
+            printInDebugOnly("Error sending message: \(error)")
         }
     }
 }

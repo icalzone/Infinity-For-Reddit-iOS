@@ -101,7 +101,7 @@ struct AccountSheet: View {
                                 do {
                                     try accountViewModel.switchToAnonymous()
                                 } catch {
-                                    print("Failed to log out: \(error)")
+                                    printInDebugOnly("Failed to log out: \(error)")
                                 }
                                 dismiss()
                             }
@@ -110,7 +110,7 @@ struct AccountSheet: View {
                                 do {
                                     try accountViewModel.logout()
                                 } catch {
-                                    print("Failed to log out: \(error)")
+                                    printInDebugOnly("Failed to log out: \(error)")
                                 }
                                 dismiss()
                             }

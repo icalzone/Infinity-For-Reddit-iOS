@@ -74,7 +74,7 @@ class SubredditAutoCompleteViewModel: ObservableObject {
                 self.subreddits = subredditListing.subreddits
             } catch {
                 // Ignore
-                print(error)
+                printInDebugOnly(error)
             }
             
             fetchSubredditsTask = nil

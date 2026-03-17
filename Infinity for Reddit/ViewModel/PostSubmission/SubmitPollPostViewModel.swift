@@ -85,7 +85,7 @@ class SubmitPollPostViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             self.submitPostTask = nil

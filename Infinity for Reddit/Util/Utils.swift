@@ -63,3 +63,9 @@ class Utils {
         )
     }
 }
+
+func printInDebugOnly(_ items: Any...) {
+    #if DEBUG
+    print(items)
+    #endif
+}

@@ -150,7 +150,7 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
         do {
             try await MediaDownloader.shared.download(downloadMediaType: downloadMediaType, onProgressWithTitle: { _, _ in })
         } catch {
-            print(error)
+            printInDebugOnly(error)
             await MainActor.run {
                 self.hasErrorWhenDownloadAllMedia = true
             }
@@ -171,7 +171,7 @@ class FullScreenMediaToolbarViewModel: ObservableObject {
                     await rootVC.present(activityVC, animated: true)
                 }
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 await MainActor.run {
                     self.error = error
                 }

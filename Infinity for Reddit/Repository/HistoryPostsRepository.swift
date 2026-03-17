@@ -22,7 +22,7 @@ class HistoryPostsRepository: HistoryPostsRepositoryProtocol {
         do {
             return saveReadPosts ? Set(try await postHistoryDao.getHistoryPostsIdsByIds(ids: postIds, username: account.username, postHistoryType: .readPosts)) : Set<String>()
         } catch {
-            print("getReadPostsIdsByIds failed with error: \(error)")
+            printInDebugOnly("getReadPostsIdsByIds failed with error: \(error)")
             return Set<String>()
         }
     }
@@ -31,7 +31,7 @@ class HistoryPostsRepository: HistoryPostsRepositoryProtocol {
         do {
             return Set(try await postHistoryDao.getHistoryPostsIdsByIds(ids: postIds, username: Account.ANONYMOUS_ACCOUNT.username, postHistoryType: postHistoryType))
         } catch {
-            print("getHistoryPostsIdsByIdsAnonymous failed with error: \(error)")
+            printInDebugOnly("getHistoryPostsIdsByIdsAnonymous failed with error: \(error)")
             return Set<String>()
         }
     }
@@ -40,7 +40,7 @@ class HistoryPostsRepository: HistoryPostsRepositoryProtocol {
         do {
             return try await !postHistoryDao.getHistoryPostsIdsByIds(ids: [postId], username: Account.ANONYMOUS_ACCOUNT.username, postHistoryType: postHistoryType).isEmpty
         } catch {
-            print("getIfExistInHistoryPostsAnonymous failed with error: \(error)")
+            printInDebugOnly("getIfExistInHistoryPostsAnonymous failed with error: \(error)")
             return false
         }
     }

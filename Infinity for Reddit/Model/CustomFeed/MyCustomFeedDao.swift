@@ -27,7 +27,7 @@ struct MyCustomFeedDao {
                 do {
                     try data.insert(db, onConflict: .replace)
                 } catch {
-                    print(error)
+                    printInDebugOnly(error)
                 }
             }
         }

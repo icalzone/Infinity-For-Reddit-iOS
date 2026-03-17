@@ -69,7 +69,7 @@ public class AccountViewModel: ObservableObject {
             }
         } catch {
             account = Account.ANONYMOUS_ACCOUNT
-            print(error.localizedDescription)
+            printInDebugOnly(error.localizedDescription)
         }
         self.contextProvider = AuthPresentationContextProvider()
         
@@ -94,7 +94,7 @@ public class AccountViewModel: ObservableObject {
             } else if let error {
                 if let errorCode = (error as? NSError)?.code {
                     if errorCode != ASWebAuthenticationSessionError.Code.canceledLogin.rawValue {
-                        print(error.localizedDescription)
+                        printInDebugOnly(error.localizedDescription)
                         self.error = AccountError.failedToLogin
                     }
                 }
@@ -107,7 +107,7 @@ public class AccountViewModel: ObservableObject {
             do {
                 try accountDao.unmarkAccountCurrent(username: account.username)
             } catch {
-                print("Failed to unmark account as current: \(error)")
+                printInDebugOnly("Failed to unmark account as current: \(error)")
                 self.error = AccountError.failedToUnmarkCurrentAccount
                 return
             }
@@ -116,7 +116,7 @@ public class AccountViewModel: ObservableObject {
             try accountDao.markAccountCurrent(username: newAccount.username)
             self.error = nil
         } catch {
-            print("Failed to mark account as current: \(error)")
+            printInDebugOnly("Failed to mark account as current: \(error)")
             self.error = AccountError.failedToMarkNewAccountCurrent
         }
     }
@@ -154,14 +154,14 @@ public class AccountViewModel: ObservableObject {
                     case .finished:
                         break
                     case .failure(let error):
-                        print("Error observing current account: \(error)")
+                        printInDebugOnly("Error observing current account: \(error)")
                     }
                 }, receiveValue: { [weak self] updatedAccount in
                     self?.account = updatedAccount ?? Account.ANONYMOUS_ACCOUNT
                 })
                 .store(in: &cancellables)
         } catch {
-            print("Cannot observe current account: \(error)")
+            printInDebugOnly("Cannot observe current account: \(error)")
             self.error = AccountError.failedToObserveCurrentAccount
         }
     }

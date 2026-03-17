@@ -89,7 +89,7 @@ class MediaUploadRepository: MediaUploadRepositoryProtocol {
         
         if getImageId {
             if let imageId = self.getImageId(metadataResponseData) {
-                print(imageId)
+                printInDebugOnly(imageId)
                 return imageId
             }
             

@@ -764,7 +764,7 @@ public class PostListingViewModel: ObservableObject {
         } catch {
             post.likes = previousVote
             self.error = error
-            print("Error voting post: \(error)")
+            printInDebugOnly("Error voting post: \(error)")
         }
     }
     
@@ -803,7 +803,7 @@ public class PostListingViewModel: ObservableObject {
         } catch {
             post.saved = previousSaved
             self.error = error
-            print("Error (un)saving post: \(error)")
+            printInDebugOnly("Error (un)saving post: \(error)")
         }
     }
     
@@ -829,7 +829,7 @@ public class PostListingViewModel: ObservableObject {
             
             post.isRead = true
         } catch {
-            print("Mark post as read failed with error: \(error)")
+            printInDebugOnly("Mark post as read failed with error: \(error)")
         }
     }
 }

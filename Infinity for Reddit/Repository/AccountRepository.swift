@@ -148,12 +148,12 @@ class AccountRepository: AccountRepositoryProtocol {
         
         guard let accessToken = responseJSON["access_token"] as? String,
            let refreshToken = responseJSON["refresh_token"] as? String else {
-            print("Error: Tokens not found in response")
+            printInDebugOnly("Error: Tokens not found in response")
             throw LoginError.noAccessTokenInResponse
         }
         
-        print("Access Token: \(accessToken)")
-        print("Refresh Token: \(refreshToken)")
+        printInDebugOnly("Access Token: \(accessToken)")
+        printInDebugOnly("Refresh Token: \(refreshToken)")
         
         try await getAccountInfo(accessToken: accessToken, refreshToken: refreshToken, code: code)
     }
@@ -166,12 +166,12 @@ class AccountRepository: AccountRepositoryProtocol {
                 .serializingString(automaticallyCancelling: true)
                 .value
         } catch {
-            print("Error: \(error.localizedDescription)")
+            printInDebugOnly("Error: \(error.localizedDescription)")
             throw LoginError.failedToGetMyInfoNetworkError
         }
         
         guard !response.isEmpty else {
-            print("Error: Empty response from Reddit")
+            printInDebugOnly("Error: Empty response from Reddit")
             throw LoginError.failedToGetMyInfoEmptyResponse
         }
         
@@ -207,7 +207,7 @@ class AccountRepository: AccountRepositoryProtocol {
             try RedditAccessTokenKeychainManager.shared.saveAccessToken(accountName: name, accessToken: accessToken)
             try RedditAccessTokenKeychainManager.shared.saveRefreshToken(accountName: name, refreshToken: refreshToken)
         } catch {
-            print("Error: Failed to insert account - \(error.localizedDescription)")
+            printInDebugOnly("Error: Failed to insert account - \(error.localizedDescription)")
             throw LoginError.failedToSaveAccountInfo
         }
     }

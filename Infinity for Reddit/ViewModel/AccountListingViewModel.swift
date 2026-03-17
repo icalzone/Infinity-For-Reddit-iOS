@@ -28,7 +28,7 @@ public class AccountListingViewModel: ObservableObject {
                 self.otherAccounts = try accountDao.getAllNonCurrentAccounts()
             }
         } catch {
-            print("Error fetching accounts: \(error)")
+            printInDebugOnly("Error fetching accounts: \(error)")
             self.currentAccount = Account.ANONYMOUS_ACCOUNT
         }
     }

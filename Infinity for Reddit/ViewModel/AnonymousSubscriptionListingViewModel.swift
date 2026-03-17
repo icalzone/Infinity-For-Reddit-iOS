@@ -134,9 +134,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -150,9 +150,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -166,9 +166,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -182,9 +182,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -198,9 +198,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -214,9 +214,9 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
                 receiveCompletion: { completion in
                     switch completion {
                     case .finished:
-                        print("Finished successfully.")
+                        printInDebugOnly("Finished successfully.")
                     case .failure(let error):
-                        print("Encountered an error: \(error)")
+                        printInDebugOnly("Encountered an error: \(error)")
                     }
                 },
                 receiveValue: { result in
@@ -236,7 +236,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
             do {
                 try await anonymousSubscriptionListingRepository.toggleFavoriteSubreddit(subscribedSubreddit)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -248,7 +248,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
             do {
                 try await anonymousSubscriptionListingRepository.toggleFavoriteUser(subscribedUser)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -260,7 +260,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
             do {
                 try await anonymousSubscriptionListingRepository.toggleFavoriteCustomFeed(myCustomFeed)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -271,7 +271,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         do {
             try await anonymousSubscriptionListingRepository.unsubscribeFromSubreddit(subscribedSubreddit)
         } catch {
-            print("Unsubscribe from subreddit error: \(error)")
+            printInDebugOnly("Unsubscribe from subreddit error: \(error)")
             self.error = error
         }
     }
@@ -281,7 +281,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         do {
             try await anonymousSubscriptionListingRepository.unfollowUser(subscribedUser)
         } catch {
-            print("Unfollow user error: \(error)")
+            printInDebugOnly("Unfollow user error: \(error)")
             self.error = error
         }
     }
@@ -291,7 +291,7 @@ public class AnonymousSubscriptionListingViewModel: ObservableObject {
         do {
             try await anonymousSubscriptionListingRepository.deleteCustomFeed(myCustomFeed)
         } catch {
-            print("Delete custom feed error: \(error)")
+            printInDebugOnly("Delete custom feed error: \(error)")
             self.error = error
         }
     }

@@ -31,7 +31,7 @@ class LinkHandler {
         if url.scheme == nil && url.host == nil {
             let path = url.absoluteString.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !path.isEmpty else {
-                print("Invalid link: \(url)")
+                printInDebugOnly("Invalid link: \(url)")
                 return LinkDestination.invalid
             }
             finalURL = constructRedditURL(from: path)
@@ -40,7 +40,7 @@ class LinkHandler {
         }
         
         guard let host = finalURL.host else {
-            print("Missing host in URL: \(finalURL)")
+            printInDebugOnly("Missing host in URL: \(finalURL)")
             return LinkDestination.invalid
         }
         
@@ -130,13 +130,13 @@ class LinkHandler {
     
     private func handleImgurURL(path: String, segments: [String], url: URL) -> LinkDestination {
         if path.matches("/gallery/\\w+/?") {
-            print("Open Imgur gallery: \(segments[1])")
+            printInDebugOnly("Open Imgur gallery: \(segments[1])")
             return LinkDestination.fullScreenMedia(FullScreenMediaType.imgurGallery(imgurId: segments[1].components(separatedBy: "-").last ?? segments[1]))
         } else if path.matches("/(album|a)/\\w+/?") {
-            print("Open Imgur album: \(segments[1])")
+            printInDebugOnly("Open Imgur album: \(segments[1])")
             return LinkDestination.fullScreenMedia(FullScreenMediaType.imgurGallery(imgurId: segments[1].components(separatedBy: "-").last ?? segments[1]))
         } else if path.matches("/\\w+/?") {
-            print("Open Imgur image: \(path.dropFirst())")
+            printInDebugOnly("Open Imgur image: \(path.dropFirst())")
             let potentialId = path.dropFirst()
             return LinkDestination.fullScreenMedia(FullScreenMediaType.imgurImage(imgurId: String(potentialId.components(separatedBy: "-").last ?? String(potentialId))))
         } else if path.hasSuffix(".gifv") || path.hasSuffix(".mp4") {
@@ -153,10 +153,10 @@ class LinkHandler {
     private func handleRedgifsURL(path: String, url: URL) -> LinkDestination {
         if path.matches("/watch/[\\w-]+$") {
             let id = path.components(separatedBy: "/").last!
-            print("Open Redgifs video ID: \(id)")
+            printInDebugOnly("Open Redgifs video ID: \(id)")
             return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: url.absoluteString, videoType: .redgifs(id: id)))
         } else {
-            print("Invalid Redgifs link")
+            printInDebugOnly("Invalid Redgifs link")
             return LinkDestination.openInBrowser(url)
         }
     }
@@ -176,7 +176,7 @@ class LinkHandler {
     private func handleStreamable(path: String, segments: [String], url: URL) -> LinkDestination {
         if path.matches("/\\w+/?") {
             let shortCode = segments[0]
-            print("Open Streamable video: \(shortCode)")
+            printInDebugOnly("Open Streamable video: \(shortCode)")
             return LinkDestination.fullScreenMedia(FullScreenMediaType.video(urlString: url.absoluteString, videoType: VideoType.streamable(shortCode: shortCode)))
         } else {
             return LinkDestination.openInBrowser(url)
@@ -186,7 +186,7 @@ class LinkHandler {
     private func openUploadedRedditImage(_ url: URL) -> LinkDestination {
         let unescaped = url.absoluteString.replacingOccurrences(of: "%2F", with: "/")
         if let id = unescaped.components(separatedBy: "/").last {
-            print("Uploaded image ID: \(id)")
+            printInDebugOnly("Uploaded image ID: \(id)")
             return LinkDestination.fullScreenMedia(.image(urlString: unescaped, fileName: "\(Utils.randomString()).jpg"))
         }
         return LinkDestination.openInBrowser(url)

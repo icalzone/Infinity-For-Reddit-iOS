@@ -45,7 +45,7 @@ class SubmitCommentRepository: SubmitCommentRepositoryProtocol {
         } else {
             params = ["api_type": "json", "return_rtjson": "true", "richtext_json": RichtextJSONConverter(embeddedImages: embeddedImages, giphyGifId: giphyGif?.id).constructRichtextJSON(markdownString: content), "text": "", "thing_id": parentFullname]
         }
-        print(params)
+        printInDebugOnly(params)
         
         try Task.checkCancellation()
         

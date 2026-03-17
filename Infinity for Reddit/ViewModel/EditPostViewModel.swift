@@ -66,7 +66,7 @@ class EditPostViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print("Error editing post: \(error)")
+                printInDebugOnly("Error editing post: \(error)")
             }
             
             editPostTask = nil

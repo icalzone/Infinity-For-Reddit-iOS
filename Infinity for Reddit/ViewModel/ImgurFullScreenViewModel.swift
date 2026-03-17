@@ -37,7 +37,7 @@ class ImgurFullScreenViewModel: ObservableObject {
                 self.isLoading = false
             }
         } catch {
-            print(error)
+            printInDebugOnly(error)
             await MainActor.run {
                 self.error = error
                 self.isLoaded = false

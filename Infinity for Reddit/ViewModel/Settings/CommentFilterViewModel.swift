@@ -47,7 +47,7 @@ class CommentFilterViewModel: ObservableObject {
             do {
                 try await commentFilterRepository.deleteCommentFilter(id: id)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

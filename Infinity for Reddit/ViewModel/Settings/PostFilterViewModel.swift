@@ -45,7 +45,7 @@ class PostFilterViewModel: ObservableObject {
                 try PostFilter.fetchAll(db, sql: "SELECT * FROM post_filter ORDER BY name")
             }
             .start(in: dbPool) { error in
-                print("Error observing post filters: \(error)")
+                printInDebugOnly("Error observing post filters: \(error)")
                 // TODO Handle error
             } onChange: { (postFilters: [PostFilter]) in
                 self.postFilters = postFilters
@@ -58,7 +58,7 @@ class PostFilterViewModel: ObservableObject {
             do {
                 try await postFilterRepository.deletePostFilter(id: id)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

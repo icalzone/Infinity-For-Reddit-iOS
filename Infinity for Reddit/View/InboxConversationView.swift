@@ -72,7 +72,7 @@ struct InboxConversationView: View {
                             .submitLabel(.send)
                             .onSubmit {
                                 guard sendMessageTask == nil else {
-                                    print("A message is being sent")
+                                    printInDebugOnly("A message is being sent")
                                     return
                                 }
                                 
@@ -87,7 +87,7 @@ struct InboxConversationView: View {
 
                         Button(action: {
                             guard sendMessageTask == nil else {
-                                print("A message is being sent")
+                                printInDebugOnly("A message is being sent")
                                 return
                             }
                             

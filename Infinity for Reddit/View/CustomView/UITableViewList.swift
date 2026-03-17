@@ -113,7 +113,7 @@ struct UICollectionViewList<Item: Hashable>: UIViewRepresentable {
         func prepareForScrollAdjustment(in collectionView: UICollectionView) {
             lastContentHeight = collectionView.collectionViewLayout.collectionViewContentSize.height
             lastContentOffset = collectionView.contentOffset
-            print("Preparing for scroll adjustment. Old Content Height: \(lastContentHeight), Old Offset: \(lastContentOffset.y)")
+            printInDebugOnly("Preparing for scroll adjustment. Old Content Height: \(lastContentHeight), Old Offset: \(lastContentOffset.y)")
         }
 
         // MARK: - KVO Observer Method
@@ -143,7 +143,7 @@ struct UICollectionViewList<Item: Hashable>: UIViewRepresentable {
                         let indexPath = IndexPath(item: lastItem, section: lastSection)
                         // Use animated: true for new messages, animated: false for initial load might be better
                         collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-                        print("KVO: Scrolled to bottom. Item: \(lastItem), Content Height: \(currentContentHeight)")
+                        printInDebugOnly("KVO: Scrolled to bottom. Item: \(lastItem), Content Height: \(currentContentHeight)")
                     }
                     return // Consume the event, no further adjustment needed for this type of scroll
                 }
@@ -154,12 +154,12 @@ struct UICollectionViewList<Item: Hashable>: UIViewRepresentable {
 
                     // Calculate the difference in content height
                     let heightDiff = currentContentHeight - self.lastContentHeight
-                    print("KVO: Content height changed by \(heightDiff). Old: \(self.lastContentHeight), New: \(currentContentHeight)")
+                    printInDebugOnly("KVO: Content height changed by \(heightDiff). Old: \(self.lastContentHeight), New: \(currentContentHeight)")
 
                     if heightDiff > 0 { // If content height increased (e.g., added items at the top)
                         let newOffset = CGPoint(x: self.lastContentOffset.x, y: self.lastContentOffset.y + heightDiff)
                         collectionView.setContentOffset(newOffset, animated: false) // No animation for smooth adjustment
-                        print("KVO: Adjusted scroll offset to \(newOffset.y)")
+                        printInDebugOnly("KVO: Adjusted scroll offset to \(newOffset.y)")
                     }
                     return // Consume the event
                 }

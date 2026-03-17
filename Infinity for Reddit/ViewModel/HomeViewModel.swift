@@ -73,7 +73,7 @@ class HomeViewModel: ObservableObject {
                 try await homeRepository.readInbox(inboxFullname: inboxFullname)
             } catch {
                 // We don't care about the error
-                print("Error reading inbox: \(error)")
+                printInDebugOnly("Error reading inbox: \(error)")
             }
         }
     }

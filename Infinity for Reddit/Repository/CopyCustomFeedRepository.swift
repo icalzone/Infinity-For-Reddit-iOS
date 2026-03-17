@@ -127,7 +127,7 @@ class CopyCustomFeedRepository: CopyCustomFeedRepositoryProtocol {
             try await anonymousCustomFeedSubredditDao.insertAll(anonymousMultiredditSubreddits: anonymousCustomFeedSubreddits)
         } catch {
             // Ugly
-            print(error)
+            printInDebugOnly(error)
             try await myCustomFeedDao.anonymousDeleteMyCustomFeed(path: myCustomFeed.path)
         }
         

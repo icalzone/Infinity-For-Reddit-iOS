@@ -92,7 +92,7 @@ class VideoFetcher {
             .response
         
         if let redirectedUrl = response.response?.url {
-            print(redirectedUrl)
+            printInDebugOnly(redirectedUrl)
             let redirectPath = redirectedUrl.path
             
             if redirectPath.range(of: #"^/r/\w+/comments/\w+/?\w+/?$"#, options: .regularExpression) != nil ||
@@ -101,7 +101,7 @@ class VideoFetcher {
                 let segments = redirectedUrl.pathComponents
                 if let commentsIndex = segments.lastIndex(of: "comments"), commentsIndex + 1 < segments.count {
                     let postId = segments[commentsIndex + 1]
-                    print("Post id: \(postId)")
+                    printInDebugOnly("Post id: \(postId)")
                     if let post = try await fetchPost(postId: postId) {
                         switch post.postType {
                         case .redditVideo(let videoUrlString, _):
@@ -130,7 +130,7 @@ class VideoFetcher {
             .response
         
         if let redirectedUrl = response.response?.url {
-            print(redirectedUrl)
+            printInDebugOnly(redirectedUrl)
             let redirectPath = redirectedUrl.path
             
             if redirectPath.range(of: #"^/r/\w+/comments/\w+/?\w+/?$"#, options: .regularExpression) != nil ||
@@ -139,7 +139,7 @@ class VideoFetcher {
                 let segments = redirectedUrl.pathComponents
                 if let commentsIndex = segments.lastIndex(of: "comments"), commentsIndex + 1 < segments.count {
                     let postId = segments[commentsIndex + 1]
-                    print("Post id: \(postId)")
+                    printInDebugOnly("Post id: \(postId)")
                     if let post = try await fetchPost(postId: postId) {
                         switch post.postType {
                         case .redditVideo:

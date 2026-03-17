@@ -34,7 +34,7 @@ class CustomThemeListingViewModel: ObservableObject {
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
                 if case .failure(let error) = completion {
-                    print("Error fetching themes: \(error)")
+                    printInDebugOnly("Error fetching themes: \(error)")
                 }
             }, receiveValue: { [weak self] themes in
                 self?.customThemes = themes
@@ -47,7 +47,7 @@ class CustomThemeListingViewModel: ObservableObject {
             do {
                 try await customThemeListingRepository.deleteTheme(customTheme)
             } catch {
-                print(error)
+                printInDebugOnly(error)
                 self.error = error
             }
         }

@@ -48,14 +48,14 @@ final class ProxyServer {
                 return
             }
             guard !self.webServer.isRunning else {
-                print("Proxy: Server already running")
+                printInDebugOnly("Proxy: Server already running")
                 return
             }
             if self.startWebServerWithHighPriority() {
-                print("Proxy: Server started on port \(self.port)")
+                printInDebugOnly("Proxy: Server started on port \(self.port)")
             } else {
                 self.webServer.start(withPort: self.port, bonjourName: nil)
-                print("Proxy: Server started on port \(self.port)")
+                printInDebugOnly("Proxy: Server started on port \(self.port)")
             }
         }
 
@@ -93,7 +93,7 @@ final class ProxyServer {
         var error: NSError?
         let success = function(webServer, selector, options, &error)
         if !success, let error {
-            print("Proxy: Failed to start server with options \(error)")
+            printInDebugOnly("Proxy: Failed to start server with options \(error)")
         }
         return success
     }
@@ -107,7 +107,7 @@ final class ProxyServer {
                 return
             }
             self.webServer.stop()
-            print("Proxy: Server stopped")
+            printInDebugOnly("Proxy: Server stopped")
         }
 
         if Thread.isMainThread {
@@ -328,15 +328,15 @@ final class ProxyServer {
     }
 
     private func logIncomingRequest(_ request: GCDWebServerRequest) {
-        print("Proxy requested: \(request.method) \(request.path)")
+        printInDebugOnly("Proxy requested: \(request.method) \(request.path)")
 
         let headers = request.headers
         if !headers.isEmpty {
-            print("Request headers: \(headers)")
+            printInDebugOnly("Request headers: \(headers)")
         }
     }
 
     private func logOutgoingResponse(_ response: GCDWebServerResponse) {
-        print("Proxy responding with status: \(response.statusCode)")
+        printInDebugOnly("Proxy responding with status: \(response.statusCode)")
     }
 }

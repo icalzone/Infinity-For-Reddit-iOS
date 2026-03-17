@@ -51,7 +51,7 @@ class EditPostRepository: EditPostRepositoryProtocol {
                 embeddedImages: embeddedImages
             ).constructRichtextJSON(markdownString: content), "text": "", "thing_id": postFullname]
         }
-        print(params)
+        printInDebugOnly(params)
         
         try Task.checkCancellation()
         

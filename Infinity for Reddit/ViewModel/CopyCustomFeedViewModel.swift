@@ -84,7 +84,7 @@ class CopyCustomFeedViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             copyCustomFeedTask = nil

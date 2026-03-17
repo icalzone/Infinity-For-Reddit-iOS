@@ -83,7 +83,7 @@ class ImgurMedia {
                 let value = try ImgurMediaItem(fromJson: imagesJson)
                 images.append(value)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 // Ignore
             }
         }

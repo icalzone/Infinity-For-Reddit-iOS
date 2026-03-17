@@ -38,9 +38,9 @@ final class ProxyManager {
     private(set) var state: State = .disabled {
         didSet {
             if case .error(let error) = state {
-                print("Proxy: State changed from \(oldValue) to \(state) – \(error.errorDescription ?? "Unknown error")")
+                printInDebugOnly("Proxy: State changed from \(oldValue) to \(state) – \(error.errorDescription ?? "Unknown error")")
             } else {
-                print("Proxy: State changed from \(oldValue) to \(state)")
+                printInDebugOnly("Proxy: State changed from \(oldValue) to \(state)")
             }
         }
     }
@@ -82,13 +82,13 @@ final class ProxyManager {
     private func resolveConfiguration() -> ProxyConfiguration? {
         guard ProxyUserDefaultsUtils.enableProxy else {
             updateStateLocked(.disabled)
-            print("Proxy: Proxy disabled")
+            printInDebugOnly("Proxy: Proxy disabled")
             return nil
         }
 
         guard let configuration = ProxyConfiguration() else {
             updateStateLocked(.error(.invalidConfiguration))
-            print("Proxy: Invalid proxy configuration")
+            printInDebugOnly("Proxy: Invalid proxy configuration")
             return nil
         }
 
@@ -103,7 +103,7 @@ final class ProxyManager {
         guard let proxyDictionary = configuration.connectionProxyDictionary,
               let host = configuration.host,
               let port = configuration.port else {
-            print("Proxy: Proxy enabled but missing host/port configuration")
+            printInDebugOnly("Proxy: Proxy enabled but missing host/port configuration")
             updateStateLocked(.error(.invalidConfiguration))
             return false
         }
@@ -113,7 +113,7 @@ final class ProxyManager {
         sessionConfiguration.timeoutIntervalForRequest = ProxyUtils.timeoutRequest
         sessionConfiguration.timeoutIntervalForResource = ProxyUtils.timeoutResource
 
-        print("Proxy: URLSession configured with proxy: \(host):\(port) (\(configuration.type.description))")
+        printInDebugOnly("Proxy: URLSession configured with proxy: \(host):\(port) (\(configuration.type.description))")
 
         let delegateQueue = OperationQueue()
         delegateQueue.qualityOfService = .userInteractive
@@ -183,7 +183,7 @@ final class ProxyManager {
             }
 
             guard let proxyServer, state == .running else {
-                print("ProxyManager bypassing proxy because server is not running. State: \(state)")
+                printInDebugOnly("ProxyManager bypassing proxy because server is not running. State: \(state)")
                 return url
             }
 
@@ -191,12 +191,12 @@ final class ProxyManager {
             guard ProxyResourceFormat(rawValue: ext) != nil,
                   let proxied = proxyServer.reverseProxyURL(from: url) else {
                 #if DEBUG
-                print("ProxyManager bypassing proxy for extension:", ext.isEmpty ? "<none>" : ext, url.absoluteString)
+                printInDebugOnly("ProxyManager bypassing proxy for extension:", ext.isEmpty ? "<none>" : ext, url.absoluteString)
                 #endif
                 return url
             }
 
-            print("Proxy: Proxied URL:\n   Original: \(url.absoluteString)\n   Proxied:  \(proxied.absoluteString)")
+            printInDebugOnly("Proxy: Proxied URL:\n   Original: \(url.absoluteString)\n   Proxied:  \(proxied.absoluteString)")
 
             return proxied
         }

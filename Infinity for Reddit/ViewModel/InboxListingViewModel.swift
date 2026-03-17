@@ -81,7 +81,7 @@ public class InboxListingViewModel: ObservableObject {
             self.isInitialLoading = false
             self.isLoadingMore = false
             
-            print("Error fetching inboxes: \(error)")
+            printInDebugOnly("Error fetching inboxes: \(error)")
         }
     }
     

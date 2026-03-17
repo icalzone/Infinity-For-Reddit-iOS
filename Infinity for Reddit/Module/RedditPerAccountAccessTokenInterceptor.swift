@@ -38,7 +38,7 @@ final class RedditPerAccountAccessTokenInterceptor: RequestInterceptor {
                 req.headers.add(name: APIUtils.USER_AGENT_KEY, value: APIUtils.USER_AGENT)
             }
         }
-        print(req.url?.absoluteString ?? "Empty URL?")
+        printInDebugOnly(req.url?.absoluteString ?? "Empty URL?")
     }
     
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {

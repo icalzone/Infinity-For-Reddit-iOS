@@ -75,7 +75,7 @@ class ReportViewModel: ObservableObject {
                 reportSubmitted = true
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             reportTask = nil

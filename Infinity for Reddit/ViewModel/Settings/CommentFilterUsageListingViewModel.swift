@@ -48,7 +48,7 @@ class CommentFilterUsageListingViewModel: ObservableObject {
             do {
                 try await commentFilterUsageListingRepository.saveCommentFilterUsage(commentFilterUsage)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -69,7 +69,7 @@ class CommentFilterUsageListingViewModel: ObservableObject {
             do {
                 try await commentFilterUsageListingRepository.saveCommentFilterUsages(commentFilterUsages)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -80,7 +80,7 @@ class CommentFilterUsageListingViewModel: ObservableObject {
             do {
                 try await commentFilterUsageListingRepository.deleteCommentFilterUsage(commentFilterUsage)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

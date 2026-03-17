@@ -128,7 +128,7 @@ final class AdvancedSettingsViewModel: ObservableObject {
                 try await block()
                 self.successMessage = action.successMessage
             } catch {
-                print("Advanced settings action failed:", error)
+                printInDebugOnly("Advanced settings action failed:", error)
                 self.error = error
             }
         }

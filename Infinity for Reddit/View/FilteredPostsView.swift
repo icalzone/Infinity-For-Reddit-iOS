@@ -57,7 +57,7 @@ struct FilteredPostsView: View {
                 filteredPostsViewModel.postFilter,
                 showInSheet: true
             ) { postFilter in
-                print(postFilter)
+                printInDebugOnly(postFilter)
                 filteredPostsViewModel.postFilter = postFilter
             }
         }

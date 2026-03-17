@@ -140,7 +140,7 @@ public class CommentListingViewModel: ObservableObject {
                 isLoadingMore = false
             }
             
-            print("Error fetching comments: \(error)")
+            printInDebugOnly("Error fetching comments: \(error)")
         }
     }
     
@@ -235,7 +235,7 @@ public class CommentListingViewModel: ObservableObject {
             } catch {
                 comment.likes = previousVote
                 self.error = error
-                print("Error voting comment: \(error)")
+                printInDebugOnly("Error voting comment: \(error)")
             }
         }
     }
@@ -260,7 +260,7 @@ public class CommentListingViewModel: ObservableObject {
             } catch {
                 comment.saved = previousSaved
                 self.error = error
-                print("Error (un)saving comment: \(error)")
+                printInDebugOnly("Error (un)saving comment: \(error)")
             }
         }
     }
@@ -288,7 +288,7 @@ public class CommentListingViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = error
                 }
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -309,7 +309,7 @@ public class CommentListingViewModel: ObservableObject {
                 comments[index].spam = false
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -330,7 +330,7 @@ public class CommentListingViewModel: ObservableObject {
                 comments[index].spam = isSpam
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -347,7 +347,7 @@ public class CommentListingViewModel: ObservableObject {
                 comments[index].locked.toggle()
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }

@@ -36,7 +36,7 @@ class PullNotificationBackgroundTaskManager {
             }
             
             task.expirationHandler = {
-                print("Background Task: Task is expiring, attempting to cancel.")
+                printInDebugOnly("Background Task: Task is expiring, attempting to cancel.")
                 pullNotificationTask.cancel()
                 task.setTaskCompleted(success: false)
             }
@@ -60,13 +60,13 @@ class PullNotificationBackgroundTaskManager {
         
         do {
             try BGTaskScheduler.shared.submit(request)
-            print("Background Task Manager: Successfully scheduled app refresh task.")
+            printInDebugOnly("Background Task Manager: Successfully scheduled app refresh task.")
         } catch {
             let nsError = error as NSError
             if nsError.domain == "BGTaskSchedulerErrorDomain" {
-                print("Background Task Manager: App refresh task is already scheduled.")
+                printInDebugOnly("Background Task Manager: App refresh task is already scheduled.")
             } else {
-                print("Background Task Manager: Could not schedule app refresh task: \(error)")
+                printInDebugOnly("Background Task Manager: Could not schedule app refresh task: \(error)")
             }
         }
     }
@@ -79,13 +79,13 @@ class PullNotificationBackgroundTaskManager {
         do {
             return try await accountDao.getAllAccounts()
         } catch {
-            print("Load accounts failed: \(error)")
+            printInDebugOnly("Load accounts failed: \(error)")
             return nil
         }
     }
 
     func pullNotificationsForAllAccounts() async -> Bool {
-        print("pullNotificationsForAllAccounts()")
+        printInDebugOnly("pullNotificationsForAllAccounts()")
         guard let accounts = await getAllAccounts(), !accounts.isEmpty else {
             return false
         }

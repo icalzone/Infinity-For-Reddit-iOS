@@ -50,7 +50,7 @@ public class InboxListing : NSObject {
                     do {
                         inboxes.append(try Inbox(fromJson: dataJson, kind: childJSON["kind"].stringValue, messageWhere: messageWhere))
                     } catch {
-                        print("Error parsing Inbox in InboxListing: \(error.localizedDescription)")
+                        printInDebugOnly("Error parsing Inbox in InboxListing: \(error.localizedDescription)")
                     }
                 }
             }

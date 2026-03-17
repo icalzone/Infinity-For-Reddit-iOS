@@ -37,7 +37,7 @@ class SearchRepository: SearchRepositoryProtocol {
             )
         } catch {
             // No need to handle error
-            print(error)
+            printInDebugOnly(error)
         }
     }
     
@@ -46,7 +46,7 @@ class SearchRepository: SearchRepositoryProtocol {
             try await self.recentSearchQueryDao.deleteAllRecentSearchQueries(username: username)
         } catch {
             // No need to handle error
-            print(error)
+            printInDebugOnly(error)
         }
     }
     
@@ -55,7 +55,7 @@ class SearchRepository: SearchRepositoryProtocol {
             try await self.recentSearchQueryDao.deleteRecentSearchQuery(recentSearchQuery: recentSearchQuery)
         } catch {
             // No need to handle error
-            print(error)
+            printInDebugOnly(error)
         }
     }
 }

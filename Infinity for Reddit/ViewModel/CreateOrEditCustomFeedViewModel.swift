@@ -91,7 +91,7 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             createOrUpdateCustomFeedTask = nil
@@ -182,7 +182,7 @@ class CreateOrEditCustomFeedViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             createOrUpdateCustomFeedTask = nil

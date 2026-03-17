@@ -61,7 +61,7 @@ class VideoFullScreenViewModel: ObservableObject {
         
         guard let url = URL(string: urlString) else {
             self.error = VideoPlayerError.invalidURL
-            print("invalid url")
+            printInDebugOnly("invalid url")
             return
         }
         
@@ -114,7 +114,7 @@ class VideoFullScreenViewModel: ObservableObject {
                 }
             }
         } catch {
-            print(error)
+            printInDebugOnly(error)
             await MainActor.run {
                 self.error = error
                 self.isLoaded = true
@@ -278,7 +278,7 @@ class VideoFullScreenViewModel: ObservableObject {
                     }
                 })
         } catch {
-            print(error)
+            printInDebugOnly(error)
             await MainActor.run {
                 self.downloadError = error
             }

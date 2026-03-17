@@ -263,7 +263,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.isInitialLoading = false
                 self.isLoadingMore = false
             }
-            print("Error fetching comments: \(error)")
+            printInDebugOnly("Error fetching comments: \(error)")
         }
     }
     
@@ -366,7 +366,7 @@ public class PostDetailsViewModel: ObservableObject {
             await MainActor.run {
                 commentMore.loadState = .failed(error)
             }
-            print("Error fetching more comments for CommentMore: \(error)")
+            printInDebugOnly("Error fetching more comments for CommentMore: \(error)")
             
             return false
         }
@@ -461,21 +461,21 @@ public class PostDetailsViewModel: ObservableObject {
                     if let depth = lastRemovedCommentDepth {
                         if depth < comment.depth {
                             // Child comment of a filtered out comment
-                            print("Comment not allowed because it's a child of a filtered out comment")
+                            printInDebugOnly("Comment not allowed because it's a child of a filtered out comment")
                             return nil
                         } else {
                             lastRemovedCommentDepth = nil
                         }
                     }
-                    print("Comment allowed")
+                    printInDebugOnly("Comment allowed")
                 } else {
                     if commentFilter?.displayMode == .collapseComment {
-                        print("Comment not allowed but collapsed")
+                        printInDebugOnly("Comment not allowed but collapsed")
                         comment.isCollasped = true
                         comment.isFilteredOut = true
                     } else {
                         lastRemovedCommentDepth = comment.depth
-                        print("Comment not allowed")
+                        printInDebugOnly("Comment not allowed")
                         return nil
                     }
                 }
@@ -486,12 +486,12 @@ public class PostDetailsViewModel: ObservableObject {
                 if let depth = lastRemovedCommentDepth {
                     if depth < commentMore.depth {
                         if commentFilter?.displayMode != .collapseComment {
-                            print("Comment more not allowed because it's a child of a filtered out comment")
+                            printInDebugOnly("Comment more not allowed because it's a child of a filtered out comment")
                             return nil
                         }
                     }
                 }
-                print("Comment more allowed")
+                printInDebugOnly("Comment more allowed")
                 return $0
             }
         }
@@ -627,7 +627,7 @@ public class PostDetailsViewModel: ObservableObject {
 //        do {
 //            try await postDetailsRepository.loadPostIcon(post: post, isFromSubredditPostListing: isFromSubredditPostListing)
 //        } catch {
-//            print("Load icon failed")
+//            printInDebugOnly("Load icon failed")
 //        }
 //    }
     
@@ -713,7 +713,7 @@ public class PostDetailsViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = error
                 }
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -747,7 +747,7 @@ public class PostDetailsViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = error
                 }
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -779,7 +779,7 @@ public class PostDetailsViewModel: ObservableObject {
                     self.error = error
                     onFinish()
                 }
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -819,7 +819,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             toggleSensitiveTask = nil
@@ -851,7 +851,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             toggleSpoilerTask = nil
@@ -902,7 +902,7 @@ public class PostDetailsViewModel: ObservableObject {
                 await MainActor.run {
                     self.error = error
                 }
-                print(error)
+                printInDebugOnly(error)
             }
             
             selectFlairTask = nil
@@ -941,7 +941,7 @@ public class PostDetailsViewModel: ObservableObject {
         } catch {
             self.post?.likes = previousVote
             self.error = error
-            print("Error voting post: \(error)")
+            printInDebugOnly("Error voting post: \(error)")
         }
     }
     
@@ -984,7 +984,7 @@ public class PostDetailsViewModel: ObservableObject {
         } catch {
             self.post?.saved = previousSaved
             self.error = error
-            print("Error (un)saving post: \(error)")
+            printInDebugOnly("Error (un)saving post: \(error)")
         }
     }
     
@@ -1011,7 +1011,7 @@ public class PostDetailsViewModel: ObservableObject {
                 historyLimit: PostHistoryUserDefaultsUtils.historyLimit
             )
         } catch {
-            print("Mark post as read failed with error: \(error)")
+            printInDebugOnly("Mark post as read failed with error: \(error)")
         }
     }
     
@@ -1045,7 +1045,7 @@ public class PostDetailsViewModel: ObservableObject {
             } catch {
                 comment.likes = previousVote
                 self.error = error
-                print("Error voting comment: \(error)")
+                printInDebugOnly("Error voting comment: \(error)")
             }
         }
     }
@@ -1070,7 +1070,7 @@ public class PostDetailsViewModel: ObservableObject {
             } catch {
                 comment.saved = previousSaved
                 self.error = error
-                print("Error (un)saving comment: \(error)")
+                printInDebugOnly("Error (un)saving comment: \(error)")
             }
         }
     }
@@ -1225,7 +1225,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.spam = false
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1251,7 +1251,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1275,7 +1275,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.spam = isSpam
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1301,7 +1301,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1319,7 +1319,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.stickied = !(self.post?.stickied ?? false)
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1337,7 +1337,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.locked = !(self.post?.locked ?? false)
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1359,7 +1359,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1377,7 +1377,7 @@ public class PostDetailsViewModel: ObservableObject {
                 self.post?.distinguished = (self.post?.distinguished ?? "") == "moderator" ? "" : "moderator"
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -1403,7 +1403,7 @@ public class PostDetailsViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = error
-                    print(error.localizedDescription)
+                    printInDebugOnly(error.localizedDescription)
                 }
             }
         }

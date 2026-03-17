@@ -76,7 +76,7 @@ public class CustomizeCommentFilterViewModel: ObservableObject {
                 
                 savedCommentFilterFlag.toggle()
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

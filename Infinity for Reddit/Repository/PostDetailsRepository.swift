@@ -72,7 +72,7 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         
         let postDetails = try PostDetailsRootClass(fromJson: json)
         postDetails.makeCommentList()
-        print(postDetails.comments.count)
+        printInDebugOnly(postDetails.comments.count)
         
         return postDetails
     }
@@ -100,7 +100,7 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         
         let postDetails = try PostDetailsRootClass(fromJson: json)
         postDetails.makeCommentList()
-        print(postDetails.comments.count)
+        printInDebugOnly(postDetails.comments.count)
         
         return postDetails
     }
@@ -123,7 +123,7 @@ public class PostDetailsRepository: PostDetailsRepositoryProtocol {
         }
         
         let moreChildren = MoreChildren(fromJson: json)
-        print(moreChildren.commentItems.count)
+        printInDebugOnly(moreChildren.commentItems.count)
         
         return moreChildren
     }

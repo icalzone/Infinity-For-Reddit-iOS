@@ -35,12 +35,12 @@ class SubmitImagePostViewModel: ObservableObject {
         self.image = image
         self.imageData = imageData
         self.isGIF = isGIF
-        print("Updated captured image: \(image.description)")
+        printInDebugOnly("Updated captured image: \(image.description)")
     }
     
     func clearCapturedImage() {
         image = nil
-        print("Cleared captured image")
+        printInDebugOnly("Cleared captured image")
     }
     
     func submitPost(
@@ -113,7 +113,7 @@ class SubmitImagePostViewModel: ObservableObject {
                 postSubmittedFlag = true
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             self.submitPostTask = nil

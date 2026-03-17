@@ -44,7 +44,7 @@ public class UserListing : NSObject {
                     users.append(try User(fromJson: dataJson))
                 } catch {
                     // Ignore
-                    print(error)
+                    printInDebugOnly(error)
                 }
             }
         }

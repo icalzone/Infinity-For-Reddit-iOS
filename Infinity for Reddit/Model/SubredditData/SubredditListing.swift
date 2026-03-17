@@ -43,7 +43,7 @@ public class SubredditListing : NSObject {
                 do {
                     subreddits.append(try Subreddit(fromJson: dataJson))
                 } catch {
-                    print(error.localizedDescription)
+                    printInDebugOnly(error.localizedDescription)
                 }
             }
         }

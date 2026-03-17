@@ -58,7 +58,7 @@ class SubmitLinkPostViewModel: ObservableObject {
             }
             
             guard var components = URLComponents(string: finalURL), let host = components.host else {
-                print("Invalid URL: \(finalURL)")
+                printInDebugOnly("Invalid URL: \(finalURL)")
                 return
             }
             
@@ -67,11 +67,11 @@ class SubmitLinkPostViewModel: ObservableObject {
             }
             
             guard let safeURL = components.url else {
-                print("Failed to build safe URL")
+                printInDebugOnly("Failed to build safe URL")
                 return
             }
             
-            print("Final safe URL: \(safeURL)")
+            printInDebugOnly("Final safe URL: \(safeURL)")
             
             do {
                 let html = try await session.request(safeURL, method: .get)
@@ -149,7 +149,7 @@ class SubmitLinkPostViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             self.submitPostTask = nil

@@ -153,7 +153,7 @@ public class UserListingViewModel: ObservableObject {
             isInitialLoading = false
             isLoadingMore = false
             
-            print("Error fetching users: \(error)")
+            printInDebugOnly("Error fetching users: \(error)")
         }
     }
     

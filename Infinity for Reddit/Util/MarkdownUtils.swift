@@ -109,15 +109,15 @@ class MarkdownUtils {
                         }
                     }
                     mediaMetadata.videoLinkMarkdown = videoLinkMarkdown
-                    print(mediaMetadata.videoLinkMarkdown)
+                    printInDebugOnly(mediaMetadata.videoLinkMarkdown)
                     
                     let replacingText = "![](\(videoID))"
                     markdownString.replaceSubrange(matchRange, with: replacingText)
-                    print(replacingText)
+                    printInDebugOnly(replacingText)
                     startIndex = matchRange.lowerBound.utf16Offset(in: markdownString) + replacingText.count
                     
-                    print("Link ID: \(linkID)")
-                    print("Video ID: \(videoID)")
+                    printInDebugOnly("Link ID: \(linkID)")
+                    printInDebugOnly("Video ID: \(videoID)")
                 }
             } else {
                 break
@@ -136,7 +136,7 @@ class MarkdownUtils {
                 }
                 
                 if let group1Range = Range(match.range(at: 1), in: markdownString) {
-                    print("processing id: \(markdownString[group1Range.lowerBound..<group1Range.upperBound])")
+                    printInDebugOnly("processing id: \(markdownString[group1Range.lowerBound..<group1Range.upperBound])")
                     let id = String(markdownString[group1Range.lowerBound..<group1Range.upperBound])
                     if let media = mediaMetadataMap[id] {
                         if media.e == MediaMetadata.gifType {
@@ -194,7 +194,7 @@ class MarkdownUtils {
         
         let replacingText = "![](\(id))"
         markdownString.replaceSubrange(matchRange, with: replacingText)
-        print(replacingText)
+        printInDebugOnly(replacingText)
         return matchRange.lowerBound.utf16Offset(in: markdownString) + replacingText.count
     }
     

@@ -185,7 +185,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 isLoadingMore = false
             }
             
-            print("Error fetching posts: \(error)")
+            printInDebugOnly("Error fetching posts: \(error)")
         }
     }
     
@@ -287,7 +287,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 }
             }
         } catch {
-            print("Load icon failed")
+            printInDebugOnly("Load icon failed")
         }
     }
     
@@ -352,7 +352,7 @@ public class HistoryPostListingViewModel: ObservableObject {
             } catch {
                 post.hidden = previousHiddenState
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -380,7 +380,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.spam = false
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -400,7 +400,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.spam = isSpam
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -414,7 +414,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.stickied.toggle()
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -428,7 +428,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.locked.toggle()
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -441,7 +441,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.over18.toggle()
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -454,7 +454,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.spoiler.toggle()
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -468,7 +468,7 @@ public class HistoryPostListingViewModel: ObservableObject {
                 post.distinguished = post.distinguished == "moderator" ? "" : "moderator"
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -490,7 +490,7 @@ public class HistoryPostListingViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.error = error
-                    print(error.localizedDescription)
+                    printInDebugOnly(error.localizedDescription)
                 }
             }
         }
@@ -562,7 +562,7 @@ public class HistoryPostListingViewModel: ObservableObject {
         } catch {
             post.likes = previousVote
             self.error = error
-            print("Error voting post: \(error)")
+            printInDebugOnly("Error voting post: \(error)")
         }
     }
     
@@ -601,7 +601,7 @@ public class HistoryPostListingViewModel: ObservableObject {
         } catch {
             post.saved = previousSaved
             self.error = error
-            print("Error (un)saving post: \(error)")
+            printInDebugOnly("Error (un)saving post: \(error)")
         }
     }
     
@@ -627,7 +627,7 @@ public class HistoryPostListingViewModel: ObservableObject {
             
             post.isRead = true
         } catch {
-            print("Mark post as read failed with error: \(error)")
+            printInDebugOnly("Mark post as read failed with error: \(error)")
         }
     }
 }

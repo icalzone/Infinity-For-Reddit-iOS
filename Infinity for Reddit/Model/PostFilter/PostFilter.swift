@@ -240,7 +240,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
                 .filter {
                     !$0.isEmpty
                 }
-            print("[PostFilter] excludesRegex patterns: \(patterns)")
+            printInDebugOnly("[PostFilter] excludesRegex patterns: \(patterns)")
             for pattern in patterns {
                 if let regex = try? NSRegularExpression(pattern: pattern),
                    regex.firstMatch(in: post.title, options: [], range: titleRange) != nil {
@@ -257,7 +257,7 @@ public struct PostFilter: Codable, FetchableRecord, PersistableRecord, Equatable
                 .filter {
                     !$0.isEmpty
                 }
-            print("[PostFilter] containsRegex patterns: \(patterns)")
+            printInDebugOnly("[PostFilter] containsRegex patterns: \(patterns)")
             for pattern in patterns {
                 if let regex = try? NSRegularExpression(pattern: pattern),
                    regex.firstMatch(in: post.title, options: [], range: titleRange) == nil {

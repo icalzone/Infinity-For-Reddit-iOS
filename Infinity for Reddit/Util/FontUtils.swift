@@ -21,7 +21,7 @@ class FontUtils {
 
         try? FileManager.default.removeItem(at: destinationURL)
         guard (try? FileManager.default.copyItem(at: sourceURL, to: destinationURL)) != nil else {
-            print("Failed to copy font file.")
+            printInDebugOnly("Failed to copy font file.")
             return false
         }
 
@@ -29,7 +29,7 @@ class FontUtils {
               let provider = CGDataProvider(data: fontData as CFData),
               let font = CGFont(provider),
               let postScriptName = font.postScriptName as String? else {
-            print("Failed to process font file.")
+            printInDebugOnly("Failed to process font file.")
             try? FileManager.default.removeItem(at: destinationURL)
             return false
         }
@@ -68,10 +68,10 @@ class FontUtils {
         if let error = error {
             let cfError = error.takeRetainedValue() as Error as NSError
             if cfError.code == 105 || cfError.code == 305 {
-                print("Font already registered.")
+                printInDebugOnly("Font already registered.")
                 return true
             }
-            print("Failed to register font: \(cfError)")
+            printInDebugOnly("Failed to register font: \(cfError)")
             return false
         }
 

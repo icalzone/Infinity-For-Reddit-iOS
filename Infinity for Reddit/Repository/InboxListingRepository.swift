@@ -59,11 +59,11 @@ public class InboxListingRepository: InboxListingRepositoryProtocol {
         .response
         
         if let statusCode = response.response?.statusCode {
-            print("Status code: \(statusCode) Session: \(self.sessionName)")
+            printInDebugOnly("Status code: \(statusCode) Session: \(self.sessionName)")
         }
         
         let data = response.data
-        print(data)
+        printInDebugOnly(data)
         try Task.checkCancellation()
         
         let json = JSON(data)

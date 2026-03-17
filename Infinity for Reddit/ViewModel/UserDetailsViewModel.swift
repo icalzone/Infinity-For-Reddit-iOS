@@ -52,7 +52,7 @@ class UserDetailsViewModel: ObservableObject {
         } catch {
             self.error = error
             
-            print("Error fetching user data: \(error)")
+            printInDebugOnly("Error fetching user data: \(error)")
         }
     }
     
@@ -73,7 +73,7 @@ class UserDetailsViewModel: ObservableObject {
             } catch {
                 self.error = error
                 
-                print("Error \(action == "sub" ? "following" : "unfollowing") \(username): \(error)")
+                printInDebugOnly("Error \(action == "sub" ? "following" : "unfollowing") \(username): \(error)")
             }
             
             followUserTask = nil

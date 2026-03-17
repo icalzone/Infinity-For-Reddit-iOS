@@ -47,7 +47,7 @@ class PostFilterUsageListingViewModel: ObservableObject {
             do {
                 try await postFilterUsageRepository.savePostFilterUsage(postFilterUsage)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -74,7 +74,7 @@ class PostFilterUsageListingViewModel: ObservableObject {
             do {
                 try await postFilterUsageRepository.savePostFilterUsages(postFilterUsages)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }
@@ -85,7 +85,7 @@ class PostFilterUsageListingViewModel: ObservableObject {
             do {
                 try await postFilterUsageRepository.deletePostFilterUsage(postFilterUsage)
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = error
             }
         }

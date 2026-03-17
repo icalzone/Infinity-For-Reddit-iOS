@@ -85,7 +85,7 @@ class CustomizeCustomThemeViewModel: ObservableObject {
             }
             loadState = .loaded
         } catch {
-            print(error)
+            printInDebugOnly(error)
             loadState = .failed(CustomizeCustomThemeViewModelError.failedToLoadCustomTheme(error))
         }
     }
@@ -112,7 +112,7 @@ class CustomizeCustomThemeViewModel: ObservableObject {
                 try await customThemeDao.insert(customTheme: customTheme)
                 self.savingSuccess = true
             } catch {
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
                 self.error = CustomizeCustomThemeViewModelError.failedToSaveCustomTheme(error)
                 self.savingSuccess = false
             }

@@ -27,7 +27,7 @@ final class URLSessionProxyService: ProxyService {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
 
-        print("Proxy: Fetching via URLSession:", url.absoluteString)
+        printInDebugOnly("Proxy: Fetching via URLSession:", url.absoluteString)
 
         return session.dataTaskPublisher(for: request)
             .tryMap { data, response in
@@ -43,7 +43,7 @@ final class URLSessionProxyService: ProxyService {
                     }
                 }
 
-                print("Proxy: Received response: \(httpResponse.statusCode) - \(data.count) bytes")
+                printInDebugOnly("Proxy: Received response: \(httpResponse.statusCode) - \(data.count) bytes")
 
                 return ProxyResponseItem(
                     data: data,

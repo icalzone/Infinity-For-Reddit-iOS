@@ -157,7 +157,7 @@ public class SubredditListingViewModel: ObservableObject {
             isInitialLoading = false
             isLoadingMore = false
             
-            print("Error fetching subreddits: \(error)")
+            printInDebugOnly("Error fetching subreddits: \(error)")
         }
     }
     

@@ -37,7 +37,7 @@ class SubmitTextPostViewModel: ObservableObject {
         receivePostReplyNotifications: Bool
     ) {
         let richtext = RichtextJSONConverter().constructRichtextJSON(markdownString: content)
-        print(richtext)
+        printInDebugOnly(richtext)
         
         guard submitPostTask == nil else {
             return
@@ -70,7 +70,7 @@ class SubmitTextPostViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             self.submitPostTask = nil

@@ -39,7 +39,7 @@ class SubredditDetailsViewModel: ObservableObject {
         } catch {
             self.error = error
             
-            print("Error fetching subreddit data: \(error)")
+            printInDebugOnly("Error fetching subreddit data: \(error)")
         }
     }
     
@@ -60,7 +60,7 @@ class SubredditDetailsViewModel: ObservableObject {
             } catch {
                 self.error = error
                 
-                print("Error \(action == "sub" ? "subscribing to" : "unsubscribing from") \(subredditName): \(error)")
+                printInDebugOnly("Error \(action == "sub" ? "subscribing to" : "unsubscribing from") \(subredditName): \(error)")
             }
         }
     }
@@ -75,7 +75,7 @@ class SubredditDetailsViewModel: ObservableObject {
                 self.userFlairs = try await subredditDetailsRepository.fetchUserFlairs(subredditName: subredditName)
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -86,7 +86,7 @@ class SubredditDetailsViewModel: ObservableObject {
                 try await subredditDetailsRepository.selectUserFlair(subredditName: subredditName, userFlair: userFlair)
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }
@@ -97,7 +97,7 @@ class SubredditDetailsViewModel: ObservableObject {
                 try await subredditDetailsRepository.selectUserFlair(subredditName: subredditName, userFlair: nil)
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
         }
     }

@@ -33,7 +33,7 @@ final class RedditAccessTokenInterceptor: RequestInterceptor {
             }
         }
         
-        print(urlRequest.url?.absoluteString ?? "Empty URL?")
+        printInDebugOnly(urlRequest.url?.absoluteString ?? "Empty URL?")
         
         completion(.success(urlRequest))
     }

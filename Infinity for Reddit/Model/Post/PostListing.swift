@@ -45,7 +45,7 @@ public class PostListing : NSObject {
                         posts.append(try Post(fromJson: dataJson))
                     } catch {
                         // Ignore the error
-                        print(error.localizedDescription)
+                        printInDebugOnly(error.localizedDescription)
                     }
                 }
             }

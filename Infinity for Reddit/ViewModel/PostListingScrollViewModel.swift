@@ -119,7 +119,7 @@ public class PostListingScrollViewModel: ObservableObject {
                 isLoadingMore = false
             }
             
-            print("Error fetching posts: \(error)")
+            printInDebugOnly("Error fetching posts: \(error)")
         }
     }
     

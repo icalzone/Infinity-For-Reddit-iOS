@@ -239,7 +239,7 @@ struct SubmitPollPostView: View {
                 if let selectedItem = newSelectedItem,
                    let imageData = try? await selectedItem.loadTransferable(type: Data.self),
                    let image = UIImage(data: imageData) {
-                    print(Utils.isGIF(imageData: imageData))
+                    printInDebugOnly(Utils.isGIF(imageData: imageData))
                     submitPollPostViewModel.addEmbeddedImage(image)
                 } else {
                     // Error handling

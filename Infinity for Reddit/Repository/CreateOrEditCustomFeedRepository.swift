@@ -124,7 +124,7 @@ class CreateOrEditCustomFeedRepository: CreateOrEditCustomFeedRepositoryProtocol
             try await anonymousCustomFeedSubredditDao.insertAll(anonymousMultiredditSubreddits: anonymousCustomFeedSubreddits)
         } catch {
             // Ugly
-            print(error)
+            printInDebugOnly(error)
             if !isUpdate {
                 try await myCustomFeedDao.anonymousDeleteMyCustomFeed(path: myCustomFeed.path)
             } else {

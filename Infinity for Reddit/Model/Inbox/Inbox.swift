@@ -82,7 +82,7 @@ public class Inbox: NSObject {
             do {
                 replies = try InboxListingRootClass(fromJson: json["replies"], messageWhere: messageWhere)
             } catch {
-                print("Error parsing InboxListingRootClass in Inbox: \(error.localizedDescription)")
+                printInDebugOnly("Error parsing InboxListingRootClass in Inbox: \(error.localizedDescription)")
             }
         }
         score = json["score"].intValue

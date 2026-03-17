@@ -41,7 +41,7 @@ class WikiViewModel: ObservableObject {
         } catch {
             self.error = error
             self.wikiLoadState = .failed(error)
-            print(error)
+            printInDebugOnly(error)
         }
     }
 }

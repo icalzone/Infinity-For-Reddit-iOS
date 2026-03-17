@@ -74,9 +74,9 @@ class SearchViewModel: ObservableObject {
             receiveCompletion: { completion in
                 switch completion {
                 case .finished:
-                    print("Finished successfully.")
+                    printInDebugOnly("Finished successfully.")
                 case .failure(let error):
-                    print("Encountered an error: \(error)")
+                    printInDebugOnly("Encountered an error: \(error)")
                 }
             },
             receiveValue: { result in

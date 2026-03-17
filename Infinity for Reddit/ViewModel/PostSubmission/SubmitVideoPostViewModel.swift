@@ -64,7 +64,7 @@ class SubmitVideoPostViewModel: ObservableObject {
     }
     
     func setVideo(url: URL) async throws {
-        print(url)
+        printInDebugOnly(url)
         self.videoURL = url
         if let image = await generateThumbnail(for: url) {
             try Task.checkCancellation()
@@ -81,7 +81,7 @@ class SubmitVideoPostViewModel: ObservableObject {
         videoURL = nil
         thumbnail = nil
         
-        print(url)
+        printInDebugOnly(url)
         self.videoURL = url
         self.processingVideoTask = Task {
             do {
@@ -125,7 +125,7 @@ class SubmitVideoPostViewModel: ObservableObject {
                     if let cgImage = cgImage {
                         continuation.resume(returning: UIImage(cgImage: cgImage))
                     } else {
-                        print("Thumbnail generation failed:", error?.localizedDescription ?? "unknown error")
+                        printInDebugOnly("Thumbnail generation failed:", error?.localizedDescription ?? "unknown error")
                         continuation.resume(returning: nil)
                     }
                 }
@@ -196,7 +196,7 @@ class SubmitVideoPostViewModel: ObservableObject {
                 postSubmittedFlag = true
             } catch {
                 self.error = error
-                print(error)
+                printInDebugOnly(error)
             }
             
             self.submitPostTask = nil

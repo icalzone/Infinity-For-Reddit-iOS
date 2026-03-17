@@ -70,7 +70,7 @@ class SubmitCommentViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print("Error submitting comment: \(error)")
+                printInDebugOnly("Error submitting comment: \(error)")
             }
             
             submitCommentTask = nil

@@ -285,7 +285,7 @@ struct HomeView: View {
             let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let docsDir = dirPaths[0]
             
-            print(docsDir)
+            printInDebugOnly(docsDir)
             
             customThemeViewModel.setAppColorScheme(colorScheme)
             
@@ -379,10 +379,10 @@ struct HomeView: View {
         }
         .onReceive(NotificationCenter.default.publisher(for: .notificationToggleChanged)) { _ in
             if NotificationUserDefaultsUtils.enableNotification {
-                print("Foreground refresh enabled")
+                printInDebugOnly("Foreground refresh enabled")
                 homeViewModel.startInboxCountPolling()
             } else {
-                print("Foreground refresh disabled")
+                printInDebugOnly("Foreground refresh disabled")
                 homeViewModel.stopInboxCountPolling()
             }
         }

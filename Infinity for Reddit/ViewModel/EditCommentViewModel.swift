@@ -74,7 +74,7 @@ class EditCommentViewModel: ObservableObject {
                 )
             } catch {
                 self.error = error
-                print("Error editing comment: \(error)")
+                printInDebugOnly("Error editing comment: \(error)")
             }
             
             editCommentTask = nil

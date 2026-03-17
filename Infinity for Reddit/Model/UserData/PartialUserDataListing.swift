@@ -22,7 +22,7 @@ struct PartialUserDataListing {
                 partialUserDataDictionary[key] = try PartialUserData(fromJson: value)
             } catch {
                 // Ignore
-                print(error.localizedDescription)
+                printInDebugOnly(error.localizedDescription)
             }
         }
     }

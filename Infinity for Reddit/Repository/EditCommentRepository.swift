@@ -52,7 +52,7 @@ class EditCommentRepository: EditCommentRepositoryProtocol {
                 giphyGifId: giphyGifId
             ).constructRichtextJSON(markdownString: content), "text": "", "thing_id": commentFullname]
         }
-        print(params)
+        printInDebugOnly(params)
         
         try Task.checkCancellation()
         

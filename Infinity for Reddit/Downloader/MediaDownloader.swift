@@ -121,7 +121,7 @@ class MediaDownloader {
                 if progress.isFinished {
                     break
                 }
-                print("Progress: \(downloadURL.absoluteString) \(progress.fractionCompleted)")
+                printInDebugOnly("Progress: \(downloadURL.absoluteString) \(progress.fractionCompleted)")
                 await onProgress(progress.fractionCompleted)
             }
         }
@@ -142,7 +142,7 @@ class MediaDownloader {
             let audioUrlPrefix = String(downloadUrlString[..<lastSlashIndex])
             for suffix in possibleRedditVideoAudioTrackURLSuffices {
                 if let audioUrl = URL(string: audioUrlPrefix + suffix) {
-                    print(audioUrl)
+                    printInDebugOnly(audioUrl)
                     do {
                         audioTrackDownloadedFileURL = try await downloadFile(downloadURL: audioUrl, fileName: "audio_track.mp4", onProgress: { progress in
                             await onProgressWithTitle("Downloading audio track...", progress)
@@ -184,7 +184,7 @@ class MediaDownloader {
         let tracks = try await audioAsset.loadTracks(withMediaType: .audio)
         for (index, track) in tracks.enumerated() {
             let duration = try await audioAsset.load(.duration).seconds
-            print("Duration: \(String(format: "%.2f", duration)) seconds")
+            printInDebugOnly("Duration: \(String(format: "%.2f", duration)) seconds")
         }
         
         guard let downloadedAudioTrack = try await audioAsset.loadTracks(withMediaType: .audio).first else {
@@ -223,7 +223,7 @@ class MediaDownloader {
             try await exportSession.export(to: exportedURL, as: .mp4)
             return exportedURL
         } catch {
-            print(error)
+            printInDebugOnly(error)
             throw MediaDownloaderError.failedToExportRedditVideoToTempDirectory
         }
     }
