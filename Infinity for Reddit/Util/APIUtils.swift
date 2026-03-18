@@ -6,6 +6,7 @@
 //
 
 import Alamofire
+import Foundation
 
 class APIUtils {
     // Base URIs
@@ -42,7 +43,7 @@ class APIUtils {
     static let AUTHORIZATION_KEY = "Authorization"
     static let AUTHORIZATION_BASE = "bearer "
     static let USER_AGENT_KEY = "User-Agent"
-    static let USER_AGENT = "ios:com.foxanastudio.infinity:1.0.0 (by /u/Hostilenemy)"
+    static let USER_AGENT = "ios:com.foxanastudio.infinity:\((Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String) ?? "1.0") (by /u/Hostilenemy)"
     static let USERNAME_KEY = "username"
     
     static let GRANT_TYPE_KEY = "grant_type"
