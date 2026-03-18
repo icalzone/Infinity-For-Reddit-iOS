@@ -17,17 +17,18 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord, Identi
     var bannerUrl: String?
     var description: String?
     var sidebarDescription: String?
-    var nSubscribers: Int?
-    var createdUTC: Int64?
+    var nSubscribers: Int
+    var createdUTC: Int64
     var suggestedCommentSort: String?
-    var isNSFW: Bool?
-    var activeUsers: Int?
+    var isSensitive: Bool
     var isSelected: Bool = false
     var isSubscribed: Bool = false
     
+    var syncTimeInSecond: Int
+    
     init(id: String, name: String, fullName: String, iconUrl: String? = nil, bannerUrl: String? = nil,
          description: String? = nil, sidebarDescription: String? = nil, nSubscribers: Int, createdUTC: Int64,
-         suggestedCommentSort: String? = nil, activeUsers: Int? = 0, isNSFW: Bool) {
+         suggestedCommentSort: String? = nil, isSensitive: Bool, syncTimeInSecond: Int) {
         self.id = id
         self.name = name
         self.fullName = fullName
@@ -38,9 +39,8 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord, Identi
         self.nSubscribers = nSubscribers
         self.createdUTC = createdUTC
         self.suggestedCommentSort = suggestedCommentSort
-        self.isNSFW = isNSFW
-        self.activeUsers = activeUsers
-        self.isSelected = false
+        self.isSensitive = isSensitive
+        self.syncTimeInSecond = Utils.getCurrentTimeEpochInSecond()
     }
     
     private enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -54,9 +54,8 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord, Identi
         case nSubscribers = "n_subscribers"
         case createdUTC = "created_utc"
         case suggestedCommentSort = "suggested_comment_sort"
-        case activeUsers = "active_users"
-        case isNSFW = "is_nsfw"
-        case isSelected = "is_selected"
+        case isSensitive = "is_sensitive"
+        case syncTimeInSecond = "sync_time_in_second"
     }
     
     public static let databaseSelection: [SQLSelectable] = CodingKeys.allCases.map { $0 }

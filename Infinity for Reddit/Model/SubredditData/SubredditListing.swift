@@ -288,7 +288,8 @@ class Subreddit: NSObject, Identifiable {
             nSubscribers: subscribers,
             createdUTC: createdUtc,
             suggestedCommentSort: suggestedCommentSort,
-            isNSFW: over18
+            isSensitive: over18,
+            syncTimeInSecond: Utils.getCurrentTimeEpochInSecond()
         )
     }
 }

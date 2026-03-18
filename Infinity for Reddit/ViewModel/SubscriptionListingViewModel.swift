@@ -361,6 +361,7 @@ public class SubscriptionListingViewModel: ObservableObject {
             )
         }
         
+        let currentTimeEpochInSecond = Utils.getCurrentTimeEpochInSecond()
         await insertSubscribedThings(subredditSubscriptions: subredditSubscriptionsTemp, userSubscriptions: userSubscriptionsTemp, subreddits: subreddits.map {
             SubredditData(
                 id: $0.id,
@@ -373,7 +374,8 @@ public class SubscriptionListingViewModel: ObservableObject {
                 nSubscribers: $0.subscribers,
                 createdUTC: $0.createdUtc,
                 suggestedCommentSort: $0.suggestedCommentSort,
-                isNSFW: $0.over18
+                isSensitive: $0.over18,
+                syncTimeInSecond: currentTimeEpochInSecond
             )
         })
         
