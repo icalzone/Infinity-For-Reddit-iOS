@@ -69,13 +69,13 @@ struct AboutSettingsView: View {
                         PreferenceEntry(
                             title: "Share",
                             subtitle: "Share this app to other people if you enjoy it"
-                        ) { }
+                        )
                     }
                     
                     PreferenceEntry(
                         title: "Infinity For Reddit",
                         subtitle: "Version \(Bundle.main.appVersion)"
-                    ) { }
+                    )
                 }
             }
         }
