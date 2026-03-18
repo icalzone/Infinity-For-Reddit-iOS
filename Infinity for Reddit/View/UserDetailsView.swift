@@ -118,7 +118,7 @@ struct UserDetailsView: View {
                             .transition(.move(edge: .top).combined(with: .opacity))
                             .animation(.easeInOut, value: isUserInfoVisible)
                         }
-                        .frame(maxHeight: proxy.size.height * 3 / 5)
+                        .frame(maxHeight: getScreenHeight(proxy) / 2)
                         .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Spacer()
@@ -181,6 +181,7 @@ struct UserDetailsView: View {
                         .allowsHitTesting(selectedTab == 1)
                     }
                 }
+                .edgesIgnoringSafeArea(.top)
                 .modify {
                     if #available(iOS 26, *) {
                         $0
@@ -204,7 +205,11 @@ struct UserDetailsView: View {
                         }
                     }
                 }
-                .edgesIgnoringSafeArea(.top)
+                .onChange(of: proxy.size) { _, newValue in
+                    if getScreenHeight(proxy) < 500 {
+                        isUserInfoVisible = false
+                    }
+                }
             }
         }
         .task {
@@ -301,5 +306,9 @@ struct UserDetailsView: View {
                 userDetailsViewModel.blockUser()
             }
         )
+    }
+    
+    func getScreenHeight(_ proxy: GeometryProxy) -> CGFloat {
+        return proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
     }
 }

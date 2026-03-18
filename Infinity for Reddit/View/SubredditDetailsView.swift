@@ -102,7 +102,7 @@ struct SubredditDetailsView: View {
                             .transition(.move(edge: .top).combined(with: .opacity))
                             .animation(.easeInOut, value: isSubredditInfoVisible)
                         }
-                        .frame(maxHeight: proxy.size.height / 2)
+                        .frame(maxHeight: getScreenHeight(proxy) / 2)
                         .fixedSize(horizontal: false, vertical: true)
                     } else {
                         Spacer()
@@ -157,6 +157,11 @@ struct SubredditDetailsView: View {
                                     .frame(height: proxy.safeAreaInsets.top)
                                     .ignoresSafeArea()
                             }
+                    }
+                }
+                .onChange(of: proxy.size) { _, newValue in
+                    if getScreenHeight(proxy) < 500 {
+                        isSubredditInfoVisible = false
                     }
                 }
             }
@@ -250,5 +255,9 @@ struct SubredditDetailsView: View {
                 subredditDetailsViewModel.cleaarUserFlair()
             })
         }
+    }
+    
+    func getScreenHeight(_ proxy: GeometryProxy) -> CGFloat {
+        return proxy.size.height + proxy.safeAreaInsets.top + proxy.safeAreaInsets.bottom
     }
 }

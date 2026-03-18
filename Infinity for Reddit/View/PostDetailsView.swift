@@ -429,6 +429,7 @@ struct PostDetailsView: View {
                                     .contentShape(Rectangle())
                                     .onTapGesture {
                                         withAnimation {
+                                            focusedField = nil
                                             showSearchBar = false
                                             postDetailsViewModel.searchedComment = nil
                                             postDetailsViewModel.searchQuery = ""
