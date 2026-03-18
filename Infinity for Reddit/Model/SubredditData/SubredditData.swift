@@ -21,7 +21,6 @@ public struct SubredditData: Codable, FetchableRecord, PersistableRecord, Identi
     var createdUTC: Int64
     var suggestedCommentSort: String?
     var isSensitive: Bool
-    var isSelected: Bool = false
     var isSubscribed: Bool = false
     
     var syncTimeInSecond: Int
