@@ -29,7 +29,16 @@ struct SubscribedSubredditListingView: View {
     var body: some View {
         RootView {
             if subscriptionListingViewModel.subredditSubscriptions.isEmpty {
-                ZStack {
+                VStack {
+                    if showCurrentAccountSubreddit && !accountViewModel.account.isAnonymous() {
+                        CurrentAccountSubredditView(
+                            account: accountViewModel.account,
+                            onSelectCustomAction: onSelectCustomAction
+                        )
+                    }
+                    
+                    Spacer()
+                    
                     if subscriptionListingViewModel.isLoadingSubscriptions {
                         ProgressIndicator()
                     } else if let error = subscriptionListingViewModel.subscribedThingListingError {
@@ -43,21 +52,17 @@ struct SubscribedSubredditListingView: View {
                         Text("No subscribed subreddits")
                             .primaryText()
                     }
+                    
+                    Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
                     if showCurrentAccountSubreddit && !accountViewModel.account.isAnonymous() {
-                        let account = accountViewModel.account
-                        SubscriptionItemView(text: account.username, iconUrl: account.profileImageUrl, action: {
-                            // This view will only appear when selecting a subreddit for post submission so we only care about onSelectCustomAction
-                            if let onSelectCustomAction = onSelectCustomAction {
-                                // We only care about the icon url subreddit name and username
-                                onSelectCustomAction(SubscribedSubredditData(name: "u_\(account.username)", iconUrl: account.profileImageUrl, username: account.username))
-                            }
-                        })
-                        .limitedWidth()
-                        .listPlainItemNoInsets()
+                        CurrentAccountSubredditView(
+                            account: accountViewModel.account,
+                            onSelectCustomAction: onSelectCustomAction
+                        )
                     }
                     
                     if !subscriptionListingViewModel.favoriteSubredditSubscriptions.isEmpty {
@@ -133,6 +138,23 @@ struct SubscribedSubredditListingView: View {
                 .scrollBounceBehavior(.basedOnSize)
                 .themedList()
             }
+        }
+    }
+    
+    struct CurrentAccountSubredditView: View {
+        let account: Account
+        let onSelectCustomAction: ((SubscribedSubredditData) -> Void)?
+        
+        var body: some View {
+            SubscriptionItemView(text: account.username, iconUrl: account.profileImageUrl, action: {
+                // This view will only appear when selecting a subreddit for post submission so we only care about onSelectCustomAction
+                if let onSelectCustomAction = onSelectCustomAction {
+                    // We only care about the icon url subreddit name and username
+                    onSelectCustomAction(SubscribedSubredditData(name: "u_\(account.username)", iconUrl: account.profileImageUrl, username: account.username))
+                }
+            })
+            .limitedWidth()
+            .listPlainItemNoInsets()
         }
     }
 }
