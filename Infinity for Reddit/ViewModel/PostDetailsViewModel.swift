@@ -105,6 +105,15 @@ public class PostDetailsViewModel: ObservableObject {
                 self?.showTopLevelCommentsFirst = UserDefaults.interfaceComment.bool(forKey: InterfaceCommentUserDefaultsUtils.showTopLevelCommentsFirstKey)
             }
             .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: Notification.Name.accountAllowSensitiveChanged)
+            .sink { [weak self] notification in
+                guard let self, let post else {
+                    return
+                }
+                self.showSensitiveContentWarningTrigger = post.over18 && !AccountAllowSensitiveNotification.isAllowSensitive(notification)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Methods
