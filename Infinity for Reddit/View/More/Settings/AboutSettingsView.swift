@@ -33,12 +33,12 @@ struct AboutSettingsView: View {
 //                        
 //                    }
                     
-//                    PreferenceEntry(
-//                        title: "Rate on App Store",
-//                        subtitle: "Give us a 5-star rating and we will be really happy"
-//                    ) {
-//                        
-//                    }
+                    PreferenceEntry(
+                        title: "Rate Us",
+                        subtitle: "Love the app? A 5-star rating would totally make our day!"
+                    ) {
+                        navigationManager.openLink("itms-apps://apps.apple.com/us/app/infinity-for-reddit/id6759064642")
+                    }
                     
                     PreferenceEntry(
                         title: "Email",
@@ -63,14 +63,14 @@ struct AboutSettingsView: View {
                         navigationManager.append(AppNavigation.subredditDetails(subredditName: "Infinity_For_Reddit"))
                     }
                     
-//                    ShareLink(
-//                        item: "Check out Infinity for Reddit for iOS, an awesome Reddit client!"
-//                    ) {
-//                        PreferenceEntry(
-//                            title: "Share",
-//                            subtitle: "Share this app to other people if you enjoy it"
-//                        )
-//                    }
+                    ShareLink(
+                        item: "Want an infinitely better Reddit experience? Try Infinity for Reddit now https://apps.apple.com/us/app/infinity-for-reddit/id6759064642"
+                    ) {
+                        PreferenceEntry(
+                            title: "Share this app with friends!",
+                            subtitle: "Let them join the fun!"
+                        )
+                    }
                     
                     PreferenceEntry(
                         title: "Infinity For Reddit",
