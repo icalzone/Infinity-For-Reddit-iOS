@@ -57,11 +57,13 @@ struct InboxListingView: View {
                                     inboxListingViewModel.markAsRead(inbox: inboxToMarkAsRead)
                                 }
                             }
+                            .limitedWidth()
                         } else {
                             InboxNotificationItemView(inbox: inbox, hasReadAllMessages: hasReadAllMessages) {
                                 navigationManager.openLink(inbox.context)
                                 inboxListingViewModel.markAsRead(inbox: inbox)
                             }
+                            .limitedWidth()
                         }
                     }
                     if inboxListingViewModel.hasMorePages {

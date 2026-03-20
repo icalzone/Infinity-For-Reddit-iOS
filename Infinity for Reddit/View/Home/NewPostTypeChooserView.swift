@@ -17,29 +17,34 @@ struct NewPostTypeChooserView: View {
                     SimpleTouchItemRow(text: "Text", icon: "text.page") {
                         navigationManager.append(AppNavigation.submitTextPost)
                     }
+                    .limitedWidth()
                     
                     SimpleTouchItemRow(text: "Link", icon: "link") {
                         navigationManager.append(AppNavigation.submitLinkPost)
                     }
+                    .limitedWidth()
                     
                     SimpleTouchItemRow(text: "Video", icon: "video") {
                         navigationManager.append(AppNavigation.submitVideoPost)
                     }
+                    .limitedWidth()
                     
                     SimpleTouchItemRow(text: "Image", icon: "photo") {
                         navigationManager.append(AppNavigation.submitImagePost)
                     }
+                    .limitedWidth()
                     
                     SimpleTouchItemRow(text: "Gallery", icon: "square.stack") {
                         navigationManager.append(AppNavigation.submitGalleryPost)
                     }
+                    .limitedWidth()
                     
                     SimpleTouchItemRow(text: "Poll", icon: "chart.bar.xaxis") {
                         navigationManager.append(AppNavigation.submitPollPost)
                     }
+                    .limitedWidth()
                 }
             }
         }
-        .limitedWidth()
     }
 }

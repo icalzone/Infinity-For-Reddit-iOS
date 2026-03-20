@@ -47,7 +47,6 @@ struct InboxView: View {
                 }
             }
         }
-        .limitedWidth()
         .id(accountViewModel.account.username)
         .onAppear {
             applyPendingRouteIfAny()
