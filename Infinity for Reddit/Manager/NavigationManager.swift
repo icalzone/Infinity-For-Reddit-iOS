@@ -59,14 +59,6 @@ class NavigationManager: ObservableObject {
         default:
             viewShouldHideNavigationBarOnScroll.append(false)
         }
-        
-        switch destination {
-        case MoreViewNavigation.settings,
-            MoreViewNavigation.test:
-            viewShouldHideNavigationBarOnScroll.append(false)
-        default:
-            viewShouldHideNavigationBarOnScroll.append(false)
-        }
         path.append(destination)
     }
 
