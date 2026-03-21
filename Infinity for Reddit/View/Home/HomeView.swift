@@ -60,18 +60,100 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ZStack {
-            TabView(selection: $selectedTab) {
+        TabView(selection: $selectedTab) {
+            ZStack {
+                CustomNavigationStack(navigationManager: tab1NavigationManager) {
+                    PostListingView(
+                        postListingMetadata: PostListingMetadata(
+                            // Anonymous subscriptions will be fetched later in PostListingViewModel
+                            postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
+                            queries: nil,
+                            params: nil
+                        ),
+                        handleToolbarMenu: false
+                    )
+                    .setUpHomeTabViewChildNavigationBar(onLogin: {
+                        accountViewModel.startLogin()
+                    })
+                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                }
+                
+                Snackbar()
+                    .zIndex(1)
+            }
+            .id(accountViewModel.account.username)
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+            .tag(Tab.home)
+            .environmentObject(tab1NavigationBarMenuManager)
+            .environmentObject(tab1SnackbarManager)
+            .onChange(of: tab1NavigationManager.path) {
+                tab1SnackbarManager.dismissIfIndefinite()
+            }
+            
+            ZStack {
+                CustomNavigationStack(navigationManager: tab2NavigationManager) {
+                    Group {
+                        if accountViewModel.account.isAnonymous() {
+                            AnonymousSubscriptionsView()
+                                .setUpHomeTabViewChildNavigationBar(onLogin: {
+                                    accountViewModel.startLogin()
+                                })
+                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        } else {
+                            SubscriptionsView()
+                                .setUpHomeTabViewChildNavigationBar(onLogin: {
+                                    accountViewModel.startLogin()
+                                })
+                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                        }
+                    }
+                }
+                
+                Snackbar()
+                    .zIndex(1)
+            }
+            .id(accountViewModel.account.username)
+            .tabItem {
+                Label("Subscriptions", systemImage: "book")
+            }
+            .tag(Tab.subscriptions)
+            .environmentObject(tab2NavigationBarMenuManager)
+            .environmentObject(tab2SnackbarManager)
+            .onChange(of: tab2NavigationManager.path) {
+                tab2SnackbarManager.dismissIfIndefinite()
+            }
+            
+            if !accountViewModel.account.isAnonymous() {
                 ZStack {
-                    CustomNavigationStack(navigationManager: tab1NavigationManager) {
-                        PostListingView(
-                            postListingMetadata: PostListingMetadata(
-                                // Anonymous subscriptions will be fetched later in PostListingViewModel
-                                postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
-                                queries: nil,
-                                params: nil
-                            ),
-                            handleToolbarMenu: false
+                    CustomNavigationStack(navigationManager: tab3NavigationManager) {
+                        NewPostTypeChooserView()
+                            .setUpHomeTabViewChildNavigationBar(onLogin: {
+                                accountViewModel.startLogin()
+                            })
+                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
+                    }
+                    
+                    Snackbar()
+                        .zIndex(1)
+                }
+                .id(accountViewModel.account.username)
+                .tabItem {
+                    Label("New Post", systemImage: "plus.circle")
+                }
+                .tag(Tab.newPost)
+                .environmentObject(tab3NavigationBarMenuManager)
+                .environmentObject(homeViewModel)
+                .environmentObject(tab3SnackbarManager)
+                .onChange(of: tab3NavigationManager.path) {
+                    tab3SnackbarManager.dismissIfIndefinite()
+                }
+                
+                ZStack {
+                    CustomNavigationStack(navigationManager: tab4NavigationManager) {
+                        InboxView(
+                            account: accountViewModel.account
                         )
                         .setUpHomeTabViewChildNavigationBar(onLogin: {
                             accountViewModel.startLogin()
@@ -84,32 +166,23 @@ struct HomeView: View {
                 }
                 .id(accountViewModel.account.username)
                 .tabItem {
-                    Label("Home", systemImage: "house")
+                    Label("Inbox", systemImage: "envelope")
                 }
-                .tag(Tab.home)
-                .environmentObject(tab1NavigationBarMenuManager)
-                .environmentObject(tab1SnackbarManager)
-                .onChange(of: tab1NavigationManager.path) {
-                    tab1SnackbarManager.dismissIfIndefinite()
+                .tag(Tab.inbox)
+                .badge(homeViewModel.inboxCount > 0 ? String(homeViewModel.inboxCount) : nil)
+                .environmentObject(tab4NavigationBarMenuManager)
+                .environmentObject(homeViewModel)
+                .environmentObject(tab4SnackbarManager)
+                .onChange(of: tab4NavigationManager.path) {
+                    tab4SnackbarManager.dismissIfIndefinite()
                 }
-                
+            } else {
                 ZStack {
-                    CustomNavigationStack(navigationManager: tab2NavigationManager) {
-                        Group {
-                            if accountViewModel.account.isAnonymous() {
-                                AnonymousSubscriptionsView()
-                                    .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                        accountViewModel.startLogin()
-                                    })
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            } else {
-                                SubscriptionsView()
-                                    .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                        accountViewModel.startLogin()
-                                    })
-                                    .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                            }
-                        }
+                    CustomNavigationStack(navigationManager: tab4NavigationManager) {
+                        SearchView()
+                            .setUpHomeTabViewChildNavigationBar(onLogin: {
+                                accountViewModel.startLogin()
+                            })
                     }
                     
                     Snackbar()
@@ -117,171 +190,41 @@ struct HomeView: View {
                 }
                 .id(accountViewModel.account.username)
                 .tabItem {
-                    Label("Subscriptions", systemImage: "book")
+                    Label("Search", systemImage: "magnifyingglass")
                 }
-                .tag(Tab.subscriptions)
-                .environmentObject(tab2NavigationBarMenuManager)
-                .environmentObject(tab2SnackbarManager)
-                .onChange(of: tab2NavigationManager.path) {
-                    tab2SnackbarManager.dismissIfIndefinite()
-                }
-                
-                if !accountViewModel.account.isAnonymous() {
-                    ZStack {
-                        CustomNavigationStack(navigationManager: tab3NavigationManager) {
-                            NewPostTypeChooserView()
-                                .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                    accountViewModel.startLogin()
-                                })
-                                .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                        }
-                        
-                        Snackbar()
-                            .zIndex(1)
-                    }
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("New Post", systemImage: "plus.circle")
-                    }
-                    .tag(Tab.newPost)
-                    .environmentObject(tab3NavigationBarMenuManager)
-                    .environmentObject(homeViewModel)
-                    .environmentObject(tab3SnackbarManager)
-                    .onChange(of: tab3NavigationManager.path) {
-                        tab3SnackbarManager.dismissIfIndefinite()
-                    }
-                    
-                    ZStack {
-                        CustomNavigationStack(navigationManager: tab4NavigationManager) {
-                            InboxView(
-                                account: accountViewModel.account
-                            )
-                            .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                accountViewModel.startLogin()
-                            })
-                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                        }
-                        
-                        Snackbar()
-                            .zIndex(1)
-                    }
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("Inbox", systemImage: "envelope")
-                    }
-                    .tag(Tab.inbox)
-                    .badge(homeViewModel.inboxCount > 0 ? String(homeViewModel.inboxCount) : nil)
-                    .environmentObject(tab4NavigationBarMenuManager)
-                    .environmentObject(homeViewModel)
-                    .environmentObject(tab4SnackbarManager)
-                    .onChange(of: tab4NavigationManager.path) {
-                        tab4SnackbarManager.dismissIfIndefinite()
-                    }
-                } else {
-                    ZStack {
-                        CustomNavigationStack(navigationManager: tab4NavigationManager) {
-                            SearchView()
-                                .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                    accountViewModel.startLogin()
-                                })
-                        }
-                        
-                        Snackbar()
-                            .zIndex(1)
-                    }
-                    .id(accountViewModel.account.username)
-                    .tabItem {
-                        Label("Search", systemImage: "magnifyingglass")
-                    }
-                    .tag(Tab.search)
-                    .environmentObject(tab4NavigationBarMenuManager)
-                    .environmentObject(tab4SnackbarManager)
-                    .onChange(of: tab4NavigationManager.path) {
-                        tab4SnackbarManager.dismissIfIndefinite()
-                    }
-                }
-                
-                ZStack {
-                    CustomNavigationStack(navigationManager: tab5NavigationManager) {
-                        MoreView()
-                            .setUpHomeTabViewChildNavigationBar(onLogin: {
-                                accountViewModel.startLogin()
-                            })
-                            .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
-                    }
-                    
-                    Snackbar()
-                        .zIndex(1)
-                }
-                .id(accountViewModel.account.username)
-                .tabItem {
-                    Label("More", systemImage: "ellipsis.circle.fill")
-                }
-                .tag(Tab.more)
-                .environmentObject(tab5NavigationBarMenuManager)
-                .environmentObject(tab5SnackbarManager)
-                .onChange(of: tab5NavigationManager.path) {
-                    tab5SnackbarManager.dismissIfIndefinite()
+                .tag(Tab.search)
+                .environmentObject(tab4NavigationBarMenuManager)
+                .environmentObject(tab4SnackbarManager)
+                .onChange(of: tab4NavigationManager.path) {
+                    tab4SnackbarManager.dismissIfIndefinite()
                 }
             }
-            .themedTabView()
-            .id(accountViewModel.account.username)
             
-            if let media = fullScreenMediaViewModel.media {
-                switch media {
-                case .image(let urlString, let aspectRatio, let post, let fileName, let matchedGeometryEffectId):
-                    ImageFullScreenView(urlString: urlString, fileName: fileName, matchedGeometryEffectId: matchedGeometryEffectId, isGif: false) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(urlString)
-                    .zIndex(1)
-                case .gallery(let currentUrlString, let post, let items, let galleryScrollState):
-                    GalleryFullScreenView(post: post, items: items, galleryScrollState: galleryScrollState) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(currentUrlString)
-                    .zIndex(1)
-                case .video(let urlString, let post, let videoType, let canDownload, let playbackTime):
-                    VideoFullScreenView(
-                        urlString: urlString,
-                        post: post,
-                        videoType: videoType,
-                        playbackTime: playbackTime,
-                        videoFullScreenViewModel: videoFullScreenViewModel,
-                        muteVideo: VideoUserDefaultsUtils.muteVideo || ((post?.over18 ?? false) && VideoUserDefaultsUtils.muteSensitiveVideo),
-                        canDownload: canDownload
-                    ) {
-                        fullScreenMediaViewModel.dismiss()
-                        videoFullScreenViewModel.resetState()
-                    }
-                    .id(urlString)
-                    .zIndex(1)
-                case .gif(let urlString, let post, let fileName):
-                    ImageFullScreenView(urlString: urlString, fileName: fileName, isGif: true) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(urlString)
-                    .zIndex(1)
-                case .imgurGallery(let imgurId, let post):
-                    ImgurFullScreenView(imgurMediaType: .imgurGallery(imgurId: imgurId), post: post) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(imgurId)
-                    .zIndex(1)
-                case .imgurAlbum(let imgurId, let post):
-                    ImgurFullScreenView(imgurMediaType: .imgurAlbum(imgurId: imgurId), post: post) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(imgurId)
-                case .imgurImage(let imgurId, let post):
-                    ImgurFullScreenView(imgurMediaType: .imgurImage(imgurId: imgurId), post: post) {
-                        fullScreenMediaViewModel.dismiss()
-                    }
-                    .id(imgurId)
-                    .zIndex(1)
+            ZStack {
+                CustomNavigationStack(navigationManager: tab5NavigationManager) {
+                    MoreView()
+                        .setUpHomeTabViewChildNavigationBar(onLogin: {
+                            accountViewModel.startLogin()
+                        })
+                        .addTitleToInlineNavigationBar(selectedTab.navigationTitle)
                 }
+                
+                Snackbar()
+                    .zIndex(1)
+            }
+            .id(accountViewModel.account.username)
+            .tabItem {
+                Label("More", systemImage: "ellipsis.circle.fill")
+            }
+            .tag(Tab.more)
+            .environmentObject(tab5NavigationBarMenuManager)
+            .environmentObject(tab5SnackbarManager)
+            .onChange(of: tab5NavigationManager.path) {
+                tab5SnackbarManager.dismissIfIndefinite()
             }
         }
+        .id(accountViewModel.account.username)
+        .themedTabView()
         .onAppear {
             let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
             let docsDir = dirPaths[0]
@@ -305,6 +248,56 @@ struct HomeView: View {
         }
         .task {
             await homeViewModel.fetchInboxCount()
+        }
+        .overlay {
+            if let media = fullScreenMediaViewModel.media {
+                switch media {
+                case .image(let urlString, let aspectRatio, let post, let fileName, let matchedGeometryEffectId):
+                    ImageFullScreenView(urlString: urlString, fileName: fileName, matchedGeometryEffectId: matchedGeometryEffectId, isGif: false) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(urlString)
+                case .gallery(let currentUrlString, let post, let items, let galleryScrollState):
+                    GalleryFullScreenView(post: post, items: items, galleryScrollState: galleryScrollState) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(currentUrlString)
+                case .video(let urlString, let post, let videoType, let canDownload, let playbackTime):
+                    VideoFullScreenView(
+                        urlString: urlString,
+                        post: post,
+                        videoType: videoType,
+                        playbackTime: playbackTime,
+                        videoFullScreenViewModel: videoFullScreenViewModel,
+                        muteVideo: VideoUserDefaultsUtils.muteVideo || ((post?.over18 ?? false) && VideoUserDefaultsUtils.muteSensitiveVideo),
+                        canDownload: canDownload
+                    ) {
+                        fullScreenMediaViewModel.dismiss()
+                        videoFullScreenViewModel.resetState()
+                    }
+                    .id(urlString)
+                case .gif(let urlString, let post, let fileName):
+                    ImageFullScreenView(urlString: urlString, fileName: fileName, isGif: true) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(urlString)
+                case .imgurGallery(let imgurId, let post):
+                    ImgurFullScreenView(imgurMediaType: .imgurGallery(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                case .imgurAlbum(let imgurId, let post):
+                    ImgurFullScreenView(imgurMediaType: .imgurAlbum(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                case .imgurImage(let imgurId, let post):
+                    ImgurFullScreenView(imgurMediaType: .imgurImage(imgurId: imgurId), post: post) {
+                        fullScreenMediaViewModel.dismiss()
+                    }
+                    .id(imgurId)
+                }
+            }
         }
 //        .fullScreenCover(item: $fullScreenMediaViewModel.media) { media in
 //            Group {
