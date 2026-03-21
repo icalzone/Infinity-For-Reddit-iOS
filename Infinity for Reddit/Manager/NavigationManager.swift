@@ -39,7 +39,8 @@ class NavigationManager: ObservableObject {
     
     func append(_ destination: any Hashable) {
         switch destination {
-        case AppNavigation.postDetails,
+        case AppNavigation.frontPage,
+            AppNavigation.postDetails,
             AppNavigation.postDetailsWithId,
             AppNavigation.subredditDetails,
             AppNavigation.userDetails,
