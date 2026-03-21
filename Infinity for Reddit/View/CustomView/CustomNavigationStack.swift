@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct CustomNavigationStack<Content: View>: View {
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    
-    @EnvironmentObject var accountViewModel: AccountViewModel
+    @EnvironmentObject private var accountViewModel: AccountViewModel
     
     @ObservedObject private var navigationManager: NavigationManager
     
@@ -31,6 +29,24 @@ struct CustomNavigationStack<Content: View>: View {
             content()
                 .navigationDestination(for: AppNavigation.self) { destination in
                     switch destination {
+                    case .frontPage:
+                        PostListingView(
+                            postListingMetadata: PostListingMetadata(
+                                // Anonymous subscriptions will be fetched later in PostListingViewModel
+                                postListingType: accountViewModel.account.isAnonymous() ? .anonymousFrontPage(concatenatedSubscriptions: nil) : .frontPage,
+                                queries: nil,
+                                params: nil
+                            ),
+                            handleToolbarMenu: false
+                        )
+                        .environmentObject(navigationManager)
+                        .environmentObject(commentSubmissionShareableViewModel)
+                        .environmentObject(postEditingShareableViewModel)
+                        .navigationBarBackButtonHidden(true)
+                        .setUpHomeTabViewChildNavigationBar(onLogin: {
+                            accountViewModel.startLogin()
+                        })
+                        .addTitleToInlineNavigationBar("Home")
                     case .postDetails(let postDetailsInput, let videoPlaybackTime):
                         PostDetailsView(postDetailsInput: postDetailsInput, videoPlaybackTime: videoPlaybackTime)
                             .environmentObject(navigationManager)
