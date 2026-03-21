@@ -40,7 +40,7 @@ struct GalleryCarousel: View {
             }
             .noPreviewPostTypeIndicatorBackground()
             .containerRelativeFrame(.horizontal, count: 1, span: 1, spacing: 0, alignment: .center)
-            .mediaTapGesture(post: post, aspectRatio: nil, matchedGeometryEffectId: nil)
+            .mediaTapGesture(post: post, aspectRatio: nil)
         } else {
             ZStack(alignment: .topLeading) {
                 TabView(selection: $galleryScrollState.scrollId) {

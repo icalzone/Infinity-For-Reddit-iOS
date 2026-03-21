@@ -177,10 +177,8 @@ extension View {
         self.modifier(NoPreviewPostTypeIndicatorViewModifier())
     }
     
-    func mediaTapGesture(post: Post?, aspectRatio: CGSize?, matchedGeometryEffectId: String?) -> some View {
-        self.modifier(MediaTapGestureHandlerViewModifer(
-            post: post, aspectRatio: aspectRatio, matchedGeometryEffectId: matchedGeometryEffectId
-        ))
+    func mediaTapGesture(post: Post?, aspectRatio: CGSize?) -> some View {
+        self.modifier(MediaTapGestureHandlerViewModifer(post: post, aspectRatio: aspectRatio))
     }
     
     func postTypeTag() -> some View {

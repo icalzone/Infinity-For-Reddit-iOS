@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct GalleryFullScreenView: View {
-    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
-    
     @StateObject private var tabViewDismissalViewModel: TabViewDismissalViewModel
     
     @ObservedObject private var galleryScrollState: GalleryScrollState

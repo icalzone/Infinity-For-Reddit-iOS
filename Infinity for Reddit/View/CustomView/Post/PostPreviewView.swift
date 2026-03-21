@@ -35,7 +35,6 @@ struct PostPreviewView: View {
                         aspectRatio: (limitMediaHeight && inPostListing) || isInCompactLayout ? nil : aspectRatio,
                         handleImageTapGesture: !(isInCompactLayout && post.postType == .gallery),
                         centerCrop: true,
-                        matchedGeometryEffectId: UUID().uuidString,
                         post: post,
                         blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages)
                     )
@@ -115,7 +114,7 @@ struct PostPreviewView: View {
                 }
             }
             .noPreviewPostTypeIndicatorBackground()
-            .mediaTapGesture(post: post, aspectRatio: nil, matchedGeometryEffectId: nil)
+            .mediaTapGesture(post: post, aspectRatio: nil)
         }
     }
     

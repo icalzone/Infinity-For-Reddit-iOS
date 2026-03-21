@@ -106,7 +106,6 @@ struct PostVideoView: View {
                                 limitMediaHeight: limitMediaHeight && inPostListing,
                                 aspectRatio: limitMediaHeight && inPostListing ? nil : (preview.images[0].source?.aspectRatio ?? preview.images[0].resolutions.first?.aspectRatio),
                                 centerCrop: true,
-                                matchedGeometryEffectId: UUID().uuidString,
                                 post: post,
                                 blur: (post.over18 && blurSensitiveImages) || (post.spoiler && blurSpoilerImages)
                             )
@@ -139,7 +138,7 @@ struct PostVideoView: View {
                             .noPreviewPostTypeIndicator()
                     }
                     .noPreviewPostTypeIndicatorBackground()
-                    .mediaTapGesture(post: post, aspectRatio: nil, matchedGeometryEffectId: nil)
+                    .mediaTapGesture(post: post, aspectRatio: nil)
                 }
             }
         }

@@ -35,7 +35,6 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
     
     let post: Post?
     let aspectRatio: CGSize?
-    let matchedGeometryEffectId: String?
     
     func body(content: Content) -> some View {
         content
@@ -47,9 +46,9 @@ struct MediaTapGestureHandlerViewModifer: ViewModifier {
                             if let post {
                                 switch post.postType {
                                 case .image:
-                                    fullScreenMediaViewModel.show(.image(urlString: post.url, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg", matchedGeometryEffectId: matchedGeometryEffectId))
+                                    fullScreenMediaViewModel.show(.image(urlString: post.url, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg"))
                                 case .imageWithUrlPreview(let urlPreview):
-                                    fullScreenMediaViewModel.show(.image(urlString: urlPreview, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg", matchedGeometryEffectId: matchedGeometryEffectId))
+                                    fullScreenMediaViewModel.show(.image(urlString: urlPreview, aspectRatio: aspectRatio, post: post, fileName: "\(post.fileNameWithoutExtension).jpg"))
                                 case .gif:
                                     if post.preview.images.isEmpty == false {
                                         if let previewImage = post.preview.images.first {

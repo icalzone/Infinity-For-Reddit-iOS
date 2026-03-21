@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct ImgurFullScreenView: View {
-    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
-    
     @StateObject private var imgurFullScreenViewModel: ImgurFullScreenViewModel
     @StateObject private var tabViewDismissalViewModel: TabViewDismissalViewModel
 

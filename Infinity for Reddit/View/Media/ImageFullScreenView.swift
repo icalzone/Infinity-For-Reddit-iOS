@@ -14,14 +14,12 @@ struct ImageFullScreenView: View {
     
     let urlString: String
     let fileName: String
-    let matchedGeometryEffectId: String?
     let isGif: Bool
     let onDismiss: () -> Void
     
-    init(urlString: String, fileName: String, matchedGeometryEffectId: String? = nil, isGif: Bool, onDismiss: @escaping () -> Void) {
+    init(urlString: String, fileName: String, isGif: Bool, onDismiss: @escaping () -> Void) {
         self.urlString = urlString
         self.fileName = fileName
-        self.matchedGeometryEffectId = matchedGeometryEffectId
         self.isGif = isGif
         self.onDismiss = onDismiss
     }
@@ -30,8 +28,7 @@ struct ImageFullScreenView: View {
         ZStack {
             CustomWebImage(
                 urlString,
-                handleImageTapGesture: false,
-                matchedGeometryEffectId: matchedGeometryEffectId
+                handleImageTapGesture: false
             )
             .mediaGesture(
                 onDragEnded: { transform in

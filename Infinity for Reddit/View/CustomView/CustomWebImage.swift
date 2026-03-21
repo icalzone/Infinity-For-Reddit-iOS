@@ -10,7 +10,6 @@ import Kingfisher
 
 struct CustomWebImage<Placeholder: View, Fallback: View>: View {
     @EnvironmentObject var navigationManager: NavigationManager
-    @EnvironmentObject var fullScreenMediaViewModel: FullScreenMediaViewModel
 
     @State private var shouldLoadFallbackImage = false
 
@@ -22,7 +21,6 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
     var circleClipped: Bool
     var handleImageTapGesture: Bool
     var centerCrop: Bool
-    var matchedGeometryEffectId: String?
     var post: Post?
     var blur: Bool
     var shouldShowRetryView: Bool
@@ -42,7 +40,6 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
         circleClipped: Bool = false,
         handleImageTapGesture: Bool = true,
         centerCrop: Bool = false,
-        matchedGeometryEffectId: String? = nil,
         post: Post? = nil,
         blur: Bool = false,
         shouldShowRetryView: Bool = true,
@@ -58,7 +55,6 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
         self.circleClipped = circleClipped
         self.handleImageTapGesture = handleImageTapGesture
         self.centerCrop = centerCrop
-        self.matchedGeometryEffectId = matchedGeometryEffectId
         self.post = post
         self.blur = blur
         self.shouldShowRetryView = shouldShowRetryView
@@ -67,20 +63,20 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
         self.fallbackViewBuilder = fallbackView     // Assign the closures
     }
 
-    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, matchedGeometryEffectId: String? = nil, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil) where Placeholder == EmptyView, Fallback == EmptyView {
-        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, matchedGeometryEffectId: matchedGeometryEffectId, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
+    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil) where Placeholder == EmptyView, Fallback == EmptyView {
+        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
                   placeholderView: { EmptyView() }, fallbackView: nil)
     }
     
-    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, matchedGeometryEffectId: String? = nil, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil,
+    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil,
          @ViewBuilder placeholderView: @escaping () -> Placeholder) where Fallback == EmptyView {
-        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, matchedGeometryEffectId: matchedGeometryEffectId, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
+        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
                   placeholderView: placeholderView, fallbackView: nil)
     }
     
-    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, matchedGeometryEffectId: String? = nil, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil,
+    init(_ urlString: String? = nil, width: CGFloat? = nil, height: CGFloat? = nil, limitMediaHeight: Bool = false, aspectRatio: CGSize? = nil, circleClipped: Bool = false, handleImageTapGesture: Bool = true, centerCrop: Bool = false, post: Post? = nil, blur: Bool = false, shouldShowRetryView: Bool = true, customOnTapGesture: (() -> Void)? = nil,
          @ViewBuilder fallbackView: @escaping () -> Fallback) where Placeholder == EmptyView {
-        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, matchedGeometryEffectId: matchedGeometryEffectId, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
+        self.init(urlString, width: width, height: height, limitMediaHeight: limitMediaHeight, aspectRatio: aspectRatio, circleClipped: circleClipped, handleImageTapGesture: handleImageTapGesture, centerCrop: centerCrop, post: post, blur: blur, shouldShowRetryView: shouldShowRetryView, customOnTapGesture: customOnTapGesture,
                   placeholderView: { EmptyView() },
                   fallbackView: fallbackView)
     }
@@ -159,7 +155,7 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
                     .frame(width: width, height: height)
                     .clipped()
                     .applyIf(handleImageTapGesture) {
-                        $0.mediaTapGesture(post: post, aspectRatio: imageAspectRatio, matchedGeometryEffectId: matchedGeometryEffectId)
+                        $0.mediaTapGesture(post: post, aspectRatio: imageAspectRatio)
                     }
                     .applyIf(!handleImageTapGesture && customOnTapGesture != nil) {
                         // Using highPriorityGesture here as a workaround to handle tap gesture in a TabView.
@@ -169,6 +165,5 @@ struct CustomWebImage<Placeholder: View, Fallback: View>: View {
                     }
             }
         }
-        .id(urlString)
     }
 }
