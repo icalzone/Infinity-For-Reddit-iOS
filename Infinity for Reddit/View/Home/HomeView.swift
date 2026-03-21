@@ -81,7 +81,6 @@ struct HomeView: View {
                 Snackbar()
                     .zIndex(1)
             }
-            .id(accountViewModel.account.username)
             .tabItem {
                 Label("Home", systemImage: "house")
             }
@@ -114,7 +113,6 @@ struct HomeView: View {
                 Snackbar()
                     .zIndex(1)
             }
-            .id(accountViewModel.account.username)
             .tabItem {
                 Label("Subscriptions", systemImage: "book")
             }
@@ -138,7 +136,6 @@ struct HomeView: View {
                     Snackbar()
                         .zIndex(1)
                 }
-                .id(accountViewModel.account.username)
                 .tabItem {
                     Label("New Post", systemImage: "plus.circle")
                 }
@@ -164,7 +161,6 @@ struct HomeView: View {
                     Snackbar()
                         .zIndex(1)
                 }
-                .id(accountViewModel.account.username)
                 .tabItem {
                     Label("Inbox", systemImage: "envelope")
                 }
@@ -188,7 +184,6 @@ struct HomeView: View {
                     Snackbar()
                         .zIndex(1)
                 }
-                .id(accountViewModel.account.username)
                 .tabItem {
                     Label("Search", systemImage: "magnifyingglass")
                 }
@@ -212,7 +207,6 @@ struct HomeView: View {
                 Snackbar()
                     .zIndex(1)
             }
-            .id(accountViewModel.account.username)
             .tabItem {
                 Label("More", systemImage: "ellipsis.circle.fill")
             }
@@ -223,7 +217,6 @@ struct HomeView: View {
                 tab5SnackbarManager.dismissIfIndefinite()
             }
         }
-        .id(accountViewModel.account.username)
         .themedTabView()
         .onAppear {
             let dirPaths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
