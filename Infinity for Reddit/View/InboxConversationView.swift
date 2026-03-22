@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct InboxConversationView: View {
-    @EnvironmentObject var navigationManager: NavigationManager
-    @EnvironmentObject var navigationBarMenuManager: NavigationBarMenuManager
-    @EnvironmentObject var accountViewModel: AccountViewModel
+    @EnvironmentObject private var navigationManager: NavigationManager
+    @EnvironmentObject private var navigationBarMenuManager: NavigationBarMenuManager
+    @EnvironmentObject private var accountViewModel: AccountViewModel
+    @EnvironmentObject private var snackbarManager: SnackbarManager
     
     @StateObject var inboxConversationViewModel: InboxConversationViewModel
     
@@ -71,33 +72,11 @@ struct InboxConversationView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                             .submitLabel(.send)
                             .onSubmit {
-                                guard sendMessageTask == nil else {
-                                    printInDebugOnly("A message is being sent")
-                                    return
-                                }
-                                
-                                sendMessageTask = Task {
-                                    defer {
-                                        sendMessageTask = nil
-                                    }
-                                    
-                                    await inboxConversationViewModel.sendMessage(message: messageText)
-                                }
+                                sendMessage()
                             }
 
                         Button(action: {
-                            guard sendMessageTask == nil else {
-                                printInDebugOnly("A message is being sent")
-                                return
-                            }
-                            
-                            sendMessageTask = Task {
-                                defer {
-                                    sendMessageTask = nil
-                                }
-                                
-                                await inboxConversationViewModel.sendMessage(message: messageText)
-                            }
+                            sendMessage()
                         }) {
                             SwiftUI.Image(systemName: "paperplane.fill")
                                 .foregroundColor(messageText.isEmpty ? .gray : .blue)
@@ -136,6 +115,19 @@ struct InboxConversationView: View {
             navigationBarMenuManager.pop(key: navigationBarMenuKey)
         }
         .showErrorUsingSnackbar(inboxConversationViewModel.$error)
+    }
+    
+    private func sendMessage() {
+        guard sendMessageTask == nil else {
+            snackbarManager.showSnackbar(.info("A message is being sent"))
+            return
+        }
+        
+        sendMessageTask = Task {
+            await inboxConversationViewModel.sendMessage(message: messageText)
+            self.messageText = ""
+            self.sendMessageTask = nil
+        }
     }
 }
 

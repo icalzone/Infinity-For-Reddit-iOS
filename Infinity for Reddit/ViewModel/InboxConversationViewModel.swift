@@ -60,8 +60,6 @@ class InboxConversationViewModel: ObservableObject {
         guard let fullNameToReplyTo else { return }
         
         do {
-            try Task.checkCancellation()
-            
             let newInbox = try await inboxConversationRepository.sendMessage(message: message, fullNameToReplyTo: fullNameToReplyTo)
             
             await MainActor.run {
