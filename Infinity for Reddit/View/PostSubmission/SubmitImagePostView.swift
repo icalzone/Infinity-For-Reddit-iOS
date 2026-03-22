@@ -192,16 +192,21 @@ struct SubmitImagePostView: View {
                 }
             }
         }
-        .onChange(of: selectedPhotoItem) { _, newSelectedItem in
+        .onChange(of: selectedPhotoItem) { _, newValue in
+            guard let newValue else {
+                return
+            }
+            
             Task {
-                if let selectedItem = newSelectedItem,
-                   let imageData = try? await selectedItem.loadTransferable(type: Data.self),
+                if let imageData = try? await newValue.loadTransferable(type: Data.self),
                    let image = UIImage(data: imageData) {
                     printInDebugOnly(Utils.isGIF(imageData: imageData))
                     submitImagePostViewModel.setImage(image: image, imageData: imageData, isGIF: Utils.isGIF(imageData: imageData))
                 } else {
                     // Error handling
                 }
+                
+                self.selectedPhotoItem = nil
             }
         }
         .onChange(of: submitImagePostViewModel.submitPostTask) { _, newValue in

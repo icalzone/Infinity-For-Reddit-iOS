@@ -169,15 +169,20 @@ struct SubmitGalleryPostView: View {
             selection: $selectedPhotoItem,
             matching: .images
         )
-        .onChange(of: selectedPhotoItem) { _, newSelectedItem in
+        .onChange(of: selectedPhotoItem) { _, newValue in
+            guard let newValue else {
+                return
+            }
+            
             Task {
-                if let selectedItem = newSelectedItem,
-                   let imageData = try? await selectedItem.loadTransferable(type: Data.self),
+                if let imageData = try? await newValue.loadTransferable(type: Data.self),
                    let pickedImage = UIImage(data: imageData) {
                     submitGalleryPostViewModel.addImage(pickedImage)
                 } else {
                     // Error handling
                 }
+                
+                self.selectedPhotoItem = nil
             }
         }
         .onChange(of: submitGalleryPostViewModel.submitPostTask) { _, newValue in
