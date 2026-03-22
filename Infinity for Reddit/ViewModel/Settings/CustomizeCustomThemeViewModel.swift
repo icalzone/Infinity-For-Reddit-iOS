@@ -103,9 +103,11 @@ class CustomizeCustomThemeViewModel: ObservableObject {
             do {
                 if customTheme.isLightTheme {
                     try await customThemeDao.unsetLightTheme()
-                } else if customTheme.isDarkTheme {
+                }
+                if customTheme.isDarkTheme {
                     try await customThemeDao.unsetDarkTheme()
-                } else if customTheme.isAmoledTheme {
+                }
+                if customTheme.isAmoledTheme {
                     try await customThemeDao.unsetAmoledTheme()
                 }
                 
