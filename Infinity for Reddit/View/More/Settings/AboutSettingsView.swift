@@ -26,12 +26,12 @@ struct AboutSettingsView: View {
                         navigationManager.append(AboutSettingsViewNavigation.credits)
                     }
                     
-//                    PreferenceEntry(
-//                        title: "Open Source",
-//                        subtitle: "Star it on Github if you like this app"
-//                    ) {
-//                        
-//                    }
+                    PreferenceEntry(
+                        title: "Open Source",
+                        subtitle: "If you enjoy this app, consider starring it on GitHub."
+                    ) {
+                        navigationManager.openLink("https://github.com/foxanastudio/Infinity-For-Reddit-iOS")
+                    }
                     
                     PreferenceEntry(
                         title: "Rate Us",
