@@ -46,9 +46,7 @@ class SnackbarManager: ObservableObject {
         self.canDismissByGesture = canDismissByGesture
         self.actionText = actionText
         self.action = action
-        withAnimation {
-            self.showSnackbar = true
-        }
+        self.showSnackbar = true
         
         if autoDismiss {
             snackbarTask = Task {
