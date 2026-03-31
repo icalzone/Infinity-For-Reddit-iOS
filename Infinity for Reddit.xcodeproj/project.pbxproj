@@ -673,10 +673,10 @@
 		};
 		4682C5432F63211A007569A0 /* XCRemoteSwiftPackageReference "Camera" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:Wonky-Wombat/Camera.git";
+			repositoryURL = "https://github.com/Wonky-Wombat/Camera.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = revision;
+				revision = 73b8bb5ff7a93bc932d9f808c73646db99ed0614;
 			};
 		};
 		5509013B2EB42E2400707F87 /* XCRemoteSwiftPackageReference "giphy-ios-sdk" */ = {

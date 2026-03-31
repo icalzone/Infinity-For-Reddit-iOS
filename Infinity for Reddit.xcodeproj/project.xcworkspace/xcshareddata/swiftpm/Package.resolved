@@ -1,5 +1,5 @@
 {
-  "originHash" : "e6b0b8f5a6528151a2579ad359200aaee6c5082af973823400775ceadc97a8c0",
+  "originHash" : "fa9216cf74f8c3065ec5514a8f130ce5e81a315a1d6b0cdf5c1ab4fab89ca72b",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -13,10 +13,9 @@
     {
       "identity" : "camera",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:Wonky-Wombat/Camera.git",
+      "location" : "https://github.com/Wonky-Wombat/Camera.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "987c01dee746b7460bcd7ae1b0a8fefb3c2862f8"
+        "revision" : "73b8bb5ff7a93bc932d9f808c73646db99ed0614"
       }
     },
     {
