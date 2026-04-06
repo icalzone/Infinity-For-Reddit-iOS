@@ -55,6 +55,11 @@ struct HomeTabPostFeedSelectionSheet: View {
                 }
                 .padding(16)
                 
+                RowText("This setting must be configured separately for each account and will take effect after restarting the app.")
+                    .primaryText()
+                    .fontWeight(.bold)
+                    .padding(16)
+                
                 switch step {
                     case .selectHomeTabPostFeedType:
                     Group {
