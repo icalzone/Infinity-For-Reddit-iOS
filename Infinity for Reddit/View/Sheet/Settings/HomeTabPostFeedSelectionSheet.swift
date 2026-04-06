@@ -13,7 +13,7 @@ struct HomeTabPostFeedSelectionSheet: View {
     @FocusState private var focusedField: FieldType?
     
     @State private var step: Step = .selectHomeTabPostFeedType
-    @State private var nameOfUsage: String = ""
+    @State private var nameOfHomeTabPostFeed: String = ""
     @State private var goForward: Bool = true
     @State private var showSelectSubredditSheet: Bool = false
     @State private var showSelectUserSheet: Bool = false
@@ -44,7 +44,10 @@ struct HomeTabPostFeedSelectionSheet: View {
                         Text("Save")
                             .positiveTextButton()
                             .onTapGesture {
-                                let trimmed = nameOfUsage.trimmingCharacters(in: .whitespacesAndNewlines)
+                                let trimmed = nameOfHomeTabPostFeed.trimmingCharacters(in: .whitespacesAndNewlines)
+                                guard !trimmed.isEmpty else {
+                                    return
+                                }
                                 onHomeTabPostFeedTypeSelected(selectedType, trimmed.isEmpty ? nil : trimmed)
                                 dismiss()
                             }
@@ -57,6 +60,16 @@ struct HomeTabPostFeedSelectionSheet: View {
                     Group {
                         IconTextButton(startIconUrl: "house", text: "Home") {
                             onHomeTabPostFeedTypeSelected(.home, nil)
+                            dismiss()
+                        }
+                        
+                        IconTextButton(startIconUrl: "flame", text: "Popular") {
+                            onHomeTabPostFeedTypeSelected(.subreddit, "popular")
+                            dismiss()
+                        }
+                        
+                        IconTextButton(startIconUrl: "globe", text: "All") {
+                            onHomeTabPostFeedTypeSelected(.subreddit, "all")
                             dismiss()
                         }
                         
@@ -96,7 +109,7 @@ struct HomeTabPostFeedSelectionSheet: View {
                         
                         HStack(spacing: 16) {
                             CustomTextField(selectedType.textFieldPlaceholder,
-                                            text: $nameOfUsage,
+                                            text: $nameOfHomeTabPostFeed,
                                             singleLine: true,
                                             autocapitalization: .never,
                                             fieldType: .nameOfHomeTabPostFeedType,

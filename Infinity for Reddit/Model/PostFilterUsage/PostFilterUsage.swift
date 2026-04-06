@@ -48,7 +48,7 @@ public struct PostFilterUsage: Codable, FetchableRecord, PersistableRecord, Hash
             case .user:
                 return "Username (Without u/ prefix)"
             case .customFeed:
-                return "MultiReddit Path (/user/yourusername/m/yourmultiredditname) (only lowercase characters)"
+                return "Path (/user/yourusername/m/yourmultiredditname) (only lowercase characters)"
             default:
                 // Really shouldn't happen
                 return ""

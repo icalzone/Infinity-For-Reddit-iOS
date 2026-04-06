@@ -12,6 +12,8 @@ import GRDB
 struct InterfaceSettingsView: View {
     @EnvironmentObject private var navigationManager: NavigationManager
     
+    @AppStorage(InterfaceUserDefaultsUtils.homeTabPostFeedTypeKey, store: .interface) private var homeTabPostFeedType: Int = HomeTabPostFeedType.home.rawValue
+    @AppStorage(InterfaceUserDefaultsUtils.nameOfHomeTabPostFeedKey, store: .interface) private var nameOfHomeTabPostFeed: String?
     @AppStorage(InterfaceUserDefaultsUtils.defaultSearchResultTabKey, store: .interface) private var defaultSearchResultTab: Int = 0
     @AppStorage(InterfaceUserDefaultsUtils.voteButtonsOnTheRightKey, store: .interface) private var voteButtonsOnTheRight: Bool = false
     @AppStorage(InterfaceUserDefaultsUtils.lazyModeIntervalKey, store: .interface) private var lazyModeInterval: Double = 2.5
@@ -31,7 +33,9 @@ struct InterfaceSettingsView: View {
                 .listPlainItemNoInsets()
                 
                 PreferenceEntry(
-                    title: "Home Tab Post Feed"
+                    title: "Home Tab Post Feed",
+                    subtitle: homeTabPostFeed,
+                    icon: "house"
                 ) {
                     showHomeTabPostFeedSelectionSheet = true
                 }
@@ -112,9 +116,38 @@ struct InterfaceSettingsView: View {
         .themedNavigationBar()
         .addTitleToInlineNavigationBar("Interface")
         .wrapContentSheet(isPresented: $showHomeTabPostFeedSelectionSheet) {
-            HomeTabPostFeedSelectionSheet { homeTabPostFeedType, nameOfHomeTabPostFeedType in
-                print("\(homeTabPostFeedType) - \(nameOfHomeTabPostFeedType)")
+            HomeTabPostFeedSelectionSheet { homeTabPostFeedType, nameOfHomeTabPostFeed in
+                InterfaceUserDefaultsUtils.setHomeTabPostFeedType(homeTabPostFeedType)
+                InterfaceUserDefaultsUtils.setNameOfHomeTabPostFeed(nameOfHomeTabPostFeed)
             }
+        }
+    }
+    
+    var homeTabPostFeed: String {
+        switch homeTabPostFeedType {
+        case HomeTabPostFeedType.home.rawValue:
+            return "Home"
+        case HomeTabPostFeedType.subreddit.rawValue:
+            if let nameOfHomeTabPostFeed {
+                if nameOfHomeTabPostFeed == "popular" || nameOfHomeTabPostFeed == "all" {
+                    return nameOfHomeTabPostFeed.capitalizedFirst
+                }
+                
+                return "r/\(nameOfHomeTabPostFeed)"
+            }
+            return "Home"
+        case HomeTabPostFeedType.user.rawValue:
+            if let nameOfHomeTabPostFeed {
+                return "u/\(nameOfHomeTabPostFeed)"
+            }
+            return "Home"
+        case HomeTabPostFeedType.customFeed.rawValue:
+            if let nameOfHomeTabPostFeed {
+                return "Custom feed: \(nameOfHomeTabPostFeed)"
+            }
+            return "Home"
+        default:
+            return "Home"
         }
     }
 }
