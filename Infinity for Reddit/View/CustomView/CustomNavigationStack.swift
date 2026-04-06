@@ -37,7 +37,7 @@ struct CustomNavigationStack<Content: View>: View {
                         .setUpHomeTabViewChildNavigationBar(onLogin: {
                             accountViewModel.startLogin()
                         })
-                        .addTitleToInlineNavigationBar(homeTabNavigationBarTitle)
+                        .addTitleToInlineNavigationBar("Home")
                         .environmentObject(navigationManager)
                         .environmentObject(commentSubmissionShareableViewModel)
                         .environmentObject(postEditingShareableViewModel)
@@ -370,30 +370,30 @@ struct CustomNavigationStack<Content: View>: View {
         }
     }
     
-    var homeTabNavigationBarTitle: String {
-        let nameOfHomeTabPostFeed = InterfaceUserDefaultsUtils.nameOfHomeTabPostFeed
-        switch InterfaceUserDefaultsUtils.homeTabPostFeedType {
-        case HomeTabPostFeedType.subreddit.rawValue:
-            if !nameOfHomeTabPostFeed.isEmpty {
-                if nameOfHomeTabPostFeed == "popular" || nameOfHomeTabPostFeed == "all" {
-                    return nameOfHomeTabPostFeed.capitalizedFirst
-                }
-                
-                return "r/\(nameOfHomeTabPostFeed)"
-            }
-            return HomeTabPostFeedType.frontPage.description
-        case HomeTabPostFeedType.user.rawValue:
-            if !nameOfHomeTabPostFeed.isEmpty {
-                return "u/\(nameOfHomeTabPostFeed)"
-            }
-            return HomeTabPostFeedType.frontPage.description
-        case HomeTabPostFeedType.customFeed.rawValue:
-            if !nameOfHomeTabPostFeed.isEmpty {
-                return "Custom feed: \(nameOfHomeTabPostFeed)"
-            }
-            return HomeTabPostFeedType.frontPage.description
-        default:
-            return HomeTabPostFeedType.frontPage.description
-        }
-    }
+//    var homeTabNavigationBarTitle: String {
+//        let nameOfHomeTabPostFeed = InterfaceUserDefaultsUtils.nameOfHomeTabPostFeed
+//        switch InterfaceUserDefaultsUtils.homeTabPostFeedType {
+//        case HomeTabPostFeedType.subreddit.rawValue:
+//            if !nameOfHomeTabPostFeed.isEmpty {
+//                if nameOfHomeTabPostFeed == "popular" || nameOfHomeTabPostFeed == "all" {
+//                    return nameOfHomeTabPostFeed.capitalizedFirst
+//                }
+//                
+//                return "r/\(nameOfHomeTabPostFeed)"
+//            }
+//            return HomeTabPostFeedType.frontPage.description
+//        case HomeTabPostFeedType.user.rawValue:
+//            if !nameOfHomeTabPostFeed.isEmpty {
+//                return "u/\(nameOfHomeTabPostFeed)"
+//            }
+//            return HomeTabPostFeedType.frontPage.description
+//        case HomeTabPostFeedType.customFeed.rawValue:
+//            if !nameOfHomeTabPostFeed.isEmpty {
+//                return "Custom feed: \(nameOfHomeTabPostFeed)"
+//            }
+//            return HomeTabPostFeedType.frontPage.description
+//        default:
+//            return HomeTabPostFeedType.frontPage.description
+//        }
+//    }
 }
