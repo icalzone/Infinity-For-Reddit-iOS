@@ -195,9 +195,9 @@ private extension HomeTabPostFeedType {
     var searchIcon: String? {
         switch self {
         case .subreddit:
-            return "plus.bubble"
+            return "text.bubble"
         case .user:
-            return "person.crop.circle.badge"
+            return "person.crop.circle"
         case .customFeed:
             return "rectangle.stack"
         default:
