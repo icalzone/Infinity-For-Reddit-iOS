@@ -213,16 +213,16 @@ struct PostDetailsView: View {
                                                     onToggleExpand: {
                                                         if fullyCollapseComment {
                                                             if comment.isCollasped {
-                                                                postDetailsViewModel.expandComments(comment: comment)
+                                                                postDetailsViewModel.expandComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                             } else {
-                                                                postDetailsViewModel.collapseComments(comment: comment)
+                                                                postDetailsViewModel.collapseComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                             }
                                                         } else {
                                                             withAnimation {
                                                                 if comment.isCollasped {
-                                                                    postDetailsViewModel.expandComments(comment: comment)
+                                                                    postDetailsViewModel.expandComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                                 } else {
-                                                                    postDetailsViewModel.collapseComments(comment: comment)
+                                                                    postDetailsViewModel.collapseComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                                 }
                                                             }
                                                         }
@@ -258,16 +258,16 @@ struct PostDetailsView: View {
                                                 .onLongPressGesture {
                                                     if fullyCollapseComment {
                                                         if comment.isCollasped {
-                                                            postDetailsViewModel.expandComments(comment: comment)
+                                                            postDetailsViewModel.expandComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                         } else {
-                                                            postDetailsViewModel.collapseComments(comment: comment)
+                                                            postDetailsViewModel.collapseComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                         }
                                                     } else {
                                                         withAnimation {
                                                             if comment.isCollasped {
-                                                                postDetailsViewModel.expandComments(comment: comment)
+                                                                postDetailsViewModel.expandComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                             } else {
-                                                                postDetailsViewModel.collapseComments(comment: comment)
+                                                                postDetailsViewModel.collapseComments(comment: comment, fullyCollapseComment: fullyCollapseComment)
                                                             }
                                                         }
                                                     }

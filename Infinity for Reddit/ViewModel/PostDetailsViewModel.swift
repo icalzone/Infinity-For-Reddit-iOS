@@ -537,8 +537,11 @@ public class PostDetailsViewModel: ObservableObject {
         MarkdownUtils.parseRedditImagesBlock(comment)
     }
     
-    public func collapseComments(comment: Comment) {
+    public func collapseComments(comment: Comment, fullyCollapseComment: Bool) {
         guard comment.hasReplies else {
+            if fullyCollapseComment {
+                comment.isCollasped = true
+            }
             return
         }
         
@@ -565,8 +568,10 @@ public class PostDetailsViewModel: ObservableObject {
         visibleComments.removeSubrange((index + 1)..<endIndex)
     }
     
-    public func expandComments(comment: Comment) {
+    public func expandComments(comment: Comment, fullyCollapseComment: Bool) {
         guard comment.hasReplies else {
+            comment.isCollasped = false
+            comment.hasExpandedBefore = true
             return
         }
         
@@ -694,7 +699,7 @@ public class PostDetailsViewModel: ObservableObject {
                 }
                 self.allComments.insert(.comment(comment), at: allIndex + 1)
                 if parentComment.isCollasped {
-                    expandComments(comment: parentComment)
+                    expandComments(comment: parentComment, fullyCollapseComment: InterfaceCommentUserDefaultsUtils.fullyCollapseComment)
                 } else {
                     self.visibleComments.insert(.comment(comment), at: visibleIndex + 1)
                 }

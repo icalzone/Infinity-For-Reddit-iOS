@@ -136,7 +136,7 @@ struct CommentViewCard: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
                 
-                if !((comment.isCollasped && fullyCollapseComment && comment.hasExpandedBefore) || (comment.isFilteredOut && !comment.hasExpandedBefore)) {
+                if !((comment.isCollasped && fullyCollapseComment) || (comment.isFilteredOut && !comment.hasExpandedBefore)) {
                     Group {
                         if let processedMarkdown = comment.bodyProcessedMarkdown {
                             Markdown(processedMarkdown)
@@ -397,7 +397,7 @@ struct CommentViewCard: View {
     }
     
     private var backgroundColor: Color {
-        return (comment.isCollasped && fullyCollapseComment && comment.hasExpandedBefore)
+        return (comment.isCollasped && fullyCollapseComment)
         || (comment.isFilteredOut && !comment.hasExpandedBefore) ? Color(hex: customThemeViewModel.currentCustomTheme.fullyCollapsedCommentBackgroundColor)
         : (highlightComment ? Color(hex: customThemeViewModel.currentCustomTheme.singleCommentThreadBackgroundColor) : Color.clear)
     }
