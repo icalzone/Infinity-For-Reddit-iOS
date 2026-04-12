@@ -52,6 +52,10 @@ struct PostDetailsView: View {
     private var fullyCollapseComment: Bool = false
     @AppStorage(InterfaceCommentUserDefaultsUtils.showAuthorAvatarKey, store: .interfaceComment)
     private var showAuthorAvatar: Bool = false
+    @AppStorage(GesturesButtonsUserDefaultsUtils.commentLeftSwipeActionKey, store: .gesturesButtons)
+    private var commentLeftSwipeAction: Int = SwipeAction.upvote.rawValue
+    @AppStorage(GesturesButtonsUserDefaultsUtils.commentRightSwipeActionKey, store: .gesturesButtons)
+    private var commentRightSwipeAction: Int = SwipeAction.downvote.rawValue
     
     @Namespace var glassActionBarNamespace
     
@@ -282,26 +286,30 @@ struct PostDetailsView: View {
                                                     if AccountViewModel.shared.account.isAnonymous() {
                                                         EmptyView()
                                                     } else {
-                                                        Button {
-                                                            postDetailsViewModel.voteComment(comment, vote: 1)
-                                                        } label: {
-                                                            SwiftUI.Image(systemName: "arrowshape.up")
-                                                                .foregroundStyle(.white)
+                                                        if let action = SwipeAction(rawValue: commentLeftSwipeAction), action != .none {
+                                                            Button {
+                                                                onSwipe(action, comment: comment)
+                                                            } label: {
+                                                                SwiftUI.Image(systemName: action.icon)
+                                                                    .foregroundStyle(.white)
+                                                            }
+                                                            .tint(action.getTint(customThemeViewModel: customThemeViewModel))
                                                         }
-                                                        .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
                                                     }
                                                 }
                                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                                     if AccountViewModel.shared.account.isAnonymous() {
                                                         EmptyView()
                                                     } else {
-                                                        Button {
-                                                            postDetailsViewModel.voteComment(comment, vote: -1)
-                                                        } label: {
-                                                            SwiftUI.Image(systemName: "arrowshape.down")
-                                                                .foregroundStyle(.white)
+                                                        if let action = SwipeAction(rawValue: commentRightSwipeAction), action != .none {
+                                                            Button {
+                                                                onSwipe(action, comment: comment)
+                                                            } label: {
+                                                                SwiftUI.Image(systemName: action.icon)
+                                                                    .foregroundStyle(.white)
+                                                            }
+                                                            .tint(action.getTint(customThemeViewModel: customThemeViewModel))
                                                         }
-                                                        .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
                                                     }
                                                 }
                                             case .more(let commentMore):
@@ -1100,6 +1108,19 @@ struct PostDetailsView: View {
         }
     }
     
+    private func onSwipe(_ action: SwipeAction, comment: Comment) {
+        switch action {
+        case .none:
+            break
+        case .upvote:
+            postDetailsViewModel.voteComment(comment, vote: 1)
+            break
+        case .downvote:
+            postDetailsViewModel.voteComment(comment, vote: -1)
+            break
+        }
+    }
+    
     private enum ActiveAlert: Identifiable {
         case deletePost
         case sensitiveContentWarning
@@ -1184,6 +1205,9 @@ private struct PostDetailsItemView: View {
     
     @State var voteTask: Task<Void, Never>?
     
+    @AppStorage(GesturesButtonsUserDefaultsUtils.postDetailsLeftSwipeActionKey, store: .gesturesButtons) private var postDetailsLeftSwipeAction: Int = SwipeAction.upvote.rawValue
+    @AppStorage(GesturesButtonsUserDefaultsUtils.postDetailsRightSwipeActionKey, store: .gesturesButtons) private var postDetailsRightSwipeAction: Int = SwipeAction.downvote.rawValue
+    
     let post: Post
     //let isFromSubredditPostListing: Bool
     let playbackTimeToSeekToInitially: Double
@@ -1231,28 +1255,45 @@ private struct PostDetailsItemView: View {
 //            }
 //        }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            Button {
-                voteTask?.cancel()
-                voteTask = Task {
-                    await postDetailsViewModel.votePost(vote: 1)
+            if let action = SwipeAction(rawValue: postDetailsLeftSwipeAction), action != .none {
+                Button {
+                    onSwipe(action)
+                } label: {
+                    SwiftUI.Image(systemName: action.icon)
+                        .foregroundStyle(.white)
                 }
-            } label: {
-                SwiftUI.Image(systemName: "arrowshape.up")
-                    .foregroundStyle(.white)
+                .tint(action.getTint(customThemeViewModel: customThemeViewModel))
             }
-            .tint(Color(hex: customThemeViewModel.currentCustomTheme.upvoted))
         }
         .swipeActions(edge: .leading, allowsFullSwipe: true) {
-            Button {
-                voteTask?.cancel()
-                voteTask = Task {
-                    await postDetailsViewModel.votePost(vote: -1)
+            if let action = SwipeAction(rawValue: postDetailsRightSwipeAction), action != .none {
+                Button {
+                    onSwipe(action)
+                } label: {
+                    SwiftUI.Image(systemName: action.icon)
+                        .foregroundStyle(.white)
                 }
-            } label: {
-                SwiftUI.Image(systemName: "arrowshape.down")
-                    .foregroundStyle(.white)
+                .tint(action.getTint(customThemeViewModel: customThemeViewModel))
             }
-            .tint(Color(hex: customThemeViewModel.currentCustomTheme.downvoted))
+        }
+    }
+    
+    private func onSwipe(_ action: SwipeAction) {
+        switch action {
+        case .none:
+            break
+        case .upvote:
+            voteTask?.cancel()
+            voteTask = Task {
+                await postDetailsViewModel.votePost(vote: 1)
+            }
+            break
+        case .downvote:
+            voteTask?.cancel()
+            voteTask = Task {
+                await postDetailsViewModel.votePost(vote: -1)
+            }
+            break
         }
     }
 }
