@@ -395,20 +395,6 @@ struct CommentViewCard: View {
         }
         .contentShape(Rectangle())
         .background(backgroundColor)
-//        .applyIf(isInPostDetails) {
-//            $0.onTapGesture {
-//                if let action = CommentTapAction(rawValue: commentLongPressAction) {
-//                    switch action {
-//                    case .toggleToolbar:
-//                        break
-//                    case .expandCollapseComment:
-//                        onExpandCollapseComment(comment: comment)
-//                        break
-//                    }
-//                }
-//                isToolbarHidden.toggle()
-//            }
-//        }
         .onChange(of: toolbarVisibilityFlag) { _, newValue in
             isToolbarHidden.toggle()
         }
