@@ -41,6 +41,7 @@ public class PostDetailsViewModel: ObservableObject {
     
     var isScrollIdle: Bool = true
     var commentItemToScrollTo: CommentItem?
+    var isPostVisible: Bool = false
 
     private var lastLoadedSortTypeKind: SortType.Kind? = nil
     private var commentFilter: CommentFilter?
@@ -1489,7 +1490,7 @@ public class PostDetailsViewModel: ObservableObject {
     }
     
     private func getCurrentScrolledCommentItem() -> CommentItem? {
-        if appearedComments.isEmpty {
+        if appearedComments.isEmpty || isPostVisible {
             return nil
         } else {
             sortAppearedComments()

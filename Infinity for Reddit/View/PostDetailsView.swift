@@ -1272,6 +1272,12 @@ private struct PostDetailsItemView: View {
         )
         .listPlainItemNoInsets()
         .id(ObjectIdentifier(post))
+        .onAppear {
+            postDetailsViewModel.isPostVisible = true
+        }
+        .onDisappear {
+            postDetailsViewModel.isPostVisible = false
+        }
 //        .onAppear {
 //            if post.subredditOrUserIconInPostDetails == nil {
 //                Task {
