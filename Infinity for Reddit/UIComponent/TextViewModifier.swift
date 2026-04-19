@@ -166,7 +166,7 @@ struct PostContentTextViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .fixedSize(horizontal: false, vertical: true)
-            .customContentFont()
+            .customContentFont(respectFontMetrics: true)
             .foregroundColor(Color(hex: isRead ? themeViewModel.currentCustomTheme.readPostContentColor : themeViewModel.currentCustomTheme.postContentColor))
     }
 }
@@ -177,7 +177,7 @@ struct CommentTextViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .fixedSize(horizontal: false, vertical: true)
-            .customContentFont()
+            .customContentFont(respectFontMetrics: true)
             .foregroundColor(Color(hex: themeViewModel.currentCustomTheme.commentColor))
     }
 }
