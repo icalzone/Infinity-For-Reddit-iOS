@@ -189,8 +189,8 @@ struct PostDetailsViewCard: View {
                         LockedTag()
                     }
                     
-                    if post.crosspostParent != nil {
-                        CrosspostTag()
+                    if let parentPost = post.crosspostParent {
+                        CrosspostTag(parentPost: parentPost)
                     }
                     
                     switch post.postType {
