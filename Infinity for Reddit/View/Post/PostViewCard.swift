@@ -433,6 +433,7 @@ private struct NoPreviewLinkView: View {
         Text(domain)
             .noPreviewPostTypeIndicatorBackground()
             .noPreviewPostTypeIndicator()
+            .customFont()
             .onTapGesture {
                 onTap()
             }

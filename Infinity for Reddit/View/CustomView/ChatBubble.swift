@@ -37,6 +37,7 @@ struct ChatBubble<Content: View>: View {
                     )
                 }
                 .foregroundColor(isSentMessage ? Color(hex: customThemeViewModel.currentCustomTheme.sentMessageTextColor) : Color(hex: customThemeViewModel.currentCustomTheme.receivedMessageTextColor))
+                .customFont()
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .frame(maxWidth: 300, alignment: isSentMessage ? .trailing : .leading)
