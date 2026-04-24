@@ -229,6 +229,5 @@ struct ChatMessageMarkdownViewModifier: ViewModifier {
                     .padding(.horizontal, 13)
                     .relativeLineSpacing(.em(0.25))
             })
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
